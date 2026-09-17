@@ -62,7 +62,7 @@ class StaysPage extends StatefulWidget {
 }
 
 class _StaysPageState extends State<StaysPage> {
-  int _selectedNavIndex = 0;
+  int _selectedNavIndex = 1; // "Saved" is active by default
   int _selectedFilterIndex = 1; // "4.8+ Top Rated" active by default
   final Set<int> _bookmarkedStays = <int>{};
 
@@ -491,8 +491,8 @@ class _StaysPageState extends State<StaysPage> {
               _buildNavItem(
                 index: 0,
                 label: 'Explore',
-                icon: Icons.explore_rounded,
-                activeIcon: Icons.explore,
+                icon: Icons.explore_outlined,
+                activeIcon: Icons.explore_rounded,
                 onTap: () {
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (_) => const HelaHomePage()),
