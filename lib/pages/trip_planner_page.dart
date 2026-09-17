@@ -4,6 +4,10 @@ import 'package:hela/pages/stays_page.dart';
 import 'package:hela/pages/profile_page.dart';
 import 'package:hela/widgets/itinerary_card.dart';
 import 'package:hela/widgets/real_time_calendar.dart';
+import 'package:hela/models/tour_plan.dart';
+import 'package:hela/models/tour_preferences.dart';
+import 'package:hela/pages/tour_plan_details_page.dart';
+import 'package:hela/pages/ai_chat_customization_page.dart';
 
 /// Data models for the planner
 
@@ -16,6 +20,7 @@ class TripPlannerPage extends StatefulWidget {
 
 class _TripPlannerPageState extends State<TripPlannerPage> {
   int _selectedNavIndex = 2; // "Journeys" is active by default
+  int _selectedItineraryIndex = 0;
   final Set<String> _selectedThemes = {'Culture', 'Nature', 'Food'};
   final Set<int> _bookmarkedItineraries = {0}; // Card 1 is bookmarked by default
 
@@ -90,6 +95,157 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
     ),
   ];
 
+
+  TourPlan _buildTourPlanForItinerary(ItineraryCardData data) {
+    final daysCount = _travelDays > 0 ? _travelDays : 5;
+
+    final cleanPrice =
+        double.tryParse(data.price.replaceAll(RegExp(r'[^\d.]'), '')) ?? 340.0;
+
+    final days = List.generate(daysCount, (i) {
+      final dayNum = i + 1;
+      final highlight = data.highlights[i % data.highlights.length];
+      return ItineraryDay(
+        dayNumber: dayNum,
+        title: 'Day $dayNum: ${data.routeName}',
+        summary: 'Experience ${data.title} focusing on ${data.categoryTag}.',
+        estimatedDayCostUsd: cleanPrice / daysCount,
+        overnightStay: data.routeName,
+        activities: [
+          ItineraryActivity(
+            title: highlight,
+            description: 'Curated signature highlight of ${data.title}.',
+            startTime: '08:30 AM',
+            estimatedDuration: '3 hours',
+            category: data.categoryTag,
+            estimatedCostUsd: 25.0,
+            travelTimeFromPrevious: '35 mins',
+            travelMethod: 'Scenic transfer',
+            tips: const ['Comfortable walking attire and camera recommended.'],
+          ),
+          const ItineraryActivity(
+            title: 'Authentic Local Lunch & Cultural Tasting',
+            description: 'Traditional Sri Lankan farm-to-table lunch.',
+            startTime: '01:00 PM',
+            estimatedDuration: '1.5 hours',
+            category: 'Culinary',
+            estimatedCostUsd: 15.0,
+            tips: ['Taste seasonal tropical fruits and Ceylon tea.'],
+          ),
+          const ItineraryActivity(
+            title: 'Sunset Viewpoint & Evening Leisure',
+            description: 'Golden hour panoramic views and scenic stroll.',
+            startTime: '05:00 PM',
+            estimatedDuration: '2 hours',
+            category: 'Leisure',
+            estimatedCostUsd: 10.0,
+            tips: ['Great photo spot during sunset.'],
+          ),
+        ],
+      );
+    });
+
+    return TourPlan(
+      id: 'itinerary_${data.title.toLowerCase().replaceAll(RegExp(r'\s+'), '_')}',
+      title: data.title,
+      summary: data.subtitle,
+      matchReason:
+          'Calibrated for $_travelDays days with ${data.categoryTag} highlights.',
+      durationDays: daysCount,
+      estimatedTotalCostUsd: cleanPrice,
+      budgetBreakdown:
+          'Includes lodging, activity permits, local transit, and guided experiences.',
+      budgetIncludes: const [
+        'Boutique eco-stays',
+        'Guided excursion permits',
+        'Inter-city travel'
+      ],
+      budgetExcludes: const [
+        'International airfare',
+        'Alcoholic beverages',
+        'Personal expenses'
+      ],
+      travelTips: const [
+        'Pack layers for changing mountain and coastal climates',
+        'Carry local currency (LKR) for artisanal craft purchases',
+        'Respect temple dress codes (covered shoulders & knees)'
+      ],
+      warnings: const [
+        'Check seasonal weather for high elevation hikes',
+        'Mountain rail tickets should be confirmed in advance'
+      ],
+      dataSources: const ['HELA Curated Journeys', 'Google Gemini AI'],
+      days: days,
+    );
+  }
+
+  TourPreferences _buildPreferencesForItinerary(ItineraryCardData data) {
+    final interests = _selectedThemes.map((t) {
+      switch (t.toLowerCase()) {
+        case 'culture':
+          return TravelInterest.culture;
+        case 'nature':
+          return TravelInterest.nature;
+        case 'food':
+          return TravelInterest.food;
+        case 'adventure':
+          return TravelInterest.adventure;
+        case 'wellness':
+          return TravelInterest.relaxation;
+        case 'wildlife':
+          return TravelInterest.wildlife;
+        default:
+          return TravelInterest.culture;
+      }
+    }).toSet();
+
+    return TourPreferences(
+      duration: TravelDuration.custom,
+      customDays: _travelDays,
+      interests: interests,
+      startingLocationName: data.routeName,
+      pace: TravelPace.moderate,
+    );
+  }
+
+  void _openTourDetails(ItineraryCardData itinerary) {
+    final plan = _buildTourPlanForItinerary(itinerary);
+    final prefs = _buildPreferencesForItinerary(itinerary);
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => TourPlanDetailsPage(
+          plan: plan,
+          preferences: prefs,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _customizeTrip(ItineraryCardData itinerary) async {
+    final plan = _buildTourPlanForItinerary(itinerary);
+    final prefs = _buildPreferencesForItinerary(itinerary);
+
+    final updatedPlan = await Navigator.of(context).push<TourPlan>(
+      MaterialPageRoute(
+        builder: (_) => AiChatCustomizationPage(
+          currentPlan: plan,
+          preferences: prefs,
+        ),
+      ),
+    );
+
+    if (updatedPlan != null && mounted) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => TourPlanDetailsPage(
+            plan: updatedPlan,
+            preferences: prefs,
+          ),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -168,28 +324,28 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
             ),
           ),
 
-          // Sticky Bottom CTA Floating Action Bar
+          // Sticky Bottom CTA Floating Action Bar (Docked cleanly above bottom nav)
           Positioned(
             left: 0,
             right: 0,
-            bottom: 64, // Sits right above bottom nav
+            bottom: 0,
             child: Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 480),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
                   decoration: BoxDecoration(
-                    color: HelaColors.surfaceContainerLowest.withValues(alpha: 0.92),
+                    color: HelaColors.surfaceContainerLowest.withValues(alpha: 0.96),
                     border: Border(
                       top: BorderSide(
-                        color: HelaColors.outlineVariant.withValues(alpha: 0.3),
+                        color: HelaColors.outlineVariant.withValues(alpha: 0.35),
                       ),
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF1F2E24).withValues(alpha: 0.08),
-                        blurRadius: 20,
-                        offset: const Offset(0, -6),
+                        color: Colors.black.withValues(alpha: 0.08),
+                        blurRadius: 16,
+                        offset: const Offset(0, -4),
                       ),
                     ],
                   ),
@@ -204,14 +360,14 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                             style: const TextStyle(
                               color: HelaColors.onSurfaceVariant,
                               fontSize: 11,
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                          const Text(
-                            '\$340',
-                            style: TextStyle(
+                          Text(
+                            _itineraries[_selectedItineraryIndex].price,
+                            style: const TextStyle(
                               color: HelaColors.primary,
-                              fontSize: 18,
+                              fontSize: 20,
                               fontWeight: FontWeight.w800,
                             ),
                           ),
@@ -220,11 +376,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                       const SizedBox(width: 14),
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Customizing $_travelDays-day Ceylon itinerary...')),
-                            );
-                          },
+                          onPressed: () => _customizeTrip(_itineraries[_selectedItineraryIndex]),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: HelaColors.tertiaryFixed,
                             foregroundColor: HelaColors.onTertiaryFixed,
@@ -234,9 +386,11 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                             ),
                             padding: const EdgeInsets.symmetric(vertical: 12),
                           ),
-                          child: Row(
+                          child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
+                            children: [
+                              Icon(Icons.auto_awesome_rounded, size: 18),
+                              SizedBox(width: 8),
                               Text(
                                 'Customize This Trip',
                                 style: TextStyle(
@@ -590,24 +744,39 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
           itemBuilder: (context, index) {
             final itinerary = _itineraries[index];
             final isBookmarked = _bookmarkedItineraries.contains(index);
+            final isSelected = _selectedItineraryIndex == index;
 
-            return ItineraryCard.fromItineraryCardData(
-              itinerary,
-              isBookmarked: isBookmarked,
-              onBookmarkTap: () {
-                setState(() {
-                  if (isBookmarked) {
-                    _bookmarkedItineraries.remove(index);
-                  } else {
-                    _bookmarkedItineraries.add(index);
-                  }
-                });
-              },
-              onViewRouteTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Viewing route for ${itinerary.title}')),
-                );
-              },
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: isSelected
+                      ? HelaColors.primary
+                      : Colors.transparent,
+                  width: 2,
+                ),
+              ),
+              child: ItineraryCard.fromItineraryCardData(
+                itinerary,
+                isBookmarked: isBookmarked,
+                onTap: () {
+                  setState(() => _selectedItineraryIndex = index);
+                },
+                onBookmarkTap: () {
+                  setState(() {
+                    if (isBookmarked) {
+                      _bookmarkedItineraries.remove(index);
+                    } else {
+                      _bookmarkedItineraries.add(index);
+                    }
+                  });
+                },
+                onViewRouteTap: () {
+                  setState(() => _selectedItineraryIndex = index);
+                  _openTourDetails(itinerary);
+                },
+              ),
             );
           },
         ),
