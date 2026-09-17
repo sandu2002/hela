@@ -1589,7 +1589,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildNavItem(index: 0, label: 'Explore', icon: Icons.explore_rounded, activeIcon: Icons.explore),
+              _buildNavItem(index: 0, label: 'Explore', icon: Icons.explore_outlined, activeIcon: Icons.explore_rounded),
               _buildNavItem(
                 index: 1,
                 label: 'Saved',

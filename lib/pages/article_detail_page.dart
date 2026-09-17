@@ -420,8 +420,8 @@ class ArticleDetailPage extends StatelessWidget {
               _buildNavItem(
                 context: context,
                 label: 'Explore',
-                icon: Icons.explore_rounded,
-                activeIcon: Icons.explore,
+                icon: Icons.explore_outlined,
+                activeIcon: Icons.explore_rounded,
                 onTap: () {
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (_) => const HelaHomePage()),

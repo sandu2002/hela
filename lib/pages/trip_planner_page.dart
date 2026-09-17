@@ -838,8 +838,8 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
               _buildNavItem(
                 index: 0,
                 label: 'Explore',
-                icon: Icons.explore_rounded,
-                activeIcon: Icons.explore,
+                icon: Icons.explore_outlined,
+                activeIcon: Icons.explore_rounded,
                 onTap: () {
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (_) => const HelaHomePage()),

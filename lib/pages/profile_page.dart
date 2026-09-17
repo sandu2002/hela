@@ -1124,8 +1124,8 @@ class _ProfilePageState extends State<ProfilePage> {
               _buildNavItem(
                 index: 0,
                 label: 'Explore',
-                icon: Icons.explore_rounded,
-                activeIcon: Icons.explore,
+                icon: Icons.explore_outlined,
+                activeIcon: Icons.explore_rounded,
                 onTap: () {
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (_) => const HelaHomePage()),
