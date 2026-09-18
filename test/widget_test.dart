@@ -17,6 +17,7 @@ import 'package:hela/pages/profile_page.dart';
 import 'package:hela/pages/cultural_guide_page.dart';
 import 'package:hela/pages/article_detail_page.dart';
 import 'package:hela/onbording/onboarding_page.dart';
+import 'package:hela/pages/signup_page.dart';
 import 'package:hela/widgets/haven_card.dart';
 import 'package:hela/widgets/stay_card.dart';
 import 'package:hela/widgets/itinerary_card.dart';
@@ -292,6 +293,32 @@ void main() {
     expect(find.byIcon(Icons.layers_rounded), findsOneWidget);
     expect(find.byIcon(Icons.add_rounded), findsOneWidget);
     expect(find.byIcon(Icons.my_location_rounded), findsNWidgets(2));
+  });
+
+  testWidgets('SignUpPage smoke test', (WidgetTester tester) async {
+    _ignoreOverflow();
+    await tester.pumpWidget(
+      _wrapWithState(const SignUpPage()),
+    );
+
+    expect(find.text('HELA'), findsOneWidget);
+    expect(find.text('Begin Your Journey'), findsOneWidget);
+    expect(find.text('Continue with Google'), findsOneWidget);
+    expect(find.text('Full Name'), findsOneWidget);
+    expect(find.text('Email Address'), findsOneWidget);
+    expect(find.text('Password'), findsOneWidget);
+    expect(find.text('Create HELA Account'), findsOneWidget);
+  });
+
+  testWidgets('SignUpPage signIn mode test', (WidgetTester tester) async {
+    _ignoreOverflow();
+    await tester.pumpWidget(
+      _wrapWithState(const SignUpPage(initialMode: AuthMode.signIn)),
+    );
+
+    expect(find.text('Welcome Back'), findsOneWidget);
+    expect(find.text('Sign In'), findsWidgets);
+    expect(find.text('Sign in with Google'), findsOneWidget);
   });
 }
 

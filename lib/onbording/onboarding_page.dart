@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hela/pages/home_page.dart';
+import 'package:hela/pages/signup_page.dart';
 
 /// Design tokens for HELA Onboarding
 class OnboardingColors {
@@ -84,7 +84,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
     if (_currentIndex < 2) {
       _goToSlide(_currentIndex + 1);
     } else {
-      _navigateToHome();
+      _navigateToSignUp();
     }
   }
 
@@ -92,13 +92,21 @@ class _OnboardingPageState extends State<OnboardingPage> {
     if (_currentIndex < 2) {
       _goToSlide(2);
     } else {
-      _navigateToHome();
+      _navigateToSignUp();
     }
   }
 
-  void _navigateToHome() {
+  void _navigateToSignUp() {
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const HelaHomePage()),
+      MaterialPageRoute(builder: (_) => const SignUpPage()),
+    );
+  }
+
+  void _navigateToSignIn() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => const SignUpPage(initialMode: AuthMode.signIn),
+      ),
     );
   }
 
@@ -698,7 +706,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 ),
               ),
               GestureDetector(
-                onTap: _navigateToHome,
+                onTap: _navigateToSignIn,
                 child: const Padding(
                   padding: EdgeInsets.only(left: 6),
                   child: Text(

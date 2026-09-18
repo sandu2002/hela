@@ -79,6 +79,33 @@ class HelaAppState extends ChangeNotifier {
     _currentNavIndex = index;
     notifyListeners();
   }
+
+  // ── Authentication ─────────────────────────────────────────────
+  bool _isAuthenticated = false;
+  String _userName = 'Guest';
+  String _userEmail = '';
+  String? _userPhotoUrl;
+
+  bool get isAuthenticated => _isAuthenticated;
+  String get userName => _userName;
+  String get userEmail => _userEmail;
+  String? get userPhotoUrl => _userPhotoUrl;
+
+  void signIn({required String name, required String email, String? photoUrl}) {
+    _isAuthenticated = true;
+    _userName = name;
+    _userEmail = email;
+    _userPhotoUrl = photoUrl;
+    notifyListeners();
+  }
+
+  void signOut() {
+    _isAuthenticated = false;
+    _userName = 'Guest';
+    _userEmail = '';
+    _userPhotoUrl = null;
+    notifyListeners();
+  }
 }
 
 /// An InheritedNotifier that exposes [HelaAppState] down the tree.

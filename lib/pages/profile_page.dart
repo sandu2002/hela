@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hela/pages/home_page.dart';
 import 'package:hela/pages/trip_planner_page.dart';
 import 'package:hela/pages/stays_page.dart';
+import 'package:hela/state/app_state.dart';
 
 /// Data models for Profile & Saved Trips
 class SavedTripCardData {
@@ -431,16 +432,27 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'Kavinda Wickramasinghe',
-                              style: TextStyle(
-                                color: HelaColors.onPrimary,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: -0.3,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                            Builder(
+                              builder: (context) {
+                                String displayName = 'Kavinda Wickramasinghe';
+                                try {
+                                  final appState = HelaAppStateProvider.of(context);
+                                  if (appState.isAuthenticated) {
+                                    displayName = appState.userName;
+                                  }
+                                } catch (_) {}
+                                return Text(
+                                  displayName,
+                                  style: const TextStyle(
+                                    color: HelaColors.onPrimary,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: -0.3,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                );
+                              },
                             ),
                             const SizedBox(height: 3),
                             const Text(
