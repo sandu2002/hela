@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hela/pages/profile/edit_profile_page.dart';
 import 'package:hela/pages/home_page.dart';
 import 'package:hela/pages/trip_planner_page.dart';
 import 'package:hela/pages/stays_page.dart';
@@ -380,50 +381,73 @@ class _ProfilePageState extends State<ProfilePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Avatar with gradient border & floral badge
-                      Stack(
-                        children: [
-                          Container(
-                            width: 76,
-                            height: 76,
-                            padding: const EdgeInsets.all(2.5),
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              gradient: LinearGradient(
-                                colors: [Color(0xFFB8C34A), Color(0xFF7FA88A)],
-                              ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const EditProfilePage(),
                             ),
-                            child: ClipOval(
-                              child: _buildNetworkImage(
-                                'https://lh3.googleusercontent.com/aida-public/AB6AXuCb49WhjEvtkcNC5SxIgicaFGy0FHajTwhLvSgls2jKJllxIgCm3GtnkBey5ISjUv1a3RBHYRJDux9aTGEuQRD2PRzQ7NQpcvmB23kcn9IUgKDRsKdgyX64gwLDMholuf3EBAmflHGPMYYyBMAcXUVZYTfptDrW3y9Os02is22iH1TXaD6SAOV7pDCQz_K7hNqQjavBUoHUUSiFUtmOeylpDB6d6w3LDISl_r_VyPAoA96T32aE2nQtbA',
-                                width: 72,
-                                height: 72,
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            right: 0,
-                            child: Container(
-                              width: 24,
-                              height: 24,
+                          );
+                        },
+                        child: Stack(
+                          children: [
+                            Container(
+                              width: 76,
+                              height: 76,
+                              padding: const EdgeInsets.all(2.5),
                               decoration: const BoxDecoration(
-                                color: Color(0xFFB8C34A),
                                 shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black26,
-                                    blurRadius: 3,
-                                  ),
-                                ],
+                                gradient: LinearGradient(
+                                  colors: [Color(0xFFB8C34A), Color(0xFF7FA88A)],
+                                ),
                               ),
-                              child: const Icon(
-                                Icons.local_florist_rounded,
-                                size: 15,
-                                color: HelaColors.tertiary,
+                              child: ClipOval(
+                                child: Builder(
+                                  builder: (context) {
+                                    String photoUrl =
+                                        'https://lh3.googleusercontent.com/aida-public/AB6AXuCb49WhjEvtkcNC5SxIgicaFGy0FHajTwhLvSgls2jKJllxIgCm3GtnkBey5ISjUv1a3RBHYRJDux9aTGEuQRD2PRzQ7NQpcvmB23kcn9IUgKDRsKdgyX64gwLDMholuf3EBAmflHGPMYYyBMAcXUVZYTfptDrW3y9Os02is22iH1TXaD6SAOV7pDCQz_K7hNqQjavBUoHUUSiFUtmOeylpDB6d6w3LDISl_r_VyPAoA96T32aE2nQtbA';
+                                    try {
+                                      final appState =
+                                          HelaAppStateProvider.of(context);
+                                      if (appState.userPhotoUrl != null &&
+                                          appState.userPhotoUrl!.isNotEmpty) {
+                                        photoUrl = appState.userPhotoUrl!;
+                                      }
+                                    } catch (_) {}
+                                    return _buildNetworkImage(
+                                      photoUrl,
+                                      width: 72,
+                                      height: 72,
+                                    );
+                                  },
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: Container(
+                                width: 24,
+                                height: 24,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFB8C34A),
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black26,
+                                      blurRadius: 3,
+                                    ),
+                                  ],
+                                ),
+                                child: const Icon(
+                                  Icons.local_florist_rounded,
+                                  size: 15,
+                                  color: HelaColors.tertiary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                       const SizedBox(width: 14),
 
@@ -437,9 +461,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 String displayName = 'Kavinda Wickramasinghe';
                                 try {
                                   final appState = HelaAppStateProvider.of(context);
-                                  if (appState.isAuthenticated) {
-                                    displayName = appState.userName;
-                                  }
+                                  displayName = appState.userName;
                                 } catch (_) {}
                                 return Text(
                                   displayName,
@@ -455,20 +477,33 @@ class _ProfilePageState extends State<ProfilePage> {
                               },
                             ),
                             const SizedBox(height: 3),
-                            const Text(
-                              '🌿 Tea Country Pathfinder · Level 4',
-                              style: TextStyle(
-                                color: HelaColors.secondaryFixed,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
+                            Builder(
+                              builder: (context) {
+                                String displayTitle =
+                                    '🌿 Tea Country Pathfinder · Level 4';
+                                try {
+                                  final appState =
+                                      HelaAppStateProvider.of(context);
+                                  displayTitle = appState.userTitle;
+                                } catch (_) {}
+                                return Text(
+                                  displayTitle,
+                                  style: const TextStyle(
+                                    color: HelaColors.secondaryFixed,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                );
+                              },
                             ),
                             const SizedBox(height: 10),
                             InkWell(
                               borderRadius: BorderRadius.circular(16),
                               onTap: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Edit Profile tapped')),
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const EditProfilePage(),
+                                  ),
                                 );
                               },
                               child: Container(

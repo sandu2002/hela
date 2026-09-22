@@ -14,10 +14,11 @@ import 'package:hela/pages/trip_planner_page.dart';
 import 'package:hela/pages/fair_ride_page.dart';
 import 'package:hela/pages/stays_page.dart';
 import 'package:hela/pages/profile_page.dart';
-import 'package:hela/pages/cultural_guide_page.dart';
-import 'package:hela/pages/article_detail_page.dart';
+import 'package:hela/pages/profile/edit_profile_page.dart';
+import 'package:hela/pages/cultural_guide/cultural_guide_page.dart';
+import 'package:hela/pages/cultural_guide/article_detail_page.dart';
 import 'package:hela/onbording/onboarding_page.dart';
-import 'package:hela/pages/signup_page.dart';
+import 'package:hela/pages/auth/signup_page.dart';
 import 'package:hela/widgets/haven_card.dart';
 import 'package:hela/widgets/stay_card.dart';
 import 'package:hela/widgets/itinerary_card.dart';
@@ -319,6 +320,35 @@ void main() {
     expect(find.text('Welcome Back'), findsOneWidget);
     expect(find.text('Sign In'), findsWidgets);
     expect(find.text('Sign in with Google'), findsOneWidget);
+  });
+
+  testWidgets('EditProfilePage smoke test', (WidgetTester tester) async {
+    _ignoreOverflow();
+    await tester.pumpWidget(
+      _wrapWithState(const EditProfilePage()),
+    );
+
+    expect(find.text('Edit Profile'), findsOneWidget);
+    expect(find.text('Explorer Identity'), findsOneWidget);
+    expect(find.text('Contact & Location'), findsOneWidget);
+    expect(find.text('Bio & Travel Notes'), findsOneWidget);
+    expect(find.text('Wanderlust Interests'), findsOneWidget);
+    expect(find.text('Save Changes'), findsOneWidget);
+    expect(find.text('Change Portrait'), findsOneWidget);
+  });
+
+  testWidgets('ProfilePage tap Edit Profile navigates to EditProfilePage', (WidgetTester tester) async {
+    _ignoreOverflow();
+    await tester.pumpWidget(
+      _wrapWithState(const ProfilePage()),
+    );
+
+    expect(find.text('Edit Profile'), findsOneWidget);
+    await tester.tap(find.text('Edit Profile'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Explorer Identity'), findsOneWidget);
+    expect(find.text('Save Changes'), findsOneWidget);
   });
 }
 

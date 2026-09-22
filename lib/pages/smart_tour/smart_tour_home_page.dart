@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hela/theme/hela_colors.dart';
-import 'package:hela/pages/travel_preferences_page.dart';
+import 'package:hela/pages/smart_tour/travel_preferences_page.dart';
 
 /// Smart Tour Planner Home — the entry point for AI-powered trip planning.
 ///

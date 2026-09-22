@@ -80,15 +80,23 @@ class HelaAppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ── Authentication ─────────────────────────────────────────────
+  // ── Authentication & Profile ────────────────────────────────────
   bool _isAuthenticated = false;
-  String _userName = 'Guest';
-  String _userEmail = '';
+  String _userName = 'Kavinda Wickramasinghe';
+  String _userEmail = 'kavinda.w@gmail.com';
+  String _userTitle = '🌿 Tea Country Pathfinder · Level 4';
+  String _userBio = 'Explorer of Ceylon highlands, tea estates, and ancient sanctuaries.';
+  String _userPhone = '+94 77 123 4567';
+  String _userLocation = 'Kandy, Central Province';
   String? _userPhotoUrl;
 
   bool get isAuthenticated => _isAuthenticated;
   String get userName => _userName;
   String get userEmail => _userEmail;
+  String get userTitle => _userTitle;
+  String get userBio => _userBio;
+  String get userPhone => _userPhone;
+  String get userLocation => _userLocation;
   String? get userPhotoUrl => _userPhotoUrl;
 
   void signIn({required String name, required String email, String? photoUrl}) {
@@ -104,6 +112,25 @@ class HelaAppState extends ChangeNotifier {
     _userName = 'Guest';
     _userEmail = '';
     _userPhotoUrl = null;
+    notifyListeners();
+  }
+
+  void updateProfile({
+    String? name,
+    String? email,
+    String? title,
+    String? bio,
+    String? phone,
+    String? location,
+    String? photoUrl,
+  }) {
+    if (name != null && name.trim().isNotEmpty) _userName = name.trim();
+    if (email != null && email.trim().isNotEmpty) _userEmail = email.trim();
+    if (title != null && title.trim().isNotEmpty) _userTitle = title.trim();
+    if (bio != null) _userBio = bio.trim();
+    if (phone != null) _userPhone = phone.trim();
+    if (location != null) _userLocation = location.trim();
+    if (photoUrl != null) _userPhotoUrl = photoUrl;
     notifyListeners();
   }
 }

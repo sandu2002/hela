@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:hela/pages/trip_planner_page.dart';
 import 'package:hela/pages/stays_page.dart';
 import 'package:hela/pages/fair_ride_page.dart';
-import 'package:hela/pages/cultural_guide_page.dart';
+import 'package:hela/pages/cultural_guide/cultural_guide_page.dart';
 import 'package:hela/pages/profile_page.dart';
 import 'package:hela/widgets/haven_card.dart';
-import 'package:hela/pages/smart_tour_home_page.dart';
+import 'package:hela/pages/smart_tour/smart_tour_home_page.dart';
 import 'package:hela/models/destination.dart';
 import 'package:hela/services/place_service.dart';
 

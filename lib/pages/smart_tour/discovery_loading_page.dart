@@ -4,7 +4,7 @@ import 'package:hela/theme/hela_colors.dart';
 import 'package:hela/models/tour_preferences.dart';
 import 'package:hela/state/tour_planner_state.dart';
 import 'package:hela/services/tour_api_service.dart';
-import 'package:hela/pages/destination_recommendations_page.dart';
+import 'package:hela/pages/smart_tour/destination_recommendations_page.dart';
 
 /// Screen displayed while AI discovers destinations matching the user's travel preferences.
 class DiscoveryLoadingPage extends StatefulWidget {

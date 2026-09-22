@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hela/pages/signup_page.dart';
+import 'package:hela/pages/auth/signup_page.dart';
 
 /// Design tokens for HELA Onboarding
 class OnboardingColors {

@@ -3,7 +3,7 @@ import 'package:hela/theme/hela_colors.dart';
 import 'package:hela/models/destination.dart';
 import 'package:hela/models/tour_preferences.dart';
 import 'package:hela/services/tour_api_service.dart';
-import 'package:hela/pages/tour_plan_details_page.dart';
+import 'package:hela/pages/smart_tour/tour_plan_details_page.dart';
 
 /// Screen displaying AI-discovered destination recommendations in Sri Lanka.
 class DestinationRecommendationsPage extends StatefulWidget {

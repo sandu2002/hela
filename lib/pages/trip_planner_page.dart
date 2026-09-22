@@ -6,8 +6,8 @@ import 'package:hela/widgets/itinerary_card.dart';
 import 'package:hela/widgets/real_time_calendar.dart';
 import 'package:hela/models/tour_plan.dart';
 import 'package:hela/models/tour_preferences.dart';
-import 'package:hela/pages/tour_plan_details_page.dart';
-import 'package:hela/pages/ai_chat_customization_page.dart';
+import 'package:hela/pages/smart_tour/tour_plan_details_page.dart';
+import 'package:hela/pages/smart_tour/ai_chat_customization_page.dart';
 
 /// Data models for the planner
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hela/theme/hela_colors.dart';
 import 'package:hela/models/tour_preferences.dart';
 import 'package:hela/state/tour_planner_state.dart';
-import 'package:hela/pages/discovery_loading_page.dart';
+import 'package:hela/pages/smart_tour/discovery_loading_page.dart';
 
 /// Travel Preferences Page — multi-section form for trip planning.
 ///

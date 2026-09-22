@@ -6,7 +6,7 @@ import 'package:hela/pages/trip_planner_page.dart';
 import 'package:hela/pages/stays_page.dart';
 import 'package:hela/pages/profile_page.dart';
 import 'package:hela/state/app_state.dart';
-import 'package:hela/pages/article_detail_page.dart';
+import 'package:hela/pages/cultural_guide/article_detail_page.dart';
 
 /// Unique ID for this cultural guide article (used by HelaAppState)
 const String _culturalGuideId = 'sacred-bo-tree-sigiriya';
