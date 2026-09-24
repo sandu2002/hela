@@ -4,58 +4,19 @@ import 'package:hela/pages/stays_page.dart';
 import 'package:hela/pages/fair_ride_page.dart';
 import 'package:hela/pages/cultural_guide/cultural_guide_page.dart';
 import 'package:hela/pages/profile_page.dart';
+import 'package:hela/pages/saved_page.dart';
+import 'package:hela/pages/travel_preferences_page.dart';
 import 'package:hela/widgets/haven_card.dart';
 import 'package:hela/pages/smart_tour/smart_tour_home_page.dart';
 import 'package:hela/models/destination.dart';
 import 'package:hela/services/place_service.dart';
+import 'package:hela/state/app_state.dart';
+import 'package:hela/models/haven_item.dart';
+export 'package:hela/models/haven_item.dart';
 
 // Re-export HelaColors from canonical location for backward compatibility
 import 'package:hela/theme/hela_colors.dart';
 export 'package:hela/theme/hela_colors.dart';
-
-
-/// Data Models
-class HavenItem {
-  final String title;
-  final String location;
-  final String category;
-  final String price;
-  final double rating;
-  final String badgeText;
-  final String imageUrl;
-
-  const HavenItem({
-    required this.title,
-    required this.location,
-    required this.category,
-    required this.price,
-    required this.rating,
-    required this.badgeText,
-    required this.imageUrl,
-  });
-}
-
-class ExperienceItem {
-  final String title;
-  final String category;
-  final String duration;
-  final String price;
-  final double rating;
-  final int reviewsCount;
-  final IconData categoryIcon;
-  final String imageUrl;
-
-  const ExperienceItem({
-    required this.title,
-    required this.category,
-    required this.duration,
-    required this.price,
-    required this.rating,
-    required this.reviewsCount,
-    required this.categoryIcon,
-    required this.imageUrl,
-  });
-}
 
 class CategoryChipData {
   final String label;
@@ -74,8 +35,6 @@ class HelaHomePage extends StatefulWidget {
 class _HelaHomePageState extends State<HelaHomePage> {
   int _selectedNavIndex = 0;
   int _selectedCategoryIndex = 0;
-  final Set<int> _bookmarkedHavens = <int>{};
-  final Set<int> _bookmarkedExp = <int>{};
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
@@ -1088,19 +1047,56 @@ class _HelaHomePageState extends State<HelaHomePage> {
             separatorBuilder: (context, index) => const SizedBox(width: 14),
             itemBuilder: (context, index) {
               final haven = _featuredHavens[index];
-              final isBookmarked = _bookmarkedHavens.contains(index);
+              final appState = HelaAppStateProvider.of(context);
+              final isBookmarked = appState.isHavenSaved(haven.title);
 
               return HavenCard.fromHavenItem(
                 haven,
                 isBookmarked: isBookmarked,
                 onBookmarkTap: () {
-                  setState(() {
-                    if (isBookmarked) {
-                      _bookmarkedHavens.remove(index);
-                    } else {
-                      _bookmarkedHavens.add(index);
-                    }
-                  });
+                  appState.toggleSaveHaven(haven);
+                  final isNowSaved = appState.isHavenSaved(haven.title);
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Row(
+                        children: [
+                          Icon(
+                            isNowSaved
+                                ? Icons.bookmark_added_rounded
+                                : Icons.bookmark_remove_rounded,
+                            color: isNowSaved ? HelaColors.tertiaryFixed : Colors.white70,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              isNowSaved
+                                  ? 'Saved "${haven.title}" to Saved Page'
+                                  : 'Removed "${haven.title}" from Saved Page',
+                              style: const TextStyle(fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                        ],
+                      ),
+                      action: isNowSaved
+                          ? SnackBarAction(
+                              label: 'View Saved',
+                              textColor: HelaColors.tertiaryFixed,
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (_) => const SavedPage()),
+                                );
+                              },
+                            )
+                          : null,
+                      duration: const Duration(seconds: 3),
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  );
                 },
                 onExploreTap: () {
                   if (index == 1) {
@@ -1255,7 +1251,8 @@ class _HelaHomePageState extends State<HelaHomePage> {
             separatorBuilder: (context, index) => const SizedBox(width: 14),
             itemBuilder: (context, index) {
               final exp = _trendingExperiences[index];
-              final isBookmarked = _bookmarkedExp.contains(index);
+              final appState = HelaAppStateProvider.of(context);
+              final isBookmarked = appState.isExperienceSaved(exp.title);
 
               return Container(
                 width: 250,
@@ -1300,20 +1297,38 @@ class _HelaHomePageState extends State<HelaHomePage> {
                                 child: InkWell(
                                   customBorder: const CircleBorder(),
                                   onTap: () {
-                                    setState(() {
-                                      if (isBookmarked) {
-                                        _bookmarkedExp.remove(index);
-                                      } else {
-                                        _bookmarkedExp.add(index);
-                                      }
-                                    });
+                                    appState.toggleSaveExperience(exp);
+                                    final isNowSaved = appState.isExperienceSaved(exp.title);
+                                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          isNowSaved
+                                              ? 'Saved "${exp.title}" to Saved Page'
+                                              : 'Removed "${exp.title}" from Saved Page',
+                                        ),
+                                        action: isNowSaved
+                                            ? SnackBarAction(
+                                                label: 'View Saved',
+                                                textColor: HelaColors.tertiaryFixed,
+                                                onPressed: () {
+                                                  Navigator.of(context).push(
+                                                    MaterialPageRoute(builder: (_) => const SavedPage()),
+                                                  );
+                                                },
+                                              )
+                                            : null,
+                                        duration: const Duration(seconds: 3),
+                                        behavior: SnackBarBehavior.floating,
+                                      ),
+                                    );
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.all(5.0),
                                     child: Icon(
                                       isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
                                       size: 16,
-                                      color: HelaColors.primary,
+                                      color: isBookmarked ? HelaColors.primary : HelaColors.onSurfaceVariant,
                                     ),
                                   ),
                                 ),
@@ -1597,15 +1612,26 @@ class _HelaHomePageState extends State<HelaHomePage> {
                 activeIcon: Icons.bookmark_rounded,
                 onTap: () {
                   Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => const StaysPage()),
+                    MaterialPageRoute(builder: (_) => const SavedPage()),
                   );
                 },
               ),
               _buildNavItem(
                 index: 2,
+                label: 'Discover',
+                icon: Icons.travel_explore_outlined,
+                activeIcon: Icons.travel_explore_rounded,
+                onTap: () {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => const TravelPreferencesPage()),
+                  );
+                },
+              ),
+              _buildNavItem(
+                index: 3,
                 label: 'Journeys',
-                icon: Icons.map_outlined,
-                activeIcon: Icons.map_rounded,
+                icon: Icons.route_outlined,
+                activeIcon: Icons.route_rounded,
                 onTap: () {
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (_) => const TripPlannerPage()),
@@ -1613,7 +1639,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
                 },
               ),
               _buildNavItem(
-                index: 3,
+                index: 4,
                 label: 'Profile',
                 icon: Icons.person_outline_rounded,
                 activeIcon: Icons.person_rounded,

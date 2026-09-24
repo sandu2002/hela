@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hela/pages/home_page.dart';
+import 'package:hela/models/haven_item.dart';
 
 /// Reusable Destination / Haven Card
 ///
@@ -24,6 +25,7 @@ class HavenCard extends StatelessWidget {
   final VoidCallback? onExploreTap;
   final VoidCallback? onTap;
   final double width;
+  final double? height;
 
   const HavenCard({
     super.key,
@@ -39,6 +41,7 @@ class HavenCard extends StatelessWidget {
     this.onExploreTap,
     this.onTap,
     this.width = 285,
+    this.height,
   });
 
   /// Factory constructor to easily create a [HavenCard] from a [HavenItem].
@@ -50,6 +53,7 @@ class HavenCard extends StatelessWidget {
     VoidCallback? onExploreTap,
     VoidCallback? onTap,
     double width = 285,
+    double? height,
   }) {
     return HavenCard(
       key: key,
@@ -65,6 +69,7 @@ class HavenCard extends StatelessWidget {
       onExploreTap: onExploreTap,
       onTap: onTap,
       width: width,
+      height: height,
     );
   }
 
@@ -74,6 +79,7 @@ class HavenCard extends StatelessWidget {
       onTap: onTap ?? onExploreTap,
       child: Container(
         width: width,
+        height: height,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
@@ -166,8 +172,9 @@ class HavenCard extends StatelessWidget {
 
                           // Bookmark Button
                           Material(
-                            color: HelaColors.primaryContainer
-                                .withValues(alpha: 0.75),
+                            color: isBookmarked
+                                ? HelaColors.primaryContainer.withValues(alpha: 0.95)
+                                : HelaColors.primaryContainer.withValues(alpha: 0.75),
                             shape: const CircleBorder(),
                             child: InkWell(
                               customBorder: const CircleBorder(),
@@ -178,7 +185,9 @@ class HavenCard extends StatelessWidget {
                                   isBookmarked
                                       ? Icons.bookmark_rounded
                                       : Icons.bookmark_border_rounded,
-                                  color: HelaColors.onPrimary,
+                                  color: isBookmarked
+                                      ? HelaColors.tertiaryFixed
+                                      : HelaColors.onPrimary,
                                   size: 18,
                                 ),
                               ),

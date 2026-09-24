@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:hela/theme/hela_colors.dart';
 import 'package:hela/models/tour_preferences.dart';
 import 'package:hela/state/tour_planner_state.dart';
 import 'package:hela/pages/smart_tour/discovery_loading_page.dart';
+import 'package:hela/services/sri_lanka_locations_service.dart';
 
 /// Travel Preferences Page — multi-section form for trip planning.
 ///
@@ -29,31 +31,31 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
   AccommodationType _selectedAccommodation = AccommodationType.noPreference;
   final TextEditingController _notesController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
+  final FocusNode _locationFocusNode = FocusNode();
+  bool _isSearchingLocation = false;
+  Timer? _locationDebounceTimer;
+  List<SriLankaLocationResult> _liveResults = [];
+  bool _isLoadingLiveResults = false;
 
   final ScrollController _scrollController = ScrollController();
-
-  // Common Sri Lankan starting locations
-  static const _commonLocations = [
-    'Bandaranaike International Airport',
-    'Colombo Fort',
-    'Kandy',
-    'Galle',
-    'Negombo',
-    'Jaffna',
-    'Trincomalee',
-    'Batticaloa',
-    'Anuradhapura',
-    'Nuwara Eliya',
-  ];
 
   @override
   void initState() {
     super.initState();
     _locationController.text = _startLocationName;
+    _locationFocusNode.addListener(() {
+      if (!_locationFocusNode.hasFocus) {
+        setState(() {
+          _isSearchingLocation = false;
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
+    _locationDebounceTimer?.cancel();
+    _locationFocusNode.dispose();
     _budgetController.dispose();
     _notesController.dispose();
     _locationController.dispose();
@@ -291,101 +293,394 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
     );
   }
 
+  void _selectLocation(String name, StartingLocationType type) {
+    _locationDebounceTimer?.cancel();
+    setState(() {
+      _startLocationName = name;
+      _startLocationType = type;
+      _locationController.text = name;
+      _isSearchingLocation = false;
+      _liveResults = [];
+      _isLoadingLiveResults = false;
+    });
+    _locationFocusNode.unfocus();
+  }
+
+  void _onLocationQueryChanged(String query) {
+    final trimmed = query.trim();
+    if (trimmed.isEmpty) {
+      _locationDebounceTimer?.cancel();
+      setState(() {
+        _isSearchingLocation = false;
+        _startLocationName = '';
+        _liveResults = [];
+        _isLoadingLiveResults = false;
+      });
+      return;
+    }
+
+    final detected = SriLankaLocationsService.detectType(trimmed);
+
+    setState(() {
+      _startLocationName = trimmed;
+      _startLocationType = detected;
+      _isSearchingLocation = true;
+    });
+
+    // Debounce live OpenStreetMap Nominatim search to discover any sub-location, village, or landmark
+    _locationDebounceTimer?.cancel();
+    if (trimmed.length >= 2) {
+      _locationDebounceTimer = Timer(const Duration(milliseconds: 320), () async {
+        if (!mounted || _locationController.text.trim() != trimmed) return;
+        setState(() => _isLoadingLiveResults = true);
+        final live = await SriLankaLocationsService.searchLive(trimmed);
+        if (!mounted || _locationController.text.trim() != trimmed) return;
+        setState(() {
+          _liveResults = live;
+          _isLoadingLiveResults = false;
+        });
+      });
+    } else {
+      _liveResults = [];
+      _isLoadingLiveResults = false;
+    }
+  }
+
   // ── Starting Location ────────────────────────────────────────
   Widget _buildStartingLocationSection() {
+    final query = _locationController.text.trim();
+    final localMatches = SriLankaLocationsService.searchLocal(query);
+
+    // Merge local matches with live OpenStreetMap Nominatim results without duplicate names
+    final combinedResults = <SriLankaLocationResult>[...localMatches];
+    for (final live in _liveResults) {
+      final exists = combinedResults.any((item) =>
+          item.name.toLowerCase() == live.name.toLowerCase());
+      if (!exists) {
+        combinedResults.add(live);
+      }
+    }
+
+    // Check if currently selected location matches one of the popular options
+    final isPopularSelected = SriLankaLocationsService.popularStartingPoints.any(
+      (loc) => loc.name.toLowerCase() == _startLocationName.toLowerCase(),
+    );
+
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Location type selector
-        Row(
-          children: StartingLocationType.values.map((type) {
-            final isSelected = _startLocationType == type;
-            return Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: ChoiceChip(
-                label: Text(type.label),
-                selected: isSelected,
-                onSelected: (_) => setState(() => _startLocationType = type),
-                selectedColor: HelaColors.tertiaryFixed,
-                backgroundColor: HelaColors.surfaceContainerLowest,
-                labelStyle: TextStyle(
-                  color: isSelected ? HelaColors.onTertiaryFixed : HelaColors.onSurfaceVariant,
-                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                  fontSize: 13,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  side: BorderSide(
-                    color: isSelected ? HelaColors.tertiaryFixedDim : HelaColors.outlineVariant.withValues(alpha: 0.5),
+        // Search & Input Bar
+        Container(
+          decoration: BoxDecoration(
+            color: HelaColors.surfaceContainerLowest,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: _locationFocusNode.hasFocus
+                  ? HelaColors.primary
+                  : HelaColors.outlineVariant.withValues(alpha: 0.6),
+              width: _locationFocusNode.hasFocus ? 1.5 : 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: TextField(
+            controller: _locationController,
+            focusNode: _locationFocusNode,
+            onChanged: _onLocationQueryChanged,
+            onTap: () {
+              if (_locationController.text.isNotEmpty && !_isSearchingLocation) {
+                setState(() => _isSearchingLocation = true);
+              }
+            },
+            style: const TextStyle(
+              color: HelaColors.primary,
+              fontSize: 14.5,
+              fontWeight: FontWeight.w600,
+            ),
+            decoration: InputDecoration(
+              hintText: 'Search city, town, village, or hotel...',
+              hintStyle: TextStyle(
+                color: HelaColors.onSurfaceVariant.withValues(alpha: 0.6),
+                fontSize: 13.5,
+                fontWeight: FontWeight.normal,
+              ),
+              prefixIcon: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: HelaColors.primary.withValues(alpha: 0.08),
+                    shape: BoxShape.circle,
                   ),
+                  child: Icon(
+                    _startLocationType == StartingLocationType.airport
+                        ? Icons.flight_takeoff_rounded
+                        : (_startLocationType == StartingLocationType.city
+                            ? Icons.location_city_rounded
+                            : Icons.place_rounded),
+                    color: HelaColors.primary,
+                    size: 18,
+                  ),
+                ),
+              ),
+              prefixIconConstraints:
+                  const BoxConstraints(minWidth: 46, minHeight: 46),
+              suffixIcon: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (_isLoadingLiveResults)
+                    const Padding(
+                      padding: EdgeInsets.only(right: 6),
+                      child: SizedBox(
+                        width: 14,
+                        height: 14,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: HelaColors.primary,
+                        ),
+                      ),
+                    ),
+                  if (_locationController.text.isNotEmpty)
+                    IconButton(
+                      icon: const Icon(Icons.cancel_rounded,
+                          color: HelaColors.outline, size: 20),
+                      onPressed: () {
+                        _locationController.clear();
+                        _onLocationQueryChanged('');
+                      },
+                    ),
+                ],
+              ),
+              border: InputBorder.none,
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+            ),
+          ),
+        ),
+
+        // Live Suggestions Dropdown
+        if (_isSearchingLocation && query.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Container(
+            constraints: const BoxConstraints(maxHeight: 250),
+            decoration: BoxDecoration(
+              color: HelaColors.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: HelaColors.outlineVariant.withValues(alpha: 0.7),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: ListView(
+                shrinkWrap: true,
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                children: [
+                  ...combinedResults.map((item) => InkWell(
+                        onTap: () => _selectLocation(item.name, item.type),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 10),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(7),
+                                decoration: const BoxDecoration(
+                                  color: HelaColors.surfaceContainerHigh,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(item.icon,
+                                    size: 16, color: HelaColors.primary),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      item.name,
+                                      style: const TextStyle(
+                                        color: HelaColors.primary,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 13.5,
+                                      ),
+                                    ),
+                                    Text(
+                                      item.subtitle,
+                                      style: const TextStyle(
+                                        color: HelaColors.onSurfaceVariant,
+                                        fontSize: 11.5,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const Icon(Icons.arrow_forward_ios_rounded,
+                                  size: 12, color: HelaColors.outline),
+                            ],
+                          ),
+                        ),
+                      )),
+                  // Custom input fallback option
+                  InkWell(
+                    onTap: () => _selectLocation(
+                      query,
+                      _startLocationType,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 10),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(7),
+                            decoration: BoxDecoration(
+                              color: HelaColors.tertiaryFixed.withValues(alpha: 0.3),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.add_location_alt_rounded,
+                                size: 16, color: HelaColors.onTertiaryFixed),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'Use "$query" as starting point',
+                              style: const TextStyle(
+                                color: HelaColors.primary,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+
+        // Selected Custom Location Tag
+        if (!isPopularSelected && _startLocationName.trim().isNotEmpty && !_isSearchingLocation) ...[
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+            decoration: BoxDecoration(
+              color: HelaColors.secondary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: HelaColors.secondary.withValues(alpha: 0.3),
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.check_circle_rounded,
+                    size: 15, color: HelaColors.secondary),
+                const SizedBox(width: 6),
+                Text(
+                  'Starting from: $_startLocationName',
+                  style: const TextStyle(
+                    color: HelaColors.primary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+
+        const SizedBox(height: 14),
+        const Text(
+          'Popular starting points',
+          style: TextStyle(
+            color: HelaColors.onSurfaceVariant,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 8),
+
+        // Popular starting points in a neat wrap
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: SriLankaLocationsService.popularStartingPoints.map((loc) {
+            final isSelected = _startLocationName.toLowerCase() ==
+                    loc.name.toLowerCase() ||
+                _startLocationName.toLowerCase() == (loc.shortLabel ?? loc.name).toLowerCase();
+            return InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () => _selectLocation(loc.name, loc.type),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? HelaColors.tertiaryFixed
+                      : HelaColors.surfaceContainerLowest,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isSelected
+                        ? HelaColors.tertiaryFixedDim
+                        : HelaColors.outlineVariant.withValues(alpha: 0.5),
+                    width: isSelected ? 2 : 1,
+                  ),
+                  boxShadow: isSelected
+                      ? [
+                          BoxShadow(
+                            color:
+                                HelaColors.tertiaryFixed.withValues(alpha: 0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ]
+                      : null,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      loc.shortLabel ?? loc.name,
+                      style: TextStyle(
+                        color: isSelected
+                            ? HelaColors.onTertiaryFixed
+                            : HelaColors.onSurfaceVariant,
+                        fontWeight:
+                            isSelected ? FontWeight.w700 : FontWeight.w500,
+                        fontSize: 13,
+                      ),
+                    ),
+                    if (isSelected) ...[
+                      const SizedBox(width: 6),
+                      const Icon(
+                        Icons.check_circle_rounded,
+                        size: 15,
+                        color: HelaColors.onTertiaryFixed,
+                      ),
+                    ],
+                  ],
                 ),
               ),
             );
           }).toList(),
-        ),
-        const SizedBox(height: 14),
-        // Location name input with suggestions
-        Container(
-          decoration: BoxDecoration(
-            color: HelaColors.surfaceContainerLowest,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: HelaColors.outlineVariant.withValues(alpha: 0.5)),
-          ),
-          child: TextField(
-            controller: _locationController,
-            onChanged: (val) => setState(() => _startLocationName = val),
-            style: const TextStyle(
-              color: HelaColors.primary,
-              fontSize: 14,
-            ),
-            decoration: InputDecoration(
-              hintText: 'Enter starting location...',
-              hintStyle: TextStyle(
-                color: HelaColors.onSurfaceVariant.withValues(alpha: 0.6),
-                fontSize: 14,
-              ),
-              prefixIcon: const Icon(Icons.search_rounded,
-                  color: HelaColors.primaryContainer, size: 20),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            ),
-          ),
-        ),
-        const SizedBox(height: 10),
-        // Quick location chips
-        SizedBox(
-          height: 36,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: _commonLocations.length,
-            separatorBuilder: (context, index) => const SizedBox(width: 8),
-            itemBuilder: (_, index) {
-              final loc = _commonLocations[index];
-              final isSelected = _startLocationName == loc;
-              return InkWell(
-                borderRadius: BorderRadius.circular(18),
-                onTap: () => setState(() {
-                  _startLocationName = loc;
-                  _locationController.text = loc;
-                }),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  decoration: BoxDecoration(
-                    color: isSelected ? HelaColors.secondary : HelaColors.surfaceContainer,
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    loc.split(',').first.split(' ').take(2).join(' '),
-                    style: TextStyle(
-                      color: isSelected ? HelaColors.onSecondary : HelaColors.onSurfaceVariant,
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
         ),
       ],
     );

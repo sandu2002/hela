@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hela/pages/profile/edit_profile_page.dart';
 import 'package:hela/pages/home_page.dart';
 import 'package:hela/pages/trip_planner_page.dart';
-import 'package:hela/pages/stays_page.dart';
+import 'package:hela/pages/saved_page.dart';
+import 'package:hela/pages/travel_preferences_page.dart';
 import 'package:hela/state/app_state.dart';
 
 /// Data models for Profile & Saved Trips
@@ -833,12 +834,100 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     // Default: Saved Itineraries
-    return ListView.separated(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: _savedTrips.length,
-      separatorBuilder: (context, index) => const SizedBox(height: 18),
-      itemBuilder: (context, index) => _buildSavedTripCard(index),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSavedHavensQuickAccessCard(),
+        const SizedBox(height: 16),
+        ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: _savedTrips.length,
+          separatorBuilder: (context, index) => const SizedBox(height: 18),
+          itemBuilder: (context, index) => _buildSavedTripCard(index),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSavedHavensQuickAccessCard() {
+    final appState = HelaAppStateProvider.of(context);
+    final count = appState.totalSavedCount;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: HelaColors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: HelaColors.outlineVariant.withValues(alpha: 0.5),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const SavedPage()),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: HelaColors.tertiaryFixed.withValues(alpha: 0.3),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.bookmark_rounded,
+                  color: HelaColors.primary,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Saved Havens & Stays',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14.5,
+                        color: HelaColors.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      count > 0
+                          ? '$count saved ${count == 1 ? 'item' : 'items'} in your wishlist'
+                          : 'No saved havens yet · Tap to view Saved Page',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: HelaColors.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 14,
+                color: HelaColors.onSurfaceVariant,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -1186,15 +1275,26 @@ class _ProfilePageState extends State<ProfilePage> {
                 activeIcon: Icons.bookmark_rounded,
                 onTap: () {
                   Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => const StaysPage()),
+                    MaterialPageRoute(builder: (_) => const SavedPage()),
                   );
                 },
               ),
               _buildNavItem(
                 index: 2,
+                label: 'Discover',
+                icon: Icons.travel_explore_outlined,
+                activeIcon: Icons.travel_explore_rounded,
+                onTap: () {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => const TravelPreferencesPage()),
+                  );
+                },
+              ),
+              _buildNavItem(
+                index: 3,
                 label: 'Journeys',
-                icon: Icons.map_outlined,
-                activeIcon: Icons.map_rounded,
+                icon: Icons.route_outlined,
+                activeIcon: Icons.route_rounded,
                 onTap: () {
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (_) => const TripPlannerPage()),
@@ -1202,7 +1302,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 },
               ),
               _buildNavItem(
-                index: 3,
+                index: 4,
                 label: 'Profile',
                 icon: Icons.person_outline_rounded,
                 activeIcon: Icons.person_rounded,

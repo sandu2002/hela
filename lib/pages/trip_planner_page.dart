@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hela/pages/home_page.dart';
-import 'package:hela/pages/stays_page.dart';
+import 'package:hela/pages/saved_page.dart';
 import 'package:hela/pages/profile_page.dart';
+import 'package:hela/pages/travel_preferences_page.dart';
 import 'package:hela/widgets/itinerary_card.dart';
 import 'package:hela/widgets/real_time_calendar.dart';
 import 'package:hela/models/tour_plan.dart';
@@ -853,19 +854,30 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                 activeIcon: Icons.bookmark_rounded,
                 onTap: () {
                   Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => const StaysPage()),
+                    MaterialPageRoute(builder: (_) => const SavedPage()),
                   );
                 },
               ),
               _buildNavItem(
                 index: 2,
-                label: 'Journeys',
-                icon: Icons.map_outlined,
-                activeIcon: Icons.map_rounded,
-                hasNotificationBadge: true,
+                label: 'Discover',
+                icon: Icons.travel_explore_outlined,
+                activeIcon: Icons.travel_explore_rounded,
+                onTap: () {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => const TravelPreferencesPage()),
+                  );
+                },
               ),
               _buildNavItem(
                 index: 3,
+                label: 'Journeys',
+                icon: Icons.route_outlined,
+                activeIcon: Icons.route_rounded,
+                hasNotificationBadge: true,
+              ),
+              _buildNavItem(
+                index: 4,
                 label: 'Profile',
                 icon: Icons.person_outline_rounded,
                 activeIcon: Icons.person_rounded,

@@ -1,10 +1,120 @@
 import 'package:flutter/material.dart';
+import 'package:hela/models/haven_item.dart';
+import 'package:hela/models/tour_plan.dart';
+import 'package:hela/pages/stays_page.dart' show StayHaven;
 
 /// Global shared state for the HELA app.
 ///
-/// Tracks bookmarked/saved guide IDs, audio playback state,
+/// Tracks bookmarked/saved guide IDs, saved havens/destinations, audio playback state,
 /// and the current bottom-nav tab index so they persist across screens.
 class HelaAppState extends ChangeNotifier {
+  // ── Saved / Bookmarked Havens ──────────────────────────────────
+  final List<HavenItem> _savedHavens = [];
+
+  List<HavenItem> get savedHavens => List.unmodifiable(_savedHavens);
+
+  bool isHavenSaved(String title) => _savedHavens.any((h) => h.title == title);
+
+  void toggleSaveHaven(HavenItem item) {
+    final index = _savedHavens.indexWhere((h) => h.title == item.title);
+    if (index >= 0) {
+      _savedHavens.removeAt(index);
+    } else {
+      _savedHavens.add(item);
+    }
+    notifyListeners();
+  }
+
+  void removeSavedHaven(String title) {
+    _savedHavens.removeWhere((h) => h.title == title);
+    notifyListeners();
+  }
+
+  // ── Saved / Bookmarked Experiences ─────────────────────────────
+  final List<ExperienceItem> _savedExperiences = [];
+
+  List<ExperienceItem> get savedExperiences => List.unmodifiable(_savedExperiences);
+
+  bool isExperienceSaved(String title) => _savedExperiences.any((e) => e.title == title);
+
+  void toggleSaveExperience(ExperienceItem item) {
+    final index = _savedExperiences.indexWhere((e) => e.title == item.title);
+    if (index >= 0) {
+      _savedExperiences.removeAt(index);
+    } else {
+      _savedExperiences.add(item);
+    }
+    notifyListeners();
+  }
+
+  void removeSavedExperience(String title) {
+    _savedExperiences.removeWhere((e) => e.title == title);
+    notifyListeners();
+  }
+
+  // ── Saved / Bookmarked Stays ───────────────────────────────────
+  final List<StayHaven> _savedStays = [];
+
+  List<StayHaven> get savedStays => List.unmodifiable(_savedStays);
+
+  bool isStaySaved(String title) => _savedStays.any((s) => s.title == title);
+
+  void toggleSaveStay(StayHaven item) {
+    final index = _savedStays.indexWhere((s) => s.title == item.title);
+    if (index >= 0) {
+      _savedStays.removeAt(index);
+    } else {
+      _savedStays.add(item);
+    }
+    notifyListeners();
+  }
+
+  void removeSavedStay(String title) {
+    _savedStays.removeWhere((s) => s.title == title);
+    notifyListeners();
+  }
+
+  // ── Saved / Bookmarked Smart Tours ─────────────────────────────
+  final List<TourPlan> _savedTours = [];
+
+  List<TourPlan> get savedTours => List.unmodifiable(_savedTours);
+
+  bool isTourSaved(String id) => _savedTours.any((t) => t.id == id);
+
+  void toggleSaveTour(TourPlan plan) {
+    final index = _savedTours.indexWhere((t) => t.id == plan.id);
+    if (index >= 0) {
+      _savedTours.removeAt(index);
+    } else {
+      _savedTours.add(plan.copyWith(isSaved: true));
+    }
+    notifyListeners();
+  }
+
+  void saveTour(TourPlan plan) {
+    final index = _savedTours.indexWhere((t) => t.id == plan.id);
+    final saved = plan.copyWith(isSaved: true);
+    if (index >= 0) {
+      _savedTours[index] = saved;
+    } else {
+      _savedTours.add(saved);
+    }
+    notifyListeners();
+  }
+
+  void removeSavedTour(String id) {
+    _savedTours.removeWhere((t) => t.id == id);
+    notifyListeners();
+  }
+
+  void clearAllSavedTours() {
+    _savedTours.clear();
+    notifyListeners();
+  }
+
+  int get totalSavedCount =>
+      _savedHavens.length + _savedExperiences.length + _savedStays.length + _savedTours.length;
+
   // ── Saved / Bookmarked Guides ──────────────────────────────────
   final Set<String> _savedGuideIds = <String>{};
 
@@ -146,10 +256,11 @@ class HelaAppStateProvider extends InheritedNotifier<HelaAppState> {
     required super.child,
   }) : super(notifier: state);
 
+  static final HelaAppState _fallbackState = HelaAppState();
+
   static HelaAppState of(BuildContext context) {
     final provider =
         context.dependOnInheritedWidgetOfExactType<HelaAppStateProvider>();
-    assert(provider != null, 'No HelaAppStateProvider found in context');
-    return provider!.notifier!;
+    return provider?.notifier ?? _fallbackState;
   }
 }

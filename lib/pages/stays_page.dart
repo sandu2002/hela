@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:hela/pages/home_page.dart';
 import 'package:hela/pages/trip_planner_page.dart';
 import 'package:hela/pages/profile_page.dart';
+import 'package:hela/pages/saved_page.dart';
+import 'package:hela/pages/travel_preferences_page.dart';
+import 'package:hela/state/app_state.dart';
 import 'package:hela/widgets/stay_card.dart';
 
 /// Model representing an Eco-Haven / Stay item
@@ -33,6 +36,14 @@ class StayHaven {
     this.buttonBgColor = HelaColors.primaryContainer,
     this.buttonTextColor = HelaColors.onPrimary,
   });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is StayHaven && runtimeType == other.runtimeType && title == other.title;
+
+  @override
+  int get hashCode => title.hashCode;
 }
 
 class StayAmenity {
@@ -62,9 +73,8 @@ class StaysPage extends StatefulWidget {
 }
 
 class _StaysPageState extends State<StaysPage> {
-  int _selectedNavIndex = 1; // "Saved" is active by default
+  int _selectedNavIndex = 0;
   int _selectedFilterIndex = 1; // "4.8+ Top Rated" active by default
-  final Set<int> _bookmarkedStays = <int>{};
 
   final List<StayFilterChipData> _filterChips = const [
     StayFilterChipData(label: 'Under \$120', hasDropdown: true),
@@ -447,19 +457,38 @@ class _StaysPageState extends State<StaysPage> {
 
   Widget _buildStayCard(int index) {
     final stay = _stays[index];
-    final isBookmarked = _bookmarkedStays.contains(index);
+    final appState = HelaAppStateProvider.of(context);
+    final isBookmarked = appState.isStaySaved(stay.title);
 
     return StayCard.fromStayHaven(
       stay,
       isBookmarked: isBookmarked,
       onBookmarkTap: () {
-        setState(() {
-          if (isBookmarked) {
-            _bookmarkedStays.remove(index);
-          } else {
-            _bookmarkedStays.add(index);
-          }
-        });
+        appState.toggleSaveStay(stay);
+        final isNowSaved = appState.isStaySaved(stay.title);
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              isNowSaved
+                  ? 'Saved "${stay.title}" to Saved Page'
+                  : 'Removed "${stay.title}" from Saved Page',
+            ),
+            action: isNowSaved
+                ? SnackBarAction(
+                    label: 'View Saved',
+                    textColor: HelaColors.tertiaryFixed,
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const SavedPage()),
+                      );
+                    },
+                  )
+                : null,
+            duration: const Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       },
       onViewTap: () {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -504,12 +533,28 @@ class _StaysPageState extends State<StaysPage> {
                 label: 'Saved',
                 icon: Icons.bookmark_border_rounded,
                 activeIcon: Icons.bookmark_rounded,
+                onTap: () {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => const SavedPage()),
+                  );
+                },
               ),
               _buildNavItem(
                 index: 2,
+                label: 'Discover',
+                icon: Icons.travel_explore_outlined,
+                activeIcon: Icons.travel_explore_rounded,
+                onTap: () {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => const TravelPreferencesPage()),
+                  );
+                },
+              ),
+              _buildNavItem(
+                index: 3,
                 label: 'Journeys',
-                icon: Icons.map_outlined,
-                activeIcon: Icons.map_rounded,
+                icon: Icons.route_outlined,
+                activeIcon: Icons.route_rounded,
                 onTap: () {
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (_) => const TripPlannerPage()),
@@ -517,7 +562,7 @@ class _StaysPageState extends State<StaysPage> {
                 },
               ),
               _buildNavItem(
-                index: 3,
+                index: 4,
                 label: 'Profile',
                 icon: Icons.person_outline_rounded,
                 activeIcon: Icons.person_rounded,

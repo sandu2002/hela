@@ -2,18 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:hela/theme/hela_colors.dart';
 import 'package:hela/models/tour_plan.dart';
 import 'package:hela/models/tour_preferences.dart';
+import 'package:hela/state/app_state.dart';
 import 'package:hela/state/tour_planner_state.dart';
+import 'package:hela/pages/saved_page.dart';
 import 'package:hela/pages/smart_tour/ai_chat_customization_page.dart';
 
 /// Detailed view of the AI-generated tour plan and day-by-day itinerary.
 class TourPlanDetailsPage extends StatefulWidget {
   final TourPlan plan;
-  final TourPreferences preferences;
+  final TourPreferences? preferences;
 
   const TourPlanDetailsPage({
     super.key,
     required this.plan,
-    required this.preferences,
+    this.preferences,
   });
 
   @override
@@ -24,6 +26,10 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
   late TourPlan _currentPlan;
   int _selectedDayIndex = 0;
   bool _isSaved = false;
+  bool _isInitialized = false;
+
+  TourPreferences get _effectivePreferences =>
+      widget.preferences ?? const TourPreferences();
 
   @override
   void initState() {
@@ -32,25 +38,79 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
     _isSaved = widget.plan.isSaved;
   }
 
-  void _handleSave() {
-    setState(() => _isSaved = true);
-    final state = TourPlannerStateProvider.of(context);
-    state.saveTour(_currentPlan);
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      final appState = HelaAppStateProvider.of(context);
+      _isSaved = appState.isTourSaved(_currentPlan.id) || widget.plan.isSaved;
+      _isInitialized = true;
+    }
+  }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Row(
-          children: [
-            Icon(Icons.bookmark_added_rounded, color: Colors.white, size: 20),
-            SizedBox(width: 10),
-            Text('Tour itinerary saved to your profile!'),
-          ],
+  void _handleSave() {
+    final appState = HelaAppStateProvider.of(context);
+    final tourState = TourPlannerStateProvider.of(context);
+    final willSave = !_isSaved;
+
+    setState(() => _isSaved = willSave);
+
+    if (willSave) {
+      final savedPlan = _currentPlan.copyWith(isSaved: true);
+      _currentPlan = savedPlan;
+      appState.saveTour(savedPlan);
+      tourState.saveTour(savedPlan);
+
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.bookmark_added_rounded, color: Colors.white, size: 20),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text('Saved "${_currentPlan.title}" to your Saved Page!'),
+              ),
+            ],
+          ),
+          backgroundColor: HelaColors.primary,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          action: SnackBarAction(
+            label: 'View',
+            textColor: HelaColors.tertiaryFixed,
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const SavedPage()),
+              );
+            },
+          ),
         ),
-        backgroundColor: HelaColors.primary,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-    );
+      );
+    } else {
+      final unsavedPlan = _currentPlan.copyWith(isSaved: false);
+      _currentPlan = unsavedPlan;
+      appState.removeSavedTour(_currentPlan.id);
+      tourState.removeSavedTour(_currentPlan.id);
+
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.bookmark_remove_rounded, color: Colors.white, size: 20),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text('Removed "${_currentPlan.title}" from Saved Page'),
+              ),
+            ],
+          ),
+          backgroundColor: HelaColors.primary,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+      );
+    }
   }
 
   Future<void> _openChatCustomizer() async {
@@ -59,7 +119,7 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
       MaterialPageRoute(
         builder: (_) => AiChatCustomizationPage(
           currentPlan: _currentPlan,
-          preferences: widget.preferences,
+          preferences: _effectivePreferences,
         ),
       ),
     );

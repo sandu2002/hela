@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:hela/pages/home_page.dart';
 import 'package:hela/pages/trip_planner_page.dart';
-import 'package:hela/pages/stays_page.dart';
+import 'package:hela/pages/saved_page.dart';
 import 'package:hela/pages/profile_page.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/pages/cultural_guide/article_detail_page.dart';
@@ -1054,7 +1054,7 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
                 activeIcon: Icons.bookmark_rounded,
                 onTap: () {
                   Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => const StaysPage()),
+                    MaterialPageRoute(builder: (_) => const SavedPage()),
                   );
                 },
               ),

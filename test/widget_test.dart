@@ -13,6 +13,8 @@ import 'package:hela/pages/home_page.dart';
 import 'package:hela/pages/trip_planner_page.dart';
 import 'package:hela/pages/fair_ride_page.dart';
 import 'package:hela/pages/stays_page.dart';
+import 'package:hela/pages/saved_page.dart';
+import 'package:hela/models/haven_item.dart';
 import 'package:hela/pages/profile_page.dart';
 import 'package:hela/pages/profile/edit_profile_page.dart';
 import 'package:hela/pages/cultural_guide/cultural_guide_page.dart';
@@ -349,6 +351,73 @@ void main() {
 
     expect(find.text('Explorer Identity'), findsOneWidget);
     expect(find.text('Save Changes'), findsOneWidget);
+  });
+
+  test('HelaAppState haven saving and removal test', () {
+    final appState = HelaAppState();
+    const testHaven = HavenItem(
+      title: 'Nine Arch Bridge & Demodara Tea Valley',
+      location: 'Ella, Highlands',
+      category: 'Guided Excursion',
+      price: '\$45',
+      rating: 4.90,
+      badgeText: '240+ Verified Explorers',
+      imageUrl: 'https://example.com/bridge.jpg',
+    );
+
+    expect(appState.isHavenSaved('Nine Arch Bridge & Demodara Tea Valley'), isFalse);
+    expect(appState.savedHavens.length, 0);
+
+    // Save haven
+    appState.toggleSaveHaven(testHaven);
+    expect(appState.isHavenSaved('Nine Arch Bridge & Demodara Tea Valley'), isTrue);
+    expect(appState.savedHavens.length, 1);
+    expect(appState.savedHavens.first.title, 'Nine Arch Bridge & Demodara Tea Valley');
+
+    // Remove haven
+    appState.toggleSaveHaven(testHaven);
+    expect(appState.isHavenSaved('Nine Arch Bridge & Demodara Tea Valley'), isFalse);
+    expect(appState.savedHavens.length, 0);
+  });
+
+  testWidgets('SavedPage empty state test', (WidgetTester tester) async {
+    _ignoreOverflow();
+    await tester.pumpWidget(
+      _wrapWithState(const SavedPage()),
+    );
+
+    expect(find.text('Saved Page'), findsOneWidget);
+    expect(find.text('Your Saved Sanctuary is Empty'), findsOneWidget);
+    expect(find.text('Explore Havens & Tours'), findsOneWidget);
+  });
+
+  testWidgets('SavedPage with saved HavenCard renders card with details', (WidgetTester tester) async {
+    _ignoreOverflow();
+    final appState = HelaAppState();
+    const testHaven = HavenItem(
+      title: 'Nine Arch Bridge & Demodara Tea Valley',
+      location: 'Ella, Highlands',
+      category: 'Guided Excursion',
+      price: '\$45',
+      rating: 4.90,
+      badgeText: '240+ Verified Explorers',
+      imageUrl: 'https://example.com/bridge.jpg',
+    );
+    appState.toggleSaveHaven(testHaven);
+
+    await tester.pumpWidget(
+      HelaAppStateProvider(
+        state: appState,
+        child: const MaterialApp(home: SavedPage()),
+      ),
+    );
+
+    expect(find.text('Saved Page'), findsOneWidget);
+    expect(find.text('Nine Arch Bridge & Demodara Tea Valley'), findsOneWidget);
+    expect(find.text('Ella, Highlands'), findsOneWidget);
+    expect(find.text('4.90'), findsOneWidget);
+    expect(find.text('240+ Verified Explorers'), findsOneWidget);
+    expect(find.text('Explore'), findsOneWidget);
   });
 }
 
