@@ -243,6 +243,24 @@ class HelaAppState extends ChangeNotifier {
     if (photoUrl != null) _userPhotoUrl = photoUrl;
     notifyListeners();
   }
+
+  // ── Theme Mode ──────────────────────────────────────────────────
+  ThemeMode _themeMode = ThemeMode.light;
+
+  ThemeMode get themeMode => _themeMode;
+  bool get isDarkMode => _themeMode == ThemeMode.dark;
+
+  void setThemeMode(ThemeMode mode) {
+    if (_themeMode != mode) {
+      _themeMode = mode;
+      notifyListeners();
+    }
+  }
+
+  void toggleTheme() {
+    _themeMode = _themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
+    notifyListeners();
+  }
 }
 
 /// An InheritedNotifier that exposes [HelaAppState] down the tree.

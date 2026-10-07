@@ -14,7 +14,6 @@ import 'package:hela/pages/trip_planner_page.dart';
 import 'package:hela/pages/fair_ride_page.dart';
 import 'package:hela/pages/stays_page.dart';
 import 'package:hela/pages/saved_page.dart';
-import 'package:hela/models/haven_item.dart';
 import 'package:hela/pages/profile_page.dart';
 import 'package:hela/pages/profile/edit_profile_page.dart';
 import 'package:hela/pages/cultural_guide/cultural_guide_page.dart';
@@ -417,7 +416,7 @@ void main() {
     expect(find.text('Ella, Highlands'), findsOneWidget);
     expect(find.text('4.90'), findsOneWidget);
     expect(find.text('240+ Verified Explorers'), findsOneWidget);
-    expect(find.text('Explore'), findsOneWidget);
+    expect(find.text('Explore'), findsAtLeastNWidgets(1));
   });
 }
 

@@ -12,6 +12,8 @@ import 'package:hela/models/destination.dart';
 import 'package:hela/services/place_service.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/models/haven_item.dart';
+import 'package:hela/widgets/theme_switch_button.dart';
+import 'package:hela/widgets/hela_drawer.dart';
 export 'package:hela/models/haven_item.dart';
 
 // Re-export HelaColors from canonical location for backward compatibility
@@ -33,6 +35,7 @@ class HelaHomePage extends StatefulWidget {
 }
 
 class _HelaHomePageState extends State<HelaHomePage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _selectedNavIndex = 0;
   int _selectedCategoryIndex = 0;
   final TextEditingController _searchController = TextEditingController();
@@ -123,6 +126,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
   ];
 
   Widget _buildNetworkImageWithFallback(String url, {double? width, double? height, BoxFit fit = BoxFit.cover}) {
+    final colors = HelaColors.of(context);
     return Image.network(
       url,
       width: width,
@@ -133,14 +137,14 @@ class _HelaHomePageState extends State<HelaHomePage> {
         return Container(
           width: width,
           height: height,
-          color: HelaColors.surfaceContainerHigh,
-          child: const Center(
+          color: colors.surfaceContainerHigh,
+          child: Center(
             child: SizedBox(
               width: 24,
               height: 24,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                color: HelaColors.secondary,
+                color: colors.secondary,
               ),
             ),
           ),
@@ -150,15 +154,15 @@ class _HelaHomePageState extends State<HelaHomePage> {
         return Container(
           width: width,
           height: height,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [HelaColors.primaryContainer, HelaColors.primary],
+              colors: [colors.primaryContainer, colors.primary],
             ),
           ),
-          child: const Center(
-            child: Icon(Icons.image_outlined, color: HelaColors.onPrimaryContainer, size: 32),
+          child: Center(
+            child: Icon(Icons.image_outlined, color: colors.onPrimaryContainer, size: 32),
           ),
         );
       },
@@ -167,8 +171,11 @@ class _HelaHomePageState extends State<HelaHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = HelaColors.of(context);
     return Scaffold(
-      backgroundColor: HelaColors.background,
+      key: _scaffoldKey,
+      drawer: const HelaNavigationDrawer(),
+      backgroundColor: colors.background,
       appBar: _buildAppBar(),
       body: SafeArea(
         top: false,
@@ -215,8 +222,10 @@ class _HelaHomePageState extends State<HelaHomePage> {
   }
 
   PreferredSizeWidget _buildAppBar() {
+    final colors = HelaColors.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return AppBar(
-      backgroundColor: HelaColors.surface.withValues(alpha: 0.92),
+      backgroundColor: colors.surface.withValues(alpha: isDark ? 0.94 : 0.92),
       elevation: 0,
       scrolledUnderElevation: 1.5,
       shadowColor: Colors.black12,
@@ -230,21 +239,19 @@ class _HelaHomePageState extends State<HelaHomePage> {
             child: InkWell(
               borderRadius: BorderRadius.circular(20),
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Menu tapped')),
-                );
+                _scaffoldKey.currentState?.openDrawer();
               },
-              child: const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Icon(Icons.menu_rounded, color: HelaColors.primary, size: 24),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(Icons.menu_rounded, color: colors.primary, size: 24),
               ),
             ),
           ),
           const SizedBox(width: 8),
-          const Text(
+          Text(
             'HELA',
             style: TextStyle(
-              color: HelaColors.primary,
+              color: colors.primary,
               fontWeight: FontWeight.w800,
               fontSize: 22,
               letterSpacing: -0.5,
@@ -254,7 +261,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.electric_rickshaw_rounded, color: HelaColors.primary, size: 24),
+          icon: Icon(Icons.electric_rickshaw_rounded, color: colors.primary, size: 24),
           tooltip: 'Fair Ride Ceylon',
           onPressed: () {
             Navigator.of(context).push(
@@ -262,11 +269,14 @@ class _HelaHomePageState extends State<HelaHomePage> {
             );
           },
         ),
+        // Matching Place 1: Top AppBar Action Bar Switch Icon!
+        const HelaThemeSwitchButton(size: 36),
+        const SizedBox(width: 2),
         Stack(
           alignment: Alignment.center,
           children: [
             IconButton(
-              icon: const Icon(Icons.notifications_outlined, color: HelaColors.primary, size: 24),
+              icon: Icon(Icons.notifications_outlined, color: colors.primary, size: 24),
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('No new notifications')),
@@ -280,9 +290,9 @@ class _HelaHomePageState extends State<HelaHomePage> {
                 width: 8,
                 height: 8,
                 decoration: BoxDecoration(
-                  color: HelaColors.error,
+                  color: colors.error,
                   shape: BoxShape.circle,
-                  border: Border.all(color: HelaColors.surface, width: 1.5),
+                  border: Border.all(color: colors.surface, width: 1.5),
                 ),
               ),
             ),
@@ -306,7 +316,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: HelaColors.secondary.withValues(alpha: 0.35),
+                      color: colors.secondary.withValues(alpha: 0.35),
                       width: 2,
                     ),
                   ),
@@ -327,61 +337,78 @@ class _HelaHomePageState extends State<HelaHomePage> {
   }
 
   Widget _buildGreetingSection() {
-    return Column(
+    final colors = HelaColors.of(context);
+    return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: const [
-            Text(
-              'AYUBOWAN, EXPLORER',
-              style: TextStyle(
-                color: HelaColors.secondary,
-                fontWeight: FontWeight.w700,
-                fontSize: 12,
-                letterSpacing: 1.1,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    'AYUBOWAN, EXPLORER',
+                    style: TextStyle(
+                      color: colors.secondary,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 12,
+                      letterSpacing: 1.1,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  const Text('👋', style: TextStyle(fontSize: 14)),
+                ],
               ),
-            ),
-            SizedBox(width: 4),
-            Text('👋', style: TextStyle(fontSize: 14)),
-          ],
-        ),
-        const SizedBox(height: 4),
-        const Text(
-          'Discover Sri Lanka',
-          style: TextStyle(
-            color: HelaColors.primary,
-            fontWeight: FontWeight.w800,
-            fontSize: 27,
-            letterSpacing: -0.6,
-            height: 1.2,
+              const SizedBox(height: 4),
+              Text(
+                'Discover Sri Lanka',
+                style: TextStyle(
+                  color: colors.primary,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 27,
+                  letterSpacing: -0.6,
+                  height: 1.2,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Lush highlands, untamed safaris & ancient royal sanctuaries.',
+                style: TextStyle(
+                  color: colors.onSurfaceVariant,
+                  fontSize: 13,
+                  height: 1.35,
+                ),
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 4),
-        const Text(
-          'Lush highlands, untamed safaris & ancient royal sanctuaries.',
-          style: TextStyle(
-            color: HelaColors.onSurfaceVariant,
-            fontSize: 13,
-            height: 1.35,
-          ),
+        const SizedBox(width: 10),
+        // Matching Place 2: Home Page Greeting Quick Switch Pill!
+        const Padding(
+          padding: EdgeInsets.only(top: 4),
+          child: HelaThemeSwitchButton(showLabel: true),
         ),
       ],
     );
   }
 
   Widget _buildSearchSection() {
+    final colors = HelaColors.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       height: 52,
       decoration: BoxDecoration(
-        color: HelaColors.surfaceContainerLowest,
+        color: colors.searchBackground,
         borderRadius: BorderRadius.circular(26),
         border: Border.all(
-          color: HelaColors.outlineVariant.withValues(alpha: 0.7),
+          color: colors.outlineVariant.withValues(alpha: isDark ? 0.6 : 0.7),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: isDark ? Colors.black.withValues(alpha: 0.25) : Colors.black.withValues(alpha: 0.03),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -389,11 +416,11 @@ class _HelaHomePageState extends State<HelaHomePage> {
       ),
       child: Row(
         children: [
-          const Padding(
-            padding: EdgeInsets.only(left: 16, right: 10),
+          Padding(
+            padding: const EdgeInsets.only(left: 16, right: 10),
             child: Icon(
               Icons.search_rounded,
-              color: HelaColors.primaryContainer,
+              color: colors.primary,
               size: 22,
             ),
           ),
@@ -401,6 +428,10 @@ class _HelaHomePageState extends State<HelaHomePage> {
             child: TextField(
               controller: _searchController,
               textInputAction: TextInputAction.search,
+              style: TextStyle(
+                color: colors.onSurface,
+                fontSize: 14.5,
+              ),
               onChanged: (val) {
                 setState(() {
                   _searchQuery = val.trim();
@@ -411,10 +442,10 @@ class _HelaHomePageState extends State<HelaHomePage> {
                   _searchQuery = val.trim();
                 });
               },
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'Where do you want to explore?',
                 hintStyle: TextStyle(
-                  color: Color(0x99424842),
+                  color: colors.onSurfaceVariant.withValues(alpha: 0.65),
                   fontSize: 14.5,
                   fontWeight: FontWeight.w400,
                 ),
@@ -426,7 +457,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
           ),
           if (_searchQuery.isNotEmpty)
             IconButton(
-              icon: const Icon(Icons.close_rounded, size: 20, color: HelaColors.outline),
+              icon: Icon(Icons.close_rounded, size: 20, color: colors.outline),
               tooltip: 'Clear search',
               onPressed: () {
                 _searchController.clear();
@@ -438,7 +469,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
           Padding(
             padding: const EdgeInsets.only(right: 6),
             child: Material(
-              color: HelaColors.primaryContainer,
+              color: colors.primaryContainer,
               shape: const CircleBorder(),
               child: InkWell(
                 customBorder: const CircleBorder(),
@@ -448,11 +479,11 @@ class _HelaHomePageState extends State<HelaHomePage> {
                     _searchQuery = _searchController.text.trim();
                   });
                 },
-                child: const Padding(
-                  padding: EdgeInsets.all(9.0),
+                child: Padding(
+                  padding: const EdgeInsets.all(9.0),
                   child: Icon(
                     Icons.search_rounded,
-                    color: HelaColors.onPrimary,
+                    color: colors.onPrimary,
                     size: 20,
                   ),
                 ),
@@ -465,6 +496,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
   }
 
   Widget _buildSearchResultsSection() {
+    final colors = HelaColors.of(context);
     final query = _searchQuery.toLowerCase();
 
     // Filter matching havens
@@ -499,8 +531,8 @@ class _HelaHomePageState extends State<HelaHomePage> {
           children: [
             Text(
               'Results for "$_searchQuery"',
-              style: const TextStyle(
-                color: HelaColors.primary,
+              style: TextStyle(
+                color: colors.primary,
                 fontWeight: FontWeight.w700,
                 fontSize: 18,
                 letterSpacing: -0.3,
@@ -511,14 +543,14 @@ class _HelaHomePageState extends State<HelaHomePage> {
                 _searchController.clear();
                 setState(() => _searchQuery = '');
               },
-              child: const Text('Clear', style: TextStyle(color: HelaColors.secondary)),
+              child: Text('Clear', style: TextStyle(color: colors.secondary)),
             ),
           ],
         ),
         Text(
           '$totalCount place${totalCount != 1 ? 's' : ''} found in Sri Lanka',
-          style: const TextStyle(
-            color: HelaColors.onSurfaceVariant,
+          style: TextStyle(
+            color: colors.onSurfaceVariant,
             fontSize: 12.5,
           ),
         ),
@@ -530,31 +562,31 @@ class _HelaHomePageState extends State<HelaHomePage> {
             padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 20),
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: HelaColors.surfaceContainerLowest,
+              color: colors.cardBackground,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: HelaColors.outlineVariant.withValues(alpha: 0.4),
+                color: colors.outlineVariant.withValues(alpha: 0.5),
               ),
             ),
             child: Column(
               children: [
-                const Icon(Icons.travel_explore_rounded,
-                    size: 48, color: HelaColors.outline),
+                Icon(Icons.travel_explore_rounded,
+                    size: 48, color: colors.outline),
                 const SizedBox(height: 12),
                 Text(
                   'No places found for "$_searchQuery"',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 15,
-                    color: HelaColors.onSurface,
+                    color: colors.onSurface,
                   ),
                 ),
                 const SizedBox(height: 6),
-                const Text(
+                Text(
                   'Try searching for "Galle", "Ella", "Sigiriya", "Kandy", or "Yala"',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: HelaColors.onSurfaceVariant,
+                    color: colors.onSurfaceVariant,
                     fontSize: 12.5,
                   ),
                 ),
@@ -576,13 +608,14 @@ class _HelaHomePageState extends State<HelaHomePage> {
   }
 
   Widget _buildPlaceResultCard(Destination place) {
+    final colors = HelaColors.of(context);
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
-        color: HelaColors.surfaceContainerLowest,
+        color: colors.cardBackground,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: HelaColors.outlineVariant.withValues(alpha: 0.4),
+          color: colors.outlineVariant.withValues(alpha: 0.5),
         ),
         boxShadow: [
           BoxShadow(
@@ -617,8 +650,8 @@ class _HelaHomePageState extends State<HelaHomePage> {
                     : Container(
                         width: 86,
                         height: 86,
-                        color: HelaColors.surfaceContainerHigh,
-                        child: const Icon(Icons.place_rounded, color: HelaColors.primary),
+                        color: colors.surfaceContainerHigh,
+                        child: Icon(Icons.place_rounded, color: colors.primary),
                       ),
               ),
               const SizedBox(width: 12),
@@ -631,15 +664,15 @@ class _HelaHomePageState extends State<HelaHomePage> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: HelaColors.primaryContainer.withValues(alpha: 0.15),
+                            color: colors.primaryContainer.withValues(alpha: 0.25),
                             borderRadius: BorderRadius.circular(6),
                           ),
-                          child: const Text(
+                          child: Text(
                             'DESTINATION',
                             style: TextStyle(
                               fontSize: 9.5,
                               fontWeight: FontWeight.w700,
-                              color: HelaColors.primary,
+                              color: colors.primary,
                             ),
                           ),
                         ),
@@ -655,23 +688,23 @@ class _HelaHomePageState extends State<HelaHomePage> {
                     const SizedBox(height: 4),
                     Text(
                       place.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 14.5,
-                        color: HelaColors.onSurface,
+                        color: colors.onSurface,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Row(
                       children: [
-                        const Icon(Icons.location_on_outlined, size: 12, color: HelaColors.onSurfaceVariant),
+                        Icon(Icons.location_on_outlined, size: 12, color: colors.onSurfaceVariant),
                         const SizedBox(width: 3),
                         Expanded(
                           child: Text(
                             place.region,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 11.5,
-                              color: HelaColors.onSurfaceVariant,
+                              color: colors.onSurfaceVariant,
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -683,9 +716,9 @@ class _HelaHomePageState extends State<HelaHomePage> {
                       place.description,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11.5,
-                        color: HelaColors.onSurfaceVariant,
+                        color: colors.onSurfaceVariant,
                         height: 1.3,
                       ),
                     ),
@@ -700,13 +733,14 @@ class _HelaHomePageState extends State<HelaHomePage> {
   }
 
   Widget _buildHavenResultCard(HavenItem haven) {
+    final colors = HelaColors.of(context);
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
-        color: HelaColors.surfaceContainerLowest,
+        color: colors.cardBackground,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: HelaColors.outlineVariant.withValues(alpha: 0.4),
+          color: colors.outlineVariant.withValues(alpha: 0.5),
         ),
         boxShadow: [
           BoxShadow(
@@ -746,15 +780,15 @@ class _HelaHomePageState extends State<HelaHomePage> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: HelaColors.secondary.withValues(alpha: 0.15),
+                            color: colors.secondary.withValues(alpha: 0.18),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
                             haven.category.toUpperCase(),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 9.5,
                               fontWeight: FontWeight.w700,
-                              color: HelaColors.secondary,
+                              color: colors.secondary,
                             ),
                           ),
                         ),
@@ -770,22 +804,22 @@ class _HelaHomePageState extends State<HelaHomePage> {
                     const SizedBox(height: 4),
                     Text(
                       haven.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 14.5,
-                        color: HelaColors.onSurface,
+                        color: colors.onSurface,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Row(
                       children: [
-                        const Icon(Icons.location_on_outlined, size: 12, color: HelaColors.onSurfaceVariant),
+                        Icon(Icons.location_on_outlined, size: 12, color: colors.onSurfaceVariant),
                         const SizedBox(width: 3),
                         Text(
                           haven.location,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11.5,
-                            color: HelaColors.onSurfaceVariant,
+                            color: colors.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -793,10 +827,10 @@ class _HelaHomePageState extends State<HelaHomePage> {
                     const SizedBox(height: 4),
                     Text(
                       '${haven.price} / person',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w800,
                         fontSize: 13,
-                        color: HelaColors.primary,
+                        color: colors.primary,
                       ),
                     ),
                   ],
@@ -810,13 +844,14 @@ class _HelaHomePageState extends State<HelaHomePage> {
   }
 
   Widget _buildExperienceResultCard(ExperienceItem exp) {
+    final colors = HelaColors.of(context);
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
-        color: HelaColors.surfaceContainerLowest,
+        color: colors.cardBackground,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: HelaColors.outlineVariant.withValues(alpha: 0.4),
+          color: colors.outlineVariant.withValues(alpha: 0.5),
         ),
         boxShadow: [
           BoxShadow(
@@ -912,6 +947,8 @@ class _HelaHomePageState extends State<HelaHomePage> {
   }
 
   Widget _buildCategoriesSection() {
+    final colors = HelaColors.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return SizedBox(
       height: 38,
       child: ListView.separated(
@@ -922,6 +959,15 @@ class _HelaHomePageState extends State<HelaHomePage> {
         itemBuilder: (context, index) {
           final isSelected = _selectedCategoryIndex == index;
           final category = _categories[index];
+
+          final bgColor = isSelected
+              ? (isDark ? colors.primary : colors.tertiaryFixed)
+              : (isDark ? colors.surfaceContainer : colors.secondary);
+
+          final fgColor = isSelected
+              ? (isDark ? colors.onPrimary : HelaColors.primary)
+              : (isDark ? colors.onSurface : Colors.white);
+
           return InkWell(
             borderRadius: BorderRadius.circular(20),
             onTap: () {
@@ -938,12 +984,16 @@ class _HelaHomePageState extends State<HelaHomePage> {
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.symmetric(horizontal: 14),
               decoration: BoxDecoration(
-                color: isSelected ? HelaColors.tertiaryFixed : HelaColors.secondary,
+                color: bgColor,
                 borderRadius: BorderRadius.circular(20),
+                border: !isSelected && isDark
+                    ? Border.all(color: colors.outlineVariant.withValues(alpha: 0.6))
+                    : null,
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: HelaColors.tertiaryFixed.withValues(alpha: 0.4),
+                          color: (isDark ? colors.primary : colors.tertiaryFixed)
+                              .withValues(alpha: 0.4),
                           blurRadius: 6,
                           offset: const Offset(0, 2),
                         )
@@ -956,13 +1006,13 @@ class _HelaHomePageState extends State<HelaHomePage> {
                   Icon(
                     category.icon,
                     size: 16,
-                    color: isSelected ? HelaColors.primary : HelaColors.onSecondary,
+                    color: fgColor,
                   ),
                   const SizedBox(width: 6),
                   Text(
                     category.label,
                     style: TextStyle(
-                      color: isSelected ? HelaColors.primary : HelaColors.onSecondary,
+                      color: fgColor,
                       fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
                       fontSize: 13,
                     ),
@@ -977,6 +1027,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
   }
 
   Widget _buildFeaturedHavensSection() {
+    final colors = HelaColors.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -985,37 +1036,39 @@ class _HelaHomePageState extends State<HelaHomePage> {
           crossAxisAlignment: CrossAxisAlignment.baseline,
           textBaseline: TextBaseline.alphabetic,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                 Text(
                   'Featured Havens',
                   style: TextStyle(
-                    color: HelaColors.primary,
+                    color: colors.primary,
                     fontWeight: FontWeight.w700,
                     fontSize: 18,
                     letterSpacing: -0.3,
                   ),
                 ),
-                SizedBox(height: 2),
+                const SizedBox(height: 2),
                 Text(
                   'Iconic sanctuaries of Ceylon',
                   style: TextStyle(
-                    color: HelaColors.onSurfaceVariant,
+                    color: colors.onSurfaceVariant,
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
             ),
-            TextButton(
+          ),
+          TextButton(
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const StaysPage()),
                 );
               },
               style: TextButton.styleFrom(
-                foregroundColor: HelaColors.secondary,
+                foregroundColor: colors.secondary,
                 padding: EdgeInsets.zero,
                 minimumSize: Size.zero,
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -1065,7 +1118,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
                             isNowSaved
                                 ? Icons.bookmark_added_rounded
                                 : Icons.bookmark_remove_rounded,
-                            color: isNowSaved ? HelaColors.tertiaryFixed : Colors.white70,
+                            color: isNowSaved ? colors.tertiaryFixed : Colors.white70,
                             size: 20,
                           ),
                           const SizedBox(width: 10),
@@ -1082,7 +1135,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
                       action: isNowSaved
                           ? SnackBarAction(
                               label: 'View Saved',
-                              textColor: HelaColors.tertiaryFixed,
+                              textColor: colors.tertiaryFixed,
                               onPressed: () {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(builder: (_) => const SavedPage()),
@@ -1122,13 +1175,14 @@ class _HelaHomePageState extends State<HelaHomePage> {
   }
 
   Widget _buildAuthenticityBanner() {
+    final colors = HelaColors.of(context);
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: HelaColors.surfaceContainer,
+        color: colors.bannerBackground,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: HelaColors.outlineVariant.withValues(alpha: 0.5),
+          color: colors.outlineVariant.withValues(alpha: 0.5),
         ),
       ),
       child: Row(
@@ -1136,14 +1190,14 @@ class _HelaHomePageState extends State<HelaHomePage> {
           Container(
             width: 44,
             height: 44,
-            decoration: const BoxDecoration(
-              color: HelaColors.secondaryContainer,
+            decoration: BoxDecoration(
+              color: colors.secondaryContainer,
               shape: BoxShape.circle,
             ),
-            child: const Center(
+            child: Center(
               child: Icon(
                 Icons.verified_rounded,
-                color: HelaColors.primary,
+                color: colors.onSecondaryContainer,
                 size: 24,
               ),
             ),
@@ -1152,20 +1206,20 @@ class _HelaHomePageState extends State<HelaHomePage> {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text(
                   'Ceylon Heritage Certified',
                   style: TextStyle(
-                    color: HelaColors.primary,
+                    color: colors.primary,
                     fontWeight: FontWeight.w700,
                     fontSize: 14,
                   ),
                 ),
-                SizedBox(height: 2),
+                const SizedBox(height: 2),
                 Text(
                   '100% vetted local indigenous hosts & eco-guides.',
                   style: TextStyle(
-                    color: HelaColors.onSurfaceVariant,
+                    color: colors.onSurfaceVariant,
                     fontSize: 12,
                     height: 1.3,
                   ),
@@ -1174,9 +1228,9 @@ class _HelaHomePageState extends State<HelaHomePage> {
             ),
           ),
           const SizedBox(width: 8),
-          const Icon(
+          Icon(
             Icons.chevron_right_rounded,
-            color: HelaColors.secondary,
+            color: colors.secondary,
             size: 22,
           ),
         ],
@@ -1185,6 +1239,8 @@ class _HelaHomePageState extends State<HelaHomePage> {
   }
 
   Widget _buildTrendingSection() {
+    final colors = HelaColors.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1193,33 +1249,35 @@ class _HelaHomePageState extends State<HelaHomePage> {
           crossAxisAlignment: CrossAxisAlignment.baseline,
           textBaseline: TextBaseline.alphabetic,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text(
-                  'Trending This Week',
-                  style: TextStyle(
-                    color: HelaColors.primary,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    letterSpacing: -0.3,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Trending This Week',
+                    style: TextStyle(
+                      color: colors.primary,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 18,
+                      letterSpacing: -0.3,
+                    ),
                   ),
-                ),
-                SizedBox(height: 2),
-                Text(
-                  'Handcrafted slow-travel expeditions',
-                  style: TextStyle(
-                    color: HelaColors.onSurfaceVariant,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
+                  const SizedBox(height: 2),
+                  Text(
+                    'Handcrafted slow-travel expeditions',
+                    style: TextStyle(
+                      color: colors.onSurfaceVariant,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             TextButton(
               onPressed: () {},
               style: TextButton.styleFrom(
-                foregroundColor: HelaColors.secondary,
+                foregroundColor: colors.secondary,
                 padding: EdgeInsets.zero,
                 minimumSize: Size.zero,
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -1257,14 +1315,14 @@ class _HelaHomePageState extends State<HelaHomePage> {
               return Container(
                 width: 250,
                 decoration: BoxDecoration(
-                  color: HelaColors.surfaceContainerLowest,
+                  color: colors.cardBackground,
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(
-                    color: HelaColors.outlineVariant.withValues(alpha: 0.5),
+                    color: colors.outlineVariant.withValues(alpha: 0.5),
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
+                      color: isDark ? Colors.black.withValues(alpha: 0.25) : Colors.black.withValues(alpha: 0.04),
                       blurRadius: 8,
                       offset: const Offset(0, 3),
                     ),
@@ -1292,7 +1350,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
                               top: 8,
                               right: 8,
                               child: Material(
-                                color: HelaColors.surfaceContainerLowest.withValues(alpha: 0.85),
+                                color: colors.surfaceContainer.withValues(alpha: 0.85),
                                 shape: const CircleBorder(),
                                 child: InkWell(
                                   customBorder: const CircleBorder(),
@@ -1310,7 +1368,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
                                         action: isNowSaved
                                             ? SnackBarAction(
                                                 label: 'View Saved',
-                                                textColor: HelaColors.tertiaryFixed,
+                                                textColor: colors.tertiaryFixed,
                                                 onPressed: () {
                                                   Navigator.of(context).push(
                                                     MaterialPageRoute(builder: (_) => const SavedPage()),
@@ -1328,7 +1386,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
                                     child: Icon(
                                       isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
                                       size: 16,
-                                      color: isBookmarked ? HelaColors.primary : HelaColors.onSurfaceVariant,
+                                      color: isBookmarked ? colors.primary : colors.onSurfaceVariant,
                                     ),
                                   ),
                                 ),
@@ -1341,22 +1399,22 @@ class _HelaHomePageState extends State<HelaHomePage> {
                               child: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                 decoration: BoxDecoration(
-                                  color: HelaColors.primaryContainer.withValues(alpha: 0.88),
+                                  color: colors.primaryContainer.withValues(alpha: 0.88),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Icon(
+                                    Icon(
                                       Icons.schedule_rounded,
                                       size: 12,
-                                      color: HelaColors.onPrimary,
+                                      color: colors.onPrimary,
                                     ),
                                     const SizedBox(width: 3),
                                     Text(
                                       exp.duration,
-                                      style: const TextStyle(
-                                        color: HelaColors.onPrimary,
+                                      style: TextStyle(
+                                        color: colors.onPrimary,
                                         fontSize: 10.5,
                                         fontWeight: FontWeight.w600,
                                       ),
@@ -1384,13 +1442,13 @@ class _HelaHomePageState extends State<HelaHomePage> {
                                       Icon(
                                         exp.categoryIcon,
                                         size: 13,
-                                        color: HelaColors.secondary,
+                                        color: colors.secondary,
                                       ),
                                       const SizedBox(width: 4),
                                       Text(
                                         exp.category,
-                                        style: const TextStyle(
-                                          color: HelaColors.secondary,
+                                        style: TextStyle(
+                                          color: colors.secondary,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 11,
                                         ),
@@ -1400,8 +1458,8 @@ class _HelaHomePageState extends State<HelaHomePage> {
                                   const SizedBox(height: 3),
                                   Text(
                                     exp.title,
-                                    style: const TextStyle(
-                                      color: HelaColors.primary,
+                                    style: TextStyle(
+                                      color: colors.onSurface,
                                       fontWeight: FontWeight.w700,
                                       fontSize: 13.5,
                                     ),
@@ -1412,10 +1470,10 @@ class _HelaHomePageState extends State<HelaHomePage> {
                               ),
                               Container(
                                 padding: const EdgeInsets.only(top: 6),
-                                decoration: const BoxDecoration(
+                                decoration: BoxDecoration(
                                   border: Border(
                                     top: BorderSide(
-                                      color: HelaColors.surfaceContainer,
+                                      color: colors.outlineVariant.withValues(alpha: 0.4),
                                       width: 1,
                                     ),
                                   ),
@@ -1423,28 +1481,31 @@ class _HelaHomePageState extends State<HelaHomePage> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    RichText(
-                                      text: TextSpan(
-                                        children: [
-                                          TextSpan(
-                                            text: exp.price,
-                                            style: const TextStyle(
-                                              color: HelaColors.primary,
-                                              fontWeight: FontWeight.w800,
-                                              fontSize: 16,
+                                    Flexible(
+                                      child: RichText(
+                                        text: TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text: exp.price,
+                                              style: TextStyle(
+                                                color: colors.primary,
+                                                fontWeight: FontWeight.w800,
+                                                fontSize: 16,
+                                              ),
                                             ),
-                                          ),
-                                          TextSpan(
-                                            text: index == 1 ? ' / jeep' : ' / guest',
-                                            style: const TextStyle(
-                                              color: HelaColors.onSurfaceVariant,
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.w400,
+                                            TextSpan(
+                                              text: index == 1 ? ' / jeep' : ' / guest',
+                                              style: TextStyle(
+                                                color: colors.onSurfaceVariant,
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.w400,
+                                              ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ),
+                                    const SizedBox(width: 4),
                                     Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
@@ -1456,8 +1517,8 @@ class _HelaHomePageState extends State<HelaHomePage> {
                                         const SizedBox(width: 2),
                                         Text(
                                           '${exp.rating} (${exp.reviewsCount})',
-                                          style: const TextStyle(
-                                            color: HelaColors.primary,
+                                          style: TextStyle(
+                                            color: colors.onSurface,
                                             fontWeight: FontWeight.w700,
                                             fontSize: 11,
                                           ),
@@ -1483,13 +1544,16 @@ class _HelaHomePageState extends State<HelaHomePage> {
   }
 
   Widget _buildCustomJourneyCard() {
+    final colors = HelaColors.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
-        color: HelaColors.primary,
+        color: isDark ? colors.surfaceContainer : HelaColors.primary,
         borderRadius: BorderRadius.circular(20),
+        border: isDark ? Border.all(color: colors.primary.withValues(alpha: 0.35)) : null,
         boxShadow: [
           BoxShadow(
-            color: HelaColors.primary.withValues(alpha: 0.3),
+            color: isDark ? colors.primary.withValues(alpha: 0.15) : HelaColors.primary.withValues(alpha: 0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -1508,7 +1572,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
                 height: 170,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: HelaColors.secondary.withValues(alpha: 0.35),
+                  color: (isDark ? colors.primary : HelaColors.secondary).withValues(alpha: 0.25),
                 ),
               ),
             ),
@@ -1517,30 +1581,30 @@ class _HelaHomePageState extends State<HelaHomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'TAILORED ITINERARIES',
                     style: TextStyle(
-                      color: HelaColors.tertiaryFixed,
+                      color: colors.tertiaryFixed,
                       fontWeight: FontWeight.w800,
                       fontSize: 11,
                       letterSpacing: 1.2,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'Need a custom private journey through Ceylon?',
                     style: TextStyle(
-                      color: HelaColors.onPrimary,
+                      color: isDark ? colors.onSurface : Colors.white,
                       fontWeight: FontWeight.w700,
                       fontSize: 20,
                       height: 1.25,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'Our native destination specialists curate immersive bespoke routes with private chauffeur guides.',
                     style: TextStyle(
-                      color: HelaColors.surfaceContainerHigh,
+                      color: isDark ? colors.onSurfaceVariant : HelaColors.surfaceContainerHigh,
                       fontSize: 13,
                       height: 1.35,
                     ),
@@ -1553,8 +1617,8 @@ class _HelaHomePageState extends State<HelaHomePage> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: HelaColors.tertiaryFixed,
-                      foregroundColor: HelaColors.primary,
+                      backgroundColor: colors.tertiaryFixed,
+                      foregroundColor: const Color(0xFF19331F),
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24),
@@ -1586,13 +1650,23 @@ class _HelaHomePageState extends State<HelaHomePage> {
   }
 
   Widget _buildBottomNavBar() {
+    final colors = HelaColors.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
-        color: HelaColors.surfaceContainerLowest.withValues(alpha: 0.95),
+        color: colors.navBarBackground.withValues(alpha: isDark ? 0.96 : 0.95),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        border: isDark
+            ? Border(
+                top: BorderSide(
+                  color: colors.outlineVariant.withValues(alpha: 0.6),
+                  width: 1,
+                ),
+              )
+            : null,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.07),
+            color: isDark ? Colors.black.withValues(alpha: 0.3) : Colors.black.withValues(alpha: 0.07),
             blurRadius: 16,
             offset: const Offset(0, -3),
           ),
@@ -1604,12 +1678,13 @@ class _HelaHomePageState extends State<HelaHomePage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildNavItem(index: 0, label: 'Explore', icon: Icons.explore_outlined, activeIcon: Icons.explore_rounded),
+              _buildNavItem(index: 0, label: 'Explore', icon: Icons.explore_outlined, activeIcon: Icons.explore_rounded, colors: colors),
               _buildNavItem(
                 index: 1,
                 label: 'Saved',
                 icon: Icons.bookmark_border_rounded,
                 activeIcon: Icons.bookmark_rounded,
+                colors: colors,
                 onTap: () {
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (_) => const SavedPage()),
@@ -1621,6 +1696,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
                 label: 'Discover',
                 icon: Icons.travel_explore_outlined,
                 activeIcon: Icons.travel_explore_rounded,
+                colors: colors,
                 onTap: () {
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (_) => const TravelPreferencesPage()),
@@ -1632,6 +1708,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
                 label: 'Journeys',
                 icon: Icons.route_outlined,
                 activeIcon: Icons.route_rounded,
+                colors: colors,
                 onTap: () {
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (_) => const TripPlannerPage()),
@@ -1643,6 +1720,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
                 label: 'Profile',
                 icon: Icons.person_outline_rounded,
                 activeIcon: Icons.person_rounded,
+                colors: colors,
                 onTap: () {
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (_) => const ProfilePage()),
@@ -1661,37 +1739,40 @@ class _HelaHomePageState extends State<HelaHomePage> {
     required String label,
     required IconData icon,
     required IconData activeIcon,
+    required HelaColorPalette colors,
     VoidCallback? onTap,
   }) {
     final isActive = _selectedNavIndex == index;
-    return InkWell(
-      borderRadius: BorderRadius.circular(16),
-      onTap: onTap ??
-          () {
-            setState(() {
-              _selectedNavIndex = index;
-            });
-          },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              isActive ? activeIcon : icon,
-              color: isActive ? HelaColors.primary : HelaColors.onSurfaceVariant,
-              size: 24,
-            ),
-            const SizedBox(height: 3),
-            Text(
-              label,
-              style: TextStyle(
-                color: isActive ? HelaColors.primary : HelaColors.onSurfaceVariant,
-                fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                fontSize: 11,
+    return Expanded(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap ??
+            () {
+              setState(() {
+                _selectedNavIndex = index;
+              });
+            },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                isActive ? activeIcon : icon,
+                color: isActive ? colors.primary : colors.onSurfaceVariant,
+                size: 24,
               ),
-            ),
-          ],
+              const SizedBox(height: 3),
+              Text(
+                label,
+                style: TextStyle(
+                  color: isActive ? colors.primary : colors.onSurfaceVariant,
+                  fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+                  fontSize: 11,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

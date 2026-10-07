@@ -1,0 +1,409 @@
+import 'package:flutter/material.dart';
+import 'package:hela/state/app_state.dart';
+import 'package:hela/theme/hela_colors.dart';
+import 'package:hela/pages/stays_page.dart';
+import 'package:hela/pages/fair_ride_page.dart';
+import 'package:hela/pages/cultural_guide/cultural_guide_page.dart';
+import 'package:hela/pages/smart_tour/smart_tour_home_page.dart';
+import 'package:hela/pages/saved_page.dart';
+import 'package:hela/pages/profile_page.dart';
+
+/// Customized Navigation Drawer for HELA with dedicated Theme Switcher.
+class HelaNavigationDrawer extends StatelessWidget {
+  const HelaNavigationDrawer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = HelaColors.of(context);
+    final appState = HelaAppStateProvider.of(context);
+    final isDark = appState.isDarkMode;
+
+    return Drawer(
+      backgroundColor: colors.surface,
+      child: SafeArea(
+        child: Column(
+          children: [
+            // ── Drawer Header ──────────────────────────────────────
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? colors.surfaceContainer
+                    : colors.primaryContainer.withValues(alpha: 0.12),
+                border: Border(
+                  bottom: BorderSide(
+                    color: colors.outlineVariant.withValues(alpha: 0.5),
+                  ),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: colors.primary,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Icon(
+                            Icons.eco_rounded,
+                            color: colors.onPrimary,
+                            size: 24,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'HELA',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w900,
+                                color: colors.primary,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                            Text(
+                              'Discover Sri Lanka',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                color: colors.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? colors.primary.withValues(alpha: 0.15)
+                          : colors.secondaryContainer.withValues(alpha: 0.6),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.verified_user_rounded,
+                          size: 14,
+                          color: colors.primary,
+                        ),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            appState.userName.isNotEmpty
+                                ? appState.userName
+                                : 'Ceylon Pathfinder',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: colors.primary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // ── Scrollable Body ────────────────────────────────────
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                children: [
+                  // ── Theme Switch Section ─────────────────────────
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'APPEARANCE',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 1.1,
+                                color: colors.secondary,
+                              ),
+                            ),
+                            Flexible(
+                              child: Text(
+                                isDark ? 'Emerald Night' : 'Daylight',
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: colors.onSurfaceVariant,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: colors.surfaceContainer,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: colors.outlineVariant.withValues(alpha: 0.5),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              _buildThemeOption(
+                                context: context,
+                                label: 'Light',
+                                icon: Icons.wb_sunny_rounded,
+                                isSelected: appState.themeMode == ThemeMode.light,
+                                onTap: () => appState.setThemeMode(ThemeMode.light),
+                                colors: colors,
+                              ),
+                              _buildThemeOption(
+                                context: context,
+                                label: 'Dark',
+                                icon: Icons.nightlight_round,
+                                isSelected: appState.themeMode == ThemeMode.dark,
+                                onTap: () => appState.setThemeMode(ThemeMode.dark),
+                                colors: colors,
+                              ),
+                              _buildThemeOption(
+                                context: context,
+                                label: 'Auto',
+                                icon: Icons.brightness_auto_rounded,
+                                isSelected: appState.themeMode == ThemeMode.system,
+                                onTap: () => appState.setThemeMode(ThemeMode.system),
+                                colors: colors,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const Divider(height: 24),
+
+                  // ── App Navigation Links ──────────────────────────
+                  _buildDrawerTile(
+                    context: context,
+                    icon: Icons.explore_rounded,
+                    title: 'Explore Ceylon Havens',
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    colors: colors,
+                  ),
+                  _buildDrawerTile(
+                    context: context,
+                    icon: Icons.hotel_rounded,
+                    title: 'Stays & Eco-Lodges',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const StaysPage()),
+                      );
+                    },
+                    colors: colors,
+                  ),
+                  _buildDrawerTile(
+                    context: context,
+                    icon: Icons.electric_rickshaw_rounded,
+                    title: 'Fair Ride Ceylon',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const FairRidePage()),
+                      );
+                    },
+                    colors: colors,
+                  ),
+                  _buildDrawerTile(
+                    context: context,
+                    icon: Icons.temple_buddhist_rounded,
+                    title: 'Cultural Heritage Guide',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const CulturalGuidePage(),
+                        ),
+                      );
+                    },
+                    colors: colors,
+                  ),
+                  _buildDrawerTile(
+                    context: context,
+                    icon: Icons.smart_toy_rounded,
+                    title: 'Smart Tour AI Planner',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const SmartTourHomePage(),
+                        ),
+                      );
+                    },
+                    colors: colors,
+                  ),
+                  _buildDrawerTile(
+                    context: context,
+                    icon: Icons.bookmark_rounded,
+                    title: 'Saved Havens & Trips',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const SavedPage()),
+                      );
+                    },
+                    colors: colors,
+                  ),
+                  _buildDrawerTile(
+                    context: context,
+                    icon: Icons.person_rounded,
+                    title: 'Explorer Profile',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const ProfilePage()),
+                      );
+                    },
+                    colors: colors,
+                  ),
+                ],
+              ),
+            ),
+
+            // ── Drawer Footer ──────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'HELA v1.0 · Ceylon OS',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: colors.onSurfaceVariant.withValues(alpha: 0.7),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Icon(
+                    Icons.eco_outlined,
+                    size: 16,
+                    color: colors.primary.withValues(alpha: 0.6),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildThemeOption({
+    required BuildContext context,
+    required String label,
+    required IconData icon,
+    required bool isSelected,
+    required VoidCallback onTap,
+    required HelaColorPalette colors,
+  }) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: isSelected ? colors.primary : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: colors.primary.withValues(alpha: 0.3),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 16,
+                color: isSelected ? colors.onPrimary : colors.onSurfaceVariant,
+              ),
+              const SizedBox(width: 5),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                  color: isSelected ? colors.onPrimary : colors.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDrawerTile({
+    required BuildContext context,
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+    required HelaColorPalette colors,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: colors.primary, size: 22),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 13.5,
+          fontWeight: FontWeight.w600,
+          color: colors.onSurface,
+        ),
+      ),
+      trailing: Icon(
+        Icons.chevron_right_rounded,
+        size: 18,
+        color: colors.onSurfaceVariant.withValues(alpha: 0.6),
+      ),
+      dense: true,
+      visualDensity: VisualDensity.compact,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+      onTap: onTap,
+    );
+  }
+}

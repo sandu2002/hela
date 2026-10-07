@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hela/pages/home_page.dart';
-import 'package:hela/pages/stays_page.dart';
 import 'package:hela/pages/saved_page.dart';
 import 'package:hela/pages/trip_planner_page.dart';
 import 'package:hela/pages/profile_page.dart';

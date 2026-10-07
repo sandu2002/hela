@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hela/pages/home_page.dart';
-import 'package:hela/models/haven_item.dart';
 
 /// Reusable Destination / Haven Card
 ///

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hela/onbording/onboarding_page.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/state/tour_planner_state.dart';
-import 'package:hela/pages/home_page.dart';
+import 'package:hela/theme/hela_theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,21 +32,18 @@ class _MyAppState extends State<MyApp> {
       state: _appState,
       child: TourPlannerStateProvider(
         state: _tourPlannerState,
-        child: MaterialApp(
-          title: 'HELA — Discover Sri Lanka',
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            useMaterial3: true,
-            fontFamily: 'Plus Jakarta Sans',
-            scaffoldBackgroundColor: HelaColors.background,
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: HelaColors.primary,
-              primary: HelaColors.primary,
-              secondary: HelaColors.secondary,
-              surface: HelaColors.surface,
-            ),
-          ),
-          home: const OnboardingPage(),
+        child: ListenableBuilder(
+          listenable: _appState,
+          builder: (context, _) {
+            return MaterialApp(
+              title: 'HELA — Discover Sri Lanka',
+              debugShowCheckedModeBanner: false,
+              theme: HelaTheme.lightTheme,
+              darkTheme: HelaTheme.darkTheme,
+              themeMode: _appState.themeMode,
+              home: const OnboardingPage(),
+            );
+          },
         ),
       ),
     );
