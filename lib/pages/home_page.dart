@@ -338,57 +338,43 @@ class _HelaHomePageState extends State<HelaHomePage> {
 
   Widget _buildGreetingSection() {
     final colors = HelaColors.of(context);
-    return Row(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Text(
-                    'AYUBOWAN, EXPLORER',
-                    style: TextStyle(
-                      color: colors.secondary,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 12,
-                      letterSpacing: 1.1,
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  const Text('👋', style: TextStyle(fontSize: 14)),
-                ],
+        Row(
+          children: [
+            Text(
+              'AYUBOWAN, EXPLORER',
+              style: TextStyle(
+                color: colors.secondary,
+                fontWeight: FontWeight.w700,
+                fontSize: 12,
+                letterSpacing: 1.1,
               ),
-              const SizedBox(height: 4),
-              Text(
-                'Discover Sri Lanka',
-                style: TextStyle(
-                  color: colors.primary,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 27,
-                  letterSpacing: -0.6,
-                  height: 1.2,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Lush highlands, untamed safaris & ancient royal sanctuaries.',
-                style: TextStyle(
-                  color: colors.onSurfaceVariant,
-                  fontSize: 13,
-                  height: 1.35,
-                ),
-              ),
-            ],
+            ),
+            const SizedBox(width: 4),
+            const Text('👋', style: TextStyle(fontSize: 14)),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Discover Sri Lanka',
+          style: TextStyle(
+            color: colors.primary,
+            fontWeight: FontWeight.w800,
+            fontSize: 27,
+            letterSpacing: -0.6,
+            height: 1.2,
           ),
         ),
-        const SizedBox(width: 10),
-        // Matching Place 2: Home Page Greeting Quick Switch Pill!
-        const Padding(
-          padding: EdgeInsets.only(top: 4),
-          child: HelaThemeSwitchButton(showLabel: true),
+        const SizedBox(height: 4),
+        Text(
+          'Lush highlands, untamed safaris & ancient royal sanctuaries.',
+          style: TextStyle(
+            color: colors.onSurfaceVariant,
+            fontSize: 13,
+            height: 1.35,
+          ),
         ),
       ],
     );
@@ -450,6 +436,9 @@ class _HelaHomePageState extends State<HelaHomePage> {
                   fontWeight: FontWeight.w400,
                 ),
                 border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                disabledBorder: InputBorder.none,
                 isDense: true,
                 contentPadding: EdgeInsets.zero,
               ),

@@ -301,6 +301,9 @@ class _AiChatCustomizationPageState extends State<AiChatCustomizationPage> {
                             color: HelaColors.outline,
                           ),
                           border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
                           contentPadding: EdgeInsets.symmetric(
                               horizontal: 18, vertical: 12),
                         ),

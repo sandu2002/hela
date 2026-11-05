@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hela/state/app_state.dart';
-import 'package:hela/theme/hela_colors.dart';
 import 'package:hela/theme/hela_theme.dart';
 import 'package:hela/widgets/theme_switch_button.dart';
 import 'package:hela/widgets/hela_drawer.dart';
@@ -67,7 +66,7 @@ void main() {
   });
 
   group('Home Page Theme Switch UI Tests', () {
-    testWidgets('Home page renders theme switch button in AppBar and Greeting section', (tester) async {
+    testWidgets('Home page renders theme switch button in AppBar', (tester) async {
       _ignoreOverflow();
       tester.view.physicalSize = const Size(1080, 2400);
       tester.view.devicePixelRatio = 2.0;
@@ -95,28 +94,23 @@ void main() {
 
       await tester.pump();
 
-      // Verify the theme switch button exists in home page matching places
-      expect(find.byType(HelaThemeSwitchButton), findsAtLeastNWidgets(2));
+      // Verify the theme switch button exists in the AppBar
+      expect(find.byType(HelaThemeSwitchButton), findsOneWidget);
 
-      // In light mode initially, the label pill displays "Light Mode"
-      expect(find.text('Light Mode'), findsOneWidget);
-
-      // Tap the greeting theme switch button to switch to Dark Mode
-      await tester.tap(find.text('Light Mode'));
+      // Tap the AppBar theme switch button to switch to Dark Mode
+      await tester.tap(find.byType(HelaThemeSwitchButton));
       await tester.pumpAndSettle();
 
       // State is now dark mode!
       expect(appState.isDarkMode, true);
       expect(appState.themeMode, ThemeMode.dark);
-      expect(find.text('Dark Mode'), findsOneWidget);
 
       // Tap again to switch back to Light Mode
-      await tester.tap(find.text('Dark Mode'));
+      await tester.tap(find.byType(HelaThemeSwitchButton));
       await tester.pumpAndSettle();
 
       expect(appState.isDarkMode, false);
       expect(appState.themeMode, ThemeMode.light);
-      expect(find.text('Light Mode'), findsOneWidget);
     });
 
     testWidgets('Menu button opens HelaNavigationDrawer with theme mode selector', (tester) async {
