@@ -62,6 +62,44 @@ void main() {
     expect(find.text('Hill Country'), findsOneWidget);
   });
 
+  testWidgets('HelaHomePage category filter updates tour cards when tapped', (WidgetTester tester) async {
+    _ignoreOverflow();
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    final appState = HelaAppState();
+    await tester.pumpWidget(
+      HelaAppStateProvider(
+        state: appState,
+        child: const MaterialApp(
+          home: HelaHomePage(),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    // Initially "Featured Havens" is visible
+    expect(find.text('Featured Havens'), findsOneWidget);
+
+    // Tap "Hill Country" filter chip (visible beside "All")
+    await tester.tap(find.text('Hill Country'));
+    await tester.pumpAndSettle();
+
+    // Header now reflects selected Hill Country category
+    expect(find.text('Hill Country Tours & Havens'), findsOneWidget);
+    expect(find.text('Nine Arch Bridge & Demodara Tea Valley'), findsOneWidget);
+
+    // Tap "All" to reset filter
+    await tester.tap(find.text('All'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Featured Havens'), findsOneWidget);
+  });
+
   testWidgets('TripPlannerPage smoke test', (WidgetTester tester) async {
     _ignoreOverflow();
     await tester.pumpWidget(

@@ -48,6 +48,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
   }
 
   final List<CategoryChipData> _categories = const [
+    CategoryChipData(label: 'All', icon: Icons.explore_rounded),
     CategoryChipData(label: 'Hill Country', icon: Icons.landscape_rounded),
     CategoryChipData(label: 'Beaches', icon: Icons.beach_access_rounded),
     CategoryChipData(label: 'Culture', icon: Icons.temple_buddhist_rounded),
@@ -56,7 +57,27 @@ class _HelaHomePageState extends State<HelaHomePage> {
     CategoryChipData(label: 'Waterfalls', icon: Icons.waterfall_chart_rounded),
   ];
 
+  String? get _selectedCategoryLabel {
+    if (_selectedCategoryIndex <= 0 || _selectedCategoryIndex >= _categories.length) {
+      return null;
+    }
+    return _categories[_selectedCategoryIndex].label;
+  }
+
+  List<HavenItem> get _filteredHavens {
+    final cat = _selectedCategoryLabel;
+    if (cat == null) return _featuredHavens;
+    return _featuredHavens.where((h) => h.filterCategory == cat).toList();
+  }
+
+  List<ExperienceItem> get _filteredExperiences {
+    final cat = _selectedCategoryLabel;
+    if (cat == null) return _trendingExperiences;
+    return _trendingExperiences.where((e) => e.filterCategory == cat).toList();
+  }
+
   final List<HavenItem> _featuredHavens = const [
+    // ── Hill Country ──────────────────────────────────────────────
     HavenItem(
       title: 'Nine Arch Bridge & Demodara Tea Valley',
       location: 'Ella, Highlands',
@@ -64,19 +85,34 @@ class _HelaHomePageState extends State<HelaHomePage> {
       price: '\$45',
       rating: 4.90,
       badgeText: '240+ Verified Explorers',
+      filterCategory: 'Hill Country',
       imageUrl:
           'https://lh3.googleusercontent.com/aida-public/AB6AXuDvJryELDH6m-aPQfsWTQ16312Y8rBu_auTNO6RdIu6gbV4Pwcooer456mtq4aG-SyKDYKNNg8-VWK0IuqWCpQQjHRKu2phfsvLM138y7tF4c0JEFCRImFso5Q05zKJanq1aBD3Q1iC30zFwaKYXyE_RgKZ0emUZlFa6Gh0qIs2uXJmMge8Zy3FlYNN0tmbm3Q7KzAXiBPuXo-9JhDuJpvmkQQWVWLd7RjEZbw3TYlMvhBaoZt8cQ-eog',
     ),
     HavenItem(
-      title: 'Ancient Citadel & Sky Palace Ascent',
-      location: 'Sigiriya, Cultural Triangle',
-      category: 'Heritage Tour',
-      price: '\$60',
-      rating: 4.95,
-      badgeText: 'UNESCO Heritage',
+      title: 'Little Adam\'s Peak & Flying Ravana Ridge',
+      location: 'Ella, Highlands',
+      category: 'Scenic Mountain Trek',
+      price: '\$55',
+      rating: 4.92,
+      badgeText: 'Panoramic Vista',
+      filterCategory: 'Hill Country',
       imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuAk9mgmweMowAekofzD0DuGrOAM90Q02qbvbSwJ1NfOp_TaTXxz2Noje8nYZerSfDgtvec2fuPDUjyvYWJLayoiDs5yQ4jtV1h14rFarsPaM-hU6LqyLC6UAUGjJw_J4rCjTuDKdMu79p07dxX754f0hvSNi9nWIkZq7Oq6_ReD9ebgcFLX3wztGHOi1lICWZV8WR4VuoyfU1_gN-wLu7Kml64bjQFLF1l4ZkZ_fGb_spDYlqdXwkPjuA',
+          'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
     ),
+    HavenItem(
+      title: 'Nuwara Eliya Tea Trails & Pedro Estate',
+      location: 'Nuwara Eliya, Highlands',
+      category: 'Heritage Tea Estate',
+      price: '\$48',
+      rating: 4.88,
+      badgeText: 'Ceylon Tea Route',
+      filterCategory: 'Hill Country',
+      imageUrl:
+          'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&auto=format&fit=crop&q=80',
+    ),
+
+    // ── Beaches ───────────────────────────────────────────────────
     HavenItem(
       title: 'Palm Coast & Blue Whale Watch Cruise',
       location: 'Mirissa, South Coast',
@@ -84,12 +120,176 @@ class _HelaHomePageState extends State<HelaHomePage> {
       price: '\$75',
       rating: 4.88,
       badgeText: 'Ocean Sanctuary',
+      filterCategory: 'Beaches',
       imageUrl:
           'https://lh3.googleusercontent.com/aida-public/AB6AXuCdCzzTCfcf96RAY1SbWTlAyxIfFy3sjrYH6c5VUEQnBtz-eqUZsAB6nACMhkwopIPaH431tO5N6rNtmoGQUznd8HwSb0tLMr98CYTP8NgH1ESYJ85k3FQRQsShcSRo2OJhFITaoJkg8ip-J14rP0c5Ma6KyAz8ThZ645a-64Qblmcye38mylwbD-3KX_l-H15_SGoWP6VS53FmY8Eic5Cxwc6vKPpHFCJZCS1bXMJ08GZCO6ATKK6RDw',
+    ),
+    HavenItem(
+      title: 'Arugam Bay Surf & Sunset Sand Dunes',
+      location: 'Arugam Bay, East Coast',
+      category: 'Surf & Ocean Camp',
+      price: '\$42',
+      rating: 4.93,
+      badgeText: 'World Surf Reserve',
+      filterCategory: 'Beaches',
+      imageUrl:
+          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80',
+    ),
+    HavenItem(
+      title: 'Tangalle Secret Coves & Sea Turtle Watch',
+      location: 'Tangalle, South Coast',
+      category: 'Coastal Hideaway',
+      price: '\$60',
+      rating: 4.91,
+      badgeText: 'Marine Sanctuary',
+      filterCategory: 'Beaches',
+      imageUrl:
+          'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=800&auto=format&fit=crop&q=80',
+    ),
+
+    // ── Culture ───────────────────────────────────────────────────
+    HavenItem(
+      title: 'Ancient Citadel & Sky Palace Ascent',
+      location: 'Sigiriya, Cultural Triangle',
+      category: 'Heritage Tour',
+      price: '\$60',
+      rating: 4.95,
+      badgeText: 'UNESCO Heritage',
+      filterCategory: 'Culture',
+      imageUrl:
+          'https://lh3.googleusercontent.com/aida-public/AB6AXuAk9mgmweMowAekofzD0DuGrOAM90Q02qbvbSwJ1NfOp_TaTXxz2Noje8nYZerSfDgtvec2fuPDUjyvYWJLayoiDs5yQ4jtV1h14rFarsPaM-hU6LqyLC6UAUGjJw_J4rCjTuDKdMu79p07dxX754f0hvSNi9nWIkZq7Oq6_ReD9ebgcFLX3wztGHOi1lICWZV8WR4VuoyfU1_gN-wLu7Kml64bjQFLF1l4ZkZ_fGb_spDYlqdXwkPjuA',
+    ),
+    HavenItem(
+      title: 'Temple of the Sacred Tooth & Royal City',
+      location: 'Kandy, Central Province',
+      category: 'Sacred Heritage',
+      price: '\$38',
+      rating: 4.94,
+      badgeText: 'Living Tradition',
+      filterCategory: 'Culture',
+      imageUrl:
+          'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
+    ),
+    HavenItem(
+      title: 'Polonnaruwa Ancient Kingdom & Gal Vihara',
+      location: 'Polonnaruwa, North Central',
+      category: 'Royal Ruins Tour',
+      price: '\$52',
+      rating: 4.91,
+      badgeText: 'Medieval Wonder',
+      filterCategory: 'Culture',
+      imageUrl:
+          'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
+    ),
+
+    // ── Adventure ─────────────────────────────────────────────────
+    HavenItem(
+      title: 'Kitulgala White Water Rafting & Canyon Jump',
+      location: 'Kitulgala, Kelani River',
+      category: 'Whitewater Expedition',
+      price: '\$65',
+      rating: 4.93,
+      badgeText: 'Adrenaline Rush',
+      filterCategory: 'Adventure',
+      imageUrl:
+          'https://images.unsplash.com/photo-1530866495561-507c9faab2ed?w=800&auto=format&fit=crop&q=80',
+    ),
+    HavenItem(
+      title: 'Ella Rock Dawn Expedition & Ravana Cave',
+      location: 'Ella, Highlands',
+      category: 'Mountain Expedition',
+      price: '\$50',
+      rating: 4.90,
+      badgeText: 'Epic Heights',
+      filterCategory: 'Adventure',
+      imageUrl:
+          'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
+    ),
+    HavenItem(
+      title: 'Adam\'s Peak Midnight Pilgrimage Summit',
+      location: 'Nallathanniya, Peak Wilderness',
+      category: 'Sacred Night Summit',
+      price: '\$45',
+      rating: 4.96,
+      badgeText: 'Holy Sunrise',
+      filterCategory: 'Adventure',
+      imageUrl:
+          'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&auto=format&fit=crop&q=80',
+    ),
+
+    // ── Wildlife ──────────────────────────────────────────────────
+    HavenItem(
+      title: 'Yala Leopard Safari at Dawn & Deep Jungles',
+      location: 'Yala National Park, Southeast',
+      category: 'Big Cat Safari',
+      price: '\$95',
+      rating: 4.96,
+      badgeText: 'High Leopard Density',
+      filterCategory: 'Wildlife',
+      imageUrl:
+          'https://lh3.googleusercontent.com/aida-public/AB6AXuDzX3rEG6vFdMVPdR2IYkb722eLQezhkZlI9-A9h7Id0Xe0tc0XBU3AGMCVpq5OaMFrUZpLK8_ANGsNvGc22u4ZDrosNecG2dQR58pzzFp11iTNtp1nZexE_3rbuxEW9xvc0AvYy3aaJEey7NHg2HIlk7OKKuSeTtKIQLWW-6cm9EMVysGfzpppGGAymEqvqu562Kxmq3DJyRqnszhtNHHwlp49NwCJ6VN-V657OYR7yjq6c8P-IaCr6w',
+    ),
+    HavenItem(
+      title: 'Minneriya Elephant Gathering by Open 4x4',
+      location: 'Minneriya National Park',
+      category: 'Elephant Safari',
+      price: '\$70',
+      rating: 4.93,
+      badgeText: 'Asia\'s Greatest Gathering',
+      filterCategory: 'Wildlife',
+      imageUrl:
+          'https://images.unsplash.com/photo-1561731216-c3a4d99437d5?w=800&auto=format&fit=crop&q=80',
+    ),
+    HavenItem(
+      title: 'Udawalawe Transit Home & Plains Safari',
+      location: 'Udawalawe, Sabaragamuwa',
+      category: 'Conservation Tour',
+      price: '\$62',
+      rating: 4.90,
+      badgeText: 'Rescue Sanctuary',
+      filterCategory: 'Wildlife',
+      imageUrl:
+          'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?w=800&auto=format&fit=crop&q=80',
+    ),
+
+    // ── Waterfalls ────────────────────────────────────────────────
+    HavenItem(
+      title: 'Diyaluma Falls Upper Natural Infinity Pools',
+      location: 'Koslanda, Badulla',
+      category: 'Waterfall Odyssey',
+      price: '\$42',
+      rating: 4.95,
+      badgeText: 'Natural Rock Pools',
+      filterCategory: 'Waterfalls',
+      imageUrl:
+          'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=800&auto=format&fit=crop&q=80',
+    ),
+    HavenItem(
+      title: 'Bambarakanda & Hidden Lanka Ella Cascades',
+      location: 'Kalupahana, Ohiya Valley',
+      category: 'Tallest Falls Trek',
+      price: '\$48',
+      rating: 4.91,
+      badgeText: '263m Cascade',
+      filterCategory: 'Waterfalls',
+      imageUrl:
+          'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
+    ),
+    HavenItem(
+      title: 'Ramboda Triple Falls & Tea Terraces',
+      location: 'Ramboda Pass, Pussellawa',
+      category: 'Mountain Waterfall',
+      price: '\$36',
+      rating: 4.88,
+      badgeText: 'Highland Vistas',
+      filterCategory: 'Waterfalls',
+      imageUrl:
+          'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&auto=format&fit=crop&q=80',
     ),
   ];
 
   final List<ExperienceItem> _trendingExperiences = const [
+    // ── Hill Country ──────────────────────────────────────────────
     ExperienceItem(
       title: 'Sunrise Hike & Kandy Tea Tasting',
       category: 'Highland Terroir',
@@ -98,20 +298,50 @@ class _HelaHomePageState extends State<HelaHomePage> {
       rating: 4.9,
       reviewsCount: 88,
       categoryIcon: Icons.local_florist_rounded,
+      filterCategory: 'Hill Country',
       imageUrl:
           'https://lh3.googleusercontent.com/aida-public/AB6AXuAWc-k1WtCHy2mQ1-JC2KOqg6jy7fs-iXGjjBHckRO8Qmfu3IMmJ__G5Okib5t4lz7hbkIBF1ELU1Vs2v844gjLpMTwiObEkSOh7XHpZZ8dd3Btj3j91sQg9l1CRMGUVu_gfQwIdCwvMPolRTdX7BN9nQFj7BneThOvXuG3aiOtTlz-R4nG2WOc156rKiHSiPeRrIU_nvWG59HwNgvWOuxfamgg4bbPy4krrZT7v38-qykE9u9dKRmMWg',
     ),
     ExperienceItem(
-      title: 'Yala Leopard Safari at Dawn',
-      category: 'Wildlife Reserve',
-      duration: '6.0 Hours',
-      price: '\$92',
-      rating: 4.96,
-      reviewsCount: 142,
-      categoryIcon: Icons.landscape_rounded,
+      title: 'Horton Plains & World\'s End Trek',
+      category: 'Cloud Forest Trail',
+      duration: '5.0 Hours',
+      price: '\$50',
+      rating: 4.94,
+      reviewsCount: 112,
+      categoryIcon: Icons.terrain_rounded,
+      filterCategory: 'Hill Country',
       imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuDzX3rEG6vFdMVPdR2IYkb722eLQezhkZlI9-A9h7Id0Xe0tc0XBU3AGMCVpq5OaMFrUZpLK8_ANGsNvGc22u4ZDrosNecG2dQR58pzzFp11iTNtp1nZexE_3rbuxEW9xvc0AvYy3aaJEey7NHg2HIlk7OKKuSeTtKIQLWW-6cm9EMVysGfzpppGGAymEqvqu562Kxmq3DJyRqnszhtNHHwlp49NwCJ6VN-V657OYR7yjq6c8P-IaCr6w',
+          'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
     ),
+
+    // ── Beaches ───────────────────────────────────────────────────
+    ExperienceItem(
+      title: 'Bentota Mangrove Lagoon & Water Skiing',
+      category: 'Lagoon Adventures',
+      duration: '3.5 Hours',
+      price: '\$45',
+      rating: 4.87,
+      reviewsCount: 64,
+      categoryIcon: Icons.surfing_rounded,
+      filterCategory: 'Beaches',
+      imageUrl:
+          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80',
+    ),
+    ExperienceItem(
+      title: 'Unawatuna Coral Reef Snorkel & Catamaran',
+      category: 'Reef Exploration',
+      duration: '4.0 Hours',
+      price: '\$55',
+      rating: 4.92,
+      reviewsCount: 98,
+      categoryIcon: Icons.sailing_rounded,
+      filterCategory: 'Beaches',
+      imageUrl:
+          'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=800&auto=format&fit=crop&q=80',
+    ),
+
+    // ── Culture ───────────────────────────────────────────────────
     ExperienceItem(
       title: 'Galle Fort Sunset Walk & Spices',
       category: 'Culinary Heritage',
@@ -120,8 +350,99 @@ class _HelaHomePageState extends State<HelaHomePage> {
       rating: 4.89,
       reviewsCount: 75,
       categoryIcon: Icons.restaurant_rounded,
+      filterCategory: 'Culture',
       imageUrl:
           'https://lh3.googleusercontent.com/aida-public/AB6AXuAnsMut8vukazOQQk1YyZCGBLo9YbXlxSvpljkSzTetlNv3S90zTSLVj93s5Ei7ruW9FItfWdv7SRHLba73k0w4GyqyAQYGdhkCc1o4whnZtFwV8Abb_yI23ZzIPm8gDdO_2nT5d6oCv9ULCcpJ2kpwQX-lLLuW3ARIM12y0b5KBn6WwpmleF7f_Gtf9E_ea8_J1ItwLULkwuuwgBd-GdluE3jJgzvYwrwzEE37TaTxbZsfu2ve_Ax6Bw',
+    ),
+    ExperienceItem(
+      title: 'Dambulla Cave Temple Monastic Art Tour',
+      category: 'Sacred Murals',
+      duration: '2.5 Hours',
+      price: '\$35',
+      rating: 4.93,
+      reviewsCount: 130,
+      categoryIcon: Icons.temple_buddhist_rounded,
+      filterCategory: 'Culture',
+      imageUrl:
+          'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
+    ),
+
+    // ── Adventure ─────────────────────────────────────────────────
+    ExperienceItem(
+      title: 'Knuckles Mountain Cloud Forest Trek',
+      category: 'Alpine Wilderness',
+      duration: '6.5 Hours',
+      price: '\$70',
+      rating: 4.95,
+      reviewsCount: 104,
+      categoryIcon: Icons.hiking_rounded,
+      filterCategory: 'Adventure',
+      imageUrl:
+          'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&auto=format&fit=crop&q=80',
+    ),
+    ExperienceItem(
+      title: 'Sinharaja Virgin Rainforest Canopy Hike',
+      category: 'Jungle Survival',
+      duration: '5.0 Hours',
+      price: '\$52',
+      rating: 4.91,
+      reviewsCount: 86,
+      categoryIcon: Icons.forest_rounded,
+      filterCategory: 'Adventure',
+      imageUrl:
+          'https://images.unsplash.com/photo-1530866495561-507c9faab2ed?w=800&auto=format&fit=crop&q=80',
+    ),
+
+    // ── Wildlife ──────────────────────────────────────────────────
+    ExperienceItem(
+      title: 'Yala Leopard Safari at Dawn',
+      category: 'Wildlife Reserve',
+      duration: '6.0 Hours',
+      price: '\$92',
+      rating: 4.96,
+      reviewsCount: 142,
+      categoryIcon: Icons.landscape_rounded,
+      filterCategory: 'Wildlife',
+      imageUrl:
+          'https://lh3.googleusercontent.com/aida-public/AB6AXuDzX3rEG6vFdMVPdR2IYkb722eLQezhkZlI9-A9h7Id0Xe0tc0XBU3AGMCVpq5OaMFrUZpLK8_ANGsNvGc22u4ZDrosNecG2dQR58pzzFp11iTNtp1nZexE_3rbuxEW9xvc0AvYy3aaJEey7NHg2HIlk7OKKuSeTtKIQLWW-6cm9EMVysGfzpppGGAymEqvqu562Kxmq3DJyRqnszhtNHHwlp49NwCJ6VN-V657OYR7yjq6c8P-IaCr6w',
+    ),
+    ExperienceItem(
+      title: 'Kalpitiya Dolphin & Sperm Whale Encounter',
+      category: 'Marine Expedition',
+      duration: '4.0 Hours',
+      price: '\$68',
+      rating: 4.89,
+      reviewsCount: 79,
+      categoryIcon: Icons.water_rounded,
+      filterCategory: 'Wildlife',
+      imageUrl:
+          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80',
+    ),
+
+    // ── Waterfalls ────────────────────────────────────────────────
+    ExperienceItem(
+      title: 'Ravana Falls Cave & Secret Pool Dip',
+      category: 'Legendary Cascades',
+      duration: '3.0 Hours',
+      price: '\$32',
+      rating: 4.87,
+      reviewsCount: 94,
+      categoryIcon: Icons.waterfall_chart_rounded,
+      filterCategory: 'Waterfalls',
+      imageUrl:
+          'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=800&auto=format&fit=crop&q=80',
+    ),
+    ExperienceItem(
+      title: 'St. Clair\'s & Devon Falls Valley Panorama',
+      category: 'Twin Falls Vista',
+      duration: '3.5 Hours',
+      price: '\$35',
+      rating: 4.89,
+      reviewsCount: 68,
+      categoryIcon: Icons.filter_hdr_rounded,
+      filterCategory: 'Waterfalls',
+      imageUrl:
+          'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&auto=format&fit=crop&q=80',
     ),
   ];
 
@@ -341,22 +662,6 @@ class _HelaHomePageState extends State<HelaHomePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Text(
-              'AYUBOWAN, EXPLORER',
-              style: TextStyle(
-                color: colors.secondary,
-                fontWeight: FontWeight.w700,
-                fontSize: 12,
-                letterSpacing: 1.1,
-              ),
-            ),
-            const SizedBox(width: 4),
-            const Text('👋', style: TextStyle(fontSize: 14)),
-          ],
-        ),
-        const SizedBox(height: 4),
         Text(
           'Discover Sri Lanka',
           style: TextStyle(
@@ -939,7 +1244,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
     final colors = HelaColors.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return SizedBox(
-      height: 38,
+      height: 40,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
@@ -950,24 +1255,29 @@ class _HelaHomePageState extends State<HelaHomePage> {
           final category = _categories[index];
 
           final bgColor = isSelected
-              ? (isDark ? colors.primary : colors.tertiaryFixed)
-              : (isDark ? colors.surfaceContainer : colors.secondary);
+              ? colors.primary
+              : (isDark ? colors.surfaceContainer : colors.surfaceContainerHigh);
 
           final fgColor = isSelected
-              ? (isDark ? colors.onPrimary : HelaColors.primary)
-              : (isDark ? colors.onSurface : Colors.white);
+              ? colors.onPrimary
+              : (isDark ? colors.onSurface : colors.primary);
+
+          final borderColor = isSelected
+              ? colors.primary
+              : (isDark
+                  ? colors.outlineVariant.withValues(alpha: 0.6)
+                  : colors.outlineVariant.withValues(alpha: 0.8));
 
           return InkWell(
             borderRadius: BorderRadius.circular(20),
             onTap: () {
               setState(() {
-                _selectedCategoryIndex = index;
+                if (_selectedCategoryIndex == index && index != 0) {
+                  _selectedCategoryIndex = 0; // Deselect to All
+                } else {
+                  _selectedCategoryIndex = index;
+                }
               });
-              if (category.label == 'Culture') {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const CulturalGuidePage()),
-                );
-              }
             },
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
@@ -975,14 +1285,11 @@ class _HelaHomePageState extends State<HelaHomePage> {
               decoration: BoxDecoration(
                 color: bgColor,
                 borderRadius: BorderRadius.circular(20),
-                border: !isSelected && isDark
-                    ? Border.all(color: colors.outlineVariant.withValues(alpha: 0.6))
-                    : null,
+                border: Border.all(color: borderColor, width: isSelected ? 1.5 : 1),
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: (isDark ? colors.primary : colors.tertiaryFixed)
-                              .withValues(alpha: 0.4),
+                          color: colors.primary.withValues(alpha: isDark ? 0.4 : 0.25),
                           blurRadius: 6,
                           offset: const Offset(0, 2),
                         )
@@ -1017,6 +1324,9 @@ class _HelaHomePageState extends State<HelaHomePage> {
 
   Widget _buildFeaturedHavensSection() {
     final colors = HelaColors.of(context);
+    final selectedCat = _selectedCategoryLabel;
+    final havens = _filteredHavens;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1029,66 +1339,92 @@ class _HelaHomePageState extends State<HelaHomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                Text(
-                  'Featured Havens',
-                  style: TextStyle(
-                    color: colors.primary,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    letterSpacing: -0.3,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'Iconic sanctuaries of Ceylon',
-                  style: TextStyle(
-                    color: colors.onSurfaceVariant,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          TextButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const StaysPage()),
-                );
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: colors.secondary,
-                padding: EdgeInsets.zero,
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: const [
                   Text(
-                    'See All',
+                    selectedCat == null ? 'Featured Havens' : '$selectedCat Tours & Havens',
                     style: TextStyle(
+                      color: colors.primary,
                       fontWeight: FontWeight.w700,
-                      fontSize: 13,
+                      fontSize: 18,
+                      letterSpacing: -0.3,
                     ),
                   ),
-                  SizedBox(width: 2),
-                  Icon(Icons.arrow_forward_rounded, size: 14),
+                  const SizedBox(height: 2),
+                  Text(
+                    selectedCat == null
+                        ? 'Iconic sanctuaries of Ceylon'
+                        : 'Curated $selectedCat journeys (${havens.length} available)',
+                    style: TextStyle(
+                      color: colors.onSurfaceVariant,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ],
               ),
             ),
+            if (selectedCat != null)
+              TextButton.icon(
+                onPressed: () {
+                  setState(() {
+                    _selectedCategoryIndex = 0;
+                  });
+                },
+                icon: Icon(Icons.close_rounded, size: 14, color: colors.secondary),
+                label: Text(
+                  'Show All',
+                  style: TextStyle(
+                    color: colors.secondary,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                  ),
+                ),
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+              )
+            else
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const StaysPage()),
+                  );
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor: colors.secondary,
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Text(
+                      'See All',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13,
+                      ),
+                    ),
+                    SizedBox(width: 2),
+                    Icon(Icons.arrow_forward_rounded, size: 14),
+                  ],
+                ),
+              ),
           ],
         ),
         const SizedBox(height: 12),
         SizedBox(
           height: 380,
           child: ListView.separated(
+            key: ValueKey('havens_list_${selectedCat ?? "all"}'),
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
-            itemCount: _featuredHavens.length,
+            itemCount: havens.length,
             separatorBuilder: (context, index) => const SizedBox(width: 14),
             itemBuilder: (context, index) {
-              final haven = _featuredHavens[index];
+              final haven = havens[index];
               final appState = HelaAppStateProvider.of(context);
               final isBookmarked = appState.isHavenSaved(haven.title);
 
@@ -1132,7 +1468,8 @@ class _HelaHomePageState extends State<HelaHomePage> {
                               },
                             )
                           : null,
-                      duration: const Duration(seconds: 3),
+                      duration: const Duration(seconds: 2),
+                      persist: false,
                       behavior: SnackBarBehavior.floating,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -1141,7 +1478,10 @@ class _HelaHomePageState extends State<HelaHomePage> {
                   );
                 },
                 onExploreTap: () {
-                  if (index == 1) {
+                  if (haven.category.contains('Heritage') ||
+                      haven.title.contains('Citadel') ||
+                      haven.title.contains('Temple') ||
+                      haven.title.contains('Ancient')) {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (_) => const CulturalGuidePage(),
@@ -1230,6 +1570,9 @@ class _HelaHomePageState extends State<HelaHomePage> {
   Widget _buildTrendingSection() {
     final colors = HelaColors.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final selectedCat = _selectedCategoryLabel;
+    final experiences = _filteredExperiences;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1243,7 +1586,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Trending This Week',
+                    selectedCat == null ? 'Trending This Week' : 'Trending $selectedCat',
                     style: TextStyle(
                       color: colors.primary,
                       fontWeight: FontWeight.w700,
@@ -1253,7 +1596,9 @@ class _HelaHomePageState extends State<HelaHomePage> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Handcrafted slow-travel expeditions',
+                    selectedCat == null
+                        ? 'Handcrafted slow-travel expeditions'
+                        : 'Authentic $selectedCat experiences (${experiences.length})',
                     style: TextStyle(
                       color: colors.onSurfaceVariant,
                       fontSize: 12,
@@ -1292,12 +1637,13 @@ class _HelaHomePageState extends State<HelaHomePage> {
         SizedBox(
           height: 236,
           child: ListView.separated(
+            key: ValueKey('exp_list_${selectedCat ?? "all"}'),
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
-            itemCount: _trendingExperiences.length,
+            itemCount: experiences.length,
             separatorBuilder: (context, index) => const SizedBox(width: 14),
             itemBuilder: (context, index) {
-              final exp = _trendingExperiences[index];
+              final exp = experiences[index];
               final appState = HelaAppStateProvider.of(context);
               final isBookmarked = appState.isExperienceSaved(exp.title);
 
@@ -1365,7 +1711,8 @@ class _HelaHomePageState extends State<HelaHomePage> {
                                                 },
                                               )
                                             : null,
-                                        duration: const Duration(seconds: 3),
+                                        duration: const Duration(seconds: 2),
+                      persist: false,
                                         behavior: SnackBarBehavior.floating,
                                       ),
                                     );

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:hela/theme/hela_colors.dart';
 import 'package:hela/models/tour_plan.dart';
 import 'package:hela/models/tour_preferences.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/state/tour_planner_state.dart';
 import 'package:hela/pages/saved_page.dart';
+import 'package:hela/pages/home_page.dart';
 import 'package:hela/pages/smart_tour/ai_chat_customization_page.dart';
 
 /// Detailed view of the AI-generated tour plan and day-by-day itinerary.
@@ -55,15 +55,19 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
 
     setState(() => _isSaved = willSave);
 
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.hideCurrentSnackBar();
+
     if (willSave) {
       final savedPlan = _currentPlan.copyWith(isSaved: true);
       _currentPlan = savedPlan;
       appState.saveTour(savedPlan);
       tourState.saveTour(savedPlan);
 
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
+          duration: const Duration(seconds: 2),
+          persist: false,
           content: Row(
             children: [
               const Icon(Icons.bookmark_added_rounded, color: Colors.white, size: 20),
@@ -93,9 +97,10 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
       appState.removeSavedTour(_currentPlan.id);
       tourState.removeSavedTour(_currentPlan.id);
 
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
+          duration: const Duration(seconds: 2),
+          persist: false,
           content: Row(
             children: [
               const Icon(Icons.bookmark_remove_rounded, color: Colors.white, size: 20),
@@ -111,6 +116,12 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
         ),
       );
     }
+
+    Future.delayed(const Duration(milliseconds: 2000), () {
+      if (mounted) {
+        messenger.hideCurrentSnackBar();
+      }
+    });
   }
 
   Future<void> _openChatCustomizer() async {
@@ -130,6 +141,13 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
         _selectedDayIndex = 0;
       });
     }
+  }
+
+  void _goToHome() {
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const HelaHomePage()),
+      (route) => false,
+    );
   }
 
   @override
@@ -157,6 +175,11 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
           ),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.home_rounded, color: HelaColors.primary),
+            tooltip: 'Home Page',
+            onPressed: _goToHome,
+          ),
           IconButton(
             icon: Icon(
               _isSaved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
@@ -340,60 +363,58 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              activeDay.title,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: HelaColors.onSurface,
-                              ),
-                            ),
-                            if (activeDay.summary.isNotEmpty) ...[
-                              const SizedBox(height: 4),
-                              Text(
-                                activeDay.summary,
-                                style: const TextStyle(
-                                  fontSize: 12.5,
-                                  color: HelaColors.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ],
+                  Text(
+                    activeDay.title,
+                    style: const TextStyle(
+                      fontSize: 16.5,
+                      fontWeight: FontWeight.w700,
+                      color: HelaColors.onSurface,
+                      height: 1.3,
+                    ),
+                  ),
+                  if (activeDay.summary.isNotEmpty) ...[
+                    const SizedBox(height: 6),
+                    Text(
+                      activeDay.summary,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: HelaColors.onSurfaceVariant,
+                        height: 1.4,
+                      ),
+                    ),
+                  ],
+                  if (activeDay.overnightStay != null &&
+                      activeDay.overnightStay!.isNotEmpty) ...[
+                    const SizedBox(height: 10),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: HelaColors.surfaceContainerLow,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: HelaColors.outlineVariant.withValues(alpha: 0.4),
                         ),
                       ),
-                      if (activeDay.overnightStay != null)
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: HelaColors.surfaceContainerLow,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.hotel_rounded,
-                                  size: 13, color: HelaColors.primary),
-                              const SizedBox(width: 4),
-                              Text(
-                                activeDay.overnightStay!,
-                                style: const TextStyle(
-                                  fontSize: 11,
-                                  color: HelaColors.primary,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.hotel_rounded,
+                              size: 14, color: HelaColors.primary),
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              activeDay.overnightStay!,
+                              style: const TextStyle(
+                                fontSize: 11.5,
+                                color: HelaColors.primary,
+                                fontWeight: FontWeight.w600,
                               ),
-                            ],
+                            ),
                           ),
-                        ),
-                    ],
-                  ),
+                        ],
+                      ),
+                    ),
+                  ],
 
                   const SizedBox(height: 16),
                   const Divider(height: 1),
@@ -491,12 +512,14 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
                                         const Icon(Icons.directions_car_rounded,
                                             size: 13, color: HelaColors.secondary),
                                         const SizedBox(width: 4),
-                                        Text(
-                                          '${act.travelTimeFromPrevious} ${act.travelMethod != null ? "(${act.travelMethod})" : ""}',
-                                          style: const TextStyle(
-                                            fontSize: 11,
-                                            color: HelaColors.secondary,
-                                            fontWeight: FontWeight.w500,
+                                        Expanded(
+                                          child: Text(
+                                            '${act.travelTimeFromPrevious} ${act.travelMethod != null ? "(${act.travelMethod})" : ""}',
+                                            style: const TextStyle(
+                                              fontSize: 11,
+                                              color: HelaColors.secondary,
+                                              fontWeight: FontWeight.w500,
+                                            ),
                                           ),
                                         ),
                                       ],
@@ -608,12 +631,90 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
               ],
             ),
           ),
+
+          const SizedBox(height: 18),
+
+          // Completion & Return to Home Card
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: HelaColors.surfaceContainerLowest,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: HelaColors.outlineVariant.withValues(alpha: 0.4),
+              ),
+            ),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: HelaColors.primary.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.check_circle_rounded,
+                        color: HelaColors.primary,
+                        size: 22,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Tour Plan Complete',
+                            style: TextStyle(
+                              fontSize: 14.5,
+                              fontWeight: FontWeight.w700,
+                              color: HelaColors.onSurface,
+                            ),
+                          ),
+                          SizedBox(height: 2),
+                          Text(
+                            'Ready to explore Sri Lanka or plan another adventure?',
+                            style: TextStyle(
+                              fontSize: 11.5,
+                              color: HelaColors.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: _goToHome,
+                    icon: const Icon(Icons.home_rounded, size: 18),
+                    label: const Text(
+                      'Back to Home Page',
+                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: HelaColors.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
 
-      // Bottom Sticky Bar: AI Customization Button
+      // Bottom Sticky Bar: Navigation & AI Customization
       bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: HelaColors.surfaceContainerLowest.withValues(alpha: 0.95),
           boxShadow: [
@@ -627,39 +728,65 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
         child: SafeArea(
           child: Row(
             children: [
+              // Home Redirection Button
+              InkWell(
+                borderRadius: BorderRadius.circular(20),
+                onTap: _goToHome,
+                child: Container(
+                  height: 44,
+                  width: 44,
+                  decoration: BoxDecoration(
+                    color: HelaColors.surfaceContainerHigh,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: HelaColors.outlineVariant.withValues(alpha: 0.6),
+                    ),
+                  ),
+                  child: const Tooltip(
+                    message: 'Home Page',
+                    child: Icon(
+                      Icons.home_rounded,
+                      color: HelaColors.primary,
+                      size: 22,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
               // Save button
               OutlinedButton.icon(
                 onPressed: _handleSave,
                 icon: Icon(
                   _isSaved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
-                  size: 18,
+                  size: 17,
                 ),
                 label: Text(_isSaved ? 'Saved' : 'Save'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: HelaColors.primary,
                   side: const BorderSide(color: HelaColors.primary),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(22),
+                    borderRadius: BorderRadius.circular(20),
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 8),
               // AI Chat Customize Button
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: _openChatCustomizer,
-                  icon: const Icon(Icons.auto_awesome_rounded, size: 18),
+                  icon: const Icon(Icons.auto_awesome_rounded, size: 17),
                   label: const Text(
-                    'Customize with AI Chat',
-                    style: TextStyle(fontWeight: FontWeight.w700),
+                    'Customize with AI',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: HelaColors.tertiaryFixed,
                     foregroundColor: HelaColors.onTertiaryFixed,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(22),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                   ),
                 ),

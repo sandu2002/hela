@@ -10,6 +10,7 @@ class HavenItem {
   final double rating;
   final String badgeText;
   final String imageUrl;
+  final String? filterCategory;
 
   const HavenItem({
     String? id,
@@ -20,6 +21,7 @@ class HavenItem {
     required this.rating,
     required this.badgeText,
     required this.imageUrl,
+    this.filterCategory,
   }) : id = id ?? title;
 
   @override
@@ -42,6 +44,7 @@ class ExperienceItem {
   final int reviewsCount;
   final IconData categoryIcon;
   final String imageUrl;
+  final String? filterCategory;
 
   const ExperienceItem({
     String? id,
@@ -53,6 +56,7 @@ class ExperienceItem {
     required this.reviewsCount,
     required this.categoryIcon,
     required this.imageUrl,
+    this.filterCategory,
   }) : id = id ?? title;
 
   @override
