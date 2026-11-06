@@ -141,8 +141,9 @@ void main() {
 
       await tester.pump();
 
-      // Tap the menu icon in the top AppBar
-      await tester.tap(find.byIcon(Icons.menu_rounded));
+      // Open the drawer via Scaffold state
+      final scaffoldState = tester.state<ScaffoldState>(find.byType(Scaffold));
+      scaffoldState.openDrawer();
       await tester.pumpAndSettle();
 
       // Drawer is now open

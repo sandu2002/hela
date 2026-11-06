@@ -168,89 +168,191 @@ class _ProfilePageState extends State<ProfilePage> {
     final appState = HelaAppStateProvider.of(context);
     final displayName = appState.userName.isNotEmpty ? appState.userName : 'Kavinda Wickramasinghe';
     final userTitle = appState.userTitle.isNotEmpty ? appState.userTitle : '🌿 Tea Country Pathfinder · Level 4';
-    final userLocation = appState.userLocation.isNotEmpty ? appState.userLocation : 'Kandy, Sri Lanka 🇱🇰';
+    final userLocation = appState.userLocation.isNotEmpty ? appState.userLocation : 'Kandy, Central Province';
+    final userBio = appState.userBio.isNotEmpty
+        ? appState.userBio
+        : 'Explorer of Ceylon highlands, tea estates, and ancient sanctuaries.';
     final photoUrl = appState.userPhotoUrl ??
         'https://lh3.googleusercontent.com/aida-public/AB6AXuCb49WhjEvtkcNC5SxIgicaFGy0FHajTwhLvSgls2jKJllxIgCm3GtnkBey5ISjUv1a3RBHYRJDux9aTGEuQRD2PRzQ7NQpcvmB23kcn9IUgKDRsKdgyX64gwLDMholuf3EBAmflHGPMYYyBMAcXUVZYTfptDrW3y9Os02is22iH1TXaD6SAOV7pDCQz_K7hNqQjavBUoHUUSiFUtmOeylpDB6d6w3LDISl_r_VyPAoA96T32aE2nQtbA';
 
     return Container(
       decoration: BoxDecoration(
-        color: HelaColors.primaryContainer,
+        color: HelaColors.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: const Color(0xFFE2EBE4), width: 1.2),
         boxShadow: [
           BoxShadow(
-            color: HelaColors.primary.withValues(alpha: 0.22),
-            blurRadius: 18,
-            offset: const Offset(0, 5),
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(22),
-        child: Stack(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Decorative background radial circles
-            Positioned(
-              right: -35,
-              top: -35,
-              child: Container(
-                width: 180,
-                height: 180,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: HelaColors.tertiaryFixedDim.withValues(alpha: 0.16),
-                    width: 1.5,
+            // ── Top Panoramic Cover Banner ────────────────────────────────
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  height: 115,
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF1E3A24), Color(0xFF3B6344), Color(0xFF709876)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Image.network(
+                        'https://images.unsplash.com/photo-1546708973-b339540b5162?w=1200&auto=format&fit=crop&q=80',
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.black.withValues(alpha: 0.15),
+                              Colors.black.withValues(alpha: 0.5),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: 10,
+                        right: 12,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.45),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: Colors.white24, width: 0.8),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: const [
+                              Icon(Icons.photo_camera_outlined, size: 12, color: Colors.white),
+                              SizedBox(width: 4),
+                              Text(
+                                'Highlands, Sri Lanka',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ),
-            Positioned(
-              right: 15,
-              bottom: -20,
-              child: Container(
-                width: 110,
-                height: 110,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: HelaColors.tertiaryFixedDim.withValues(alpha: 0.1),
-                    width: 1.5,
+
+                // ── Overlapping Avatar (TripAdvisor Signature) ──────────────
+                Positioned(
+                  bottom: -38,
+                  left: 18,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const EditProfilePage()),
+                      );
+                    },
+                    child: Stack(
+                      children: [
+                        Container(
+                          width: 82,
+                          height: 82,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 3.5),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.14),
+                                blurRadius: 10,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: ClipOval(
+                            child: _buildNetworkImage(
+                              photoUrl,
+                              width: 75,
+                              height: 75,
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 2,
+                          right: 2,
+                          child: Container(
+                            width: 26,
+                            height: 26,
+                            decoration: BoxDecoration(
+                              color: HelaColors.primary,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 2),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.2),
+                                  blurRadius: 4,
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.camera_alt_rounded,
+                              size: 13,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
 
+            // Space below banner for overlapping avatar
+            const SizedBox(height: 44),
+
+            // ── Profile Body Content ──────────────────────────────────────
             Padding(
-              padding: const EdgeInsets.all(18),
+              padding: const EdgeInsets.symmetric(horizontal: 18),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Top Status Badges Row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // Badges Row
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 6,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4.5),
+                        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
                         decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.28),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.14),
-                          ),
+                          color: const Color(0xFFE8F5E9),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFFC8E6C9)),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: const [
-                            Icon(
-                              Icons.verified_rounded,
-                              size: 14,
-                              color: HelaColors.tertiaryFixed,
-                            ),
-                            SizedBox(width: 5),
+                            Icon(Icons.verified_rounded, size: 13, color: Color(0xFF2E7D32)),
+                            SizedBox(width: 4),
                             Text(
                               'Verified Resident Explorer',
                               style: TextStyle(
-                                color: HelaColors.tertiaryFixed,
+                                color: Color(0xFF1B5E20),
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -261,19 +363,20 @@ class _ProfilePageState extends State<ProfilePage> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: HelaColors.tertiaryFixed.withValues(alpha: 0.2),
+                          color: const Color(0xFFFFF8E1),
                           borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFFFFECB3)),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: const [
-                            Icon(Icons.military_tech_rounded, size: 14, color: HelaColors.tertiaryFixed),
+                            Icon(Icons.military_tech_rounded, size: 14, color: Color(0xFFB78103)),
                             SizedBox(width: 3),
                             Text(
                               'Level 4 Contributor',
                               style: TextStyle(
-                                color: HelaColors.tertiaryFixed,
-                                fontSize: 10.5,
+                                color: Color(0xFF7A5400),
+                                fontSize: 11,
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
@@ -282,212 +385,133 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 10),
 
-                  // Avatar, Info & Quick Actions
+                  // User Display Name
+                  Text(
+                    displayName,
+                    style: const TextStyle(
+                      color: HelaColors.primary,
+                      fontSize: 21,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.4,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 3),
+
+                  // Title & Location
+                  Text(
+                    userTitle,
+                    style: const TextStyle(
+                      color: HelaColors.secondary,
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Avatar with gradient border
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => const EditProfilePage()),
-                          );
-                        },
-                        child: Stack(
-                          children: [
-                            Container(
-                              width: 78,
-                              height: 78,
-                              padding: const EdgeInsets.all(2.5),
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                gradient: LinearGradient(
-                                  colors: [Color(0xFFB8C34A), Color(0xFF7FA88A)],
-                                ),
-                              ),
-                              child: ClipOval(
-                                child: _buildNetworkImage(
-                                  photoUrl,
-                                  width: 74,
-                                  height: 74,
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: Container(
-                                width: 24,
-                                height: 24,
-                                decoration: const BoxDecoration(
-                                  color: Color(0xFFB8C34A),
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black26,
-                                      blurRadius: 3,
-                                    ),
-                                  ],
-                                ),
-                                child: const Icon(
-                                  Icons.camera_alt_rounded,
-                                  size: 13,
-                                  color: HelaColors.tertiary,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 14),
-
-                      // User Identity
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              displayName,
-                              style: const TextStyle(
-                                color: HelaColors.onPrimary,
-                                fontSize: 18.5,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: -0.3,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 3),
-                            Text(
-                              userTitle,
-                              style: const TextStyle(
-                                color: HelaColors.secondaryFixed,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 4),
-                            Row(
-                              children: [
-                                const Icon(Icons.location_on_outlined, size: 12, color: HelaColors.onPrimaryContainer),
-                                const SizedBox(width: 3),
-                                Expanded(
-                                  child: Text(
-                                    userLocation,
-                                    style: const TextStyle(
-                                      color: HelaColors.onPrimaryContainer,
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-
-                            // Action buttons: Edit Profile & Share
-                            Row(
-                              children: [
-                                InkWell(
-                                  borderRadius: BorderRadius.circular(16),
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(builder: (_) => const EditProfilePage()),
-                                    );
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha: 0.16),
-                                      borderRadius: BorderRadius.circular(16),
-                                      border: Border.all(
-                                        color: Colors.white.withValues(alpha: 0.22),
-                                      ),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: const [
-                                        Icon(Icons.edit_rounded, size: 12, color: HelaColors.onPrimary),
-                                        SizedBox(width: 4),
-                                        Text(
-                                          'Edit Profile',
-                                          style: TextStyle(
-                                            color: HelaColors.onPrimary,
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                InkWell(
-                                  borderRadius: BorderRadius.circular(16),
-                                  onTap: _showShareProfileSheet,
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha: 0.1),
-                                      borderRadius: BorderRadius.circular(16),
-                                      border: Border.all(
-                                        color: Colors.white.withValues(alpha: 0.15),
-                                      ),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: const [
-                                        Icon(Icons.share_rounded, size: 12, color: HelaColors.onPrimaryContainer),
-                                        SizedBox(width: 4),
-                                        Text(
-                                          'Share',
-                                          style: TextStyle(
-                                            color: HelaColors.onPrimaryContainer,
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                      const Icon(Icons.location_on_rounded, size: 13, color: HelaColors.outline),
+                      const SizedBox(width: 3),
+                      Text(
+                        userLocation,
+                        style: const TextStyle(
+                          color: HelaColors.onSurfaceVariant,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 18),
-
-                  // TripAdvisor Stats Bar (4 columns)
-                  Container(
-                    padding: const EdgeInsets.only(top: 14),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        top: BorderSide(
-                          color: Colors.white.withValues(alpha: 0.15),
-                        ),
+                  if (userBio.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      userBio,
+                      style: const TextStyle(
+                        color: HelaColors.onSurfaceVariant,
+                        fontSize: 12.5,
+                        height: 1.35,
                       ),
                     ),
-                    child: Row(
-                      children: [
-                        _buildStatItem('12', 'Havens'),
-                        _buildDivider(),
-                        _buildStatItem('3', 'Expeditions'),
-                        _buildDivider(),
-                        _buildStatItem('4.9 ★', 'Traveler Score'),
-                        _buildDivider(),
-                        _buildStatItem('2,450', 'Points'),
-                      ],
-                    ),
+                  ],
+                  const SizedBox(height: 14),
+
+                  // Action Buttons: Edit Profile & Share
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (_) => const EditProfilePage()),
+                            );
+                          },
+                          icon: const Icon(Icons.edit_outlined, size: 15),
+                          label: const Text(
+                            'Edit Profile',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: HelaColors.primary,
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(vertical: 11),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      OutlinedButton.icon(
+                        onPressed: _showShareProfileSheet,
+                        icon: const Icon(Icons.share_outlined, size: 15),
+                        label: const Text(
+                          'Share',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: HelaColors.primary,
+                          side: const BorderSide(color: Color(0xFFCFDCD0), width: 1.2),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
+                  const SizedBox(height: 16),
+                ],
+              ),
+            ),
+
+            // ── TripAdvisor Stats Section (Clean & High Contrast) ─────────
+            Container(
+              decoration: const BoxDecoration(
+                color: Color(0xFFF6F8F6),
+                border: Border(
+                  top: BorderSide(color: Color(0xFFE5EDE6), width: 1),
+                ),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+              child: Row(
+                children: [
+                  _buildStatItem('12', 'Havens'),
+                  _buildDivider(),
+                  _buildStatItem('3', 'Expeditions'),
+                  _buildDivider(),
+                  _buildStatItem('4.9 ★', 'Traveler Score'),
+                  _buildDivider(),
+                  _buildStatItem('2,450', 'Points'),
                 ],
               ),
             ),
@@ -504,16 +528,17 @@ class _ProfilePageState extends State<ProfilePage> {
           Text(
             count,
             style: const TextStyle(
-              color: HelaColors.tertiaryFixed,
+              color: HelaColors.primary,
               fontSize: 16.5,
               fontWeight: FontWeight.w800,
+              letterSpacing: -0.2,
             ),
           ),
           const SizedBox(height: 2),
           Text(
             label,
             style: const TextStyle(
-              color: Color(0xFF9AB99D),
+              color: HelaColors.onSurfaceVariant,
               fontSize: 10.5,
               fontWeight: FontWeight.w600,
             ),
@@ -527,8 +552,8 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildDivider() {
     return Container(
       width: 1,
-      height: 26,
-      color: Colors.white.withValues(alpha: 0.14),
+      height: 24,
+      color: const Color(0xFFDCE5DD),
     );
   }
 

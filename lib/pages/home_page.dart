@@ -553,32 +553,14 @@ class _HelaHomePageState extends State<HelaHomePage> {
       toolbarHeight: 64,
       titleSpacing: 16,
       automaticallyImplyLeading: false,
-      title: Row(
-        children: [
-          Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(20),
-              onTap: () {
-                _scaffoldKey.currentState?.openDrawer();
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Icon(Icons.menu_rounded, color: colors.primary, size: 24),
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            'HELA',
-            style: TextStyle(
-              color: colors.primary,
-              fontWeight: FontWeight.w800,
-              fontSize: 22,
-              letterSpacing: -0.5,
-            ),
-          ),
-        ],
+      title: Text(
+        'HELA',
+        style: TextStyle(
+          color: colors.primary,
+          fontWeight: FontWeight.w800,
+          fontSize: 22,
+          letterSpacing: -0.5,
+        ),
       ),
       actions: [
         IconButton(
