@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hela/pages/home_page.dart';
-import 'package:hela/pages/saved_page.dart';
-import 'package:hela/pages/trip_planner_page.dart';
-import 'package:hela/pages/profile_page.dart';
+import 'package:hela/widgets/hela_bottom_nav_bar.dart';
 
 /// A generic article / cultural guide detail page.
 ///
@@ -323,7 +321,7 @@ class ArticleDetailPage extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomNavBar(context),
+      bottomNavigationBar: const HelaBottomNavBar(currentIndex: 0),
     );
   }
 
@@ -395,112 +393,6 @@ class ArticleDetailPage extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildBottomNavBar(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: HelaColors.surfaceContainerLowest.withValues(alpha: 0.95),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.07),
-            blurRadius: 16,
-            offset: const Offset(0, -3),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(
-                context: context,
-                label: 'Explore',
-                icon: Icons.explore_outlined,
-                activeIcon: Icons.explore_rounded,
-                onTap: () {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => const HelaHomePage()),
-                  );
-                },
-              ),
-              _buildNavItem(
-                context: context,
-                label: 'Saved',
-                icon: Icons.bookmark_border_rounded,
-                activeIcon: Icons.bookmark_rounded,
-                onTap: () {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => const SavedPage()),
-                  );
-                },
-              ),
-              _buildNavItem(
-                context: context,
-                label: 'Journeys',
-                icon: Icons.map_outlined,
-                activeIcon: Icons.map_rounded,
-                onTap: () {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                        builder: (_) => const TripPlannerPage()),
-                  );
-                },
-              ),
-              _buildNavItem(
-                context: context,
-                label: 'Profile',
-                icon: Icons.person_outline_rounded,
-                activeIcon: Icons.person_rounded,
-                onTap: () {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => const ProfilePage()),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem({
-    required BuildContext context,
-    required String label,
-    required IconData icon,
-    required IconData activeIcon,
-    VoidCallback? onTap,
-  }) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(16),
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: HelaColors.onSurfaceVariant,
-              size: 24,
-            ),
-            const SizedBox(height: 3),
-            Text(
-              label,
-              style: const TextStyle(
-                color: HelaColors.onSurfaceVariant,
-                fontWeight: FontWeight.w500,
-                fontSize: 11,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hela/pages/home_page.dart';
-import 'package:hela/pages/trip_planner_page.dart';
-import 'package:hela/pages/profile_page.dart';
 import 'package:hela/pages/saved_page.dart';
-import 'package:hela/pages/travel_preferences_page.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/widgets/stay_card.dart';
+import 'package:hela/widgets/hela_bottom_nav_bar.dart';
 
 /// Model representing an Eco-Haven / Stay item
 class StayHaven {
@@ -73,7 +71,6 @@ class StaysPage extends StatefulWidget {
 }
 
 class _StaysPageState extends State<StaysPage> {
-  int _selectedNavIndex = 0;
   int _selectedFilterIndex = 1; // "4.8+ Top Rated" active by default
 
   final List<StayFilterChipData> _filterChips = const [
@@ -179,7 +176,7 @@ class _StaysPageState extends State<StaysPage> {
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomNavBar(),
+      bottomNavigationBar: const HelaBottomNavBar(currentIndex: 0),
     );
   }
 
@@ -495,128 +492,6 @@ class _StaysPageState extends State<StaysPage> {
           SnackBar(content: Text('Opening details for ${stay.title}')),
         );
       },
-    );
-  }
-
-  Widget _buildBottomNavBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: HelaColors.surfaceContainerLowest.withValues(alpha: 0.95),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.07),
-            blurRadius: 16,
-            offset: const Offset(0, -3),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(
-                index: 0,
-                label: 'Explore',
-                icon: Icons.explore_outlined,
-                activeIcon: Icons.explore_rounded,
-                onTap: () {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => const HelaHomePage()),
-                  );
-                },
-              ),
-              _buildNavItem(
-                index: 1,
-                label: 'Saved',
-                icon: Icons.bookmark_border_rounded,
-                activeIcon: Icons.bookmark_rounded,
-                onTap: () {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => const SavedPage()),
-                  );
-                },
-              ),
-              _buildNavItem(
-                index: 2,
-                label: 'Discover',
-                icon: Icons.travel_explore_outlined,
-                activeIcon: Icons.travel_explore_rounded,
-                onTap: () {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => const TravelPreferencesPage()),
-                  );
-                },
-              ),
-              _buildNavItem(
-                index: 3,
-                label: 'Journeys',
-                icon: Icons.route_outlined,
-                activeIcon: Icons.route_rounded,
-                onTap: () {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => const TripPlannerPage()),
-                  );
-                },
-              ),
-              _buildNavItem(
-                index: 4,
-                label: 'Profile',
-                icon: Icons.person_outline_rounded,
-                activeIcon: Icons.person_rounded,
-                onTap: () {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => const ProfilePage()),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem({
-    required int index,
-    required String label,
-    required IconData icon,
-    required IconData activeIcon,
-    VoidCallback? onTap,
-  }) {
-    final isActive = _selectedNavIndex == index;
-    return InkWell(
-      borderRadius: BorderRadius.circular(16),
-      onTap: onTap ??
-          () {
-            setState(() {
-              _selectedNavIndex = index;
-            });
-          },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              isActive ? activeIcon : icon,
-              color: isActive ? HelaColors.primary : HelaColors.onSurfaceVariant,
-              size: 24,
-            ),
-            const SizedBox(height: 3),
-            Text(
-              label,
-              style: TextStyle(
-                color: isActive ? HelaColors.primary : HelaColors.onSurfaceVariant,
-                fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                fontSize: 11,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

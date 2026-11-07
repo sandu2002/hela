@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hela/pages/profile/edit_profile_page.dart';
 import 'package:hela/pages/home_page.dart';
-import 'package:hela/pages/trip_planner_page.dart';
 import 'package:hela/pages/saved_page.dart';
 import 'package:hela/pages/travel_preferences_page.dart';
 import 'package:hela/state/app_state.dart';
+import 'package:hela/widgets/hela_bottom_nav_bar.dart';
 
 /// TripAdvisor-grade professional Profile & Comprehensive Settings Page
 class ProfilePage extends StatefulWidget {
@@ -15,7 +15,6 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  int _selectedNavIndex = 4; // "Profile" tab is active in bottom bar
   int _selectedTabIndex = 0; // 0: Settings & Preferences, 1: Saved Itineraries, 2: Badges & Reviews
 
   // ── Interactive Settings State ───────────────────────────────────────────
@@ -94,7 +93,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomNavBar(),
+      bottomNavigationBar: const HelaBottomNavBar(currentIndex: 4),
     );
   }
 
@@ -2382,130 +2381,4 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   // ── Bottom Navigation Bar ────────────────────────────────────────────────
-  Widget _buildBottomNavBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: HelaColors.surfaceContainerLowest.withValues(alpha: 0.96),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.07),
-            blurRadius: 16,
-            offset: const Offset(0, -3),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(
-                index: 0,
-                label: 'Explore',
-                icon: Icons.explore_outlined,
-                activeIcon: Icons.explore_rounded,
-                onTap: () {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => const HelaHomePage()),
-                  );
-                },
-              ),
-              _buildNavItem(
-                index: 1,
-                label: 'Saved',
-                icon: Icons.bookmark_border_rounded,
-                activeIcon: Icons.bookmark_rounded,
-                onTap: () {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => const SavedPage()),
-                  );
-                },
-              ),
-              _buildNavItem(
-                index: 2,
-                label: 'Discover',
-                icon: Icons.travel_explore_outlined,
-                activeIcon: Icons.travel_explore_rounded,
-                onTap: () {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => const TravelPreferencesPage()),
-                  );
-                },
-              ),
-              _buildNavItem(
-                index: 3,
-                label: 'Journeys',
-                icon: Icons.route_outlined,
-                activeIcon: Icons.route_rounded,
-                onTap: () {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => const TripPlannerPage()),
-                  );
-                },
-              ),
-              _buildNavItem(
-                index: 4,
-                label: 'Profile',
-                icon: Icons.person_outline_rounded,
-                activeIcon: Icons.person_rounded,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem({
-    required int index,
-    required String label,
-    required IconData icon,
-    required IconData activeIcon,
-    VoidCallback? onTap,
-  }) {
-    final isActive = _selectedNavIndex == index;
-    return InkWell(
-      borderRadius: BorderRadius.circular(16),
-      onTap: onTap ??
-          () {
-            setState(() {
-              _selectedNavIndex = index;
-            });
-          },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              isActive ? activeIcon : icon,
-              color: isActive ? HelaColors.primary : HelaColors.onSurfaceVariant,
-              size: 24,
-            ),
-            const SizedBox(height: 3),
-            Text(
-              label,
-              style: TextStyle(
-                color: isActive ? HelaColors.primary : HelaColors.onSurfaceVariant,
-                fontWeight: isActive ? FontWeight.w800 : FontWeight.w500,
-                fontSize: 11,
-              ),
-            ),
-            if (isActive)
-              Container(
-                margin: const EdgeInsets.only(top: 2),
-                width: 5,
-                height: 5,
-                decoration: const BoxDecoration(
-                  color: HelaColors.primary,
-                  shape: BoxShape.circle,
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
 }
