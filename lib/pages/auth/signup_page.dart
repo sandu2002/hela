@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hela/pages/home_page.dart';
+import 'package:hela/services/insforge_auth_service.dart';
 import 'package:hela/state/app_state.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Authentication mode — Sign Up or Sign In
 enum AuthMode { signUp, signIn }
@@ -99,17 +101,17 @@ class _GoogleLogoPainter extends CustomPainter {
       ..strokeWidth = strokeW
       ..strokeCap = StrokeCap.butt;
 
-    // Blue arc — right side (top-right quadrant → lower-right)
+    // Blue arc
     paint.color = const Color(0xFF4285F4);
     canvas.drawArc(
       Rect.fromCircle(center: Offset(cx, cy), radius: r),
-      -0.6, // ~-35°
-      1.15,  // ~65°
+      -0.6,
+      1.15,
       false,
       paint,
     );
 
-    // Green arc — bottom
+    // Green arc
     paint.color = const Color(0xFF34A853);
     canvas.drawArc(
       Rect.fromCircle(center: Offset(cx, cy), radius: r),
@@ -119,7 +121,7 @@ class _GoogleLogoPainter extends CustomPainter {
       paint,
     );
 
-    // Yellow arc — left-bottom
+    // Yellow arc
     paint.color = const Color(0xFFFBBC05);
     canvas.drawArc(
       Rect.fromCircle(center: Offset(cx, cy), radius: r),
@@ -129,7 +131,7 @@ class _GoogleLogoPainter extends CustomPainter {
       paint,
     );
 
-    // Red arc — top-left
+    // Red arc
     paint.color = const Color(0xFFEA4335);
     canvas.drawArc(
       Rect.fromCircle(center: Offset(cx, cy), radius: r),
@@ -139,7 +141,7 @@ class _GoogleLogoPainter extends CustomPainter {
       paint,
     );
 
-    // Horizontal bar of the "G" — blue
+    // Horizontal bar
     final Paint barPaint = Paint()
       ..color = const Color(0xFF4285F4)
       ..style = PaintingStyle.fill;
@@ -154,14 +156,31 @@ class _GoogleLogoPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-/// ── Simulated Google Account Data ──────────────────────────────
-class _GoogleAccountInfo {
+/// ── GitHub Icon ────────────────────────────────────────────────
+class _GitHubIcon extends StatelessWidget {
+  final double size;
+  const _GitHubIcon({this.size = 20});
+
+  @override
+  Widget build(BuildContext context) {
+    return Icon(
+      Icons.code_rounded,
+      size: size,
+      color: _AuthColors.primary,
+    );
+  }
+}
+
+/// ── Social Account Info ────────────────────────────────────────
+class _SocialAccountInfo {
+  final String provider;
   final String name;
   final String email;
   final String avatarLetter;
   final Color avatarColor;
 
-  const _GoogleAccountInfo({
+  const _SocialAccountInfo({
+    required this.provider,
     required this.name,
     required this.email,
     required this.avatarLetter,
@@ -169,18 +188,27 @@ class _GoogleAccountInfo {
   });
 }
 
-const List<_GoogleAccountInfo> _mockGoogleAccounts = [
-  _GoogleAccountInfo(
+const List<_SocialAccountInfo> _mockSocialAccounts = [
+  _SocialAccountInfo(
+    provider: 'google',
     name: 'Kavinda Wickramasinghe',
     email: 'kavinda.w@gmail.com',
     avatarLetter: 'K',
     avatarColor: Color(0xFF4285F4),
   ),
-  _GoogleAccountInfo(
-    name: 'Kavinda Work',
-    email: 'kavinda.work@gmail.com',
-    avatarLetter: 'K',
+  _SocialAccountInfo(
+    provider: 'google',
+    name: 'Ceylon Explorer',
+    email: 'explorer@hela.lk',
+    avatarLetter: 'C',
     avatarColor: Color(0xFF34A853),
+  ),
+  _SocialAccountInfo(
+    provider: 'github',
+    name: 'KavinduDev',
+    email: 'kavindu.dev@github.com',
+    avatarLetter: 'G',
+    avatarColor: Color(0xFF24292E),
   ),
 ];
 
@@ -267,7 +295,7 @@ class _SignUpPageState extends State<SignUpPage>
     );
   }
 
-  /// Submit email/password form
+  /// Submit email/password form to InsForge BaaS
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -276,6 +304,7 @@ class _SignUpPageState extends State<SignUpPage>
         const SnackBar(
           content: Text('Please agree to the Terms & Privacy Policy'),
           backgroundColor: _AuthColors.error,
+          duration: Duration(seconds: 2),
         ),
       );
       return;
@@ -283,48 +312,80 @@ class _SignUpPageState extends State<SignUpPage>
 
     setState(() => _isLoading = true);
 
-    // Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 1200));
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    final name = _nameController.text.trim();
 
-    if (!mounted) return;
-
-    // Sign the user in via app state
     try {
-      final appState = HelaAppStateProvider.of(context);
-      appState.signIn(
-        name: _mode == AuthMode.signUp
-            ? _nameController.text.trim()
-            : _emailController.text.split('@').first,
-        email: _emailController.text.trim(),
-      );
-    } catch (_) {
-      // If provider is not in tree, proceed without state
-    }
+      final InsForgeAuthResult result;
+      if (_mode == AuthMode.signUp) {
+        result = await InsForgeAuthService.instance.signUp(
+          email: email,
+          password: password,
+          name: name.isNotEmpty ? name : null,
+        );
+      } else {
+        result = await InsForgeAuthService.instance.signIn(
+          email: email,
+          password: password,
+        );
+      }
 
-    setState(() => _isLoading = false);
+      if (!mounted) return;
+      setState(() => _isLoading = false);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          _mode == AuthMode.signUp
-              ? 'Account created successfully!'
-              : 'Welcome back!',
+      if (result.isSuccess) {
+        final appState = HelaAppStateProvider.of(context);
+        appState.signIn(
+          name: result.user?.name ?? (_mode == AuthMode.signUp ? name : email.split('@').first),
+          email: result.user?.email ?? email,
+          photoUrl: result.user?.avatarUrl,
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              _mode == AuthMode.signUp
+                  ? 'Welcome to HELA, ${result.user?.name ?? 'Explorer'}! Account created on InsForge.'
+                  : 'Welcome back, ${result.user?.name ?? 'Explorer'}!',
+            ),
+            backgroundColor: _AuthColors.primaryContainer,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+
+        _navigateToHome();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result.errorMessage ?? 'Authentication failed. Please try again.'),
+            backgroundColor: _AuthColors.error,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: _AuthColors.error,
+          duration: const Duration(seconds: 2),
         ),
-        backgroundColor: _AuthColors.primaryContainer,
-      ),
-    );
-
-    _navigateToHome();
+      );
+    }
   }
 
-  /// Show Google Account picker bottom sheet
-  Future<void> _signInWithGoogle() async {
-    final selected = await showModalBottomSheet<_GoogleAccountInfo>(
+  /// Show Social Account picker bottom sheet
+  Future<void> _signInWithSocial(String provider) async {
+    final selected = await showModalBottomSheet<_SocialAccountInfo>(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (ctx) => _GoogleAccountPickerSheet(
-        accounts: _mockGoogleAccounts,
+      builder: (ctx) => _SocialAccountPickerSheet(
+        provider: provider,
+        accounts: _mockSocialAccounts.where((a) => a.provider == provider).toList(),
       ),
     );
 
@@ -332,32 +393,53 @@ class _SignUpPageState extends State<SignUpPage>
 
     setState(() => _isLoading = true);
 
-    // Simulate Google sign-in delay
-    await Future.delayed(const Duration(milliseconds: 900));
-
-    if (!mounted) return;
-
     try {
-      final appState = HelaAppStateProvider.of(context);
-      appState.signIn(
-        name: selected.name,
+      final result = await InsForgeAuthService.instance.signInWithSocialAccount(
+        provider: selected.provider,
         email: selected.email,
-        photoUrl: null,
+        name: selected.name,
       );
-    } catch (_) {
-      // Proceed without state
+
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+
+      if (result.isSuccess) {
+        final appState = HelaAppStateProvider.of(context);
+        appState.signIn(
+          name: result.user?.name ?? selected.name,
+          email: result.user?.email ?? selected.email,
+          photoUrl: result.user?.avatarUrl,
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Signed in via ${provider.toUpperCase()} as ${selected.name}'),
+            backgroundColor: _AuthColors.primaryContainer,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+
+        _navigateToHome();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result.errorMessage ?? 'Social sign in failed'),
+            backgroundColor: _AuthColors.error,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: _AuthColors.error,
+          duration: const Duration(seconds: 2),
+        ),
+      );
     }
-
-    setState(() => _isLoading = false);
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Signed in as ${selected.name}'),
-        backgroundColor: _AuthColors.primaryContainer,
-      ),
-    );
-
-    _navigateToHome();
   }
 
   // ── Build ───────────────────────────────────────────────────────
@@ -406,8 +488,8 @@ class _SignUpPageState extends State<SignUpPage>
                           const SizedBox(height: 16),
                           Text(
                             _mode == AuthMode.signUp
-                                ? 'Creating your account…'
-                                : 'Signing you in…',
+                                ? 'Connecting to InsForge…'
+                                : 'Authenticating with InsForge…',
                             style: const TextStyle(
                               color: _AuthColors.onSurface,
                               fontSize: 14,
@@ -434,11 +516,11 @@ class _SignUpPageState extends State<SignUpPage>
                       child: Column(
                         children: [
                           _buildHeroHeader(),
-                          const SizedBox(height: 28),
-                          _buildGoogleSignInButton(),
                           const SizedBox(height: 24),
+                          _buildSocialButtons(),
+                          const SizedBox(height: 22),
                           _buildDivider(),
-                          const SizedBox(height: 24),
+                          const SizedBox(height: 22),
                           _buildForm(),
                           const SizedBox(height: 20),
                           _buildSubmitButton(),
@@ -576,44 +658,88 @@ class _SignUpPageState extends State<SignUpPage>
     );
   }
 
-  /// ── Google Sign-In Button ──
-  Widget _buildGoogleSignInButton() {
-    return SizedBox(
-      width: double.infinity,
-      height: 54,
-      child: OutlinedButton(
-        onPressed: _isLoading ? null : _signInWithGoogle,
-        style: OutlinedButton.styleFrom(
-          backgroundColor: _AuthColors.surfaceContainerLowest,
-          side: BorderSide(
-            color: _AuthColors.outlineVariant.withValues(alpha: 0.7),
-            width: 1.2,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          elevation: 1,
-          shadowColor: Colors.black12,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const _GoogleIcon(size: 20),
-            const SizedBox(width: 12),
-            Text(
-              _mode == AuthMode.signUp
-                  ? 'Continue with Google'
-                  : 'Sign in with Google',
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: _AuthColors.onSurface,
-                letterSpacing: 0.1,
+  /// ── Social Login Buttons (Google + GitHub) ──
+  Widget _buildSocialButtons() {
+    return Column(
+      children: [
+        // Google Sign-In
+        SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: OutlinedButton(
+            onPressed: _isLoading ? null : () => _signInWithSocial('google'),
+            style: OutlinedButton.styleFrom(
+              backgroundColor: _AuthColors.surfaceContainerLowest,
+              side: BorderSide(
+                color: _AuthColors.outlineVariant.withValues(alpha: 0.7),
+                width: 1.2,
               ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 1,
+              shadowColor: Colors.black12,
             ),
-          ],
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const _GoogleIcon(size: 20),
+                const SizedBox(width: 12),
+                Text(
+                  _mode == AuthMode.signUp
+                      ? 'Continue with Google'
+                      : 'Sign in with Google',
+                  style: const TextStyle(
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.w600,
+                    color: _AuthColors.onSurface,
+                    letterSpacing: 0.1,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
-      ),
+        const SizedBox(height: 10),
+        // GitHub Sign-In
+        SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: OutlinedButton(
+            onPressed: _isLoading ? null : () => _signInWithSocial('github'),
+            style: OutlinedButton.styleFrom(
+              backgroundColor: _AuthColors.surfaceContainerLowest,
+              side: BorderSide(
+                color: _AuthColors.outlineVariant.withValues(alpha: 0.7),
+                width: 1.2,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 1,
+              shadowColor: Colors.black12,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const _GitHubIcon(size: 20),
+                const SizedBox(width: 12),
+                Text(
+                  _mode == AuthMode.signUp
+                      ? 'Continue with GitHub'
+                      : 'Sign in with GitHub',
+                  style: const TextStyle(
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.w600,
+                    color: _AuthColors.onSurface,
+                    letterSpacing: 0.1,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -746,8 +872,8 @@ class _SignUpPageState extends State<SignUpPage>
               suffixIcon: IconButton(
                 icon: Icon(
                   _obscureConfirmPassword
-                      ? Icons.visibility_off_outlined
-                      : Icons.visibility_outlined,
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
                   color: _AuthColors.outline,
                   size: 20,
                 ),
@@ -1087,14 +1213,31 @@ class _SignUpPageState extends State<SignUpPage>
 }
 
 /// ════════════════════════════════════════════════════════════════
-/// ██  Google Account Picker  ████████████████████████████████████
+/// ██  Social Account Picker  █████████████████████████████████████
 /// ════════════════════════════════════════════════════════════════
-class _GoogleAccountPickerSheet extends StatelessWidget {
-  final List<_GoogleAccountInfo> accounts;
-  const _GoogleAccountPickerSheet({required this.accounts});
+class _SocialAccountPickerSheet extends StatelessWidget {
+  final String provider;
+  final List<_SocialAccountInfo> accounts;
+  const _SocialAccountPickerSheet({
+    required this.provider,
+    required this.accounts,
+  });
+
+  Future<void> _launchWebOAuth(BuildContext context) async {
+    Navigator.pop(context);
+    final oauthData = await InsForgeAuthService.instance.initiateOAuth(provider: provider);
+    if (oauthData != null && oauthData['authUrl'] != null) {
+      final uri = Uri.parse(oauthData['authUrl']!);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final providerTitle = provider == 'google' ? 'Google' : 'GitHub';
+
     return Container(
       margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -1116,12 +1259,12 @@ class _GoogleAccountPickerSheet extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
             child: Row(
               children: [
-                const _GoogleIcon(size: 24),
+                if (provider == 'google') const _GoogleIcon(size: 24) else const _GitHubIcon(size: 24),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'Choose an account',
-                    style: TextStyle(
+                    'Sign in with $providerTitle',
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
                       color: _AuthColors.onSurface,
@@ -1137,11 +1280,11 @@ class _GoogleAccountPickerSheet extends StatelessWidget {
             ),
           ),
 
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Text(
-              'to continue to HELA',
-              style: TextStyle(
+              'Select an account to authenticate with InsForge BaaS',
+              style: const TextStyle(
                 fontSize: 13,
                 color: _AuthColors.onSurfaceVariant,
               ),
@@ -1157,17 +1300,9 @@ class _GoogleAccountPickerSheet extends StatelessWidget {
           // Accounts list
           ...accounts.map((account) => _buildAccountTile(context, account)),
 
-          // Add another account
+          // Web OAuth flow option
           InkWell(
-            onTap: () {
-              // For now, just close the sheet
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Use another account (coming soon)'),
-                ),
-              );
-            },
+            onTap: () => _launchWebOAuth(context),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
               child: Row(
@@ -1182,16 +1317,31 @@ class _GoogleAccountPickerSheet extends StatelessWidget {
                         width: 1.5,
                       ),
                     ),
-                    child: const Icon(Icons.person_add_alt_rounded,
-                        size: 18, color: _AuthColors.outline),
+                    child: const Icon(Icons.open_in_browser_rounded,
+                        size: 18, color: _AuthColors.secondary),
                   ),
                   const SizedBox(width: 14),
-                  const Text(
-                    'Use another account',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: _AuthColors.onSurface,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Open $providerTitle OAuth in Browser',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: _AuthColors.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        const Text(
+                          'Direct PKCE OAuth authorization flow',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: _AuthColors.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -1205,7 +1355,7 @@ class _GoogleAccountPickerSheet extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
             child: Text(
-              'By continuing, Google will share your name, email, and profile picture with HELA.',
+              'InsForge secures your authentication session with industry-standard PKCE and JWT tokens.',
               style: TextStyle(
                 fontSize: 11,
                 color: _AuthColors.outline.withValues(alpha: 0.8),
@@ -1219,7 +1369,7 @@ class _GoogleAccountPickerSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildAccountTile(BuildContext context, _GoogleAccountInfo account) {
+  Widget _buildAccountTile(BuildContext context, _SocialAccountInfo account) {
     return InkWell(
       onTap: () => Navigator.pop(context, account),
       child: Padding(
@@ -1270,6 +1420,7 @@ class _GoogleAccountPickerSheet extends StatelessWidget {
                 ],
               ),
             ),
+            const Icon(Icons.arrow_forward_ios_rounded, size: 13, color: _AuthColors.outline),
           ],
         ),
       ),

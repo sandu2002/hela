@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hela/onbording/onboarding_page.dart';
+import 'package:hela/services/insforge_auth_service.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/state/tour_planner_state.dart';
 import 'package:hela/theme/hela_theme.dart';
@@ -18,6 +19,23 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final HelaAppState _appState = HelaAppState();
   final TourPlannerState _tourPlannerState = TourPlannerState();
+
+  @override
+  void initState() {
+    super.initState();
+    _restoreAuthSession();
+  }
+
+  Future<void> _restoreAuthSession() async {
+    final user = await InsForgeAuthService.instance.restoreSession();
+    if (user != null && mounted) {
+      _appState.signIn(
+        name: user.name,
+        email: user.email,
+        photoUrl: user.avatarUrl,
+      );
+    }
+  }
 
   @override
   void dispose() {

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:hela/pages/auth/signup_page.dart';
 import 'package:hela/pages/profile/edit_profile_page.dart';
 import 'package:hela/pages/home_page.dart';
 import 'package:hela/pages/saved_page.dart';
 import 'package:hela/pages/travel_preferences_page.dart';
+import 'package:hela/services/insforge_auth_service.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/widgets/hela_bottom_nav_bar.dart';
 
@@ -2230,9 +2232,17 @@ class _ProfilePageState extends State<ProfilePage> {
               backgroundColor: const Color(0xFFC62828),
               foregroundColor: Colors.white,
             ),
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(ctx);
-              _showToast('You have been logged out.');
+              await InsForgeAuthService.instance.signOut();
+              if (mounted) {
+                HelaAppStateProvider.of(context).signOut();
+                _showToast('You have been logged out from InsForge.');
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const SignUpPage(initialMode: AuthMode.signIn)),
+                  (route) => false,
+                );
+              }
             },
             child: const Text('Log Out'),
           ),
