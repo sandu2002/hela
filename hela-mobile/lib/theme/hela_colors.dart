@@ -110,6 +110,8 @@ class HelaColorPalette {
   });
 
   bool get isDark => brightness == Brightness.dark;
+
+  Color get onBackground => onSurface;
 }
 
 /// Theme Color Palette from Design Tokens (Lankan Tropical Modernism).
@@ -117,7 +119,9 @@ class HelaColors {
   // ── Light Theme Tokens (Lankan Tropical Modernism) ────────────────
   static const Color primary = Color(0xFF00443E); // Deep Ocean Teal
   static const Color onPrimary = Color(0xFFFFFFFF);
-  static const Color primaryContainer = Color(0xFF0B5D56); // Primary Interaction Teal
+  static const Color primaryContainer = Color(
+    0xFF0B5D56,
+  ); // Primary Interaction Teal
   static const Color onPrimaryContainer = Color(0xFF8ED3CA);
   static const Color primaryFixed = Color(0xFFAAF0E6);
   static const Color primaryFixedDim = Color(0xFF8ED3CA);
@@ -137,7 +141,9 @@ class HelaColors {
   static const Color onTertiary = Color(0xFFFFFFFF);
   static const Color tertiaryContainer = Color(0xFF6E4C00);
   static const Color onTertiaryContainer = Color(0xFFF5BD57);
-  static const Color tertiaryFixed = Color(0xFFFFDEAA); // Peach / Amber highlight
+  static const Color tertiaryFixed = Color(
+    0xFFFFDEAA,
+  ); // Peach / Amber highlight
   static const Color tertiaryFixedDim = Color(0xFFF5BD58);
   static const Color onTertiaryFixed = Color(0xFF271900);
   static const Color onTertiaryFixedVariant = Color(0xFF5F4100);
@@ -145,7 +151,9 @@ class HelaColors {
   // Surface hierarchy
   static const Color background = Color(0xFFE9FEF9); // Tropical Mint Canvas
   static const Color surface = Color(0xFFE9FEF9);
-  static const Color surfaceContainerLowest = Color(0xFFFFFFFF); // Elevated cards & fields
+  static const Color surfaceContainerLowest = Color(
+    0xFFFFFFFF,
+  ); // Elevated cards & fields
   static const Color surfaceContainerLow = Color(0xFFE3F8F3);
   static const Color surfaceContainer = Color(0xFFDEF2ED);
   static const Color surfaceContainerHigh = Color(0xFFD8EDE7);
@@ -321,6 +329,9 @@ class HelaColors {
     return Theme.of(context).brightness == Brightness.dark;
   }
 }
+
+/// Backward compatibility typedef for HelaColorPalette
+typedef HelaPalette = HelaColorPalette;
 
 /// Convenience context extension for accessing the active theme colors.
 extension HelaThemeContextExtension on BuildContext {

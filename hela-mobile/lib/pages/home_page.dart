@@ -1179,15 +1179,15 @@ class _HelaHomePageState extends State<HelaHomePage> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: HelaColors.tertiaryFixed.withValues(alpha: 0.5),
+                          color: colors.goldenAmber.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
                           exp.category.toUpperCase(),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 9.5,
                             fontWeight: FontWeight.w700,
-                            color: Color(0xFF1A1D00),
+                            color: colors.primary,
                           ),
                         ),
                       ),
@@ -1444,7 +1444,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
                             isNowSaved
                                 ? Icons.bookmark_added_rounded
                                 : Icons.bookmark_remove_rounded,
-                            color: isNowSaved ? colors.tertiaryFixed : Colors.white70,
+                            color: isNowSaved ? colors.goldenAmber : Colors.white70,
                             size: 20,
                           ),
                           const SizedBox(width: 10),
@@ -1461,7 +1461,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
                       action: isNowSaved
                           ? SnackBarAction(
                               label: 'View Saved',
-                              textColor: colors.tertiaryFixed,
+                              textColor: colors.goldenAmber,
                               onPressed: () {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(builder: (_) => const SavedPage()),
@@ -1704,7 +1704,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
                                         action: isNowSaved
                                             ? SnackBarAction(
                                                 label: 'View Saved',
-                                                textColor: colors.tertiaryFixed,
+                                                textColor: colors.goldenAmber,
                                                 onPressed: () {
                                                   Navigator.of(context).push(
                                                     MaterialPageRoute(builder: (_) => const SavedPage()),
@@ -1921,7 +1921,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
                   Text(
                     'TAILORED ITINERARIES',
                     style: TextStyle(
-                      color: colors.tertiaryFixed,
+                      color: colors.goldenAmber,
                       fontWeight: FontWeight.w800,
                       fontSize: 11,
                       letterSpacing: 1.2,
@@ -1954,11 +1954,11 @@ class _HelaHomePageState extends State<HelaHomePage> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: colors.tertiaryFixed,
-                      foregroundColor: const Color(0xFF19331F),
+                      backgroundColor: colors.goldenAmber,
+                      foregroundColor: const Color(0xFF132220),
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: BorderRadius.circular(16),
                       ),
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                     ),
