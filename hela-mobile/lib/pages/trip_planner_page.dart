@@ -8,7 +8,9 @@ import 'package:hela/widgets/hela_bottom_nav_bar.dart';
 /// (Screen 1b1afbb5b8884b4e8ceaf12ac9c68d70: Plan Your Sri Lankan Adventure
 ///  & Screen d48a0b4b55994a0d876eccbe5db39ab5: Your Sri Lankan Adventure)
 class TripPlannerPage extends StatefulWidget {
-  const TripPlannerPage({super.key});
+  final String? initialExtraNote;
+
+  const TripPlannerPage({super.key, this.initialExtraNote});
 
   @override
   State<TripPlannerPage> createState() => _TripPlannerPageState();
@@ -19,6 +21,15 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
   final TextEditingController _startLocationController =
       TextEditingController(text: 'Bandaranaike Intl Airport (CMB)');
   final TextEditingController _extraNotesController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialExtraNote != null &&
+        widget.initialExtraNote!.trim().isNotEmpty) {
+      _extraNotesController.text = widget.initialExtraNote!.trim();
+    }
+  }
 
   DateTime _startDate = DateTime(2025, 10, 14);
   DateTime _endDate = DateTime(2025, 10, 24);

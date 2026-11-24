@@ -1,38 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:hela/data/place_details_catalog.dart';
 import 'package:hela/pages/fair_ride_page.dart';
 import 'package:hela/pages/cultural_guide/cultural_guide_page.dart';
 import 'package:hela/pages/explore_page.dart';
+import 'package:hela/pages/place_details_page.dart';
 import 'package:hela/pages/trip_planner_page.dart';
 import 'package:hela/pages/profile_page.dart';
 import 'package:hela/services/live_weather_service.dart';
+import 'package:hela/widgets/featured_destination_card.dart';
 import 'package:hela/widgets/hela_drawer.dart';
 import 'package:hela/widgets/hela_bottom_nav_bar.dart';
 import 'package:hela/state/app_state.dart';
 
 // Re-exports for backward compatibility
+export 'package:hela/models/featured_destination_item.dart';
 export 'package:hela/models/haven_item.dart';
 import 'package:hela/theme/hela_colors.dart';
 export 'package:hela/theme/hela_colors.dart';
-
-/// Featured Destination model for Stitch Home Dashboard
-class FeaturedDestinationItem {
-  final String title;
-  final String subtitle;
-  final String rating;
-  final String badge;
-  final String footerTag;
-  final String imageUrl;
-
-  const FeaturedDestinationItem({
-    required this.title,
-    required this.subtitle,
-    required this.rating,
-    required this.badge,
-    required this.footerTag,
-    required this.imageUrl,
-  });
-}
 
 /// Handcrafted Experience model for Stitch Home Dashboard
 class HomeExperienceItem {
@@ -80,53 +65,27 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
     'All',
   ];
 
-  final List<FeaturedDestinationItem> _destinations = const [
-    FeaturedDestinationItem(
-      title: 'Sigiriya',
-      subtitle: 'Ancient Lion Rock fortress & royal water gardens',
-      rating: '5.0',
-      badge: 'UNESCO',
-      footerTag: 'Cultural Wonder',
-      imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuB470bfrsJ34_Zfz3mF8BpQZOUum-fhawKh51cm1K8-0n16IJnyIRDWCDo-p-4LKlIJL7eWRS6fSHiQ7Y076dniwfTg2-uSNGP-Y1fU4rUt8gQCz0RWM_EspICB8L-E9uu3ZguLz8MSZG0MZai01QaMRbw9u7NFJ6XRoYIDFwFMifvWSsy_XhyQ2UkxBFBJVs0TNFtCkUr-O7xCS0cyKCNy4TCnZZq8uzJM0M3dU9c',
-    ),
-    FeaturedDestinationItem(
-      title: 'Ella',
-      subtitle: 'Nine Arch Bridge, Little Adam\'s Peak & misty tea estates',
-      rating: '4.9',
-      badge: 'Highlands',
-      footerTag: 'Scenic Rail & Hike',
-      imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuC1-w7059r6Tx8JOuHhGLLm6spMsWw09E48ApBmOWTEe-p-IbOyd8GBmFh3Zvn60CK2ZR0YsjHx75NDRUWyT2eYsmsMBsoNsO380YPX-8NkCVlAl9L84IrpVcJskPmn7bby1SLlQNDsytKDChKgPdcmfeIa6V14oUmNsO-WDDWQZJlHl_dJvco52RzpSUA0AS2JlopPWLNhvwsNiRGcKN4YqXKlwv5GpBLlmhs9TRI',
-    ),
-    FeaturedDestinationItem(
-      title: 'Kandy',
-      subtitle: 'Sacred Temple of the Tooth & lush botanical sanctuary',
-      rating: '4.8',
-      badge: 'Heritage',
-      footerTag: 'Spiritual Heart',
-      imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuAf_ZHki056g4HPCYefzjMlcb2RDYtvjthd-ddHXXVe627O2eS1UoDIgiQ_L-HKdkLD9fKmpLz29XjJCzAX-uHg68hnR6w8d8wJJJasNuOqCFl3pVUmgcPmjQzd1eEzWMovtcNQjv5uQV-wGNks7fK8WOBUFpNVKYzvyjP0oOxlEXwSUQgjWHLC-mO86yMwUkMCo4fc0t_xHB8t1iRNYNQe3OQwojumYbhjBuANTUk',
-    ),
-    FeaturedDestinationItem(
-      title: 'Galle',
-      subtitle: '17th-century Dutch colonial ramparts & ocean fort',
-      rating: '4.9',
-      badge: 'Colonial Fort',
-      footerTag: 'Coastal Heritage',
-      imageUrl:
-          'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
-    ),
-    FeaturedDestinationItem(
-      title: 'Mirissa',
-      subtitle: 'Golden palm-fringed coastlines & sunset whale watching',
-      rating: '4.9',
-      badge: 'South Coast',
-      footerTag: 'Ocean & Whales',
-      imageUrl:
-          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80',
-    ),
-  ];
+  void _openPlaceDetailsFromDestination(FeaturedDestinationItem item) {
+    final details = PlaceDetailCatalog.resolveForFeaturedDestination(item);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => PlaceDetailsPage(place: details)),
+    );
+  }
+
+  void _openPlaceDetailsFromExperience(HomeExperienceItem exp) {
+    final details = PlaceDetailCatalog.resolveByIdOrTitle(
+      exp.title,
+      fallbackSubtitle: exp.subtitle,
+      fallbackRating: exp.rating,
+      fallbackImageUrl: exp.imageUrl,
+      fallbackCategory: exp.category,
+    );
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => PlaceDetailsPage(place: details)),
+    );
+  }
 
   final List<HomeExperienceItem> _experiences = const [
     HomeExperienceItem(
@@ -1237,91 +1196,94 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
   }
 
   Widget _buildExperienceCard(HomeExperienceItem exp, HelaColorPalette colors) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: colors.cardBackground,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: colors.architecturalBorder),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: SizedBox(
-              width: 64,
-              height: 64,
-              child: _buildNetworkImage(exp.imageUrl),
+    return GestureDetector(
+      onTap: () => _openPlaceDetailsFromExperience(exp),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: colors.cardBackground,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: colors.architecturalBorder),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      exp.category,
-                      style: TextStyle(
-                        fontSize: 9.5,
-                        fontWeight: FontWeight.w700,
-                        color: colors.secondary,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Icon(Icons.star_rounded, size: 12, color: colors.goldenAmber),
-                        const SizedBox(width: 2),
-                        Text(
-                          exp.rating,
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: colors.onSurface,
-                          ),
+          ],
+        ),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: SizedBox(
+                width: 64,
+                height: 64,
+                child: _buildNetworkImage(exp.imageUrl),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        exp.category,
+                        style: TextStyle(
+                          fontSize: 9.5,
+                          fontWeight: FontWeight.w700,
+                          color: colors.secondary,
+                          letterSpacing: 0.5,
                         ),
-                      ],
+                      ),
+                      Row(
+                        children: [
+                          Icon(Icons.star_rounded, size: 12, color: colors.goldenAmber),
+                          const SizedBox(width: 2),
+                          Text(
+                            exp.rating,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: colors.onSurface,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    exp.title,
+                    style: TextStyle(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w700,
+                      color: colors.onSurface,
                     ),
-                  ],
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  exp.title,
-                  style: TextStyle(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w700,
-                    color: colors.onSurface,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  exp.subtitle,
-                  style: TextStyle(
-                    fontSize: 11.5,
-                    color: colors.onSurfaceVariant,
+                  const SizedBox(height: 2),
+                  Text(
+                    exp.subtitle,
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      color: colors.onSurfaceVariant,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 6),
-          Icon(Icons.chevron_right_rounded, size: 20, color: colors.outlineVariant),
-        ],
+            const SizedBox(width: 6),
+            Icon(Icons.chevron_right_rounded, size: 20, color: colors.outlineVariant),
+          ],
+        ),
       ),
     );
   }

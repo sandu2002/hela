@@ -12,7 +12,7 @@ bool get _isFlutterWidgetTest => WidgetsBinding.instance.runtimeType
     .toString()
     .contains('TestWidgetsFlutterBinding');
 
-TileLayer _buildOsmTileLayer() {
+TileLayer buildTestSafeOsmTileLayer() {
   return TileLayer(
     urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
     userAgentPackageName: 'com.hela.travel',
@@ -20,6 +20,8 @@ TileLayer _buildOsmTileLayer() {
     tileProvider: _isFlutterWidgetTest ? _TestBlankTileProvider() : null,
   );
 }
+
+TileLayer _buildOsmTileLayer() => buildTestSafeOsmTileLayer();
 
 /// Returns a 1x1 transparent PNG in widget test environments so `flutter test`
 /// does not fail on blocked outbound tile HTTP requests.
