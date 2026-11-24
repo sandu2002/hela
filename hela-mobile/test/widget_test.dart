@@ -824,7 +824,7 @@ void main() {
         ),
       ),
     );
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     // Tap language pill
     await tester.tap(find.text('EN').first);
