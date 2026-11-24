@@ -42,12 +42,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
       'titleKey': 'tea_hills',
       'icon': '🍃',
       'locationTitle': 'Nine Arch Bridge',
+      'locationKey': 'nine_arch_bridge',
       'locationSubtitle': 'Badulla Railway Line, Ella',
-      'tagText': 'Ella Highlands • Scenic Rail',
-      'tagIcon': Icons.train_rounded,
+      'tagText': 'Nine Arch Bridge',
+      'tagIcon': Icons.location_on_rounded,
       'rating': '4.9',
       'imageUrl':
-          'https://images.unsplash.com/photo-1546708973-b339540b5162?w=1000&auto=format&fit=crop&q=80',
+          'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=1200&auto=format&fit=crop&q=85',
       'tipTitle': 'Scenic Rail Tip',
       'tipBody':
           'Reserve 1st or 2nd class observation carriage seats at least 30 days ahead during peak season for panoramic misty views.',
@@ -1340,6 +1341,55 @@ class _OnboardingPageState extends State<OnboardingPage> {
     );
   }
 
+  Widget _buildScreen2Highlights(HelaAppState appState) {
+    return Center(
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Top Row: Golden Coastlines & Tea Country Peaks
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildFeaturePill(
+                  icon: Icons.waves_rounded,
+                  iconColor: OnboardingTokens.primaryDark,
+                  label: appState.tr('golden_coastlines'),
+                ),
+                const SizedBox(width: 8),
+                _buildFeaturePill(
+                  icon: Icons.terrain_rounded,
+                  iconColor: OnboardingTokens.primaryDark,
+                  label: appState.tr('tea_country_peaks'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            // Bottom Row: Yala Wildlife & Ancient Temples
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildFeaturePill(
+                  icon: Icons.pets_rounded,
+                  iconColor: OnboardingTokens.primaryDark,
+                  label: appState.tr('yala_wildlife'),
+                ),
+                const SizedBox(width: 8),
+                _buildFeaturePill(
+                  icon: Icons.temple_buddhist_rounded,
+                  iconColor: OnboardingTokens.primaryDark,
+                  label: appState.tr('ancient_temples'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   // ──────────────────────────────────────────────────────────────────────────
   // SCREEN 2: Explore Every Corner (Image 3)
   // ──────────────────────────────────────────────────────────────────────────
@@ -1377,160 +1427,51 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     ),
                   ),
 
-                  // Top-Left Tag
+                  // Top-Left Location Pill (Nine Arch Bridge)
                   Positioned(
                     top: 14,
                     left: 14,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.5),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            activeCat['tagIcon'] as IconData,
-                            size: 14,
-                            color: Colors.white,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            activeCat['tagText'] as String,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
+                    child: InkWell(
+                      onTap: _showLiveTimetable,
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.95),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.12),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  // Top-Right Tag: Rating / Golden Dawn
-                  Positioned(
-                    top: 14,
-                    right: 14,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.5),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.star_rounded,
-                            size: 15,
-                            color: Color(0xFFFFB800),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            activeCat['rating'] as String,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  // Bottom Floating Card
-                  Positioned(
-                    bottom: 14,
-                    left: 14,
-                    right: 14,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.95),
-                        borderRadius: BorderRadius.circular(18),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.1),
-                            blurRadius: 10,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 38,
-                            height: 38,
-                            decoration: const BoxDecoration(
-                              color: OnboardingTokens.mintBadge,
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.location_on_rounded,
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.location_on_outlined,
+                              size: 16,
                               color: OnboardingTokens.primaryDark,
-                              size: 18,
                             ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  activeCat['locationTitle'] as String,
-                                  style: const TextStyle(
-                                    fontSize: 13.5,
-                                    fontWeight: FontWeight.w800,
-                                    color: OnboardingTokens.textDark,
-                                  ),
-                                ),
-                                Text(
-                                  activeCat['locationSubtitle'] as String,
-                                  style: const TextStyle(
-                                    fontSize: 11,
-                                    color: OnboardingTokens.textMuted,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          InkWell(
-                            onTap: _showLiveTimetable,
-                            borderRadius: BorderRadius.circular(10),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 4,
+                            const SizedBox(width: 6),
+                            Text(
+                              appState.tr(
+                                activeCat['locationKey'] as String? ??
+                                    'nine_arch_bridge',
                               ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    activeCat['actionText'] as String,
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w700,
-                                      color: OnboardingTokens.primaryDark,
-                                    ),
-                                  ),
-                                ],
+                              style: const TextStyle(
+                                fontSize: 12.5,
+                                fontWeight: FontWeight.w700,
+                                color: OnboardingTokens.textDark,
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -1609,62 +1550,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
             ),
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 18),
 
-          // Tip Card
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: const Color(0xFFE2F6EE),
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(
-                color: OnboardingTokens.mintBorder,
-              ),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFC7EDE0),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.lightbulb_outline_rounded,
-                    color: OnboardingTokens.primaryDark,
-                    size: 19,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        activeCat['tipTitle'] as String,
-                        style: const TextStyle(
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w800,
-                          color: OnboardingTokens.textDark,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        activeCat['tipBody'] as String,
-                        style: const TextStyle(
-                          fontSize: 12.5,
-                          height: 1.4,
-                          color: OnboardingTokens.textMuted,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+          // Highlights Pills (replacing old Tip Card):
+          // Golden Coastlines, Tea Country Peaks, Yala Wildlife, Ancient Temples
+          _buildScreen2Highlights(appState),
 
           const SizedBox(height: 20),
 

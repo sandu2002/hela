@@ -751,6 +751,51 @@ void main() {
     expect(find.byIcon(Icons.wb_twilight_rounded), findsOneWidget);
   });
 
+  testWidgets('OnboardingPage Screen 2 renders highlight pills without tip card', (WidgetTester tester) async {
+    _ignoreOverflow();
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    final appState = HelaAppState();
+    await tester.pumpWidget(
+      HelaAppStateProvider(
+        state: appState,
+        child: const MaterialApp(
+          home: OnboardingPage(),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    // Navigate to slide 1 (Screen 2)
+    await tester.tap(find.text('Get Started'));
+    await tester.pumpAndSettle();
+
+    // Verify Screen 2 headline
+    expect(find.text('Explore Every Corner'), findsOneWidget);
+
+    // Verify Tip Card is removed
+    expect(find.text('Scenic Rail Tip'), findsNothing);
+    expect(
+      find.text('Reserve 1st or 2nd class observation carriage seats at least 30 days ahead during peak season for panoramic misty views.'),
+      findsNothing,
+    );
+
+    // Verify the 4 highlight pills are rendered
+    expect(find.text('Golden Coastlines'), findsOneWidget);
+    expect(find.text('Tea Country Peaks'), findsOneWidget);
+    expect(find.text('Yala Wildlife'), findsOneWidget);
+    expect(find.text('Ancient Temples'), findsOneWidget);
+    expect(find.byIcon(Icons.waves_rounded), findsOneWidget);
+    expect(find.byIcon(Icons.terrain_rounded), findsOneWidget);
+    expect(find.byIcon(Icons.pets_rounded), findsOneWidget);
+    expect(find.byIcon(Icons.temple_buddhist_rounded), findsOneWidget);
+  });
+
   testWidgets('OnboardingPage Screen 3 renders stitch bento layout with 3/3 progress, showcase card and 3 bento cards', (WidgetTester tester) async {
     _ignoreOverflow();
     tester.view.physicalSize = const Size(1080, 2400);
