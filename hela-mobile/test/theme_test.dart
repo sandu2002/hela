@@ -66,7 +66,7 @@ void main() {
   });
 
   group('Home Page Theme Switch UI Tests', () {
-    testWidgets('Home page renders theme switch button in AppBar', (tester) async {
+    testWidgets('Home page does not render theme switch button in AppBar', (tester) async {
       _ignoreOverflow();
       tester.view.physicalSize = const Size(1080, 2400);
       tester.view.devicePixelRatio = 2.0;
@@ -94,23 +94,9 @@ void main() {
 
       await tester.pump();
 
-      // Verify the theme switch button exists in the AppBar
-      expect(find.byType(HelaThemeSwitchButton), findsOneWidget);
-
-      // Tap the AppBar theme switch button to switch to Dark Mode
-      await tester.tap(find.byType(HelaThemeSwitchButton));
-      await tester.pumpAndSettle();
-
-      // State is now dark mode!
-      expect(appState.isDarkMode, true);
-      expect(appState.themeMode, ThemeMode.dark);
-
-      // Tap again to switch back to Light Mode
-      await tester.tap(find.byType(HelaThemeSwitchButton));
-      await tester.pumpAndSettle();
-
-      expect(appState.isDarkMode, false);
-      expect(appState.themeMode, ThemeMode.light);
+      // Verify the theme switch button is removed from the Home AppBar
+      expect(find.byType(HelaThemeSwitchButton), findsNothing);
+      expect(find.byIcon(Icons.notifications_outlined), findsOneWidget);
     });
 
     testWidgets('Menu button opens HelaNavigationDrawer with theme mode selector', (tester) async {

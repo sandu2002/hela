@@ -4,7 +4,6 @@ import 'package:hela/pages/cultural_guide/cultural_guide_page.dart';
 import 'package:hela/pages/explore_page.dart';
 import 'package:hela/pages/trip_planner_page.dart';
 import 'package:hela/pages/profile_page.dart';
-import 'package:hela/widgets/theme_switch_button.dart';
 import 'package:hela/widgets/hela_drawer.dart';
 import 'package:hela/widgets/hela_bottom_nav_bar.dart';
 import 'package:hela/state/app_state.dart';
@@ -397,7 +396,6 @@ class _HelaHomePageState extends State<HelaHomePage> {
         ],
       ),
       actions: [
-        const HelaThemeSwitchButton(size: 34),
         IconButton(
           icon: Icon(Icons.notifications_outlined, color: colors.onSurfaceVariant, size: 22),
           tooltip: 'Notifications',
@@ -523,7 +521,14 @@ class _HelaHomePageState extends State<HelaHomePage> {
               ),
               decoration: InputDecoration(
                 border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                disabledBorder: InputBorder.none,
+                errorBorder: InputBorder.none,
+                focusedErrorBorder: InputBorder.none,
+                filled: false,
                 isCollapsed: true,
+                contentPadding: EdgeInsets.zero,
                 hintText: HelaAppStateProvider.of(context).tr('where_to_go'),
                 hintStyle: TextStyle(
                   color: colors.onSurfaceVariant.withValues(alpha: 0.7),
@@ -1012,27 +1017,14 @@ class _HelaHomePageState extends State<HelaHomePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              HelaAppStateProvider.of(context).tr('experiences_love'),
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w800,
-                color: colors.onSurface,
-                fontFamily: 'Inter',
-              ),
-            ),
-            Text(
-              HelaAppStateProvider.of(context).tr('handcrafted'),
-              style: TextStyle(
-                fontSize: 11.5,
-                fontWeight: FontWeight.w600,
-                color: colors.onSurfaceVariant,
-              ),
-            ),
-          ],
+        Text(
+          HelaAppStateProvider.of(context).tr('experiences_love'),
+          style: TextStyle(
+            fontSize: 17,
+            fontWeight: FontWeight.w800,
+            color: colors.onSurface,
+            fontFamily: 'Inter',
+          ),
         ),
         const SizedBox(height: 12),
 

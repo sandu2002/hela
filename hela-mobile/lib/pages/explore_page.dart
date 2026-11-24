@@ -713,7 +713,14 @@ class _ExplorePageState extends State<ExplorePage> {
                     ),
                     decoration: InputDecoration(
                       border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      focusedErrorBorder: InputBorder.none,
+                      filled: false,
                       isCollapsed: true,
+                      contentPadding: EdgeInsets.zero,
                       hintText: 'Search destinations, attractions...',
                       hintStyle: TextStyle(
                         fontSize: 13,
