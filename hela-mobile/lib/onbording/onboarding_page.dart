@@ -32,6 +32,60 @@ class _OnboardingPageState extends State<OnboardingPage> {
   final PageController _pageController = PageController();
   int _currentIndex = 0;
 
+  // Selected category on Step 1 (Discover Sri Lanka)
+  int _selectedStep1Index = 0;
+
+  final List<Map<String, dynamic>> _step1Categories = [
+    {
+      'title': 'Sigiriya Rock',
+      'titleKey': 'cat_cultural_heritage',
+      'icon': '🏛️',
+      'locationTitle': 'Sigiriya Rock Fortress',
+      'locationSubtitle': 'Cultural Triangle, Matale',
+      'tagText': 'Cultural Triangle • UNESCO Heritage',
+      'tagIcon': Icons.temple_buddhist_rounded,
+      'rating': '4.9',
+      'imageUrl':
+          'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=1200&auto=format&fit=crop&q=85',
+      'tipTitle': 'Sigiriya Dawn Tip',
+      'tipBody':
+          'Climb Sigiriya at sunrise (6:30 AM) to beat the tropical heat and enjoy misty 360° jungle canopy views.',
+      'actionText': 'Citadel Guide ›',
+    },
+    {
+      'title': 'Ella Highlands',
+      'titleKey': 'cat_hill_country',
+      'icon': '🍃',
+      'locationTitle': 'Nine Arch Bridge',
+      'locationSubtitle': 'Badulla Railway Line, Ella',
+      'tagText': 'Ella Highlands • Scenic Rail',
+      'tagIcon': Icons.train_rounded,
+      'rating': '4.9',
+      'imageUrl':
+          'https://images.unsplash.com/photo-1546708973-b339540b5162?w=1000&auto=format&fit=crop&q=80',
+      'tipTitle': 'Scenic Rail Tip',
+      'tipBody':
+          'Reserve 1st or 2nd class observation carriage seats at least 30 days ahead during peak season for panoramic misty views.',
+      'actionText': 'Live Timetable ›',
+    },
+    {
+      'title': 'Mirissa Coast',
+      'titleKey': 'cat_beaches',
+      'icon': '🏖️',
+      'locationTitle': 'Coconut Tree Hill',
+      'locationSubtitle': 'Southern Coast, Mirissa',
+      'tagText': 'Southern Coast • Surf & Whales',
+      'tagIcon': Icons.surfing_rounded,
+      'rating': '4.8',
+      'imageUrl':
+          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1000&auto=format&fit=crop&q=80',
+      'tipTitle': 'Sunset & Surf Tip',
+      'tipBody':
+          'Best surf swell runs November to April on the South Coast. Head up Coconut Tree Hill around 5:30 PM for breathtaking sunset vistas.',
+      'actionText': 'Tide Times ›',
+    },
+  ];
+
   // Selected category on Step 2 (Explore Every Corner)
   int _selectedCategoryIndex = 0;
 
@@ -147,108 +201,304 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
         return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 44,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  appState.tr('select_language'),
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: OnboardingTokens.textDark,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  appState.tr('language_desc'),
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: OnboardingTokens.textMuted,
-                  ),
-                ),
-                const SizedBox(height: 14),
-                ...languages.map((lang) {
-                  final isSelected = currentLang == lang.code;
-                  return ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: Container(
-                      width: 38,
-                      height: 38,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(ctx).size.height * 0.82,
+            ),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 44,
+                      height: 4,
                       decoration: BoxDecoration(
-                        color: isSelected
-                            ? OnboardingTokens.mintBadge
-                            : Colors.grey.shade100,
-                        shape: BoxShape.circle,
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(2),
                       ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        lang.code,
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    appState.tr('select_language'),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: OnboardingTokens.textDark,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    appState.tr('language_desc'),
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: OnboardingTokens.textMuted,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  ...languages.map((lang) {
+                    final isSelected = currentLang == lang.code;
+                    return ListTile(
+                      dense: true,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 2),
+                      leading: Container(
+                        width: 38,
+                        height: 38,
+                        decoration: BoxDecoration(
                           color: isSelected
-                              ? OnboardingTokens.primaryDark
-                              : Colors.grey.shade700,
+                              ? OnboardingTokens.mintBadge
+                              : Colors.grey.shade100,
+                          shape: BoxShape.circle,
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          lang.code,
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w800,
+                            color: isSelected
+                                ? OnboardingTokens.primaryDark
+                                : Colors.grey.shade700,
+                          ),
                         ),
                       ),
-                    ),
-                    title: Text(
-                      lang.name,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight:
-                            isSelected ? FontWeight.w700 : FontWeight.w500,
-                        color: OnboardingTokens.textDark,
-                      ),
-                    ),
-                    subtitle: Text(
-                      lang.nativeName,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: OnboardingTokens.textMuted,
-                      ),
-                    ),
-                    trailing: isSelected
-                        ? const Icon(
-                            Icons.check_circle_rounded,
-                            color: OnboardingTokens.primaryDark,
-                          )
-                        : null,
-                    onTap: () {
-                      appState.setLanguage(lang.code);
-                      Navigator.pop(ctx);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('${appState.tr('language_updated')} ${lang.name} (${lang.code}) ✨'),
-                          duration: const Duration(seconds: 2),
+                      title: Text(
+                        lang.name,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight:
+                              isSelected ? FontWeight.w700 : FontWeight.w500,
+                          color: OnboardingTokens.textDark,
                         ),
-                      );
-                    },
-                  );
-                }),
-              ],
+                      ),
+                      subtitle: Text(
+                        lang.nativeName,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: OnboardingTokens.textMuted,
+                        ),
+                      ),
+                      trailing: isSelected
+                          ? const Icon(
+                              Icons.check_circle_rounded,
+                              color: OnboardingTokens.primaryDark,
+                            )
+                          : null,
+                      onTap: () {
+                        appState.setLanguage(lang.code);
+                        Navigator.pop(ctx);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('${appState.tr('language_updated')} ${lang.name} (${lang.code}) ✨'),
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      },
+                    );
+                  }),
+                ],
+              ),
             ),
           ),
+        );
+      },
+    );
+  }
+
+  void _showCitadelGuide() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.65,
+          maxChildSize: 0.88,
+          minChildSize: 0.45,
+          expand: false,
+          builder: (_, scrollController) {
+            final highlights = [
+              {
+                'name': 'Lion Rock Summit & Sky Palace',
+                'category': 'Royal Citadel',
+                'time': 'Best: 06:30 AM – 09:00 AM',
+                'desc': '600-foot ancient palace of King Kashyapa with 360° views across the central plains.',
+                'tag': 'UNESCO Site',
+              },
+              {
+                'name': 'Mirror Wall & Ancient Graffiti',
+                'category': 'Historical Literature',
+                'time': 'Open 07:00 AM – 05:30 PM',
+                'desc': 'Polished brick wall covered in 8th-century verses celebrating the Sigiriya Maidens.',
+                'tag': 'Ancient Poetry',
+              },
+              {
+                'name': 'Royal Water Gardens & Fountains',
+                'category': 'Hydraulic Engineering',
+                'time': 'Active Year-Round',
+                'desc': 'Symmetrical water pavilions and underground conduits that still run during monsoon.',
+                'tag': '5th Century Tech',
+              },
+              {
+                'name': 'Pidurangala Sunset Vista',
+                'category': 'Panoramic Viewpoint',
+                'time': 'Best: 05:00 PM – 06:30 PM',
+                'desc': 'Climb adjacent rock monastery for direct, unhindered views of Sigiriya at sunset.',
+                'tag': 'Golden Hour',
+              },
+            ];
+
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: ListView(
+                controller: scrollController,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 44,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: const BoxDecoration(
+                          color: OnboardingTokens.mintBadge,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.landscape_rounded,
+                          color: OnboardingTokens.primaryDark,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Sigiriya Rock Fortress',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                              color: OnboardingTokens.textDark,
+                            ),
+                          ),
+                          Text(
+                            'UNESCO World Heritage · 5th Century Citadel',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: OnboardingTokens.textMuted,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 18),
+                  ...highlights.map((item) {
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: OnboardingTokens.background,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: OnboardingTokens.mintBorder,
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  item['name']!,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w800,
+                                    color: OnboardingTokens.primaryDark,
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  item['tag']!,
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    color: OnboardingTokens.textMuted,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.access_time_rounded,
+                                size: 14,
+                                color: OnboardingTokens.textMuted,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                item['time']!,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: OnboardingTokens.textDark,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            item['desc']!,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: OnboardingTokens.textMuted,
+                              height: 1.35,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            );
+          },
         );
       },
     );
@@ -680,59 +930,64 @@ class _OnboardingPageState extends State<OnboardingPage> {
           children: [
             // Left Element
             if (_currentIndex == 0)
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 38,
-                    height: 38,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.04),
-                          blurRadius: 6,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    alignment: Alignment.center,
-                    child: const Text(
-                      'HELA',
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: -0.5,
-                        color: OnboardingTokens.primaryDark,
+              Expanded(
+                child: Row(
+                  children: [
+                    Container(
+                      width: 38,
+                      height: 38,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.04),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
+                      alignment: Alignment.center,
+                      child: const Text(
                         'HELA',
                         style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                          color: OnboardingTokens.textDark,
-                          letterSpacing: -0.2,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -0.5,
+                          color: OnboardingTokens.primaryDark,
                         ),
                       ),
-                      Text(
-                        HelaAppStateProvider.of(context).tr('sri_lanka_travel_companion'),
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
-                          color: OnboardingTokens.textMuted,
-                        ),
+                    ),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'HELA',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                              color: OnboardingTokens.textDark,
+                              letterSpacing: -0.2,
+                            ),
+                          ),
+                          Text(
+                            HelaAppStateProvider.of(context).tr('sri_lanka_travel_companion'),
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                              color: OnboardingTokens.textMuted,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               )
             else
               // Circular Back Button for Screen 2 & 3
@@ -841,34 +1096,63 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 ),
               )
             else
-              // Screen 3: Sparkle Badge HELA AI GUIDE
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  color: OnboardingTokens.peachBadge,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.auto_awesome_rounded,
-                      size: 15,
-                      color: OnboardingTokens.peachText,
-                    ),
-                    SizedBox(width: 6),
-                    Text(
-                      'HELA AI GUIDE',
-                      style: TextStyle(
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.w800,
-                        color: OnboardingTokens.peachText,
-                        letterSpacing: 0.5,
+              // Screen 3: Language Pill + Brand Monogram Token (matching Stitch design)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  InkWell(
+                    onTap: _showLanguageSelector,
+                    borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: OnboardingTokens.mintContainer,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.translate_rounded,
+                            size: 15,
+                            color: Color(0xFF5F4100),
+                          ),
+                          const SizedBox(width: 5),
+                          Text(
+                            '${HelaAppStateProvider.of(context).selectedLanguage} / සිංහල',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: OnboardingTokens.primaryDark,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 8),
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFB6EAE1),
+                      shape: BoxShape.circle,
+                    ),
+                    alignment: Alignment.center,
+                    child: const Text(
+                      'HELA',
+                      style: TextStyle(
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: -0.5,
+                        color: OnboardingTokens.primaryDark,
+                      ),
+                    ),
+                  ),
+                ],
               ),
           ],
         ),
@@ -881,13 +1165,16 @@ class _OnboardingPageState extends State<OnboardingPage> {
   // ──────────────────────────────────────────────────────────────────────────
   Widget _buildScreen1() {
     final appState = HelaAppStateProvider.of(context);
+    final activeCat = _step1Categories[_selectedStep1Index];
+
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 6),
 
-          // Hero Image Card (Sigiriya at dawn)
+          // Hero Image Card with Overlays (matching Screen 2 layout)
           ClipRRect(
             borderRadius: BorderRadius.circular(26),
             child: SizedBox(
@@ -897,7 +1184,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 fit: StackFit.expand,
                 children: [
                   Image.network(
-                    'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=1200&auto=format&fit=crop&q=85',
+                    activeCat['imageUrl'] as String,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) => Container(
                       color: OnboardingTokens.primaryDark,
@@ -910,30 +1197,30 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     ),
                   ),
 
-                  // Top-Right Pill: Golden Dawn
+                  // Top-Left Tag
                   Positioned(
                     top: 14,
-                    right: 14,
+                    left: 14,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.45),
+                        color: Colors.black.withValues(alpha: 0.5),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(
-                            Icons.wb_sunny_outlined,
+                          Icon(
+                            activeCat['tagIcon'] as IconData,
                             size: 14,
                             color: Colors.white,
                           ),
-                          const SizedBox(width: 5),
+                          const SizedBox(width: 6),
                           Text(
-                            appState.tr('golden_dawn'),
+                            activeCat['tagText'] as String,
                             style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
@@ -945,41 +1232,129 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     ),
                   ),
 
-                  // Bottom-Left Pill: Sigiriya, Cultural Triangle
+                  // Top-Right Tag: Rating / Golden Dawn
                   Positioned(
-                    bottom: 14,
-                    left: 14,
+                    top: 14,
+                    right: 14,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 8,
+                        horizontal: 10,
+                        vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.95),
+                        color: Colors.black.withValues(alpha: 0.5),
                         borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.12),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(
-                            Icons.location_on_outlined,
-                            size: 16,
-                            color: OnboardingTokens.primaryDark,
+                          Icon(
+                            _selectedStep1Index == 0
+                                ? Icons.wb_sunny_outlined
+                                : Icons.star_rounded,
+                            size: 15,
+                            color: const Color(0xFFFFB800),
                           ),
-                          const SizedBox(width: 6),
+                          const SizedBox(width: 4),
                           Text(
-                            appState.tr('sigiriya_cultural_triangle'),
+                            _selectedStep1Index == 0
+                                ? appState.tr('golden_dawn')
+                                : (activeCat['rating'] as String),
                             style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              color: OnboardingTokens.textDark,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Bottom Floating Card
+                  Positioned(
+                    bottom: 14,
+                    left: 14,
+                    right: 14,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.95),
+                        borderRadius: BorderRadius.circular(18),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            blurRadius: 10,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 38,
+                            height: 38,
+                            decoration: const BoxDecoration(
+                              color: OnboardingTokens.mintBadge,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.location_on_rounded,
+                              color: OnboardingTokens.primaryDark,
+                              size: 18,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  activeCat['locationTitle'] as String,
+                                  style: const TextStyle(
+                                    fontSize: 13.5,
+                                    fontWeight: FontWeight.w800,
+                                    color: OnboardingTokens.textDark,
+                                  ),
+                                ),
+                                Text(
+                                  _selectedStep1Index == 0
+                                      ? appState.tr('sigiriya_cultural_triangle')
+                                      : (activeCat['locationSubtitle'] as String),
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    color: OnboardingTokens.textMuted,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              if (_selectedStep1Index == 1) {
+                                _showLiveTimetable();
+                              } else {
+                                _showCitadelGuide();
+                              }
+                            },
+                            borderRadius: BorderRadius.circular(10),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 4,
+                              ),
+                              child: Text(
+                                activeCat['actionText'] as String,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: OnboardingTokens.primaryDark,
+                                ),
+                              ),
                             ),
                           ),
                         ],
@@ -991,63 +1366,129 @@ class _OnboardingPageState extends State<OnboardingPage> {
             ),
           ),
 
-          const SizedBox(height: 18),
+          const SizedBox(height: 16),
 
-          // 3 Page Dots Indicator (Step 1 active)
+          // Interactive Category Chips Row
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: List.generate(_step1Categories.length, (idx) {
+                final cat = _step1Categories[idx];
+                final isSelected = _selectedStep1Index == idx;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: InkWell(
+                    onTap: () {
+                      setState(() {
+                        _selectedStep1Index = idx;
+                      });
+                    },
+                    borderRadius: BorderRadius.circular(20),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? const Color(0xFFBCEEDA)
+                            : OnboardingTokens.mintContainer,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: isSelected
+                              ? const Color(0xFF7DD2B4)
+                              : OnboardingTokens.mintBorder,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(cat['icon'] as String),
+                          const SizedBox(width: 6),
+                          Text(
+                            appState.tr(cat['titleKey'] as String? ?? 'cat_cultural_heritage'),
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: isSelected
+                                  ? FontWeight.w800
+                                  : FontWeight.w600,
+                              color: isSelected
+                                  ? OnboardingTokens.primaryDark
+                                  : OnboardingTokens.textDark,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Step Badge & Verified Waypoints
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
-                width: 28,
-                height: 7,
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: OnboardingTokens.primaryDark,
-                  borderRadius: BorderRadius.circular(4),
+                  color: OnboardingTokens.mintBadge,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Text(
+                  'STEP 01 OF 03',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    color: OnboardingTokens.primaryDark,
+                    letterSpacing: 0.5,
+                  ),
                 ),
               ),
-              const SizedBox(width: 6),
-              Container(
-                width: 7,
-                height: 7,
-                decoration: const BoxDecoration(
-                  color: OnboardingTokens.dotInactive,
-                  shape: BoxShape.circle,
-                ),
-              ),
-              const SizedBox(width: 6),
-              Container(
-                width: 7,
-                height: 7,
-                decoration: const BoxDecoration(
-                  color: OnboardingTokens.dotInactive,
-                  shape: BoxShape.circle,
-                ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.verified_user_outlined,
+                    size: 15,
+                    color: OnboardingTokens.primaryDark,
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    appState.tr('verified_waypoints'),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: OnboardingTokens.primaryDark,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
 
-          const SizedBox(height: 18),
+          const SizedBox(height: 10),
 
           // Title
           Text(
             appState.tr('discover_title'),
-            textAlign: TextAlign.center,
             style: const TextStyle(
-              fontSize: 28,
-              height: 1.2,
+              fontSize: 27,
               fontWeight: FontWeight.w800,
               color: OnboardingTokens.textDark,
               letterSpacing: -0.5,
             ),
           ),
 
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
 
           // Subtitle
           Text(
             appState.tr('discover_subtitle'),
-            textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 14,
               height: 1.45,
@@ -1055,12 +1496,69 @@ class _OnboardingPageState extends State<OnboardingPage> {
             ),
           ),
 
-          const SizedBox(height: 18),
+          const SizedBox(height: 16),
+
+          // Tip Card (matching Screen 2 tip card layout)
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE2F6EE),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: OnboardingTokens.mintBorder,
+              ),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFC7EDE0),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.lightbulb_outline_rounded,
+                    color: OnboardingTokens.primaryDark,
+                    size: 19,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        activeCat['tipTitle'] as String,
+                        style: const TextStyle(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w800,
+                          color: OnboardingTokens.textDark,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        activeCat['tipBody'] as String,
+                        style: const TextStyle(
+                          fontSize: 12.5,
+                          height: 1.4,
+                          color: OnboardingTokens.textMuted,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 16),
 
           // Feature Highlight Pills (AI Smart Itineraries, Transparent Fares, Local Heritage)
           _buildFeaturePills(appState),
 
-          const SizedBox(height: 22),
+          const SizedBox(height: 20),
 
           // Primary CTA: Get Started
           SizedBox(
@@ -1095,35 +1593,30 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
           const SizedBox(height: 8),
 
-          // Secondary CTA: Continue as Guest
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
+          // Secondary CTA: Continue as Guest (Text-like without underline)
+          Center(
+            child: TextButton(
               onPressed: _continueAsGuest,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFB6EAE1),
-                foregroundColor: OnboardingTokens.primaryDark,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
+              style: TextButton.styleFrom(
+                foregroundColor: OnboardingTokens.textMuted,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   const Icon(
                     Icons.explore_outlined,
-                    size: 19,
-                    color: OnboardingTokens.primaryDark,
+                    size: 18,
+                    color: OnboardingTokens.textMuted,
                   ),
                   const SizedBox(width: 8),
                   Text(
                     appState.tr('continue_as_guest'),
                     style: const TextStyle(
-                      fontSize: 14.5,
+                      fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      color: OnboardingTokens.primaryDark,
+                      color: OnboardingTokens.textMuted,
+                      decoration: TextDecoration.none,
                     ),
                   ),
                 ],
@@ -1131,7 +1624,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
             ),
           ),
 
-          const SizedBox(height: 14),
+          const SizedBox(height: 10),
 
           // Footer link: Sign In
           Row(
@@ -1371,7 +1864,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     ),
                   ),
 
-                  // Top-Right Tag: Rating
+                  // Top-Right Tag: Rating / Golden Dawn
                   Positioned(
                     top: 14,
                     right: 14,
@@ -1387,14 +1880,18 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(
-                            Icons.star_rounded,
+                          Icon(
+                            _selectedStep1Index == 0
+                                ? Icons.wb_sunny_outlined
+                                : Icons.star_rounded,
                             size: 15,
-                            color: Color(0xFFFFB800),
+                            color: const Color(0xFFFFB800),
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            activeCat['rating'] as String,
+                            _selectedStep1Index == 0
+                                ? appState.tr('golden_dawn')
+                                : (activeCat['rating'] as String),
                             style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w800,
@@ -1457,7 +1954,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                   ),
                                 ),
                                 Text(
-                                  activeCat['locationSubtitle'] as String,
+                                  _selectedStep1Index == 0
+                                      ? appState.tr('sigiriya_cultural_triangle')
+                                      : (activeCat['locationSubtitle'] as String),
                                   style: const TextStyle(
                                     fontSize: 11,
                                     color: OnboardingTokens.textMuted,
@@ -1752,101 +2251,210 @@ class _OnboardingPageState extends State<OnboardingPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 6),
+          // Step Progress Indicator (Step 3 of 3 with 3/3 pill)
+          Padding(
+            padding: const EdgeInsets.only(top: 2, bottom: 12),
+            child: Row(
+              children: [
+                Container(
+                  height: 6,
+                  width: 28,
+                  decoration: BoxDecoration(
+                    color: OnboardingTokens.primaryTeal,
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Container(
+                  height: 6,
+                  width: 28,
+                  decoration: BoxDecoration(
+                    color: OnboardingTokens.primaryTeal,
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Container(
+                    height: 6,
+                    decoration: BoxDecoration(
+                      color: OnboardingTokens.primaryDark,
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  '3/3',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: OnboardingTokens.primaryDark,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
 
-          // Hero Image Card (Sri Lankan Cultural Lamp Ceremony)
+          // Visual Showcase Card (Cultural Immersion in Kandy)
           ClipRRect(
-            borderRadius: BorderRadius.circular(26),
+            borderRadius: BorderRadius.circular(20),
             child: SizedBox(
-              height: 270,
+              height: 240,
               width: double.infinity,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
                   Image.network(
-                    'https://images.unsplash.com/photo-1620619767323-b95a89183081?w=1000&auto=format&fit=crop&q=80',
+                    'https://lh3.googleusercontent.com/aida-public/AB6AXuCw5H81UBSW8A11JA-e6aQCq9ri4qIeZSvKxBA3SfX_4SaGGwn6A3C4TFFfW2KASveGMkh_mw2uHpg6jOgBI-ZUBb05AlswnmsbhYz2iaC2B_KtSh7YR-PzFtqzMSXSDOgPbzzXIs5wvokwLVVS4i-uHNgCEl7IIsB53dAXLigo4X3Gyl0Vv9zkJeznRC6omMp2ia5nYq7vC3UAykMNyCtVayl27YBnXKUUT5502G8',
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      color: OnboardingTokens.primaryDark,
-                      alignment: Alignment.center,
-                      child: const Icon(
-                        Icons.temple_buddhist_rounded,
-                        color: Colors.white70,
-                        size: 54,
+                    errorBuilder: (context, error, stackTrace) => Image.network(
+                      'https://images.unsplash.com/photo-1620619767323-b95a89183081?w=1000&auto=format&fit=crop&q=80',
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        color: OnboardingTokens.primaryDark,
+                        alignment: Alignment.center,
+                        child: const Icon(
+                          Icons.temple_buddhist_rounded,
+                          color: Colors.white70,
+                          size: 54,
+                        ),
                       ),
                     ),
                   ),
 
-                  // Bottom Overlay Pill: Ask HELA 24/7 Smart Companion
+                  // Ambient Gradient Scrim
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withValues(alpha: 0.2),
+                          OnboardingTokens.primaryDark.withValues(alpha: 0.8),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Floating Experience Chip: 🪔 Cultural Immersion • Kandy Heritage
                   Positioned(
-                    bottom: 14,
-                    left: 14,
-                    right: 14,
-                    child: InkWell(
-                      onTap: _showAskHelaSheet,
-                      borderRadius: BorderRadius.circular(20),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 9,
+                    top: 12,
+                    left: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.95),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.08),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text('🪔', style: TextStyle(fontSize: 13)),
+                          const SizedBox(width: 6),
+                          Text(
+                            appState.tr('kandy_heritage_tag'),
+                            style: const TextStyle(
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.w600,
+                              color: OnboardingTokens.textDark,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Bottom Audio Snippet & Rating Lockup
+                  Positioned(
+                    bottom: 12,
+                    left: 12,
+                    right: 12,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Live Folk Lore & Ola Leaf Tales Button
+                        InkWell(
+                          onTap: _showAskHelaSheet,
+                          borderRadius: BorderRadius.circular(16),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 28,
+                                height: 28,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFF6E4C00),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.record_voice_over_rounded,
+                                  color: Color(0xFFF5BD57),
+                                  size: 15,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                appState.tr('live_folklore_tag'),
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                  shadows: [
+                                    Shadow(
+                                      color: Colors.black54,
+                                      blurRadius: 4,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.95),
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.12),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFF7A4810),
-                                shape: BoxShape.circle,
+
+                        // Star Rating Pill
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.4),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.star_rounded,
+                                color: Color(0xFFF5BD58),
+                                size: 14,
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            const Text(
-                              'Ask HELA',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w800,
-                                color: OnboardingTokens.textDark,
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            const Text(
-                              '•',
-                              style: TextStyle(
-                                color: OnboardingTokens.textMuted,
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            const Expanded(
-                              child: Text(
-                                '24/7 Smart Companion',
+                              SizedBox(width: 3),
+                              Text(
+                                '4.98',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                  color: OnboardingTokens.textMuted,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
                                 ),
-                                overflow: TextOverflow.ellipsis,
                               ),
-                            ),
-                            const Icon(
-                              Icons.chevron_right_rounded,
-                              size: 18,
-                              color: OnboardingTokens.primaryDark,
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ],
@@ -1856,105 +2464,22 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
           const SizedBox(height: 16),
 
-          // 3-Bar Segmented Progress Indicator (All 3 filled)
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFC0E8D9),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Container(
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFC0E8D9),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Container(
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: OnboardingTokens.primaryDark,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 14),
-
-          // Step Badge & Cultural Greeting
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: OnboardingTokens.mintBadge,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Text(
-                  'STEP 03 OF 03',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
-                    color: OnboardingTokens.primaryDark,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ),
-              const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.spa_rounded,
-                    size: 16,
-                    color: Color(0xFF7A4810),
-                  ),
-                  SizedBox(width: 5),
-                  Text(
-                    'Ayubowan',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w800,
-                      color: Color(0xFF5B380E),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 10),
-
-          // Title
+          // Narrative Headline Block
           Text(
-            appState.tr('personal_companion_title'),
+            appState.tr('personal_companion_title_clean'),
             style: const TextStyle(
-              fontSize: 27,
+              fontSize: 24,
               fontWeight: FontWeight.w800,
-              height: 1.2,
               color: OnboardingTokens.textDark,
-              letterSpacing: -0.5,
+              letterSpacing: -0.4,
             ),
           ),
 
           const SizedBox(height: 8),
 
-          // Description
+          // Narrative Description
           Text(
-            appState.tr('personal_companion_desc'),
+            appState.tr('personal_companion_desc_detail'),
             style: const TextStyle(
               fontSize: 13.5,
               height: 1.45,
@@ -1964,29 +2489,36 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
           const SizedBox(height: 16),
 
-          // 3 Feature Cards
-          _buildFeatureCard(
-            icon: Icons.explore_outlined,
-            iconColor: OnboardingTokens.primaryDark,
-            iconBg: OnboardingTokens.mintBadge,
-            title: appState.tr('ai_itinerary_planner'),
-            subtitle: appState.tr('ai_itinerary_sub'),
+          // 3 Bento-style Feature Mini Cards
+          _buildBentoFeatureCard(
+            icon: Icons.auto_awesome_rounded,
+            title: appState.tr('ai_tour_guide'),
+            badgeText: appState.tr('bilingual'),
+            badgeBg: const Color(0xFFB6EAE1),
+            badgeTextColor: const Color(0xFF00443E),
+            subtitle: appState.tr('ai_tour_guide_sub'),
           ),
-          const SizedBox(height: 8),
-          _buildFeatureCard(
-            icon: Icons.temple_buddhist_rounded,
-            iconColor: const Color(0xFF8A5A1E),
-            iconBg: const Color(0xFFF7EBDC),
-            title: appState.tr('local_cultural_guide'),
-            subtitle: appState.tr('local_cultural_sub'),
+
+          const SizedBox(height: 10),
+
+          _buildBentoFeatureCard(
+            icon: Icons.map_rounded,
+            title: appState.tr('dynamic_trip_planner'),
+            badgeText: appState.tr('auto_sync'),
+            badgeBg: const Color(0xFFD2E7E2),
+            badgeTextColor: const Color(0xFF3F4947),
+            subtitle: appState.tr('dynamic_trip_planner_sub'),
           ),
-          const SizedBox(height: 8),
-          _buildFeatureCard(
-            icon: Icons.shield_outlined,
-            iconColor: OnboardingTokens.primaryDark,
-            iconBg: OnboardingTokens.mintBadge,
-            title: appState.tr('transparent_rides'),
-            subtitle: appState.tr('transparent_rides_sub'),
+
+          const SizedBox(height: 10),
+
+          _buildBentoFeatureCard(
+            icon: Icons.local_taxi_rounded,
+            title: appState.tr('fair_taxi_pricing'),
+            badgeText: appState.tr('meter_verified'),
+            badgeBg: const Color(0xFFFFDEAA),
+            badgeTextColor: const Color(0xFF5F4100),
+            subtitle: appState.tr('fair_taxi_pricing_sub'),
           ),
 
           const SizedBox(height: 20),
@@ -2022,9 +2554,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
             ),
           ),
 
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
 
-          // Footer link: Sign In
+          // Footer link: Already have an account? Sign In
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -2043,66 +2575,123 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     fontSize: 13,
                     fontWeight: FontWeight.w800,
                     color: OnboardingTokens.primaryDark,
+                    decoration: TextDecoration.underline,
                   ),
                 ),
               ),
             ],
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
+
+          // Reassurance Micro-banner
+          GestureDetector(
+            onTap: _continueAsGuest,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.verified_user_outlined,
+                  size: 14,
+                  color: Color(0xFF356760),
+                ),
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(
+                    appState.tr('continue_guest_reassurance'),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w500,
+                      color: OnboardingTokens.textMuted,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 20),
         ],
       ),
     );
   }
 
-  Widget _buildFeatureCard({
+  Widget _buildBentoFeatureCard({
     required IconData icon,
-    required Color iconColor,
-    required Color iconBg,
     required String title,
+    required String badgeText,
+    required Color badgeBg,
+    required Color badgeTextColor,
     required String subtitle,
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFFE5F5EE),
+        color: const Color(0xFFE3F8F3),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         children: [
           Container(
-            width: 42,
-            height: 42,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
-              color: iconBg,
+              color: const Color(0xFFD2E7E2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
               icon,
-              color: iconColor,
+              color: OnboardingTokens.primaryDark,
               size: 22,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w800,
-                    color: OnboardingTokens.textDark,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: OnboardingTokens.textDark,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: badgeBg,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        badgeText,
+                        style: TextStyle(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w700,
+                          color: badgeTextColor,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 3),
                 Text(
                   subtitle,
                   style: const TextStyle(
-                    fontSize: 11.5,
+                    fontSize: 12,
                     color: OnboardingTokens.textMuted,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),

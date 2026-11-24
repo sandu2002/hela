@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:hela/state/app_state.dart';
+import 'package:hela/services/localization_service.dart';
 import 'package:hela/pages/home_page.dart';
 import 'package:hela/pages/trip_planner_page.dart';
 import 'package:hela/pages/fair_ride_page.dart';
@@ -564,23 +565,20 @@ void main() {
     expect(appState.languageDisplayName, 'English (US)');
     expect(appState.tr('get_started'), 'Get Started');
 
-    appState.setLanguage('SI');
-    expect(appState.selectedLanguage, 'SI');
-    expect(appState.languageDisplayName, 'සිංහල (Sinhala)');
-    expect(appState.tr('get_started'), 'ආරම්භ කරමු');
-
-    appState.setLanguage('TA');
-    expect(appState.selectedLanguage, 'TA');
-    expect(appState.languageDisplayName, 'தமிழ் (Tamil)');
-    expect(appState.tr('get_started'), 'தொடங்குங்கள்');
+    // Verify Sinhala and Tamil removed from supportedLanguages
+    expect(LocalizationService.supportedLanguages.any((l) => l.code == 'SI'), isFalse);
+    expect(LocalizationService.supportedLanguages.any((l) => l.code == 'TA'), isFalse);
+    expect(LocalizationService.supportedLanguages.length, 5);
 
     appState.setLanguage('DE');
     expect(appState.selectedLanguage, 'DE');
     expect(appState.languageDisplayName, 'Deutsch (German)');
+    expect(appState.tr('get_started'), 'Loslegen');
 
     appState.setLanguage('FR');
     expect(appState.selectedLanguage, 'FR');
     expect(appState.languageDisplayName, 'Français (French)');
+    expect(appState.tr('get_started'), 'Commencer');
 
     appState.setLanguage('ZH');
     expect(appState.selectedLanguage, 'ZH');
@@ -620,17 +618,20 @@ void main() {
 
     // Modal bottom sheet appears with 'Select Language'
     expect(find.text('Select Language'), findsOneWidget);
-    expect(find.text('සිංහල (Sinhala)'), findsOneWidget);
+    // Sinhala and Tamil must be removed
+    expect(find.text('සිංහල (Sinhala)'), findsNothing);
+    expect(find.text('தமிழ் (Tamil)'), findsNothing);
+    expect(find.text('Français (French)'), findsOneWidget);
 
-    // Tap Sinhala
-    await tester.tap(find.text('සිංහල (Sinhala)'));
+    // Tap French
+    await tester.tap(find.text('Français (French)'));
     await tester.pumpAndSettle();
 
-    // Verify app state language updated to SI
-    expect(appState.selectedLanguage, 'SI');
-    expect(find.text('SI'), findsWidgets);
-    expect(find.text('ආරම්භ කරමු'), findsOneWidget);
-    expect(find.text('ආගන්තුකයෙකු ලෙස යන්න'), findsOneWidget);
+    // Verify app state language updated to FR
+    expect(appState.selectedLanguage, 'FR');
+    expect(find.text('FR'), findsWidgets);
+    expect(find.text('Commencer'), findsOneWidget);
+    expect(find.text('Continuer en invité'), findsOneWidget);
   });
 
   testWidgets('OnboardingPage texts dynamically translate when language changes to German (DE)', (WidgetTester tester) async {
@@ -704,16 +705,17 @@ void main() {
     await tester.tap(find.text('Language'));
     await tester.pumpAndSettle();
 
-    // Check languages in bottom sheet
-    expect(find.text('සිංහල (Sinhala)'), findsOneWidget);
+    // Check languages in bottom sheet: Sinhala and Tamil removed
+    expect(find.text('සිංහල (Sinhala)'), findsNothing);
+    expect(find.text('Deutsch (German)'), findsOneWidget);
 
-    // Tap Sinhala
-    await tester.tap(find.text('සිංහල (Sinhala)'));
+    // Tap Deutsch
+    await tester.tap(find.text('Deutsch (German)'));
     await tester.pumpAndSettle();
 
-    // Verify appState is now SI and ProfilePage reflects it
-    expect(appState.selectedLanguage, 'SI');
-    expect(find.text('සිංහල (Sinhala)'), findsOneWidget);
+    // Verify appState is now DE and ProfilePage reflects it
+    expect(appState.selectedLanguage, 'DE');
+    expect(find.text('Deutsch (German)'), findsOneWidget);
   });
 
   testWidgets('OnboardingPage renders bottom hospitality card and Continue as Guest with explore icon', (WidgetTester tester) async {
@@ -747,6 +749,94 @@ void main() {
       findsOneWidget,
     );
     expect(find.byIcon(Icons.wb_twilight_rounded), findsOneWidget);
+  });
+
+  testWidgets('OnboardingPage Screen 3 renders stitch bento layout with 3/3 progress, showcase card and 3 bento cards', (WidgetTester tester) async {
+    _ignoreOverflow();
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    final appState = HelaAppState();
+    await tester.pumpWidget(
+      HelaAppStateProvider(
+        state: appState,
+        child: const MaterialApp(
+          home: OnboardingPage(),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    // Navigate to slide 2 (Screen 3)
+    await tester.tap(find.text('Get Started'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+
+    // Verify top progress indicator shows 3/3
+    expect(find.text('3/3'), findsOneWidget);
+
+    // Verify top bar has language selector and brand monogram
+    expect(find.text('EN / සිංහල'), findsOneWidget);
+    expect(find.text('HELA'), findsWidgets);
+
+    // Verify visual showcase card tags
+    expect(find.text('Cultural Immersion • Kandy Heritage'), findsOneWidget);
+    expect(find.text('Live Folk Lore & Ola Leaf Tales'), findsOneWidget);
+    expect(find.text('4.98'), findsOneWidget);
+
+    // Verify headline and 3 bento cards with badges
+    expect(find.text('Your Personal Travel Companion'), findsOneWidget);
+    expect(find.text('AI Tour Guide'), findsOneWidget);
+    expect(find.text('Bilingual'), findsOneWidget);
+    expect(find.text('Dynamic Trip Planner'), findsOneWidget);
+    expect(find.text('Auto-Sync'), findsOneWidget);
+    expect(find.text('Fair Taxi Pricing'), findsOneWidget);
+    expect(find.text('Meter Verified'), findsOneWidget);
+
+    // Verify CTAs
+    expect(find.text('Start Exploring'), findsOneWidget);
+    expect(
+      find.text('Continue as Guest • No credit card or upfront registration required'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('Language selector bottom sheet does not overflow on compact screens', (WidgetTester tester) async {
+    _ignoreOverflow();
+    tester.view.physicalSize = const Size(360, 640);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    final appState = HelaAppState();
+    await tester.pumpWidget(
+      HelaAppStateProvider(
+        state: appState,
+        child: const MaterialApp(
+          home: OnboardingPage(),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    // Tap language pill
+    await tester.tap(find.text('EN').first);
+    await tester.pumpAndSettle();
+
+    // Modal sheet appears with no overflows
+    expect(find.text('Select Language'), findsOneWidget);
+    expect(find.text('English (US)'), findsOneWidget);
+    expect(find.text('Deutsch (German)'), findsOneWidget);
+    expect(find.text('Français (French)'), findsOneWidget);
+    expect(find.text('中文 (Mandarin)'), findsOneWidget);
+    expect(find.text('Русский (Russian)'), findsOneWidget);
   });
 }
 

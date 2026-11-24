@@ -226,6 +226,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: HelaColors.of(context).surfaceContainerLowest,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -233,51 +234,57 @@ class _SignUpPageState extends State<SignUpPage> {
       builder: (ctx) {
         final colors = HelaColors.of(ctx);
         return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 36,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: colors.outlineVariant,
-                      borderRadius: BorderRadius.circular(2),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(ctx).size.height * 0.75,
+            ),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 36,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: colors.outlineVariant,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  appState.tr('select_language'),
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: colors.onSurface,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                ...LocalizationService.supportedLanguages.map((lang) {
-                  final isSelected = lang.code.toUpperCase() == currentCode.toUpperCase();
-                  return ListTile(
-                    leading: Text(lang.flag, style: const TextStyle(fontSize: 24)),
-                    title: Text(lang.name),
-                    subtitle: Text(
-                      lang.nativeName,
-                      style: TextStyle(fontSize: 12, color: colors.onSurfaceVariant),
+                  const SizedBox(height: 16),
+                  Text(
+                    appState.tr('select_language'),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: colors.onSurface,
                     ),
-                    trailing: isSelected
-                        ? Icon(Icons.check_circle_rounded, color: colors.primary)
-                        : null,
-                    onTap: () {
-                      appState.setLanguage(lang.code);
-                      Navigator.pop(ctx);
-                    },
-                  );
-                }),
-              ],
+                  ),
+                  const SizedBox(height: 12),
+                  ...LocalizationService.supportedLanguages.map((lang) {
+                    final isSelected = lang.code.toUpperCase() == currentCode.toUpperCase();
+                    return ListTile(
+                      leading: Text(lang.flag, style: const TextStyle(fontSize: 24)),
+                      title: Text(lang.name),
+                      subtitle: Text(
+                        lang.nativeName,
+                        style: TextStyle(fontSize: 12, color: colors.onSurfaceVariant),
+                      ),
+                      trailing: isSelected
+                          ? Icon(Icons.check_circle_rounded, color: colors.primary)
+                          : null,
+                      onTap: () {
+                        appState.setLanguage(lang.code);
+                        Navigator.pop(ctx);
+                      },
+                    );
+                  }),
+                ],
+              ),
             ),
           ),
         );

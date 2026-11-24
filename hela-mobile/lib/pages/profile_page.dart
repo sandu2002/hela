@@ -1920,61 +1920,68 @@ class _ProfilePageState extends State<ProfilePage> {
 
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
       ),
       builder: (ctx) {
         return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      appState.tr('select_language'),
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: HelaColors.primary),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close_rounded, size: 20, color: HelaColors.onSurfaceVariant),
-                      onPressed: () => Navigator.pop(ctx),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                ...LocalizationService.supportedLanguages.map((lang) {
-                  final isSelected = lang.code.toUpperCase() == currentCode.toUpperCase();
-                  return ListTile(
-                    dense: true,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 2),
-                    leading: Text(lang.flag, style: const TextStyle(fontSize: 22)),
-                    title: Text(
-                      lang.name,
-                      style: TextStyle(
-                        fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                        color: isSelected ? HelaColors.primary : HelaColors.onSurface,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(ctx).size.height * 0.75,
+            ),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        appState.tr('select_language'),
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: HelaColors.primary),
                       ),
-                    ),
-                    subtitle: Text(
-                      lang.nativeName,
-                      style: const TextStyle(fontSize: 12, color: HelaColors.onSurfaceVariant),
-                    ),
-                    trailing: isSelected
-                        ? const Icon(Icons.check_circle_rounded, color: HelaColors.primary)
-                        : null,
-                    onTap: () {
-                      appState.setLanguage(lang.code);
-                      Navigator.pop(ctx);
-                      _showToast('${appState.tr('language_updated')} ${lang.name}');
-                    },
-                  );
-                }),
-              ],
+                      IconButton(
+                        icon: const Icon(Icons.close_rounded, size: 20, color: HelaColors.onSurfaceVariant),
+                        onPressed: () => Navigator.pop(ctx),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  ...LocalizationService.supportedLanguages.map((lang) {
+                    final isSelected = lang.code.toUpperCase() == currentCode.toUpperCase();
+                    return ListTile(
+                      dense: true,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 2),
+                      leading: Text(lang.flag, style: const TextStyle(fontSize: 22)),
+                      title: Text(
+                        lang.name,
+                        style: TextStyle(
+                          fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                          color: isSelected ? HelaColors.primary : HelaColors.onSurface,
+                        ),
+                      ),
+                      subtitle: Text(
+                        lang.nativeName,
+                        style: const TextStyle(fontSize: 12, color: HelaColors.onSurfaceVariant),
+                      ),
+                      trailing: isSelected
+                          ? const Icon(Icons.check_circle_rounded, color: HelaColors.primary)
+                          : null,
+                      onTap: () {
+                        appState.setLanguage(lang.code);
+                        Navigator.pop(ctx);
+                        _showToast('${appState.tr('language_updated')} ${lang.name}');
+                      },
+                    );
+                  }),
+                ],
+              ),
             ),
           ),
         );
