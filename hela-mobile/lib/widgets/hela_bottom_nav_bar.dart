@@ -10,7 +10,7 @@ import 'package:hela/pages/profile_page.dart';
 /// - 64px docked height + safe area
 /// - Inactive icons/labels: #63736E (colors.outline)
 /// - Active tab: #0B5D56 (colors.primaryContainer) with a 4px active indicator dot below
-/// - 5 Global Tabs: Home, Explore, My Trips, Bookings, Profile
+/// - 5 Global Tabs: Home, Explore, Trip Planner, Bookings, Profile
 class HelaBottomNavBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int>? onTabSelected;
@@ -35,7 +35,7 @@ class HelaBottomNavBar extends StatelessWidget {
       activeIcon: Icons.near_me_rounded,
     ),
     _NavItemData(
-      label: 'My Trips',
+      label: 'Trip Planner',
       icon: Icons.map_outlined,
       activeIcon: Icons.map_rounded,
     ),
@@ -227,7 +227,7 @@ class HelaBottomNavBar extends StatelessWidget {
               style: TextStyle(
                 color: isActive ? activeColor : inactiveColor,
                 fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                fontSize: 10.5,
+                fontSize: 10,
                 fontFamily: 'Inter',
               ),
               maxLines: 1,
