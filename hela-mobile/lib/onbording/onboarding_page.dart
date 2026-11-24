@@ -34,7 +34,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
 
   // Selected category on Step 2 (Explore Every Corner)
-  int _selectedCategoryIndex = 0;
+  final int _selectedCategoryIndex = 0;
 
   final List<Map<String, dynamic>> _step2Categories = [
     {
@@ -1536,67 +1536,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   ),
                 ],
               ),
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // Interactive Category Chips Row
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: List.generate(_step2Categories.length, (idx) {
-                final cat = _step2Categories[idx];
-                final isSelected = _selectedCategoryIndex == idx;
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: InkWell(
-                    onTap: () {
-                      setState(() {
-                        _selectedCategoryIndex = idx;
-                      });
-                    },
-                    borderRadius: BorderRadius.circular(20),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? const Color(0xFFBCEEDA)
-                            : OnboardingTokens.mintContainer,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: isSelected
-                              ? const Color(0xFF7DD2B4)
-                              : OnboardingTokens.mintBorder,
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(cat['icon'] as String),
-                          const SizedBox(width: 6),
-                          Text(
-                            appState.tr(cat['titleKey'] as String? ?? 'tea_hills'),
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: isSelected
-                                  ? FontWeight.w800
-                                  : FontWeight.w600,
-                              color: isSelected
-                                  ? OnboardingTokens.primaryDark
-                                  : OnboardingTokens.textDark,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              }),
             ),
           ),
 
