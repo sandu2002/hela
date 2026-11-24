@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hela/models/tour_plan.dart';
+import 'package:hela/pages/active_journey_page.dart';
 import 'package:hela/pages/fair_ride_page.dart';
 import 'package:hela/pages/profile_page.dart';
 import 'package:hela/theme/hela_colors.dart';
@@ -141,78 +142,74 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
       elevation: 0,
       scrolledUnderElevation: 1.0,
       automaticallyImplyLeading: false,
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              InkWell(
-                onTap: () => Navigator.pop(context),
-                borderRadius: BorderRadius.circular(999),
-                child: Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(
-                    color: colors.cardBackground,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: colors.architecturalBorder),
-                    boxShadow: [
-                      BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6, offset: const Offset(0, 2)),
-                    ],
-                  ),
-                  child: Icon(Icons.arrow_back_rounded, size: 20, color: colors.onSurface),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                'Itinerary Details',
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w700,
-                  color: colors.onSurface,
-                  fontFamily: 'Inter',
-                ),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              IconButton(
-                icon: Icon(Icons.share_rounded, size: 20, color: colors.onSurfaceVariant),
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Itinerary link copied to clipboard!')),
-                  );
-                },
-              ),
-              PopupMenuButton<String>(
-                icon: Icon(Icons.more_vert_rounded, size: 20, color: colors.onSurfaceVariant),
-                onSelected: (value) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Option selected: $value')),
-                  );
-                },
-                itemBuilder: (context) => [
-                  const PopupMenuItem(value: 'pdf', child: Text('Export Itinerary as PDF')),
-                  const PopupMenuItem(value: 'offline', child: Text('Download for Offline Use')),
-                  const PopupMenuItem(value: 'guide', child: Text('Connect with Local Chauffeur')),
+      leading: Padding(
+        padding: const EdgeInsets.only(left: 12),
+        child: Center(
+          child: InkWell(
+            onTap: () => Navigator.pop(context),
+            borderRadius: BorderRadius.circular(999),
+            child: Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: colors.cardBackground,
+                shape: BoxShape.circle,
+                border: Border.all(color: colors.architecturalBorder),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6, offset: const Offset(0, 2)),
                 ],
               ),
-              InkWell(
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfilePage()));
-                },
-                borderRadius: BorderRadius.circular(999),
-                child: CircleAvatar(
-                  radius: 16,
-                  backgroundColor: colors.primary,
-                  child: const Icon(Icons.person_rounded, size: 18, color: Colors.white),
-                ),
-              ),
-            ],
+              child: Icon(Icons.arrow_back_rounded, size: 20, color: colors.onSurface),
+            ),
           ),
-        ],
+        ),
       ),
+      title: Text(
+        'Itinerary Details',
+        style: TextStyle(
+          fontSize: 17,
+          fontWeight: FontWeight.w700,
+          color: colors.onSurface,
+          fontFamily: 'Inter',
+        ),
+      ),
+      actions: [
+        IconButton(
+          icon: Icon(Icons.share_rounded, size: 20, color: colors.onSurfaceVariant),
+          onPressed: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Itinerary link copied to clipboard!')),
+            );
+          },
+        ),
+        PopupMenuButton<String>(
+          icon: Icon(Icons.more_vert_rounded, size: 20, color: colors.onSurfaceVariant),
+          onSelected: (value) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Option selected: $value')),
+            );
+          },
+          itemBuilder: (context) => [
+            const PopupMenuItem(value: 'pdf', child: Text('Export Itinerary as PDF')),
+            const PopupMenuItem(value: 'offline', child: Text('Download for Offline Use')),
+            const PopupMenuItem(value: 'guide', child: Text('Connect with Local Chauffeur')),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.only(right: 12),
+          child: InkWell(
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfilePage()));
+            },
+            borderRadius: BorderRadius.circular(999),
+            child: CircleAvatar(
+              radius: 16,
+              backgroundColor: colors.primary,
+              child: const Icon(Icons.person_rounded, size: 18, color: Colors.white),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -244,34 +241,42 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3.5),
-                decoration: BoxDecoration(
-                  color: colors.secondaryContainer,
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.auto_awesome_rounded, size: 12.5, color: colors.primary),
-                    const SizedBox(width: 4),
-                    Text(
-                      'AI CURATED PLAN',
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w800,
-                        color: colors.primary,
-                        letterSpacing: 0.4,
+              Flexible(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3.5),
+                  decoration: BoxDecoration(
+                    color: colors.secondaryContainer,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.auto_awesome_rounded, size: 12.5, color: colors.primary),
+                      const SizedBox(width: 4),
+                      Flexible(
+                        child: Text(
+                          'AI CURATED PLAN',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            color: colors.primary,
+                            letterSpacing: 0.4,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
+              const SizedBox(width: 8),
               InkWell(
                 onTap: () => Navigator.pop(context),
                 borderRadius: BorderRadius.circular(8),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
                         'Edit Preferences',
@@ -560,27 +565,42 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Icon(Icons.alt_route_rounded, size: 19, color: colors.primary),
-                  const SizedBox(width: 6),
-                  Text(
-                    'Day ${_selectedDayIndex + 1} Route Overview',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: colors.onSurface,
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(Icons.alt_route_rounded, size: 19, color: colors.primary),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        'Day ${_selectedDayIndex + 1} Route Overview',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: colors.onSurface,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+              const SizedBox(width: 8),
               InkWell(
                 onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Displaying full interactive GPS map preview...')),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ActiveJourneyPage(
+                        dayNumber: _selectedDayIndex + 1,
+                        dateText: 'Oct ${_selectedDayIndex + 14}, 2025',
+                        origin: widget.startLocation,
+                        destination: 'Sigiriya Lion Rock Citadel',
+                      ),
+                    ),
                   );
                 },
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       'Expand',
@@ -929,10 +949,14 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    stop.costLabel,
-                                    style: TextStyle(fontSize: 10.5, color: colors.onSurfaceVariant),
+                                  Flexible(
+                                    child: Text(
+                                      stop.costLabel,
+                                      style: TextStyle(fontSize: 10.5, color: colors.onSurfaceVariant),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
+                                  const SizedBox(width: 6),
                                   Text(
                                     stop.costValue,
                                     style: TextStyle(
@@ -1169,10 +1193,15 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                   height: 50,
                   child: ElevatedButton(
                     onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Starting Day 1 Tour GPS Navigator! 🚗'),
-                          duration: Duration(seconds: 2),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ActiveJourneyPage(
+                            dayNumber: _selectedDayIndex + 1,
+                            dateText: 'Oct ${_selectedDayIndex + 14}, 2025',
+                            origin: widget.startLocation,
+                            destination: 'Sigiriya Lion Rock Citadel',
+                          ),
                         ),
                       );
                     },
@@ -1198,9 +1227,13 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                   children: [
                     Icon(Icons.download_for_offline_rounded, size: 13, color: colors.primary),
                     const SizedBox(width: 4),
-                    Text(
-                      'Turn-by-turn live navigation & offline mode included',
-                      style: TextStyle(fontSize: 10.5, color: colors.onSurfaceVariant),
+                    Flexible(
+                      child: Text(
+                        'Turn-by-turn live navigation & offline mode included',
+                        style: TextStyle(fontSize: 10.5, color: colors.onSurfaceVariant),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ],
                 ),

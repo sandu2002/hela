@@ -22,6 +22,7 @@ import 'package:hela/onbording/onboarding_page.dart';
 import 'package:hela/pages/auth/signup_page.dart';
 import 'package:hela/pages/explore_page.dart';
 import 'package:hela/pages/itinerary_details_page.dart';
+import 'package:hela/pages/active_journey_page.dart';
 import 'package:hela/widgets/haven_card.dart';
 import 'package:hela/widgets/stay_card.dart';
 import 'package:hela/widgets/itinerary_card.dart';
@@ -522,6 +523,36 @@ void main() {
     expect(find.text('Boutique Heritage Villa Check-In & Dinner'), findsOneWidget);
     expect(find.text('HELA Fair-Price Assurance'), findsOneWidget);
     expect(find.text('Start My Journey'), findsOneWidget);
+
+    // Tap Start My Journey and verify navigation to ActiveJourneyPage
+    await tester.tap(find.text('Start My Journey'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
+    expect(find.text('Day 1 Live Journey'), findsOneWidget);
+    expect(find.text('GPS LIVE'), findsOneWidget);
+  });
+
+  testWidgets('ActiveJourneyPage smoke test and stop checklist', (WidgetTester tester) async {
+    _ignoreOverflow();
+    await tester.pumpWidget(
+      _wrapWithState(const ActiveJourneyPage()),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
+
+    expect(find.text('Day 1 Live Journey'), findsOneWidget);
+    expect(find.text('GPS LIVE'), findsOneWidget);
+    expect(find.text('In 1.4 km • Turn Right onto Central Link'), findsOneWidget);
+    expect(find.text('Chaminda Perera'), findsOneWidget);
+    expect(find.text('CURRENT LEG 2 OF 4'), findsOneWidget);
+    expect(find.text('Day 1 Timeline & Stops'), findsOneWidget);
+    expect(find.text('Mark as Arrived at Kurunegala'), findsOneWidget);
+
+    // Scroll into view and tap Mark as Arrived
+    await tester.ensureVisible(find.text('Mark as Arrived at Kurunegala'));
+    await tester.tap(find.text('Mark as Arrived at Kurunegala'));
+    await tester.pump();
+    expect(find.text('Completed ✓'), findsOneWidget);
   });
 }
 
