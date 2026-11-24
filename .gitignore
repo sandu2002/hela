@@ -30,3 +30,7 @@ hela-mobile/.flutter-plugins-dependencies
 hela-mobile/android/.gradle/
 hela-mobile/android/.kotlin/
 hela-mobile/android/local.properties
+
+# Stitch design exports
+stitch_design/
+stitch_screens/
