@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hela/onbording/onboarding_page.dart';
 import 'package:hela/pages/home_page.dart';
 import 'package:hela/services/insforge_auth_service.dart';
+import 'package:hela/services/localization_service.dart';
 import 'package:hela/state/app_state.dart';
 
 /// Authentication mode — Sign Up or Sign In
@@ -176,7 +177,6 @@ class _SignUpPageState extends State<SignUpPage> {
   bool _agreedToTerms = true;
   bool _isLoading = false;
   String _selectedCountry = '';
-  String _selectedLanguage = 'EN';
   PasswordStrength _strength = PasswordStrength.none;
 
   final List<Map<String, String>> _countries = const [
@@ -220,11 +220,10 @@ class _SignUpPageState extends State<SignUpPage> {
     });
   }
 
-  void _selectLanguage(String lang) {
-    setState(() => _selectedLanguage = lang);
-  }
-
   void _showLanguageSelector() {
+    final appState = HelaAppStateProvider.of(context);
+    final currentCode = appState.selectedLanguage;
+
     showModalBottomSheet(
       context: context,
       backgroundColor: HelaColors.of(context).surfaceContainerLowest,
@@ -252,7 +251,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Select Language',
+                  appState.tr('select_language'),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
@@ -260,39 +259,24 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                ListTile(
-                  leading: const Text('🇬🇧', style: TextStyle(fontSize: 24)),
-                  title: const Text('English (EN)'),
-                  trailing: _selectedLanguage == 'EN'
-                      ? Icon(Icons.check_circle_rounded, color: colors.primary)
-                      : null,
-                  onTap: () {
-                    _selectLanguage('EN');
-                    Navigator.pop(ctx);
-                  },
-                ),
-                ListTile(
-                  leading: const Text('🇱🇰', style: TextStyle(fontSize: 24)),
-                  title: const Text('සිංහල (SI)'),
-                  trailing: _selectedLanguage == 'SI'
-                      ? Icon(Icons.check_circle_rounded, color: colors.primary)
-                      : null,
-                  onTap: () {
-                    _selectLanguage('SI');
-                    Navigator.pop(ctx);
-                  },
-                ),
-                ListTile(
-                  leading: const Text('🇱🇰', style: TextStyle(fontSize: 24)),
-                  title: const Text('தமிழ் (TA)'),
-                  trailing: _selectedLanguage == 'TA'
-                      ? Icon(Icons.check_circle_rounded, color: colors.primary)
-                      : null,
-                  onTap: () {
-                    _selectLanguage('TA');
-                    Navigator.pop(ctx);
-                  },
-                ),
+                ...LocalizationService.supportedLanguages.map((lang) {
+                  final isSelected = lang.code.toUpperCase() == currentCode.toUpperCase();
+                  return ListTile(
+                    leading: Text(lang.flag, style: const TextStyle(fontSize: 24)),
+                    title: Text(lang.name),
+                    subtitle: Text(
+                      lang.nativeName,
+                      style: TextStyle(fontSize: 12, color: colors.onSurfaceVariant),
+                    ),
+                    trailing: isSelected
+                        ? Icon(Icons.check_circle_rounded, color: colors.primary)
+                        : null,
+                    onTap: () {
+                      appState.setLanguage(lang.code);
+                      Navigator.pop(ctx);
+                    },
+                  );
+                }),
               ],
             ),
           ),
@@ -527,7 +511,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   Icon(Icons.translate_rounded, size: 16, color: colors.primary),
                   const SizedBox(width: 4),
                   Text(
-                    _selectedLanguage,
+                    HelaAppStateProvider.of(context).selectedLanguage,
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,

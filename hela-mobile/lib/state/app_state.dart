@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hela/models/haven_item.dart';
 import 'package:hela/models/tour_plan.dart';
 import 'package:hela/pages/stays_page.dart' show StayHaven;
+import 'package:hela/services/localization_service.dart';
 
 /// Global shared state for the HELA app.
 ///
@@ -269,6 +270,23 @@ class HelaAppState extends ChangeNotifier {
     _themeMode = _themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
     notifyListeners();
   }
+
+  // ── Language & Localization ────────────────────────────────────
+  String _selectedLanguage = 'EN';
+
+  String get selectedLanguage => _selectedLanguage;
+
+  String get languageDisplayName => LocalizationService.getDisplayName(_selectedLanguage);
+
+  void setLanguage(String code) {
+    final upper = code.toUpperCase();
+    if (_selectedLanguage != upper) {
+      _selectedLanguage = upper;
+      notifyListeners();
+    }
+  }
+
+  String tr(String key) => LocalizationService.tr(key, _selectedLanguage);
 }
 
 /// An InheritedNotifier that exposes [HelaAppState] down the tree.

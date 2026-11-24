@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hela/pages/auth/signup_page.dart';
 import 'package:hela/pages/home_page.dart';
+import 'package:hela/services/localization_service.dart';
 import 'package:hela/state/app_state.dart';
 
 /// Design tokens specifically tailored for HELA's Onboarding Experience
@@ -30,9 +31,6 @@ class OnboardingPage extends StatefulWidget {
 class _OnboardingPageState extends State<OnboardingPage> {
   final PageController _pageController = PageController();
   int _currentIndex = 0;
-
-  // Selected language for language pill
-  String _selectedLanguage = 'EN';
 
   // Selected category on Step 2 (Explore Every Corner)
   int _selectedCategoryIndex = 0;
@@ -140,6 +138,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 
   void _showLanguageSelector() {
+    final appState = HelaAppStateProvider.of(context);
+    final currentLang = appState.selectedLanguage;
+    final languages = LocalizationService.supportedLanguages;
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -147,14 +149,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
-        final languages = [
-          {'code': 'EN', 'name': 'English', 'native': 'English'},
-          {'code': 'SI', 'name': 'Sinhala', 'native': 'සිංහල'},
-          {'code': 'TA', 'name': 'Tamil', 'native': 'தமிழ்'},
-          {'code': 'DE', 'name': 'German', 'native': 'Deutsch'},
-          {'code': 'FR', 'name': 'French', 'native': 'Français'},
-        ];
-
         return SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -173,25 +167,25 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'Select Language',
-                  style: TextStyle(
+                Text(
+                  appState.tr('select_language'),
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                     color: OnboardingTokens.textDark,
                   ),
                 ),
                 const SizedBox(height: 4),
-                const Text(
-                  'Choose your preferred language for island discovery.',
-                  style: TextStyle(
+                Text(
+                  appState.tr('language_desc'),
+                  style: const TextStyle(
                     fontSize: 13,
                     color: OnboardingTokens.textMuted,
                   ),
                 ),
                 const SizedBox(height: 14),
                 ...languages.map((lang) {
-                  final isSelected = _selectedLanguage == lang['code'];
+                  final isSelected = currentLang == lang.code;
                   return ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: Container(
@@ -205,7 +199,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       ),
                       alignment: Alignment.center,
                       child: Text(
-                        lang['code']!,
+                        lang.code,
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w800,
@@ -216,7 +210,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       ),
                     ),
                     title: Text(
-                      lang['name']!,
+                      lang.name,
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight:
@@ -225,7 +219,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       ),
                     ),
                     subtitle: Text(
-                      lang['native']!,
+                      lang.nativeName,
                       style: const TextStyle(
                         fontSize: 12,
                         color: OnboardingTokens.textMuted,
@@ -238,10 +232,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           )
                         : null,
                     onTap: () {
-                      setState(() {
-                        _selectedLanguage = lang['code']!;
-                      });
+                      appState.setLanguage(lang.code);
                       Navigator.pop(ctx);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('${appState.tr('language_updated')} ${lang.name} (${lang.code}) ✨'),
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
                     },
                   );
                 }),
@@ -805,7 +803,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        _selectedLanguage,
+                        HelaAppStateProvider.of(context).selectedLanguage,
                         style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w800,
@@ -830,9 +828,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   foregroundColor: OnboardingTokens.primaryDark,
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                 ),
-                child: const Text(
-                  'Skip',
-                  style: TextStyle(
+                child: Text(
+                  HelaAppStateProvider.of(context).tr('skip'),
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: OnboardingTokens.primaryDark,

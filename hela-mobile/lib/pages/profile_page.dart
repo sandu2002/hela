@@ -5,6 +5,7 @@ import 'package:hela/pages/home_page.dart';
 import 'package:hela/pages/saved_page.dart';
 import 'package:hela/pages/travel_preferences_page.dart';
 import 'package:hela/services/insforge_auth_service.dart';
+import 'package:hela/services/localization_service.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/widgets/hela_bottom_nav_bar.dart';
 
@@ -21,7 +22,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
   // ── Interactive Settings State ───────────────────────────────────────────
   String _currency = 'USD (\$)';
-  String _language = 'English (US)';
   String _distanceUnit = 'Kilometers (km)';
   String _travelPace = 'Balanced';
   String _profileVisibility = 'Public (All Explorers)';
@@ -809,7 +809,7 @@ class _ProfilePageState extends State<ProfilePage> {
           _buildSettingsTile(
             icon: Icons.translate_rounded,
             title: 'Language',
-            subtitle: _language,
+            subtitle: HelaAppStateProvider.of(context).languageDisplayName,
             trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: HelaColors.onSurfaceVariant),
             onTap: _showLanguagePicker,
           ),
@@ -1915,13 +1915,8 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _showLanguagePicker() {
-    final languages = [
-      'English (US)',
-      'සිංහල (Sinhala)',
-      'தமிழ் (Tamil)',
-      'Français (French)',
-      'Deutsch (German)',
-    ];
+    final appState = HelaAppStateProvider.of(context);
+    final currentCode = appState.selectedLanguage;
 
     showModalBottomSheet(
       context: context,
@@ -1936,30 +1931,46 @@ class _ProfilePageState extends State<ProfilePage> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Select Language',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: HelaColors.primary),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      appState.tr('select_language'),
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: HelaColors.primary),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close_rounded, size: 20, color: HelaColors.onSurfaceVariant),
+                      onPressed: () => Navigator.pop(ctx),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 12),
-                ...languages.map((lang) {
-                  final isSelected = _language == lang;
+                ...LocalizationService.supportedLanguages.map((lang) {
+                  final isSelected = lang.code.toUpperCase() == currentCode.toUpperCase();
                   return ListTile(
                     dense: true,
-                    contentPadding: EdgeInsets.zero,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 2),
+                    leading: Text(lang.flag, style: const TextStyle(fontSize: 22)),
                     title: Text(
-                      lang,
+                      lang.name,
                       style: TextStyle(
                         fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
                         color: isSelected ? HelaColors.primary : HelaColors.onSurface,
                       ),
                     ),
+                    subtitle: Text(
+                      lang.nativeName,
+                      style: const TextStyle(fontSize: 12, color: HelaColors.onSurfaceVariant),
+                    ),
                     trailing: isSelected
                         ? const Icon(Icons.check_circle_rounded, color: HelaColors.primary)
                         : null,
                     onTap: () {
-                      setState(() => _language = lang);
+                      appState.setLanguage(lang.code);
                       Navigator.pop(ctx);
-                      _showToast('Language updated to $lang');
+                      _showToast('${appState.tr('language_updated')} ${lang.name}');
                     },
                   );
                 }),

@@ -554,5 +554,120 @@ void main() {
     await tester.pump();
     expect(find.text('Completed ✓'), findsOneWidget);
   });
+
+  test('HelaAppState and LocalizationService language synchronization', () {
+    final appState = HelaAppState();
+    expect(appState.selectedLanguage, 'EN');
+    expect(appState.languageDisplayName, 'English (US)');
+    expect(appState.tr('get_started'), 'Get Started');
+
+    appState.setLanguage('SI');
+    expect(appState.selectedLanguage, 'SI');
+    expect(appState.languageDisplayName, 'සිංහල (Sinhala)');
+    expect(appState.tr('get_started'), 'ආරම්භ කරමු');
+
+    appState.setLanguage('TA');
+    expect(appState.selectedLanguage, 'TA');
+    expect(appState.languageDisplayName, 'தமிழ் (Tamil)');
+    expect(appState.tr('get_started'), 'தொடங்குங்கள்');
+
+    appState.setLanguage('DE');
+    expect(appState.selectedLanguage, 'DE');
+    expect(appState.languageDisplayName, 'Deutsch (German)');
+
+    appState.setLanguage('FR');
+    expect(appState.selectedLanguage, 'FR');
+    expect(appState.languageDisplayName, 'Français (French)');
+
+    appState.setLanguage('ZH');
+    expect(appState.selectedLanguage, 'ZH');
+    expect(appState.languageDisplayName, '中文 (Mandarin)');
+
+    appState.setLanguage('RU');
+    expect(appState.selectedLanguage, 'RU');
+    expect(appState.languageDisplayName, 'Русский (Russian)');
+  });
+
+  testWidgets('OnboardingPage language selector changes app language and updates UI', (WidgetTester tester) async {
+    _ignoreOverflow();
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    final appState = HelaAppState();
+    await tester.pumpWidget(
+      HelaAppStateProvider(
+        state: appState,
+        child: const MaterialApp(
+          home: OnboardingPage(),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    // Verify initial language pill shows EN
+    expect(find.text('EN'), findsWidgets);
+
+    // Tap the language selector pill
+    await tester.tap(find.text('EN').first);
+    await tester.pumpAndSettle();
+
+    // Modal bottom sheet appears with 'Select Language'
+    expect(find.text('Select Language'), findsOneWidget);
+    expect(find.text('සිංහල (Sinhala)'), findsOneWidget);
+
+    // Tap Sinhala
+    await tester.tap(find.text('සිංහල (Sinhala)'));
+    await tester.pumpAndSettle();
+
+    // Verify app state language updated to SI
+    expect(appState.selectedLanguage, 'SI');
+    expect(find.text('SI'), findsWidgets);
+  });
+
+  testWidgets('ProfilePage language setting displays current language and syncs updates with HelaAppState', (WidgetTester tester) async {
+    _ignoreOverflow();
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    final appState = HelaAppState();
+    appState.setLanguage('EN');
+
+    await tester.pumpWidget(
+      HelaAppStateProvider(
+        state: appState,
+        child: const MaterialApp(
+          home: ProfilePage(),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    // Initial language subtitle should show English (US)
+    expect(find.text('English (US)'), findsOneWidget);
+
+    // Scroll into view and tap Language tile to open language picker
+    await tester.ensureVisible(find.text('Language'));
+    await tester.tap(find.text('Language'));
+    await tester.pumpAndSettle();
+
+    // Check languages in bottom sheet
+    expect(find.text('සිංහල (Sinhala)'), findsOneWidget);
+
+    // Tap Sinhala
+    await tester.tap(find.text('සිංහල (Sinhala)'));
+    await tester.pumpAndSettle();
+
+    // Verify appState is now SI and ProfilePage reflects it
+    expect(appState.selectedLanguage, 'SI');
+    expect(find.text('සිංහල (Sinhala)'), findsOneWidget);
+  });
 }
 
