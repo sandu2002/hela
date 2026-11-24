@@ -20,6 +20,7 @@ import 'package:hela/pages/cultural_guide/cultural_guide_page.dart';
 import 'package:hela/pages/cultural_guide/article_detail_page.dart';
 import 'package:hela/onbording/onboarding_page.dart';
 import 'package:hela/pages/auth/signup_page.dart';
+import 'package:hela/pages/explore_page.dart';
 import 'package:hela/widgets/haven_card.dart';
 import 'package:hela/widgets/stay_card.dart';
 import 'package:hela/widgets/itinerary_card.dart';
@@ -456,6 +457,37 @@ void main() {
     expect(find.text('4.90'), findsOneWidget);
     expect(find.text('240+ Verified Explorers'), findsOneWidget);
     expect(find.text('Explore'), findsAtLeastNWidgets(1));
+  });
+
+  testWidgets('ExplorePage smoke test and view toggle', (WidgetTester tester) async {
+    _ignoreOverflow();
+    await tester.pumpWidget(
+      _wrapWithState(const ExplorePage()),
+    );
+    await tester.pump();
+
+    expect(find.text('Explore Sri Lanka'), findsOneWidget);
+    expect(find.text('Find places worth discovering.'), findsOneWidget);
+    expect(find.text('Popular Destinations'), findsOneWidget);
+    expect(find.text('Hidden Gems'), findsOneWidget);
+    expect(find.text('Cultural Experiences'), findsOneWidget);
+
+    // Toggle Map view
+    final mapToggleFinder = find.byKey(const ValueKey('explore_map_toggle'));
+    expect(mapToggleFinder, findsOneWidget);
+    await tester.tap(mapToggleFinder);
+    await tester.pump(const Duration(milliseconds: 100));
+
+    // Map view is displayed
+    expect(find.byType(RealTimeGoogleMap), findsOneWidget);
+
+    // Toggle back to List view
+    final listToggleFinder = find.byKey(const ValueKey('explore_list_toggle'));
+    expect(listToggleFinder, findsOneWidget);
+    await tester.tap(listToggleFinder);
+    await tester.pump(const Duration(milliseconds: 100));
+
+    expect(find.text('Popular Destinations'), findsOneWidget);
   });
 }
 

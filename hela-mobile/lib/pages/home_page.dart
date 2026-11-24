@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hela/pages/fair_ride_page.dart';
 import 'package:hela/pages/cultural_guide/cultural_guide_page.dart';
+import 'package:hela/pages/explore_page.dart';
 import 'package:hela/pages/trip_planner_page.dart';
 import 'package:hela/pages/profile_page.dart';
 import 'package:hela/widgets/theme_switch_button.dart';
@@ -713,7 +714,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
           iconColor: colors.primary,
           title: 'Find Places',
           onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const CulturalGuidePage()));
+            Navigator.push(context, MaterialPageRoute(builder: (_) => const ExplorePage()));
           },
           colors: colors,
         ),
@@ -846,7 +847,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
             ),
             TextButton(
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const CulturalGuidePage()));
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const ExplorePage()));
               },
               style: TextButton.styleFrom(
                 foregroundColor: colors.primary,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hela/pages/home_page.dart';
-import 'package:hela/pages/cultural_guide/cultural_guide_page.dart';
+import 'package:hela/pages/explore_page.dart';
 import 'package:hela/pages/trip_planner_page.dart';
 import 'package:hela/pages/bookings_page.dart';
 import 'package:hela/pages/profile_page.dart';
@@ -65,7 +65,7 @@ class HelaBottomNavBar extends StatelessWidget {
         targetPage = const HelaHomePage();
         break;
       case 1:
-        targetPage = const CulturalGuidePage();
+        targetPage = const ExplorePage();
         break;
       case 2:
         targetPage = const TripPlannerPage();
