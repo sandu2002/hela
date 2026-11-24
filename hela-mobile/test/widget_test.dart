@@ -104,14 +104,19 @@ void main() {
   testWidgets('TripPlannerPage smoke test', (WidgetTester tester) async {
     _ignoreOverflow();
     await tester.pumpWidget(
-      const MaterialApp(
-        home: TripPlannerPage(),
-      ),
+      _wrapWithState(const TripPlannerPage()),
     );
+    await tester.pump();
 
-    expect(find.text('AI PLANNER'), findsOneWidget);
-    expect(find.text('Where do you feel like wandering?'), findsOneWidget);
-    expect(find.text('AI-Suggested Itineraries'), findsOneWidget);
+    expect(find.text('Plan Your Sri Lankan Adventure'), findsOneWidget);
+    expect(find.text('Where does your journey begin?'), findsOneWidget);
+    expect(find.text('Travel Dates'), findsOneWidget);
+    expect(find.text('Travel Budget'), findsOneWidget);
+    expect(find.text('Travel Interests'), findsOneWidget);
+    expect(find.text('Pace & Travel Style'), findsOneWidget);
+    expect(find.text('Generate My Itinerary ✨'), findsOneWidget);
+    expect(find.text('Get Directions'), findsOneWidget);
+    expect(find.text('Add to My Trip'), findsOneWidget);
   });
 
   testWidgets('FairRidePage smoke test', (WidgetTester tester) async {
