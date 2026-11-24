@@ -185,16 +185,17 @@ void main() {
   testWidgets('OnboardingPage smoke test', (WidgetTester tester) async {
     _ignoreOverflow();
     await tester.pumpWidget(
-      const MaterialApp(
-        home: OnboardingPage(),
+      _wrapWithState(
+        const OnboardingPage(),
       ),
     );
 
-    expect(find.text('HELA'), findsOneWidget);
-    expect(find.text('Skip'), findsOneWidget);
-    expect(find.text('BESPOKE ITINERARIES'), findsOneWidget);
-    expect(find.text('Plan Effortlessly'), findsOneWidget);
-    expect(find.text('Continue'), findsOneWidget);
+    expect(find.text('HELA'), findsWidgets);
+    expect(find.text('Sri Lanka Travel Companion'), findsOneWidget);
+    expect(find.text('Discover Sri Lanka,\nYour Way'), findsOneWidget);
+    expect(find.text('Get Started'), findsOneWidget);
+    expect(find.text('Continue as Guest'), findsOneWidget);
+    expect(find.text('Sign In'), findsOneWidget);
   });
 
   testWidgets('HavenCard component test', (WidgetTester tester) async {
@@ -341,12 +342,12 @@ void main() {
       _wrapWithState(const SignUpPage()),
     );
 
-    expect(find.text('HELA'), findsOneWidget);
+    expect(find.text('HELA • CEYLON'), findsOneWidget);
     expect(find.text('Begin Your Journey'), findsOneWidget);
     expect(find.text('Continue with Google'), findsOneWidget);
     expect(find.text('Full Name'), findsOneWidget);
     expect(find.text('Email Address'), findsOneWidget);
-    expect(find.text('Password'), findsOneWidget);
+    expect(find.text('Create Password'), findsOneWidget);
     expect(find.text('Create HELA Account'), findsOneWidget);
   });
 
@@ -358,7 +359,7 @@ void main() {
 
     expect(find.text('Welcome Back'), findsOneWidget);
     expect(find.text('Sign In'), findsWidgets);
-    expect(find.text('Sign in with Google'), findsOneWidget);
+    expect(find.text('Continue with Google'), findsOneWidget);
   });
 
   testWidgets('EditProfilePage smoke test', (WidgetTester tester) async {

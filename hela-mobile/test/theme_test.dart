@@ -26,15 +26,15 @@ void main() {
       expect(HelaColors.lightPalette.brightness, Brightness.light);
       expect(HelaColors.darkPalette.brightness, Brightness.dark);
 
-      // Light mode uses deep forest green primary and warm cream background
-      expect(HelaColors.lightPalette.primary, const Color(0xFF19331F));
-      expect(HelaColors.lightPalette.background, const Color(0xFFFAF9F3));
+      // Light mode uses deep Ocean Teal primary and tropical mint surface
+      expect(HelaColors.lightPalette.primary, const Color(0xFF00443E));
+      expect(HelaColors.lightPalette.background, const Color(0xFFE9FEF9));
 
-      // Dark mode uses radiant emerald green primary and Ceylon pine-slate night background
-      expect(HelaColors.darkPalette.primary, const Color(0xFF7ED994));
-      expect(HelaColors.darkPalette.background, const Color(0xFF0D140F));
-      expect(HelaColors.darkPalette.surface, const Color(0xFF131B15));
-      expect(HelaColors.darkPalette.onSurface, const Color(0xFFE2E5DE));
+      // Dark mode uses radiant Ceylon Sea Foam primary and Ceylon Emerald Night background
+      expect(HelaColors.darkPalette.primary, const Color(0xFF8ED3CA));
+      expect(HelaColors.darkPalette.background, const Color(0xFF0B1715));
+      expect(HelaColors.darkPalette.surface, const Color(0xFF10211E));
+      expect(HelaColors.darkPalette.onSurface, const Color(0xFFE0F5F0));
     });
 
     test('HelaTheme produces valid ThemeData for light and dark modes', () {

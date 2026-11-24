@@ -3,9 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:hela/theme/hela_colors.dart';
 
 /// Central theme definitions for the HELA application.
-///
-/// Provides finely tuned Light and Dark themes reflecting Sri Lanka's lush
-/// highlands, tropical coastlines, and ancient emerald heritage.
+/// Conforms strictly to the Lankan Tropical Modernism design system.
 class HelaTheme {
   // ── Light Theme ───────────────────────────────────────────────────
   static ThemeData get lightTheme {
@@ -35,7 +33,7 @@ class HelaTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      fontFamily: 'Plus Jakarta Sans',
+      fontFamily: 'Inter',
       scaffoldBackgroundColor: palette.background,
       colorScheme: colorScheme,
       canvasColor: palette.background,
@@ -43,7 +41,7 @@ class HelaTheme {
         backgroundColor: palette.surface,
         foregroundColor: palette.primary,
         elevation: 0,
-        scrolledUnderElevation: 1.5,
+        scrolledUnderElevation: 1.0,
         shadowColor: Colors.black12,
         centerTitle: false,
         systemOverlayStyle: SystemUiOverlayStyle.dark,
@@ -52,8 +50,8 @@ class HelaTheme {
         titleTextStyle: TextStyle(
           color: palette.primary,
           fontSize: 20,
-          fontWeight: FontWeight.w800,
-          fontFamily: 'Plus Jakarta Sans',
+          fontWeight: FontWeight.w700,
+          fontFamily: 'Inter',
           letterSpacing: -0.5,
         ),
       ),
@@ -64,33 +62,33 @@ class HelaTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
           side: BorderSide(
-            color: palette.outlineVariant.withValues(alpha: 0.5),
+            color: palette.architecturalBorder,
             width: 1,
           ),
         ),
       ),
       chipTheme: ChipThemeData(
-        backgroundColor: palette.surfaceContainer,
+        backgroundColor: palette.surfaceContainerLowest,
         disabledColor: palette.surfaceDim,
         selectedColor: palette.primaryContainer,
         secondarySelectedColor: palette.secondaryContainer,
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         labelStyle: TextStyle(
-          color: palette.onSurface,
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          fontFamily: 'Plus Jakarta Sans',
+          color: palette.onSurfaceVariant,
+          fontSize: 13,
+          fontWeight: FontWeight.w500,
+          fontFamily: 'Inter',
         ),
         secondaryLabelStyle: TextStyle(
           color: palette.onSecondaryContainer,
-          fontSize: 12,
+          fontSize: 13,
           fontWeight: FontWeight.w600,
-          fontFamily: 'Plus Jakarta Sans',
+          fontFamily: 'Inter',
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(9999),
           side: BorderSide(
-            color: palette.outlineVariant.withValues(alpha: 0.4),
+            color: palette.architecturalBorder,
           ),
         ),
       ),
@@ -103,12 +101,12 @@ class HelaTheme {
         selectedLabelStyle: const TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w700,
-          fontFamily: 'Plus Jakarta Sans',
+          fontFamily: 'Inter',
         ),
         unselectedLabelStyle: const TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w500,
-          fontFamily: 'Plus Jakarta Sans',
+          fontFamily: 'Inter',
         ),
       ),
       drawerTheme: DrawerThemeData(
@@ -117,19 +115,19 @@ class HelaTheme {
         surfaceTintColor: Colors.transparent,
       ),
       dialogTheme: DialogThemeData(
-        backgroundColor: palette.surface,
+        backgroundColor: palette.surfaceContainerLowest,
         elevation: 6,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         titleTextStyle: TextStyle(
           color: palette.primary,
           fontSize: 18,
           fontWeight: FontWeight.w700,
-          fontFamily: 'Plus Jakarta Sans',
+          fontFamily: 'Inter',
         ),
         contentTextStyle: TextStyle(
           color: palette.onSurfaceVariant,
           fontSize: 14,
-          fontFamily: 'Plus Jakarta Sans',
+          fontFamily: 'Inter',
         ),
       ),
       snackBarTheme: SnackBarThemeData(
@@ -138,33 +136,33 @@ class HelaTheme {
           color: Colors.white,
           fontSize: 13,
           fontWeight: FontWeight.w600,
-          fontFamily: 'Plus Jakarta Sans',
+          fontFamily: 'Inter',
         ),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: palette.searchBackground,
+        fillColor: palette.surfaceContainerLowest,
         hintStyle: TextStyle(
-          color: palette.onSurfaceVariant.withValues(alpha: 0.6),
+          color: palette.outline,
           fontSize: 14,
           fontWeight: FontWeight.w400,
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: palette.outlineVariant),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
-            color: palette.outlineVariant.withValues(alpha: 0.6),
+            color: palette.outlineVariant,
           ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: palette.primary, width: 1.5),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: palette.primaryContainer, width: 1.5),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -172,22 +170,22 @@ class HelaTheme {
           backgroundColor: palette.primary,
           foregroundColor: palette.onPrimary,
           elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           textStyle: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-            fontFamily: 'Plus Jakarta Sans',
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Inter',
           ),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: palette.secondary,
+          foregroundColor: palette.primary,
           textStyle: const TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w700,
-            fontFamily: 'Plus Jakarta Sans',
+            fontFamily: 'Inter',
           ),
         ),
       ),
@@ -199,7 +197,7 @@ class HelaTheme {
           textStyle: const TextStyle(
             fontSize: 13.5,
             fontWeight: FontWeight.w600,
-            fontFamily: 'Plus Jakarta Sans',
+            fontFamily: 'Inter',
           ),
         ),
       ),
@@ -239,7 +237,7 @@ class HelaTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      fontFamily: 'Plus Jakarta Sans',
+      fontFamily: 'Inter',
       scaffoldBackgroundColor: palette.background,
       colorScheme: colorScheme,
       canvasColor: palette.background,
@@ -256,8 +254,8 @@ class HelaTheme {
         titleTextStyle: TextStyle(
           color: palette.onSurface,
           fontSize: 20,
-          fontWeight: FontWeight.w800,
-          fontFamily: 'Plus Jakarta Sans',
+          fontWeight: FontWeight.w700,
+          fontFamily: 'Inter',
           letterSpacing: -0.5,
         ),
       ),
@@ -268,7 +266,7 @@ class HelaTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
           side: BorderSide(
-            color: palette.outlineVariant.withValues(alpha: 0.7),
+            color: palette.outlineVariant.withValues(alpha: 0.6),
             width: 1,
           ),
         ),
@@ -278,23 +276,23 @@ class HelaTheme {
         disabledColor: palette.surfaceDim,
         selectedColor: palette.primaryContainer,
         secondarySelectedColor: palette.secondaryContainer,
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         labelStyle: TextStyle(
           color: palette.onSurface,
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          fontFamily: 'Plus Jakarta Sans',
+          fontSize: 13,
+          fontWeight: FontWeight.w500,
+          fontFamily: 'Inter',
         ),
         secondaryLabelStyle: TextStyle(
           color: palette.onSecondaryContainer,
-          fontSize: 12,
+          fontSize: 13,
           fontWeight: FontWeight.w600,
-          fontFamily: 'Plus Jakarta Sans',
+          fontFamily: 'Inter',
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(9999),
           side: BorderSide(
-            color: palette.outlineVariant.withValues(alpha: 0.6),
+            color: palette.outlineVariant.withValues(alpha: 0.5),
           ),
         ),
       ),
@@ -307,12 +305,12 @@ class HelaTheme {
         selectedLabelStyle: const TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w700,
-          fontFamily: 'Plus Jakarta Sans',
+          fontFamily: 'Inter',
         ),
         unselectedLabelStyle: const TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w500,
-          fontFamily: 'Plus Jakarta Sans',
+          fontFamily: 'Inter',
         ),
       ),
       drawerTheme: DrawerThemeData(
@@ -321,19 +319,19 @@ class HelaTheme {
         surfaceTintColor: Colors.transparent,
       ),
       dialogTheme: DialogThemeData(
-        backgroundColor: palette.surface,
+        backgroundColor: palette.surfaceContainer,
         elevation: 8,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         titleTextStyle: TextStyle(
           color: palette.primary,
           fontSize: 18,
           fontWeight: FontWeight.w700,
-          fontFamily: 'Plus Jakarta Sans',
+          fontFamily: 'Inter',
         ),
         contentTextStyle: TextStyle(
           color: palette.onSurfaceVariant,
           fontSize: 14,
-          fontFamily: 'Plus Jakarta Sans',
+          fontFamily: 'Inter',
         ),
       ),
       snackBarTheme: SnackBarThemeData(
@@ -342,7 +340,7 @@ class HelaTheme {
           color: palette.onSurface,
           fontSize: 13,
           fontWeight: FontWeight.w600,
-          fontFamily: 'Plus Jakarta Sans',
+          fontFamily: 'Inter',
         ),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
@@ -358,19 +356,19 @@ class HelaTheme {
           fontSize: 14,
           fontWeight: FontWeight.w400,
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: palette.outlineVariant),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
             color: palette.outlineVariant.withValues(alpha: 0.5),
           ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: palette.primary, width: 1.5),
         ),
       ),
@@ -379,12 +377,12 @@ class HelaTheme {
           backgroundColor: palette.primary,
           foregroundColor: palette.onPrimary,
           elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           textStyle: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-            fontFamily: 'Plus Jakarta Sans',
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Inter',
           ),
         ),
       ),
@@ -394,7 +392,7 @@ class HelaTheme {
           textStyle: const TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w700,
-            fontFamily: 'Plus Jakarta Sans',
+            fontFamily: 'Inter',
           ),
         ),
       ),
@@ -406,7 +404,7 @@ class HelaTheme {
           textStyle: const TextStyle(
             fontSize: 13.5,
             fontWeight: FontWeight.w600,
-            fontFamily: 'Plus Jakarta Sans',
+            fontFamily: 'Inter',
           ),
         ),
       ),

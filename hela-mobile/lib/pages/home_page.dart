@@ -544,20 +544,42 @@ class _HelaHomePageState extends State<HelaHomePage> {
     final colors = HelaColors.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return AppBar(
-      backgroundColor: colors.surface.withValues(alpha: isDark ? 0.94 : 0.92),
+      backgroundColor: colors.surface.withValues(alpha: isDark ? 0.96 : 0.94),
       elevation: 0,
-      scrolledUnderElevation: 1.5,
+      scrolledUnderElevation: 1.0,
       shadowColor: Colors.black12,
       toolbarHeight: 64,
       titleSpacing: 16,
       automaticallyImplyLeading: false,
-      title: Text(
-        'HELA',
-        style: TextStyle(
-          color: colors.primary,
-          fontWeight: FontWeight.w800,
-          fontSize: 22,
-          letterSpacing: -0.5,
+      title: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: colors.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(9999),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: colors.primary,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              'HELA • CEYLON',
+              style: TextStyle(
+                color: colors.primary,
+                fontWeight: FontWeight.w800,
+                fontSize: 12.5,
+                letterSpacing: 1.1,
+                fontFamily: 'Inter',
+              ),
+            ),
+          ],
         ),
       ),
       actions: [
@@ -570,7 +592,6 @@ class _HelaHomePageState extends State<HelaHomePage> {
             );
           },
         ),
-        // Matching Place 1: Top AppBar Action Bar Switch Icon!
         const HelaThemeSwitchButton(size: 36),
         const SizedBox(width: 2),
         Stack(
@@ -591,7 +612,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
                 width: 8,
                 height: 8,
                 decoration: BoxDecoration(
-                  color: colors.error,
+                  color: colors.coralSunrise,
                   shape: BoxShape.circle,
                   border: Border.all(color: colors.surface, width: 1.5),
                 ),
@@ -669,18 +690,18 @@ class _HelaHomePageState extends State<HelaHomePage> {
     final colors = HelaColors.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      height: 52,
+      height: 48,
       decoration: BoxDecoration(
-        color: colors.searchBackground,
-        borderRadius: BorderRadius.circular(26),
+        color: colors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(9999),
         border: Border.all(
-          color: colors.outlineVariant.withValues(alpha: isDark ? 0.6 : 0.7),
+          color: colors.architecturalBorder,
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black.withValues(alpha: 0.25) : Colors.black.withValues(alpha: 0.03),
-            blurRadius: 8,
+            color: colors.primary.withValues(alpha: isDark ? 0.2 : 0.05),
+            blurRadius: 10,
             offset: const Offset(0, 3),
           ),
         ],
@@ -691,8 +712,8 @@ class _HelaHomePageState extends State<HelaHomePage> {
             padding: const EdgeInsets.only(left: 16, right: 10),
             child: Icon(
               Icons.search_rounded,
-              color: colors.primary,
-              size: 22,
+              color: colors.primaryContainer,
+              size: 20,
             ),
           ),
           Expanded(
@@ -1224,7 +1245,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
     final colors = HelaColors.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return SizedBox(
-      height: 40,
+      height: 36,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
@@ -1235,21 +1256,21 @@ class _HelaHomePageState extends State<HelaHomePage> {
           final category = _categories[index];
 
           final bgColor = isSelected
-              ? colors.primary
-              : (isDark ? colors.surfaceContainer : colors.surfaceContainerHigh);
+              ? colors.primaryContainer
+              : (isDark ? colors.surfaceContainer : colors.surfaceContainerLowest);
 
           final fgColor = isSelected
               ? colors.onPrimary
-              : (isDark ? colors.onSurface : colors.primary);
+              : (isDark ? colors.onSurface : colors.outline);
 
           final borderColor = isSelected
-              ? colors.primary
+              ? colors.primaryContainer
               : (isDark
-                  ? colors.outlineVariant.withValues(alpha: 0.6)
-                  : colors.outlineVariant.withValues(alpha: 0.8));
+                  ? colors.outlineVariant.withValues(alpha: 0.5)
+                  : colors.architecturalBorder);
 
           return InkWell(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(9999),
             onTap: () {
               setState(() {
                 if (_selectedCategoryIndex == index && index != 0) {
@@ -1260,16 +1281,16 @@ class _HelaHomePageState extends State<HelaHomePage> {
               });
             },
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
+              duration: const Duration(milliseconds: 180),
               padding: const EdgeInsets.symmetric(horizontal: 14),
               decoration: BoxDecoration(
                 color: bgColor,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: borderColor, width: isSelected ? 1.5 : 1),
+                borderRadius: BorderRadius.circular(9999),
+                border: Border.all(color: borderColor, width: 1),
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: colors.primary.withValues(alpha: isDark ? 0.4 : 0.25),
+                          color: colors.primary.withValues(alpha: isDark ? 0.35 : 0.2),
                           blurRadius: 6,
                           offset: const Offset(0, 2),
                         )

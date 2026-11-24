@@ -37,16 +37,25 @@ class _FairRidePageState extends State<FairRidePage> {
     VehicleOption(
       id: 'tuktuk',
       title: 'Tuk-Tuk',
-      subtitle: 'Hill road breeze & tight turns',
+      subtitle: 'Official Meter Rate · Agile',
       capacity: '1-3 Seats',
       fareLkr: 1450,
       fareUsd: 4.80,
       icon: Icons.electric_rickshaw_rounded,
     ),
     VehicleOption(
+      id: 'nanocar',
+      title: 'Nano Car',
+      subtitle: 'Budget AC · Tight trails',
+      capacity: '1-3 Seats',
+      fareLkr: 2100,
+      fareUsd: 6.90,
+      icon: Icons.directions_car_filled_rounded,
+    ),
+    VehicleOption(
       id: 'sedan',
       title: 'Sedan Car',
-      subtitle: 'AC quiet comfort & luggage',
+      subtitle: 'Standard AC · Luggage boot',
       capacity: '1-4 Seats',
       fareLkr: 2800,
       fareUsd: 9.20,
@@ -634,10 +643,12 @@ class _FairRidePageState extends State<FairRidePage> {
   }
 
   PreferredSizeWidget _buildTopAppBar() {
+    final colors = HelaColors.of(context);
+    final isDark = colors.isDark;
     return AppBar(
-      backgroundColor: HelaColors.surface.withValues(alpha: 0.92),
+      backgroundColor: colors.surface.withValues(alpha: isDark ? 0.96 : 0.94),
       elevation: 0,
-      scrolledUnderElevation: 1.5,
+      scrolledUnderElevation: 1.0,
       shadowColor: Colors.black12,
       toolbarHeight: 64,
       titleSpacing: 0,
@@ -648,46 +659,55 @@ class _FairRidePageState extends State<FairRidePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Material(
-              color: Colors.transparent,
+              color: colors.surfaceContainerLowest,
+              shape: const CircleBorder(),
+              elevation: 1,
+              shadowColor: Colors.black12,
               child: InkWell(
-                borderRadius: BorderRadius.circular(20),
-                onTap: () {
-                  Navigator.of(context).maybePop();
-                },
-                child: const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Icon(Icons.arrow_back_rounded, color: HelaColors.primary, size: 24),
+                customBorder: const CircleBorder(),
+                onTap: () => Navigator.of(context).maybePop(),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(Icons.arrow_back_rounded, color: colors.primary, size: 20),
                 ),
               ),
             ),
-            Column(
-              children: const [
-                Text(
-                  'HELA MOBILITY',
-                  style: TextStyle(
-                    color: HelaColors.secondary,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.2,
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+              decoration: BoxDecoration(
+                color: colors.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(9999),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 7,
+                    height: 7,
+                    decoration: BoxDecoration(
+                      color: colors.primary,
+                      shape: BoxShape.circle,
+                    ),
                   ),
-                ),
-                SizedBox(height: 2),
-                Text(
-                  'Fair Ride Ceylon',
-                  style: TextStyle(
-                    color: HelaColors.primary,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.3,
+                  const SizedBox(width: 6),
+                  Text(
+                    'Fair Ride Ceylon',
+                    style: TextStyle(
+                      color: colors.primary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.2,
+                      fontFamily: 'Inter',
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             Stack(
               alignment: Alignment.center,
               children: [
                 IconButton(
-                  icon: const Icon(Icons.verified_user_rounded, color: HelaColors.primary, size: 24),
+                  icon: Icon(Icons.verified_user_rounded, color: colors.primary, size: 22),
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('SOS & Emergency Support Active')),
@@ -700,8 +720,8 @@ class _FairRidePageState extends State<FairRidePage> {
                   child: Container(
                     width: 7,
                     height: 7,
-                    decoration: const BoxDecoration(
-                      color: HelaColors.tertiaryFixedDim,
+                    decoration: BoxDecoration(
+                      color: colors.goldenAmber,
                       shape: BoxShape.circle,
                     ),
                   ),

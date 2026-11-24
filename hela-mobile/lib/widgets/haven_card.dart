@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hela/pages/home_page.dart';
 
-/// Reusable Destination / Haven Card
-///
-/// Features:
-/// - Hero background image with gradient darkening
+/// Reusable Destination / Haven Card conforming to Lankan Tropical Modernism:
+/// - 16px radius, subtle architectural border, ambient tea-tinted depth
 /// - Location badge with pin icon
 /// - Interactive bookmark icon button
-/// - Rating badge (star + score) and explorer social proof text
+/// - Rating badge (Golden Amber star + score) and explorer social proof text
 /// - Multi-line title
 /// - Category and price display ("From $X / person")
 /// - "Explore" action button with customizable callback
@@ -74,46 +72,49 @@ class HavenCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = HelaColors.of(context);
+
     return GestureDetector(
       onTap: onTap ?? onExploreTap,
       child: Container(
         width: width,
         height: height,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: HelaColors.outlineVariant.withValues(alpha: 0.35),
+            color: colors.architecturalBorder,
+            width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
-              blurRadius: 10,
+              color: colors.primary.withValues(alpha: 0.08),
+              blurRadius: 16,
               offset: const Offset(0, 4),
             ),
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(16),
           child: Stack(
             children: [
               // Full Background Image
               Positioned.fill(
-                child: _buildImage(),
+                child: _buildImage(colors),
               ),
 
-              // Forest Dark Green Gradient Overlay
+              // Forest Dark Green / Ocean Teal Gradient Overlay
               Positioned.fill(
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      stops: const [0.0, 0.45, 0.75, 1.0],
+                      stops: const [0.0, 0.40, 0.72, 1.0],
                       colors: [
                         Colors.transparent,
                         Colors.black.withValues(alpha: 0.15),
-                        HelaColors.primary.withValues(alpha: 0.78),
-                        HelaColors.primary.withValues(alpha: 0.96),
+                        colors.primary.withValues(alpha: 0.78),
+                        colors.primary.withValues(alpha: 0.96),
                       ],
                     ),
                   ),
@@ -139,11 +140,11 @@ class HavenCard extends StatelessWidget {
                               vertical: 5,
                             ),
                             decoration: BoxDecoration(
-                              color: HelaColors.tertiaryFixed,
-                              borderRadius: BorderRadius.circular(16),
+                              color: colors.tertiaryFixed,
+                              borderRadius: BorderRadius.circular(9999),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.1),
+                                  color: Colors.black.withValues(alpha: 0.12),
                                   blurRadius: 4,
                                 ),
                               ],
@@ -151,18 +152,19 @@ class HavenCard extends StatelessWidget {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.location_on_rounded,
                                   size: 13,
-                                  color: HelaColors.primary,
+                                  color: colors.onTertiaryFixed,
                                 ),
                                 const SizedBox(width: 3),
                                 Text(
                                   location,
-                                  style: const TextStyle(
-                                    color: HelaColors.primary,
+                                  style: TextStyle(
+                                    color: colors.onTertiaryFixed,
                                     fontWeight: FontWeight.w700,
                                     fontSize: 11,
+                                    fontFamily: 'Inter',
                                   ),
                                 ),
                               ],
@@ -172,8 +174,8 @@ class HavenCard extends StatelessWidget {
                           // Bookmark Button
                           Material(
                             color: isBookmarked
-                                ? HelaColors.primaryContainer.withValues(alpha: 0.95)
-                                : HelaColors.primaryContainer.withValues(alpha: 0.75),
+                                ? colors.primaryContainer.withValues(alpha: 0.95)
+                                : colors.primaryContainer.withValues(alpha: 0.75),
                             shape: const CircleBorder(),
                             child: InkWell(
                               customBorder: const CircleBorder(),
@@ -185,8 +187,8 @@ class HavenCard extends StatelessWidget {
                                       ? Icons.bookmark_rounded
                                       : Icons.bookmark_border_rounded,
                                   color: isBookmarked
-                                      ? HelaColors.tertiaryFixed
-                                      : HelaColors.onPrimary,
+                                      ? colors.coralSunrise
+                                      : colors.onPrimary,
                                   size: 18,
                                 ),
                               ),
@@ -208,25 +210,26 @@ class HavenCard extends StatelessWidget {
                                   vertical: 2,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: HelaColors.surfaceContainerLowest
+                                  color: colors.surfaceContainerLowest
                                       .withValues(alpha: 0.92),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Icon(
+                                    Icon(
                                       Icons.star_rounded,
                                       size: 14,
-                                      color: Colors.amber,
+                                      color: colors.goldenAmber,
                                     ),
                                     const SizedBox(width: 2),
                                     Text(
                                       rating.toStringAsFixed(2),
-                                      style: const TextStyle(
-                                        color: HelaColors.primary,
+                                      style: TextStyle(
+                                        color: colors.primary,
                                         fontWeight: FontWeight.w800,
                                         fontSize: 11,
+                                        fontFamily: 'Inter',
                                       ),
                                     ),
                                   ],
@@ -236,10 +239,11 @@ class HavenCard extends StatelessWidget {
                               Expanded(
                                 child: Text(
                                   badgeText,
-                                  style: const TextStyle(
-                                    color: HelaColors.surfaceContainerLow,
+                                  style: TextStyle(
+                                    color: colors.surfaceContainerLow,
                                     fontSize: 11,
                                     fontWeight: FontWeight.w500,
+                                    fontFamily: 'Inter',
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -253,16 +257,17 @@ class HavenCard extends StatelessWidget {
                           Text(
                             title,
                             style: const TextStyle(
-                              color: HelaColors.onPrimary,
+                              color: Colors.white,
                               fontWeight: FontWeight.w700,
-                              fontSize: 17,
+                              fontSize: 16.5,
                               height: 1.25,
+                              fontFamily: 'Inter',
                             ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
 
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 10),
 
                           // Bottom Divider & Details
                           Container(
@@ -270,8 +275,7 @@ class HavenCard extends StatelessWidget {
                             decoration: BoxDecoration(
                               border: Border(
                                 top: BorderSide(
-                                  color: HelaColors.onPrimary
-                                      .withValues(alpha: 0.2),
+                                  color: Colors.white.withValues(alpha: 0.2),
                                   width: 1,
                                 ),
                               ),
@@ -284,10 +288,11 @@ class HavenCard extends StatelessWidget {
                                   children: [
                                     Text(
                                       category,
-                                      style: const TextStyle(
-                                        color: HelaColors.onPrimaryContainer,
+                                      style: TextStyle(
+                                        color: colors.onPrimaryContainer,
                                         fontSize: 11,
                                         fontWeight: FontWeight.w500,
+                                        fontFamily: 'Inter',
                                       ),
                                     ),
                                     RichText(
@@ -296,18 +301,19 @@ class HavenCard extends StatelessWidget {
                                           TextSpan(
                                             text: 'From $price',
                                             style: const TextStyle(
-                                              color: HelaColors.onPrimary,
+                                              color: Colors.white,
                                               fontWeight: FontWeight.w800,
                                               fontSize: 15,
+                                              fontFamily: 'Inter',
                                             ),
                                           ),
-                                          const TextSpan(
+                                          TextSpan(
                                             text: ' / person',
                                             style: TextStyle(
-                                              color: HelaColors
-                                                  .surfaceContainerHighest,
+                                              color: colors.surfaceContainerHighest,
                                               fontSize: 11,
                                               fontWeight: FontWeight.w400,
+                                              fontFamily: 'Inter',
                                             ),
                                           ),
                                         ],
@@ -320,26 +326,26 @@ class HavenCard extends StatelessWidget {
                                 ElevatedButton(
                                   onPressed: onExploreTap,
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: HelaColors.tertiaryFixed,
-                                    foregroundColor: HelaColors.primary,
+                                    backgroundColor: colors.tertiaryFixed,
+                                    foregroundColor: colors.onTertiaryFixed,
                                     elevation: 0,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
+                                      borderRadius: BorderRadius.circular(9999),
                                     ),
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 14,
                                       vertical: 6,
                                     ),
                                     minimumSize: Size.zero,
-                                    tapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                   ),
                                   child: const Text(
                                     'Explore',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      fontWeight: FontWeight.w800,
+                                      fontWeight: FontWeight.w700,
                                       letterSpacing: -0.2,
+                                      fontFamily: 'Inter',
                                     ),
                                   ),
                                 ),
@@ -359,17 +365,17 @@ class HavenCard extends StatelessWidget {
     );
   }
 
-  Widget _buildImage() {
+  Widget _buildImage(HelaColorPalette colors) {
     return Image.network(
       imageUrl,
       fit: BoxFit.cover,
       errorBuilder: (context, error, stackTrace) {
         return Container(
-          color: HelaColors.primaryContainer,
-          child: const Center(
+          color: colors.primaryContainer,
+          child: Center(
             child: Icon(
               Icons.landscape_rounded,
-              color: HelaColors.onPrimaryContainer,
+              color: colors.onPrimaryContainer,
               size: 40,
             ),
           ),
@@ -378,7 +384,7 @@ class HavenCard extends StatelessWidget {
       loadingBuilder: (context, child, loadingProgress) {
         if (loadingProgress == null) return child;
         return Container(
-          color: HelaColors.surfaceContainerHigh,
+          color: colors.surfaceContainerHigh,
           child: Center(
             child: CircularProgressIndicator(
               value: loadingProgress.expectedTotalBytes != null
@@ -386,7 +392,7 @@ class HavenCard extends StatelessWidget {
                       loadingProgress.expectedTotalBytes!
                   : null,
               strokeWidth: 2,
-              color: HelaColors.secondary,
+              color: colors.secondary,
             ),
           ),
         );

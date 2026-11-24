@@ -30,7 +30,7 @@ module.exports = async function(request) {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stpringify({ error: error.message }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });

@@ -217,6 +217,14 @@ class HelaAppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void continueAsGuest() {
+    _isAuthenticated = false;
+    _userName = 'Guest Explorer';
+    _userEmail = '';
+    _userPhotoUrl = null;
+    notifyListeners();
+  }
+
   void signOut() {
     _isAuthenticated = false;
     _userName = 'Guest';
