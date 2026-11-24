@@ -21,6 +21,7 @@ import 'package:hela/pages/cultural_guide/article_detail_page.dart';
 import 'package:hela/onbording/onboarding_page.dart';
 import 'package:hela/pages/auth/signup_page.dart';
 import 'package:hela/pages/explore_page.dart';
+import 'package:hela/pages/itinerary_details_page.dart';
 import 'package:hela/widgets/haven_card.dart';
 import 'package:hela/widgets/stay_card.dart';
 import 'package:hela/widgets/itinerary_card.dart';
@@ -493,6 +494,34 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
 
     expect(find.text('Popular Destinations'), findsOneWidget);
+  });
+
+  testWidgets('ItineraryDetailsPage smoke test and stop rendering', (WidgetTester tester) async {
+    _ignoreOverflow();
+    await tester.pumpWidget(
+      _wrapWithState(
+        ItineraryDetailsPage(
+          startDate: DateTime(2025, 10, 14),
+          endDate: DateTime(2025, 10, 24),
+          adults: 2,
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('Itinerary Details'), findsOneWidget);
+    expect(find.text('AI CURATED PLAN'), findsOneWidget);
+    expect(find.text('Cultural Wonders & Emerald Peaks'), findsOneWidget);
+    expect(find.text('10 Days / 9 Nights'), findsOneWidget);
+    expect(find.text('2 Travellers'), findsOneWidget);
+    expect(find.text('Day 1 Route Overview'), findsOneWidget);
+    expect(find.text('Day 1 Itinerary'), findsOneWidget);
+    expect(find.text('Arrival & Tropical Welcome at CMB'), findsOneWidget);
+    expect(find.text('Traditional Rice & Curry Feast at Kurunegala'), findsOneWidget);
+    expect(find.text('Ascent of Sigiriya Lion Rock Citadel'), findsOneWidget);
+    expect(find.text('Boutique Heritage Villa Check-In & Dinner'), findsOneWidget);
+    expect(find.text('HELA Fair-Price Assurance'), findsOneWidget);
+    expect(find.text('Start My Journey'), findsOneWidget);
   });
 }
 
