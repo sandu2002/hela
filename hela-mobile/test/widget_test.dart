@@ -58,8 +58,8 @@ void main() {
       ),
     );
 
-    expect(find.text('Discover Sri Lanka'), findsOneWidget);
-    expect(find.text('Hill Country'), findsOneWidget);
+    expect(find.text('Discover Sri Lanka, Your Way'), findsOneWidget);
+    expect(find.text('Featured Destinations'), findsOneWidget);
   });
 
   testWidgets('HelaHomePage category filter updates tour cards when tapped', (WidgetTester tester) async {
@@ -82,22 +82,22 @@ void main() {
     );
     await tester.pump();
 
-    // Initially "Featured Havens" is visible
-    expect(find.text('Featured Havens'), findsOneWidget);
+    // Initially "Featured Destinations" and Sigiriya are visible
+    expect(find.text('Featured Destinations'), findsOneWidget);
+    expect(find.text('Sigiriya'), findsOneWidget);
 
-    // Tap "Hill Country" filter chip (visible beside "All")
-    await tester.tap(find.text('Hill Country'));
+    // Tap "Beaches" filter chip
+    await tester.tap(find.text('Beaches'));
     await tester.pumpAndSettle();
 
-    // Header now reflects selected Hill Country category
-    expect(find.text('Hill Country Tours & Havens'), findsOneWidget);
-    expect(find.text('Nine Arch Bridge & Demodara Tea Valley'), findsOneWidget);
+    // Experience card now shows Beaches experience
+    expect(find.text('Weligama Surfing & Tangalle Bays'), findsOneWidget);
 
-    // Tap "All" to reset filter
-    await tester.tap(find.text('All'));
+    // Tap "Nature & Wildlife" filter chip
+    await tester.tap(find.text('Nature & Wildlife'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Featured Havens'), findsOneWidget);
+    expect(find.text('Minneriya Elephant Gathering & Yala Safaris'), findsOneWidget);
   });
 
   testWidgets('TripPlannerPage smoke test', (WidgetTester tester) async {

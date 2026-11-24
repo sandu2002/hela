@@ -1,29 +1,53 @@
 import 'package:flutter/material.dart';
-import 'package:hela/pages/stays_page.dart';
 import 'package:hela/pages/fair_ride_page.dart';
 import 'package:hela/pages/cultural_guide/cultural_guide_page.dart';
+import 'package:hela/pages/trip_planner_page.dart';
 import 'package:hela/pages/profile_page.dart';
-import 'package:hela/pages/saved_page.dart';
-import 'package:hela/widgets/haven_card.dart';
-import 'package:hela/pages/smart_tour/smart_tour_home_page.dart';
-import 'package:hela/models/destination.dart';
-import 'package:hela/services/place_service.dart';
-import 'package:hela/state/app_state.dart';
-import 'package:hela/models/haven_item.dart';
 import 'package:hela/widgets/theme_switch_button.dart';
 import 'package:hela/widgets/hela_drawer.dart';
 import 'package:hela/widgets/hela_bottom_nav_bar.dart';
-export 'package:hela/models/haven_item.dart';
 
-// Re-export HelaColors from canonical location for backward compatibility
+// Re-exports for backward compatibility
+export 'package:hela/models/haven_item.dart';
 import 'package:hela/theme/hela_colors.dart';
 export 'package:hela/theme/hela_colors.dart';
 
-class CategoryChipData {
-  final String label;
-  final IconData icon;
+/// Featured Destination model for Stitch Home Dashboard
+class FeaturedDestinationItem {
+  final String title;
+  final String subtitle;
+  final String rating;
+  final String badge;
+  final String footerTag;
+  final String imageUrl;
 
-  const CategoryChipData({required this.label, required this.icon});
+  const FeaturedDestinationItem({
+    required this.title,
+    required this.subtitle,
+    required this.rating,
+    required this.badge,
+    required this.footerTag,
+    required this.imageUrl,
+  });
+}
+
+/// Handcrafted Experience model for Stitch Home Dashboard
+class HomeExperienceItem {
+  final String title;
+  final String subtitle;
+  final String category;
+  final String rating;
+  final String imageUrl;
+  final String filterCategory;
+
+  const HomeExperienceItem({
+    required this.title,
+    required this.subtitle,
+    required this.category,
+    required this.rating,
+    required this.imageUrl,
+    required this.filterCategory,
+  });
 }
 
 class HelaHomePage extends StatefulWidget {
@@ -35,9 +59,105 @@ class HelaHomePage extends StatefulWidget {
 
 class _HelaHomePageState extends State<HelaHomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  int _selectedCategoryIndex = 0;
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+  String _currentCity = 'Colombo';
+  int _selectedExperienceChipIndex = 0; // 0: Nature & Wildlife, 1: Beaches, 2: Cultural Heritage, 3: Hill Country, 4: All
+
+  final List<String> _experienceFilters = const [
+    'Nature & Wildlife',
+    'Beaches',
+    'Cultural Heritage',
+    'Hill Country',
+    'All',
+  ];
+
+  final List<FeaturedDestinationItem> _destinations = const [
+    FeaturedDestinationItem(
+      title: 'Sigiriya',
+      subtitle: 'Ancient Lion Rock fortress & royal water gardens',
+      rating: '5.0',
+      badge: 'UNESCO',
+      footerTag: 'Cultural Wonder',
+      imageUrl:
+          'https://lh3.googleusercontent.com/aida-public/AB6AXuB470bfrsJ34_Zfz3mF8BpQZOUum-fhawKh51cm1K8-0n16IJnyIRDWCDo-p-4LKlIJL7eWRS6fSHiQ7Y076dniwfTg2-uSNGP-Y1fU4rUt8gQCz0RWM_EspICB8L-E9uu3ZguLz8MSZG0MZai01QaMRbw9u7NFJ6XRoYIDFwFMifvWSsy_XhyQ2UkxBFBJVs0TNFtCkUr-O7xCS0cyKCNy4TCnZZq8uzJM0M3dU9c',
+    ),
+    FeaturedDestinationItem(
+      title: 'Ella',
+      subtitle: 'Nine Arch Bridge, Little Adam\'s Peak & misty tea estates',
+      rating: '4.9',
+      badge: 'Highlands',
+      footerTag: 'Scenic Rail & Hike',
+      imageUrl:
+          'https://lh3.googleusercontent.com/aida-public/AB6AXuC1-w7059r6Tx8JOuHhGLLm6spMsWw09E48ApBmOWTEe-p-IbOyd8GBmFh3Zvn60CK2ZR0YsjHx75NDRUWyT2eYsmsMBsoNsO380YPX-8NkCVlAl9L84IrpVcJskPmn7bby1SLlQNDsytKDChKgPdcmfeIa6V14oUmNsO-WDDWQZJlHl_dJvco52RzpSUA0AS2JlopPWLNhvwsNiRGcKN4YqXKlwv5GpBLlmhs9TRI',
+    ),
+    FeaturedDestinationItem(
+      title: 'Kandy',
+      subtitle: 'Sacred Temple of the Tooth & lush botanical sanctuary',
+      rating: '4.8',
+      badge: 'Heritage',
+      footerTag: 'Spiritual Heart',
+      imageUrl:
+          'https://lh3.googleusercontent.com/aida-public/AB6AXuAf_ZHki056g4HPCYefzjMlcb2RDYtvjthd-ddHXXVe627O2eS1UoDIgiQ_L-HKdkLD9fKmpLz29XjJCzAX-uHg68hnR6w8d8wJJJasNuOqCFl3pVUmgcPmjQzd1eEzWMovtcNQjv5uQV-wGNks7fK8WOBUFpNVKYzvyjP0oOxlEXwSUQgjWHLC-mO86yMwUkMCo4fc0t_xHB8t1iRNYNQe3OQwojumYbhjBuANTUk',
+    ),
+    FeaturedDestinationItem(
+      title: 'Galle',
+      subtitle: '17th-century Dutch colonial ramparts & ocean fort',
+      rating: '4.9',
+      badge: 'Colonial Fort',
+      footerTag: 'Coastal Heritage',
+      imageUrl:
+          'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
+    ),
+    FeaturedDestinationItem(
+      title: 'Mirissa',
+      subtitle: 'Golden palm-fringed coastlines & sunset whale watching',
+      rating: '4.9',
+      badge: 'South Coast',
+      footerTag: 'Ocean & Whales',
+      imageUrl:
+          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80',
+    ),
+  ];
+
+  final List<HomeExperienceItem> _experiences = const [
+    HomeExperienceItem(
+      title: 'Minneriya Elephant Gathering & Yala Safaris',
+      subtitle: 'Witness majestic wild elephant herds & elusive leopards',
+      category: 'NATURE & WILDLIFE',
+      rating: '4.9',
+      filterCategory: 'Nature & Wildlife',
+      imageUrl:
+          'https://lh3.googleusercontent.com/aida-public/AB6AXuD0D-R82TA9_SGuSRDfEnwrE2O1k8vnQfZhJ3koSU4dn3zja8bG-1GyYpElMjx7OaMROOj5YIrG_ilEW47rcLiRGDhHJ9XTpTJm5wQdSK6ZbluVAV45sagYlIO4JtR_VMfGHBBecYiAD1gG5dir-RCgv1og-V5_c2KBOHvrr44Kfw5QelxizrzCF9Bhhj9hBwM6Qy65FCruTdgatHraZDf-6C4KhLFPlpc0DpOKZfs',
+    ),
+    HomeExperienceItem(
+      title: 'Ceylon Spice Trail & Hopper Feast',
+      subtitle: 'Authentic culinary secrets & aromatic street flavours',
+      category: 'FOOD EXPERIENCES',
+      rating: '4.8',
+      filterCategory: 'Cultural Heritage',
+      imageUrl:
+          'https://lh3.googleusercontent.com/aida-public/AB6AXuD2rfOC6O1lEWNIWbhJf_r1GCl1ASdc_1ILTZsnvCFVaqHPPJVjBzyaXrPR1lsA9FFF5W9vKiAcTPRCN53Z0WEr4EqTNXW4tVKuzy04-fiYUbKBRLtuEuz-SVnjSnMumm-Dh4IVwk3eB8rMdw1axmV-frW7vrR441oE8YY6RAqBn8NgN_P5MA87481eCnW137ndaMkyTU49mPguMCtmFLjJscVS6fkCvzyZ4fi4yVA',
+    ),
+    HomeExperienceItem(
+      title: 'Weligama Surfing & Tangalle Bays',
+      subtitle: 'Pristine breaks, secluded lagoons & coastal bliss',
+      category: 'BEACHES & OCEAN',
+      rating: '4.9',
+      filterCategory: 'Beaches',
+      imageUrl:
+          'https://lh3.googleusercontent.com/aida-public/AB6AXuD_mI8m7U4OG8RLk9jEVrfoZ3MLdCuXE_POyoYiKB7DwHR7fA3C56-fnoLmO3maydv5UPhaBIrOjd8xJ26dOCKDowueQ3cdc2tPTpeK0Nc44gDM1OiLGugPrOVOJipNveFhuHtwKxqF-eP1ZJJKfd_OJXhz9mlAZMNvs6ye70hBOjRqcS3XO8amh6r6tmPbWWlzqhGKW19iXSynZe8CaXaLElc5zIZgJS-YuK_HVgo',
+    ),
+    HomeExperienceItem(
+      title: 'Nine Arch Bridge & Demodara Tea Valley',
+      subtitle: 'Colonial railway arches shrouded in morning mountain mist',
+      category: 'HILL COUNTRY',
+      rating: '4.9',
+      filterCategory: 'Hill Country',
+      imageUrl:
+          'https://lh3.googleusercontent.com/aida-public/AB6AXuDvJryELDH6m-aPQfsWTQ16312Y8rBu_auTNO6RdIu6gbV4Pwcooer456mtq4aG-SyKDYKNNg8-VWK0IuqWCpQQjHRKu2phfsvLM138y7tF4c0JEFCRImFso5Q05zKJanq1aBD3Q1iC30zFwaKYXyE_RgKZ0emUZlFa6Gh0qIs2uXJmMge8Zy3FlYNN0tmbm3Q7KzAXiBPuXo-9JhDuJpvmkQQWVWLd7RjEZbw3TYlMvhBaoZt8cQ-eog',
+    ),
+  ];
 
   @override
   void dispose() {
@@ -45,504 +165,174 @@ class _HelaHomePageState extends State<HelaHomePage> {
     super.dispose();
   }
 
-  final List<CategoryChipData> _categories = const [
-    CategoryChipData(label: 'All', icon: Icons.explore_rounded),
-    CategoryChipData(label: 'Hill Country', icon: Icons.landscape_rounded),
-    CategoryChipData(label: 'Beaches', icon: Icons.beach_access_rounded),
-    CategoryChipData(label: 'Culture', icon: Icons.temple_buddhist_rounded),
-    CategoryChipData(label: 'Adventure', icon: Icons.hiking_rounded),
-    CategoryChipData(label: 'Wildlife', icon: Icons.pets_rounded),
-    CategoryChipData(label: 'Waterfalls', icon: Icons.waterfall_chart_rounded),
-  ];
-
-  String? get _selectedCategoryLabel {
-    if (_selectedCategoryIndex <= 0 || _selectedCategoryIndex >= _categories.length) {
-      return null;
-    }
-    return _categories[_selectedCategoryIndex].label;
+  void _openLocationPicker() {
+    final cities = ['Colombo', 'Kandy', 'Galle', 'Ella', 'Sigiriya', 'Mirissa', 'Nuwara Eliya', 'Trincomalee'];
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        final colors = HelaColors.of(context);
+        return Container(
+          decoration: BoxDecoration(
+            color: colors.cardBackground,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: colors.architecturalBorder,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Select Current Location',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: colors.onSurface,
+                ),
+              ),
+              const SizedBox(height: 12),
+              ...cities.map(
+                (city) => ListTile(
+                  leading: Icon(
+                    Icons.location_on_rounded,
+                    color: city == _currentCity ? colors.primary : colors.onSurfaceVariant,
+                  ),
+                  title: Text(
+                    city,
+                    style: TextStyle(
+                      fontWeight: city == _currentCity ? FontWeight.w700 : FontWeight.w500,
+                      color: city == _currentCity ? colors.primary : colors.onSurface,
+                    ),
+                  ),
+                  trailing: city == _currentCity
+                      ? Icon(Icons.check_rounded, color: colors.primary)
+                      : null,
+                  onTap: () {
+                    setState(() => _currentCity = city);
+                    Navigator.pop(ctx);
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
-  List<HavenItem> get _filteredHavens {
-    final cat = _selectedCategoryLabel;
-    if (cat == null) return _featuredHavens;
-    return _featuredHavens.where((h) => h.filterCategory == cat).toList();
-  }
-
-  List<ExperienceItem> get _filteredExperiences {
-    final cat = _selectedCategoryLabel;
-    if (cat == null) return _trendingExperiences;
-    return _trendingExperiences.where((e) => e.filterCategory == cat).toList();
-  }
-
-  final List<HavenItem> _featuredHavens = const [
-    // ── Hill Country ──────────────────────────────────────────────
-    HavenItem(
-      title: 'Nine Arch Bridge & Demodara Tea Valley',
-      location: 'Ella, Highlands',
-      category: 'Guided Excursion',
-      price: '\$45',
-      rating: 4.90,
-      badgeText: '240+ Verified Explorers',
-      filterCategory: 'Hill Country',
-      imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuDvJryELDH6m-aPQfsWTQ16312Y8rBu_auTNO6RdIu6gbV4Pwcooer456mtq4aG-SyKDYKNNg8-VWK0IuqWCpQQjHRKu2phfsvLM138y7tF4c0JEFCRImFso5Q05zKJanq1aBD3Q1iC30zFwaKYXyE_RgKZ0emUZlFa6Gh0qIs2uXJmMge8Zy3FlYNN0tmbm3Q7KzAXiBPuXo-9JhDuJpvmkQQWVWLd7RjEZbw3TYlMvhBaoZt8cQ-eog',
-    ),
-    HavenItem(
-      title: 'Little Adam\'s Peak & Flying Ravana Ridge',
-      location: 'Ella, Highlands',
-      category: 'Scenic Mountain Trek',
-      price: '\$55',
-      rating: 4.92,
-      badgeText: 'Panoramic Vista',
-      filterCategory: 'Hill Country',
-      imageUrl:
-          'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
-    ),
-    HavenItem(
-      title: 'Nuwara Eliya Tea Trails & Pedro Estate',
-      location: 'Nuwara Eliya, Highlands',
-      category: 'Heritage Tea Estate',
-      price: '\$48',
-      rating: 4.88,
-      badgeText: 'Ceylon Tea Route',
-      filterCategory: 'Hill Country',
-      imageUrl:
-          'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&auto=format&fit=crop&q=80',
-    ),
-
-    // ── Beaches ───────────────────────────────────────────────────
-    HavenItem(
-      title: 'Palm Coast & Blue Whale Watch Cruise',
-      location: 'Mirissa, South Coast',
-      category: 'Coastal Safari',
-      price: '\$75',
-      rating: 4.88,
-      badgeText: 'Ocean Sanctuary',
-      filterCategory: 'Beaches',
-      imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuCdCzzTCfcf96RAY1SbWTlAyxIfFy3sjrYH6c5VUEQnBtz-eqUZsAB6nACMhkwopIPaH431tO5N6rNtmoGQUznd8HwSb0tLMr98CYTP8NgH1ESYJ85k3FQRQsShcSRo2OJhFITaoJkg8ip-J14rP0c5Ma6KyAz8ThZ645a-64Qblmcye38mylwbD-3KX_l-H15_SGoWP6VS53FmY8Eic5Cxwc6vKPpHFCJZCS1bXMJ08GZCO6ATKK6RDw',
-    ),
-    HavenItem(
-      title: 'Arugam Bay Surf & Sunset Sand Dunes',
-      location: 'Arugam Bay, East Coast',
-      category: 'Surf & Ocean Camp',
-      price: '\$42',
-      rating: 4.93,
-      badgeText: 'World Surf Reserve',
-      filterCategory: 'Beaches',
-      imageUrl:
-          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80',
-    ),
-    HavenItem(
-      title: 'Tangalle Secret Coves & Sea Turtle Watch',
-      location: 'Tangalle, South Coast',
-      category: 'Coastal Hideaway',
-      price: '\$60',
-      rating: 4.91,
-      badgeText: 'Marine Sanctuary',
-      filterCategory: 'Beaches',
-      imageUrl:
-          'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=800&auto=format&fit=crop&q=80',
-    ),
-
-    // ── Culture ───────────────────────────────────────────────────
-    HavenItem(
-      title: 'Ancient Citadel & Sky Palace Ascent',
-      location: 'Sigiriya, Cultural Triangle',
-      category: 'Heritage Tour',
-      price: '\$60',
-      rating: 4.95,
-      badgeText: 'UNESCO Heritage',
-      filterCategory: 'Culture',
-      imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuAk9mgmweMowAekofzD0DuGrOAM90Q02qbvbSwJ1NfOp_TaTXxz2Noje8nYZerSfDgtvec2fuPDUjyvYWJLayoiDs5yQ4jtV1h14rFarsPaM-hU6LqyLC6UAUGjJw_J4rCjTuDKdMu79p07dxX754f0hvSNi9nWIkZq7Oq6_ReD9ebgcFLX3wztGHOi1lICWZV8WR4VuoyfU1_gN-wLu7Kml64bjQFLF1l4ZkZ_fGb_spDYlqdXwkPjuA',
-    ),
-    HavenItem(
-      title: 'Temple of the Sacred Tooth & Royal City',
-      location: 'Kandy, Central Province',
-      category: 'Sacred Heritage',
-      price: '\$38',
-      rating: 4.94,
-      badgeText: 'Living Tradition',
-      filterCategory: 'Culture',
-      imageUrl:
-          'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
-    ),
-    HavenItem(
-      title: 'Polonnaruwa Ancient Kingdom & Gal Vihara',
-      location: 'Polonnaruwa, North Central',
-      category: 'Royal Ruins Tour',
-      price: '\$52',
-      rating: 4.91,
-      badgeText: 'Medieval Wonder',
-      filterCategory: 'Culture',
-      imageUrl:
-          'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
-    ),
-
-    // ── Adventure ─────────────────────────────────────────────────
-    HavenItem(
-      title: 'Kitulgala White Water Rafting & Canyon Jump',
-      location: 'Kitulgala, Kelani River',
-      category: 'Whitewater Expedition',
-      price: '\$65',
-      rating: 4.93,
-      badgeText: 'Adrenaline Rush',
-      filterCategory: 'Adventure',
-      imageUrl:
-          'https://images.unsplash.com/photo-1530866495561-507c9faab2ed?w=800&auto=format&fit=crop&q=80',
-    ),
-    HavenItem(
-      title: 'Ella Rock Dawn Expedition & Ravana Cave',
-      location: 'Ella, Highlands',
-      category: 'Mountain Expedition',
-      price: '\$50',
-      rating: 4.90,
-      badgeText: 'Epic Heights',
-      filterCategory: 'Adventure',
-      imageUrl:
-          'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
-    ),
-    HavenItem(
-      title: 'Adam\'s Peak Midnight Pilgrimage Summit',
-      location: 'Nallathanniya, Peak Wilderness',
-      category: 'Sacred Night Summit',
-      price: '\$45',
-      rating: 4.96,
-      badgeText: 'Holy Sunrise',
-      filterCategory: 'Adventure',
-      imageUrl:
-          'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&auto=format&fit=crop&q=80',
-    ),
-
-    // ── Wildlife ──────────────────────────────────────────────────
-    HavenItem(
-      title: 'Yala Leopard Safari at Dawn & Deep Jungles',
-      location: 'Yala National Park, Southeast',
-      category: 'Big Cat Safari',
-      price: '\$95',
-      rating: 4.96,
-      badgeText: 'High Leopard Density',
-      filterCategory: 'Wildlife',
-      imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuDzX3rEG6vFdMVPdR2IYkb722eLQezhkZlI9-A9h7Id0Xe0tc0XBU3AGMCVpq5OaMFrUZpLK8_ANGsNvGc22u4ZDrosNecG2dQR58pzzFp11iTNtp1nZexE_3rbuxEW9xvc0AvYy3aaJEey7NHg2HIlk7OKKuSeTtKIQLWW-6cm9EMVysGfzpppGGAymEqvqu562Kxmq3DJyRqnszhtNHHwlp49NwCJ6VN-V657OYR7yjq6c8P-IaCr6w',
-    ),
-    HavenItem(
-      title: 'Minneriya Elephant Gathering by Open 4x4',
-      location: 'Minneriya National Park',
-      category: 'Elephant Safari',
-      price: '\$70',
-      rating: 4.93,
-      badgeText: 'Asia\'s Greatest Gathering',
-      filterCategory: 'Wildlife',
-      imageUrl:
-          'https://images.unsplash.com/photo-1561731216-c3a4d99437d5?w=800&auto=format&fit=crop&q=80',
-    ),
-    HavenItem(
-      title: 'Udawalawe Transit Home & Plains Safari',
-      location: 'Udawalawe, Sabaragamuwa',
-      category: 'Conservation Tour',
-      price: '\$62',
-      rating: 4.90,
-      badgeText: 'Rescue Sanctuary',
-      filterCategory: 'Wildlife',
-      imageUrl:
-          'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?w=800&auto=format&fit=crop&q=80',
-    ),
-
-    // ── Waterfalls ────────────────────────────────────────────────
-    HavenItem(
-      title: 'Diyaluma Falls Upper Natural Infinity Pools',
-      location: 'Koslanda, Badulla',
-      category: 'Waterfall Odyssey',
-      price: '\$42',
-      rating: 4.95,
-      badgeText: 'Natural Rock Pools',
-      filterCategory: 'Waterfalls',
-      imageUrl:
-          'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=800&auto=format&fit=crop&q=80',
-    ),
-    HavenItem(
-      title: 'Bambarakanda & Hidden Lanka Ella Cascades',
-      location: 'Kalupahana, Ohiya Valley',
-      category: 'Tallest Falls Trek',
-      price: '\$48',
-      rating: 4.91,
-      badgeText: '263m Cascade',
-      filterCategory: 'Waterfalls',
-      imageUrl:
-          'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
-    ),
-    HavenItem(
-      title: 'Ramboda Triple Falls & Tea Terraces',
-      location: 'Ramboda Pass, Pussellawa',
-      category: 'Mountain Waterfall',
-      price: '\$36',
-      rating: 4.88,
-      badgeText: 'Highland Vistas',
-      filterCategory: 'Waterfalls',
-      imageUrl:
-          'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&auto=format&fit=crop&q=80',
-    ),
-  ];
-
-  final List<ExperienceItem> _trendingExperiences = const [
-    // ── Hill Country ──────────────────────────────────────────────
-    ExperienceItem(
-      title: 'Sunrise Hike & Kandy Tea Tasting',
-      category: 'Highland Terroir',
-      duration: '4.5 Hours',
-      price: '\$38',
-      rating: 4.9,
-      reviewsCount: 88,
-      categoryIcon: Icons.local_florist_rounded,
-      filterCategory: 'Hill Country',
-      imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuAWc-k1WtCHy2mQ1-JC2KOqg6jy7fs-iXGjjBHckRO8Qmfu3IMmJ__G5Okib5t4lz7hbkIBF1ELU1Vs2v844gjLpMTwiObEkSOh7XHpZZ8dd3Btj3j91sQg9l1CRMGUVu_gfQwIdCwvMPolRTdX7BN9nQFj7BneThOvXuG3aiOtTlz-R4nG2WOc156rKiHSiPeRrIU_nvWG59HwNgvWOuxfamgg4bbPy4krrZT7v38-qykE9u9dKRmMWg',
-    ),
-    ExperienceItem(
-      title: 'Horton Plains & World\'s End Trek',
-      category: 'Cloud Forest Trail',
-      duration: '5.0 Hours',
-      price: '\$50',
-      rating: 4.94,
-      reviewsCount: 112,
-      categoryIcon: Icons.terrain_rounded,
-      filterCategory: 'Hill Country',
-      imageUrl:
-          'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
-    ),
-
-    // ── Beaches ───────────────────────────────────────────────────
-    ExperienceItem(
-      title: 'Bentota Mangrove Lagoon & Water Skiing',
-      category: 'Lagoon Adventures',
-      duration: '3.5 Hours',
-      price: '\$45',
-      rating: 4.87,
-      reviewsCount: 64,
-      categoryIcon: Icons.surfing_rounded,
-      filterCategory: 'Beaches',
-      imageUrl:
-          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80',
-    ),
-    ExperienceItem(
-      title: 'Unawatuna Coral Reef Snorkel & Catamaran',
-      category: 'Reef Exploration',
-      duration: '4.0 Hours',
-      price: '\$55',
-      rating: 4.92,
-      reviewsCount: 98,
-      categoryIcon: Icons.sailing_rounded,
-      filterCategory: 'Beaches',
-      imageUrl:
-          'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=800&auto=format&fit=crop&q=80',
-    ),
-
-    // ── Culture ───────────────────────────────────────────────────
-    ExperienceItem(
-      title: 'Galle Fort Sunset Walk & Spices',
-      category: 'Culinary Heritage',
-      duration: '3.0 Hours',
-      price: '\$42',
-      rating: 4.89,
-      reviewsCount: 75,
-      categoryIcon: Icons.restaurant_rounded,
-      filterCategory: 'Culture',
-      imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuAnsMut8vukazOQQk1YyZCGBLo9YbXlxSvpljkSzTetlNv3S90zTSLVj93s5Ei7ruW9FItfWdv7SRHLba73k0w4GyqyAQYGdhkCc1o4whnZtFwV8Abb_yI23ZzIPm8gDdO_2nT5d6oCv9ULCcpJ2kpwQX-lLLuW3ARIM12y0b5KBn6WwpmleF7f_Gtf9E_ea8_J1ItwLULkwuuwgBd-GdluE3jJgzvYwrwzEE37TaTxbZsfu2ve_Ax6Bw',
-    ),
-    ExperienceItem(
-      title: 'Dambulla Cave Temple Monastic Art Tour',
-      category: 'Sacred Murals',
-      duration: '2.5 Hours',
-      price: '\$35',
-      rating: 4.93,
-      reviewsCount: 130,
-      categoryIcon: Icons.temple_buddhist_rounded,
-      filterCategory: 'Culture',
-      imageUrl:
-          'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
-    ),
-
-    // ── Adventure ─────────────────────────────────────────────────
-    ExperienceItem(
-      title: 'Knuckles Mountain Cloud Forest Trek',
-      category: 'Alpine Wilderness',
-      duration: '6.5 Hours',
-      price: '\$70',
-      rating: 4.95,
-      reviewsCount: 104,
-      categoryIcon: Icons.hiking_rounded,
-      filterCategory: 'Adventure',
-      imageUrl:
-          'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&auto=format&fit=crop&q=80',
-    ),
-    ExperienceItem(
-      title: 'Sinharaja Virgin Rainforest Canopy Hike',
-      category: 'Jungle Survival',
-      duration: '5.0 Hours',
-      price: '\$52',
-      rating: 4.91,
-      reviewsCount: 86,
-      categoryIcon: Icons.forest_rounded,
-      filterCategory: 'Adventure',
-      imageUrl:
-          'https://images.unsplash.com/photo-1530866495561-507c9faab2ed?w=800&auto=format&fit=crop&q=80',
-    ),
-
-    // ── Wildlife ──────────────────────────────────────────────────
-    ExperienceItem(
-      title: 'Yala Leopard Safari at Dawn',
-      category: 'Wildlife Reserve',
-      duration: '6.0 Hours',
-      price: '\$92',
-      rating: 4.96,
-      reviewsCount: 142,
-      categoryIcon: Icons.landscape_rounded,
-      filterCategory: 'Wildlife',
-      imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuDzX3rEG6vFdMVPdR2IYkb722eLQezhkZlI9-A9h7Id0Xe0tc0XBU3AGMCVpq5OaMFrUZpLK8_ANGsNvGc22u4ZDrosNecG2dQR58pzzFp11iTNtp1nZexE_3rbuxEW9xvc0AvYy3aaJEey7NHg2HIlk7OKKuSeTtKIQLWW-6cm9EMVysGfzpppGGAymEqvqu562Kxmq3DJyRqnszhtNHHwlp49NwCJ6VN-V657OYR7yjq6c8P-IaCr6w',
-    ),
-    ExperienceItem(
-      title: 'Kalpitiya Dolphin & Sperm Whale Encounter',
-      category: 'Marine Expedition',
-      duration: '4.0 Hours',
-      price: '\$68',
-      rating: 4.89,
-      reviewsCount: 79,
-      categoryIcon: Icons.water_rounded,
-      filterCategory: 'Wildlife',
-      imageUrl:
-          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80',
-    ),
-
-    // ── Waterfalls ────────────────────────────────────────────────
-    ExperienceItem(
-      title: 'Ravana Falls Cave & Secret Pool Dip',
-      category: 'Legendary Cascades',
-      duration: '3.0 Hours',
-      price: '\$32',
-      rating: 4.87,
-      reviewsCount: 94,
-      categoryIcon: Icons.waterfall_chart_rounded,
-      filterCategory: 'Waterfalls',
-      imageUrl:
-          'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=800&auto=format&fit=crop&q=80',
-    ),
-    ExperienceItem(
-      title: 'St. Clair\'s & Devon Falls Valley Panorama',
-      category: 'Twin Falls Vista',
-      duration: '3.5 Hours',
-      price: '\$35',
-      rating: 4.89,
-      reviewsCount: 68,
-      categoryIcon: Icons.filter_hdr_rounded,
-      filterCategory: 'Waterfalls',
-      imageUrl:
-          'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&auto=format&fit=crop&q=80',
-    ),
-  ];
-
-  Widget _buildNetworkImageWithFallback(String url, {double? width, double? height, BoxFit fit = BoxFit.cover}) {
-    final colors = HelaColors.of(context);
+  Widget _buildNetworkImage(String url, {double? width, double? height, BoxFit fit = BoxFit.cover}) {
     return Image.network(
       url,
       width: width,
       height: height,
       fit: fit,
-      loadingBuilder: (context, child, loadingProgress) {
-        if (loadingProgress == null) return child;
-        return Container(
-          width: width,
-          height: height,
-          color: colors.surfaceContainerHigh,
-          child: Center(
-            child: SizedBox(
-              width: 24,
-              height: 24,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: colors.secondary,
-              ),
-            ),
-          ),
-        );
-      },
-      errorBuilder: (context, error, stackTrace) {
-        return Container(
-          width: width,
-          height: height,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [colors.primaryContainer, colors.primary],
-            ),
-          ),
-          child: Center(
-            child: Icon(Icons.image_outlined, color: colors.onPrimaryContainer, size: 32),
-          ),
-        );
-      },
+      errorBuilder: (context, error, stackTrace) => Container(
+        width: width,
+        height: height,
+        color: const Color(0xFF0B5D56).withValues(alpha: 0.15),
+        child: const Center(
+          child: Icon(Icons.landscape_rounded, color: Color(0xFF0B5D56), size: 32),
+        ),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = HelaColors.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final query = _searchQuery.trim().toLowerCase();
+    final selectedFilter = _experienceFilters[_selectedExperienceChipIndex];
+    final baseExperiences = selectedFilter == 'All'
+        ? _experiences
+        : _experiences.where((e) => e.filterCategory == selectedFilter).toList();
+    final displayedExperiences = query.isEmpty
+        ? baseExperiences
+        : baseExperiences.where((e) => e.title.toLowerCase().contains(query) || e.subtitle.toLowerCase().contains(query)).toList();
+
     return Scaffold(
       key: _scaffoldKey,
       drawer: const HelaNavigationDrawer(),
       backgroundColor: colors.background,
-      appBar: _buildAppBar(),
+      appBar: _buildTopAppBar(colors, isDark),
       body: SafeArea(
         top: false,
         bottom: false,
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.only(bottom: 100),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 480),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 14),
-                    _buildGreetingSection(),
-                    const SizedBox(height: 18),
-                    _buildSearchSection(),
-                    const SizedBox(height: 16),
-                    if (_searchQuery.isNotEmpty) ...[
-                      _buildSearchResultsSection(),
-                    ] else ...[
-                      _buildCategoriesSection(),
-                      const SizedBox(height: 24),
-                      _buildFeaturedHavensSection(),
-                      const SizedBox(height: 22),
-                      _buildAuthenticityBanner(),
-                      const SizedBox(height: 24),
-                      _buildTrendingSection(),
-                      const SizedBox(height: 24),
-                      _buildCustomJourneyCard(),
-                    ],
-                    const SizedBox(height: 20),
-                  ],
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.only(bottom: 120),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 480),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 12),
+
+                        // Greeting & Location Subbar
+                        _buildGreetingAndLocation(colors),
+                        const SizedBox(height: 14),
+
+                        // Search Interaction Bar
+                        _buildSearchBar(colors),
+                        const SizedBox(height: 18),
+
+                        // Hero Section: Smart Itinerary Card
+                        _buildHeroSmartItineraryCard(colors),
+                        const SizedBox(height: 20),
+
+                        // Quick Actions: 4-Column Grid
+                        _buildQuickActions(colors),
+                        const SizedBox(height: 24),
+
+                        // Featured Destinations Carousel
+                        _buildFeaturedDestinationsSection(colors),
+                        const SizedBox(height: 26),
+
+                        // Experiences You Will Love Section
+                        _buildExperiencesSection(colors, displayedExperiences),
+                        const SizedBox(height: 22),
+
+                        // AI Assistant Promo Banner
+                        _buildAiAssistantPromoBanner(colors),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
+
+            // Floating "Smart Guide • Ask HELA" Action Button in Bottom Right
+            Positioned(
+              bottom: 16,
+              right: 16,
+              child: HelaBottomNavBar.buildFloatingAskHelaButton(context),
+            ),
+          ],
         ),
       ),
       bottomNavigationBar: const HelaBottomNavBar(currentIndex: 0),
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
-    final colors = HelaColors.of(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+  PreferredSizeWidget _buildTopAppBar(HelaColorPalette colors, bool isDark) {
     return AppBar(
       backgroundColor: colors.surface.withValues(alpha: isDark ? 0.96 : 0.94),
       elevation: 0,
@@ -551,106 +341,149 @@ class _HelaHomePageState extends State<HelaHomePage> {
       toolbarHeight: 64,
       titleSpacing: 16,
       automaticallyImplyLeading: false,
-      title: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        decoration: BoxDecoration(
-          color: colors.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(9999),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 8,
-              height: 8,
+      title: Row(
+        children: [
+          // Monogram / Drawer Trigger
+          InkWell(
+            onTap: () {
+              _scaffoldKey.currentState?.openDrawer();
+            },
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
-                color: colors.primary,
-                shape: BoxShape.circle,
+                color: colors.primaryContainer,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: colors.primary.withValues(alpha: 0.15),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
+              child: const Icon(Icons.explore_rounded, color: Colors.white, size: 20),
             ),
-            const SizedBox(width: 6),
-            Text(
-              'HELA • CEYLON',
-              style: TextStyle(
-                color: colors.primary,
-                fontWeight: FontWeight.w800,
-                fontSize: 12.5,
-                letterSpacing: 1.1,
-                fontFamily: 'Inter',
+          ),
+          const SizedBox(width: 10),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'HELA TRAVEL',
+                style: TextStyle(
+                  color: colors.secondary,
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.8,
+                  fontFamily: 'Inter',
+                ),
               ),
-            ),
-          ],
-        ),
+              Text(
+                'Home',
+                style: TextStyle(
+                  color: colors.onSurface,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  fontFamily: 'Inter',
+                  height: 1.15,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
       actions: [
+        const HelaThemeSwitchButton(size: 34),
         IconButton(
-          icon: Icon(Icons.electric_rickshaw_rounded, color: colors.primary, size: 24),
-          tooltip: 'Fair Ride Ceylon',
+          icon: Icon(Icons.notifications_outlined, color: colors.onSurfaceVariant, size: 22),
+          tooltip: 'Notifications',
           onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const FairRidePage()),
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('No new travel notifications')),
             );
           },
         ),
-        const HelaThemeSwitchButton(size: 36),
-        const SizedBox(width: 2),
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            IconButton(
-              icon: Icon(Icons.notifications_outlined, color: colors.primary, size: 24),
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('No new notifications')),
-                );
-              },
+        Padding(
+          padding: const EdgeInsets.only(right: 16, left: 4),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const ProfilePage()),
+              );
+            },
+            child: CircleAvatar(
+              radius: 16,
+              backgroundColor: colors.primary,
+              child: const Icon(Icons.person_rounded, color: Colors.white, size: 18),
             ),
-            Positioned(
-              top: 14,
-              right: 14,
-              child: Container(
-                width: 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: colors.coralSunrise,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: colors.surface, width: 1.5),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGreetingAndLocation(HelaColorPalette colors) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  'Hello, Traveller!',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: colors.onSurface,
+                    fontFamily: 'Inter',
+                  ),
                 ),
+                const SizedBox(width: 4),
+                const Text('🌴', style: TextStyle(fontSize: 16)),
+              ],
+            ),
+            const SizedBox(height: 2),
+            Text(
+              'Explore the Pearl of the Indian Ocean',
+              style: TextStyle(
+                fontSize: 12,
+                color: colors.onSurfaceVariant,
+                fontWeight: FontWeight.w400,
               ),
             ),
           ],
         ),
-        Padding(
-          padding: const EdgeInsets.only(right: 16, left: 4),
-          child: Tooltip(
-            message: 'Profile',
-            child: GestureDetector(
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const ProfilePage()),
-                );
-              },
-              child: MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: colors.secondary.withValues(alpha: 0.35),
-                      width: 2,
-                    ),
-                  ),
-                  child: ClipOval(
-                    child: _buildNetworkImageWithFallback(
-                      'https://lh3.googleusercontent.com/aida-public/AB6AXuAYaDOlpE1923DxKMHjTzrGSSaCxwudP2YkvXacPtlfANGQK9Hz9BBI9D9gs00_CjlWdXxfej4-wfKki4-K1xTwGSrLGLTZYKqPLbNiNaRnNjdx3ECnnXdsyuf8R4KDMLritAUq3JYUYf2jibgDLxyajwEvfVebj8wVV1Bgt8JEq2mZEq4-Ff3SdcX4aNxV1I8Xb6UusllqkYnuv4rzk7RZ4EawOB9C5ZXz1k2je2LbM7-fsA8b3x6Prw',
-                      width: 36,
-                      height: 36,
-                    ),
+        InkWell(
+          onTap: _openLocationPicker,
+          borderRadius: BorderRadius.circular(999),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: colors.surfaceContainer,
+              borderRadius: BorderRadius.circular(999),
+              border: Border.all(color: colors.architecturalBorder),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.location_on_rounded, size: 15, color: colors.primary),
+                const SizedBox(width: 4),
+                Text(
+                  _currentCity,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: colors.primary,
                   ),
                 ),
-              ),
+                const SizedBox(width: 2),
+                Icon(Icons.expand_more_rounded, size: 14, color: colors.onSurfaceVariant),
+              ],
             ),
           ),
         ),
@@ -658,49 +491,16 @@ class _HelaHomePageState extends State<HelaHomePage> {
     );
   }
 
-  Widget _buildGreetingSection() {
-    final colors = HelaColors.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Discover Sri Lanka',
-          style: TextStyle(
-            color: colors.primary,
-            fontWeight: FontWeight.w800,
-            fontSize: 27,
-            letterSpacing: -0.6,
-            height: 1.2,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          'Lush highlands, untamed safaris & ancient royal sanctuaries.',
-          style: TextStyle(
-            color: colors.onSurfaceVariant,
-            fontSize: 13,
-            height: 1.35,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSearchSection() {
-    final colors = HelaColors.of(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+  Widget _buildSearchBar(HelaColorPalette colors) {
     return Container(
       height: 48,
       decoration: BoxDecoration(
         color: colors.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(9999),
-        border: Border.all(
-          color: colors.architecturalBorder,
-          width: 1,
-        ),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: colors.architecturalBorder),
         boxShadow: [
           BoxShadow(
-            color: colors.primary.withValues(alpha: isDark ? 0.2 : 0.05),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -709,80 +509,39 @@ class _HelaHomePageState extends State<HelaHomePage> {
       child: Row(
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 16, right: 10),
-            child: Icon(
-              Icons.search_rounded,
-              color: colors.primaryContainer,
-              size: 20,
-            ),
+            padding: const EdgeInsets.only(left: 14, right: 10),
+            child: Icon(Icons.search_rounded, color: colors.primary, size: 22),
           ),
           Expanded(
             child: TextField(
               controller: _searchController,
-              textInputAction: TextInputAction.search,
+              onChanged: (val) => setState(() => _searchQuery = val),
               style: TextStyle(
+                fontSize: 14,
                 color: colors.onSurface,
-                fontSize: 14.5,
+                fontWeight: FontWeight.w500,
               ),
-              onChanged: (val) {
-                setState(() {
-                  _searchQuery = val.trim();
-                });
-              },
-              onSubmitted: (val) {
-                setState(() {
-                  _searchQuery = val.trim();
-                });
-              },
               decoration: InputDecoration(
-                hintText: 'Where do you want to explore?',
-                hintStyle: TextStyle(
-                  color: colors.onSurfaceVariant.withValues(alpha: 0.65),
-                  fontSize: 14.5,
-                  fontWeight: FontWeight.w400,
-                ),
                 border: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
-                isDense: true,
-                contentPadding: EdgeInsets.zero,
+                isCollapsed: true,
+                hintText: 'Where would you like to go?',
+                hintStyle: TextStyle(
+                  color: colors.onSurfaceVariant.withValues(alpha: 0.7),
+                  fontSize: 13.5,
+                ),
               ),
             ),
           ),
-          if (_searchQuery.isNotEmpty)
-            IconButton(
-              icon: Icon(Icons.close_rounded, size: 20, color: colors.outline),
-              tooltip: 'Clear search',
-              onPressed: () {
-                _searchController.clear();
-                setState(() {
-                  _searchQuery = '';
-                });
-              },
-            ),
           Padding(
-            padding: const EdgeInsets.only(right: 6),
-            child: Material(
-              color: colors.primaryContainer,
-              shape: const CircleBorder(),
-              child: InkWell(
-                customBorder: const CircleBorder(),
-                onTap: () {
-                  FocusScope.of(context).unfocus();
-                  setState(() {
-                    _searchQuery = _searchController.text.trim();
-                  });
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(9.0),
-                  child: Icon(
-                    Icons.search_rounded,
-                    color: colors.onPrimary,
-                    size: 20,
-                  ),
-                ),
+            padding: const EdgeInsets.only(right: 8),
+            child: Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: colors.surfaceContainer,
+                borderRadius: BorderRadius.circular(8),
               ),
+              child: Icon(Icons.tune_rounded, size: 18, color: colors.primary),
             ),
           ),
         ],
@@ -790,34 +549,462 @@ class _HelaHomePageState extends State<HelaHomePage> {
     );
   }
 
-  Widget _buildSearchResultsSection() {
-    final colors = HelaColors.of(context);
-    final query = _searchQuery.toLowerCase();
+  Widget _buildHeroSmartItineraryCard(HelaColorPalette colors) {
+    return Container(
+      height: 220,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: colors.primary.withValues(alpha: 0.2),
+            blurRadius: 14,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            _buildNetworkImage(
+              'https://lh3.googleusercontent.com/aida-public/AB6AXuCfLRS1LsxapAszLJa0etMrOi9jdUPktoyWZIMUJLEh7doMRbg20drfraJaI5G8ZirrxpePZwTqZU7JILR8-Eq0jZF0KInaY-Hsc9Vca4f_F4WwJZHI70_-J-IWqwQEPELEOhGvdamVSm4UXl-4O6Y3TK6__pIoTFUGQB1pqOvj5r66yxFmpB4W6-i7-CINSqIJnavY8Z4YbSIQWnaWrLI8d1gBJovsav4axAwuKvw',
+            ),
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  colors: [
+                    colors.primary.withValues(alpha: 0.95),
+                    colors.primary.withValues(alpha: 0.45),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: colors.goldenAmber,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Icon(Icons.auto_awesome_rounded, size: 12, color: Color(0xFF271900)),
+                        SizedBox(width: 4),
+                        Text(
+                          'SMART ITINERARY',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF271900),
+                            letterSpacing: 0.6,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'Discover Sri Lanka, Your Way',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 21,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                      height: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    'Your perfect island adventure starts here.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white.withValues(alpha: 0.9),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const TripPlannerPage()),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: colors.primaryFixed,
+                          foregroundColor: colors.primary,
+                          elevation: 1,
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        child: Row(
+                          children: const [
+                            Text(
+                              'Plan My Trip',
+                              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                            ),
+                            SizedBox(width: 6),
+                            Icon(Icons.arrow_forward_rounded, size: 16),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        'Instant AI generation',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.white.withValues(alpha: 0.8),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-    // Filter matching havens
-    final matchedHavens = _featuredHavens.where((h) {
-      return h.title.toLowerCase().contains(query) ||
-          h.location.toLowerCase().contains(query) ||
-          h.category.toLowerCase().contains(query);
-    }).toList();
+  Widget _buildQuickActions(HelaColorPalette colors) {
+    return Row(
+      children: [
+        _buildActionTile(
+          icon: Icons.explore_rounded,
+          iconBg: colors.secondaryContainer,
+          iconColor: colors.onSecondaryContainer,
+          title: 'AI Travel...',
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (_) => const TripPlannerPage()));
+          },
+          colors: colors,
+        ),
+        const SizedBox(width: 8),
+        _buildActionTile(
+          icon: Icons.electric_rickshaw_rounded,
+          iconBg: colors.surfaceContainerHigh,
+          iconColor: colors.primary,
+          title: 'Book a Taxi',
+          badgeText: 'Meter',
+          badgeColor: colors.goldenAmber,
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (_) => const FairRidePage()));
+          },
+          colors: colors,
+        ),
+        const SizedBox(width: 8),
+        _buildActionTile(
+          icon: Icons.map_rounded,
+          iconBg: colors.surfaceContainerHigh,
+          iconColor: colors.primary,
+          title: 'Find Places',
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (_) => const CulturalGuidePage()));
+          },
+          colors: colors,
+        ),
+        const SizedBox(width: 8),
+        _buildActionTile(
+          icon: Icons.temple_buddhist_rounded,
+          iconBg: colors.secondaryContainer,
+          iconColor: colors.onSecondaryContainer,
+          title: 'Explore...',
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (_) => const CulturalGuidePage()));
+          },
+          colors: colors,
+        ),
+      ],
+    );
+  }
 
-    // Filter matching experiences
-    final matchedExperiences = _trendingExperiences.where((e) {
-      return e.title.toLowerCase().contains(query) ||
-          e.category.toLowerCase().contains(query);
-    }).toList();
+  Widget _buildActionTile({
+    required IconData icon,
+    required Color iconBg,
+    required Color iconColor,
+    required String title,
+    required VoidCallback onTap,
+    required HelaColorPalette colors,
+    String? badgeText,
+    Color? badgeColor,
+  }) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+          decoration: BoxDecoration(
+            color: colors.cardBackground,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: colors.architecturalBorder),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: iconBg,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(icon, color: iconColor, size: 22),
+                  ),
+                  if (badgeText != null)
+                    Positioned(
+                      top: -6,
+                      right: -6,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                        decoration: BoxDecoration(
+                          color: badgeColor ?? colors.goldenAmber,
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Text(
+                          badgeText,
+                          style: const TextStyle(
+                            fontSize: 8.5,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF271900),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w700,
+                  color: colors.onSurface,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
-    // Filter matching curated destinations (e.g. Galle Dutch Fort, etc.)
-    final matchedPlaces = PlaceService.curatedSriLankaPlaces.where((p) {
-      return p.name.toLowerCase().contains(query) ||
-          p.region.toLowerCase().contains(query) ||
-          p.description.toLowerCase().contains(query) ||
-          p.categories.any((c) => c.toLowerCase().contains(query));
-    }).toList();
+  Widget _buildFeaturedDestinationsSection(HelaColorPalette colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Text(
+                  'Featured Destinations',
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w800,
+                    color: colors.onSurface,
+                    fontFamily: 'Inter',
+                  ),
+                ),
+                const SizedBox(width: 5),
+                Container(
+                  width: 6,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: colors.primary,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ],
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const CulturalGuidePage()));
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: colors.primary,
+                padding: EdgeInsets.zero,
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: const Text('See All', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
 
-    final totalCount =
-        matchedHavens.length + matchedExperiences.length + matchedPlaces.length;
+        // Horizontal Carousel
+        SizedBox(
+          height: 220,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            itemCount: _destinations.length,
+            separatorBuilder: (_, _) => const SizedBox(width: 12),
+            itemBuilder: (context, index) {
+              final item = _destinations[index];
+              return _buildDestinationCard(item, colors);
+            },
+          ),
+        ),
+      ],
+    );
+  }
 
+  Widget _buildDestinationCard(FeaturedDestinationItem item, HelaColorPalette colors) {
+    return Container(
+      width: 230,
+      decoration: BoxDecoration(
+        color: colors.cardBackground,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colors.architecturalBorder),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image Header
+            Stack(
+              children: [
+                SizedBox(
+                  height: 125,
+                  width: double.infinity,
+                  child: _buildNetworkImage(item.imageUrl),
+                ),
+                // Rating pill
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.92),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.star_rounded, size: 12, color: colors.goldenAmber),
+                        const SizedBox(width: 2),
+                        Text(
+                          item.rating,
+                          style: const TextStyle(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF132220),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                // UNESCO / Category badge
+                Positioned(
+                  bottom: 8,
+                  left: 8,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: colors.primaryContainer,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Text(
+                      item.badge,
+                      style: const TextStyle(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            // Card Body
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.title,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: colors.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    item.subtitle,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: colors.onSurfaceVariant,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        item.footerTag,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: colors.primary,
+                        ),
+                      ),
+                      Icon(Icons.arrow_forward_rounded, size: 15, color: colors.primary),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExperiencesSection(HelaColorPalette colors, List<HomeExperienceItem> items) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -825,711 +1012,92 @@ class _HelaHomePageState extends State<HelaHomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Results for "$_searchQuery"',
+              'Experiences You Will Love',
               style: TextStyle(
-                color: colors.primary,
-                fontWeight: FontWeight.w700,
-                fontSize: 18,
-                letterSpacing: -0.3,
+                fontSize: 17,
+                fontWeight: FontWeight.w800,
+                color: colors.onSurface,
+                fontFamily: 'Inter',
               ),
             ),
-            TextButton(
-              onPressed: () {
-                _searchController.clear();
-                setState(() => _searchQuery = '');
-              },
-              child: Text('Clear', style: TextStyle(color: colors.secondary)),
+            Text(
+              'Handcrafted',
+              style: TextStyle(
+                fontSize: 11.5,
+                fontWeight: FontWeight.w600,
+                color: colors.onSurfaceVariant,
+              ),
             ),
           ],
         ),
-        Text(
-          '$totalCount place${totalCount != 1 ? 's' : ''} found in Sri Lanka',
-          style: TextStyle(
-            color: colors.onSurfaceVariant,
-            fontSize: 12.5,
+        const SizedBox(height: 12),
+
+        // Filter Pills
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          child: Row(
+            children: List.generate(_experienceFilters.length, (idx) {
+              final isSelected = _selectedExperienceChipIndex == idx;
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: GestureDetector(
+                  onTap: () => setState(() => _selectedExperienceChipIndex = idx),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                    decoration: BoxDecoration(
+                      color: isSelected ? colors.primary : colors.cardBackground,
+                      borderRadius: BorderRadius.circular(999),
+                      border: Border.all(
+                        color: isSelected ? colors.primary : colors.architecturalBorder,
+                      ),
+                    ),
+                    child: Text(
+                      _experienceFilters[idx],
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                        color: isSelected ? Colors.white : colors.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }),
           ),
         ),
         const SizedBox(height: 14),
 
-        if (totalCount == 0) ...[
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 20),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: colors.cardBackground,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: colors.outlineVariant.withValues(alpha: 0.5),
-              ),
-            ),
-            child: Column(
-              children: [
-                Icon(Icons.travel_explore_rounded,
-                    size: 48, color: colors.outline),
-                const SizedBox(height: 12),
-                Text(
-                  'No places found for "$_searchQuery"',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 15,
-                    color: colors.onSurface,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  'Try searching for "Galle", "Ella", "Sigiriya", "Kandy", or "Yala"',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: colors.onSurfaceVariant,
-                    fontSize: 12.5,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ] else ...[
-          // Matched Curated Places
-          ...matchedPlaces.map((place) => _buildPlaceResultCard(place)),
-
-          // Matched Havens
-          ...matchedHavens.map((haven) => _buildHavenResultCard(haven)),
-
-          // Matched Experiences
-          ...matchedExperiences.map((exp) => _buildExperienceResultCard(exp)),
-        ],
+        // Experience Cards Stack
+        ...items.map((exp) => _buildExperienceCard(exp, colors)),
       ],
     );
   }
 
-  Widget _buildPlaceResultCard(Destination place) {
-    final colors = HelaColors.of(context);
+  Widget _buildExperienceCard(HomeExperienceItem exp, HelaColorPalette colors) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 14),
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: colors.cardBackground,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: colors.outlineVariant.withValues(alpha: 0.5),
-        ),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: colors.architecturalBorder),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => const SmartTourHomePage(),
-            ),
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: place.imageUrl.isNotEmpty
-                    ? _buildNetworkImageWithFallback(
-                        place.imageUrl,
-                        width: 86,
-                        height: 86,
-                      )
-                    : Container(
-                        width: 86,
-                        height: 86,
-                        color: colors.surfaceContainerHigh,
-                        child: Icon(Icons.place_rounded, color: colors.primary),
-                      ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: colors.primaryContainer.withValues(alpha: 0.25),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            'DESTINATION',
-                            style: TextStyle(
-                              fontSize: 9.5,
-                              fontWeight: FontWeight.w700,
-                              color: colors.primary,
-                            ),
-                          ),
-                        ),
-                        const Spacer(),
-                        const Icon(Icons.star_rounded, size: 14, color: Color(0xFFD4A017)),
-                        const SizedBox(width: 2),
-                        const Text(
-                          '4.9',
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      place.name,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14.5,
-                        color: colors.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Row(
-                      children: [
-                        Icon(Icons.location_on_outlined, size: 12, color: colors.onSurfaceVariant),
-                        const SizedBox(width: 3),
-                        Expanded(
-                          child: Text(
-                            place.region,
-                            style: TextStyle(
-                              fontSize: 11.5,
-                              color: colors.onSurfaceVariant,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      place.description,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 11.5,
-                        color: colors.onSurfaceVariant,
-                        height: 1.3,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHavenResultCard(HavenItem haven) {
-    final colors = HelaColors.of(context);
-    return Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      decoration: BoxDecoration(
-        color: colors.cardBackground,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: colors.outlineVariant.withValues(alpha: 0.5),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const StaysPage()),
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: _buildNetworkImageWithFallback(
-                  haven.imageUrl,
-                  width: 86,
-                  height: 86,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: colors.secondary.withValues(alpha: 0.18),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            haven.category.toUpperCase(),
-                            style: TextStyle(
-                              fontSize: 9.5,
-                              fontWeight: FontWeight.w700,
-                              color: colors.secondary,
-                            ),
-                          ),
-                        ),
-                        const Spacer(),
-                        const Icon(Icons.star_rounded, size: 14, color: Color(0xFFD4A017)),
-                        const SizedBox(width: 2),
-                        Text(
-                          haven.rating.toString(),
-                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      haven.title,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14.5,
-                        color: colors.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Row(
-                      children: [
-                        Icon(Icons.location_on_outlined, size: 12, color: colors.onSurfaceVariant),
-                        const SizedBox(width: 3),
-                        Text(
-                          haven.location,
-                          style: TextStyle(
-                            fontSize: 11.5,
-                            color: colors.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${haven.price} / person',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 13,
-                        color: colors.primary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildExperienceResultCard(ExperienceItem exp) {
-    final colors = HelaColors.of(context);
-    return Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      decoration: BoxDecoration(
-        color: colors.cardBackground,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: colors.outlineVariant.withValues(alpha: 0.5),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: _buildNetworkImageWithFallback(
-                exp.imageUrl,
-                width: 86,
-                height: 86,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: colors.goldenAmber.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          exp.category.toUpperCase(),
-                          style: TextStyle(
-                            fontSize: 9.5,
-                            fontWeight: FontWeight.w700,
-                            color: colors.primary,
-                          ),
-                        ),
-                      ),
-                      const Spacer(),
-                      const Icon(Icons.star_rounded, size: 14, color: Color(0xFFD4A017)),
-                      const SizedBox(width: 2),
-                      Text(
-                        exp.rating.toString(),
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    exp.title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14.5,
-                      color: HelaColors.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Row(
-                    children: [
-                      const Icon(Icons.schedule_rounded, size: 12, color: HelaColors.onSurfaceVariant),
-                      const SizedBox(width: 3),
-                      Text(
-                        exp.duration,
-                        style: const TextStyle(
-                          fontSize: 11.5,
-                          color: HelaColors.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${exp.price} / person',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 13,
-                      color: HelaColors.primary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCategoriesSection() {
-    final colors = HelaColors.of(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return SizedBox(
-      height: 36,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
-        itemCount: _categories.length,
-        separatorBuilder: (context, index) => const SizedBox(width: 8),
-        itemBuilder: (context, index) {
-          final isSelected = _selectedCategoryIndex == index;
-          final category = _categories[index];
-
-          final bgColor = isSelected
-              ? colors.primaryContainer
-              : (isDark ? colors.surfaceContainer : colors.surfaceContainerLowest);
-
-          final fgColor = isSelected
-              ? colors.onPrimary
-              : (isDark ? colors.onSurface : colors.outline);
-
-          final borderColor = isSelected
-              ? colors.primaryContainer
-              : (isDark
-                  ? colors.outlineVariant.withValues(alpha: 0.5)
-                  : colors.architecturalBorder);
-
-          return InkWell(
-            borderRadius: BorderRadius.circular(9999),
-            onTap: () {
-              setState(() {
-                if (_selectedCategoryIndex == index && index != 0) {
-                  _selectedCategoryIndex = 0; // Deselect to All
-                } else {
-                  _selectedCategoryIndex = index;
-                }
-              });
-            },
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              decoration: BoxDecoration(
-                color: bgColor,
-                borderRadius: BorderRadius.circular(9999),
-                border: Border.all(color: borderColor, width: 1),
-                boxShadow: isSelected
-                    ? [
-                        BoxShadow(
-                          color: colors.primary.withValues(alpha: isDark ? 0.35 : 0.2),
-                          blurRadius: 6,
-                          offset: const Offset(0, 2),
-                        )
-                      ]
-                    : null,
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    category.icon,
-                    size: 16,
-                    color: fgColor,
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    category.label,
-                    style: TextStyle(
-                      color: fgColor,
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                      fontSize: 13,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildFeaturedHavensSection() {
-    final colors = HelaColors.of(context);
-    final selectedCat = _selectedCategoryLabel;
-    final havens = _filteredHavens;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.baseline,
-          textBaseline: TextBaseline.alphabetic,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    selectedCat == null ? 'Featured Havens' : '$selectedCat Tours & Havens',
-                    style: TextStyle(
-                      color: colors.primary,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 18,
-                      letterSpacing: -0.3,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    selectedCat == null
-                        ? 'Iconic sanctuaries of Ceylon'
-                        : 'Curated $selectedCat journeys (${havens.length} available)',
-                    style: TextStyle(
-                      color: colors.onSurfaceVariant,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (selectedCat != null)
-              TextButton.icon(
-                onPressed: () {
-                  setState(() {
-                    _selectedCategoryIndex = 0;
-                  });
-                },
-                icon: Icon(Icons.close_rounded, size: 14, color: colors.secondary),
-                label: Text(
-                  'Show All',
-                  style: TextStyle(
-                    color: colors.secondary,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 13,
-                  ),
-                ),
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-              )
-            else
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const StaysPage()),
-                  );
-                },
-                style: TextButton.styleFrom(
-                  foregroundColor: colors.secondary,
-                  padding: EdgeInsets.zero,
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Text(
-                      'See All',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 13,
-                      ),
-                    ),
-                    SizedBox(width: 2),
-                    Icon(Icons.arrow_forward_rounded, size: 14),
-                  ],
-                ),
-              ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: 380,
-          child: ListView.separated(
-            key: ValueKey('havens_list_${selectedCat ?? "all"}'),
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            itemCount: havens.length,
-            separatorBuilder: (context, index) => const SizedBox(width: 14),
-            itemBuilder: (context, index) {
-              final haven = havens[index];
-              final appState = HelaAppStateProvider.of(context);
-              final isBookmarked = appState.isHavenSaved(haven.title);
-
-              return HavenCard.fromHavenItem(
-                haven,
-                isBookmarked: isBookmarked,
-                onBookmarkTap: () {
-                  appState.toggleSaveHaven(haven);
-                  final isNowSaved = appState.isHavenSaved(haven.title);
-                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Row(
-                        children: [
-                          Icon(
-                            isNowSaved
-                                ? Icons.bookmark_added_rounded
-                                : Icons.bookmark_remove_rounded,
-                            color: isNowSaved ? colors.goldenAmber : Colors.white70,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              isNowSaved
-                                  ? 'Saved "${haven.title}" to Saved Page'
-                                  : 'Removed "${haven.title}" from Saved Page',
-                              style: const TextStyle(fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                        ],
-                      ),
-                      action: isNowSaved
-                          ? SnackBarAction(
-                              label: 'View Saved',
-                              textColor: colors.goldenAmber,
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (_) => const SavedPage()),
-                                );
-                              },
-                            )
-                          : null,
-                      duration: const Duration(seconds: 2),
-                      persist: false,
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  );
-                },
-                onExploreTap: () {
-                  if (haven.category.contains('Heritage') ||
-                      haven.title.contains('Citadel') ||
-                      haven.title.contains('Temple') ||
-                      haven.title.contains('Ancient')) {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const CulturalGuidePage(),
-                      ),
-                    );
-                  } else {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const StaysPage(),
-                      ),
-                    );
-                  }
-                },
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAuthenticityBanner() {
-    final colors = HelaColors.of(context);
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: colors.bannerBackground,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: colors.outlineVariant.withValues(alpha: 0.5),
-        ),
       ),
       child: Row(
         children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: colors.secondaryContainer,
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Icon(
-                Icons.verified_rounded,
-                color: colors.onSecondaryContainer,
-                size: 24,
-              ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: SizedBox(
+              width: 64,
+              height: 64,
+              child: _buildNetworkImage(exp.imageUrl),
             ),
           ),
           const SizedBox(width: 12),
@@ -1537,451 +1105,132 @@ class _HelaHomePageState extends State<HelaHomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Ceylon Heritage Certified',
-                  style: TextStyle(
-                    color: colors.primary,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      exp.category,
+                      style: TextStyle(
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w700,
+                        color: colors.secondary,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Icon(Icons.star_rounded, size: 12, color: colors.goldenAmber),
+                        const SizedBox(width: 2),
+                        Text(
+                          exp.rating,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: colors.onSurface,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '100% vetted local indigenous hosts & eco-guides.',
+                  exp.title,
                   style: TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w700,
+                    color: colors.onSurface,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  exp.subtitle,
+                  style: TextStyle(
+                    fontSize: 11.5,
                     color: colors.onSurfaceVariant,
-                    fontSize: 12,
-                    height: 1.3,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 6),
+          Icon(Icons.chevron_right_rounded, size: 20, color: colors.outlineVariant),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAiAssistantPromoBanner(HelaColorPalette colors) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [colors.surfaceContainerHigh, colors.surfaceContainer],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colors.architecturalBorder),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: colors.primaryContainer,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(Icons.smart_toy_rounded, size: 22, color: colors.goldenAmber),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Need travel advice?',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: colors.secondary,
+                  ),
+                ),
+                Text(
+                  'Ask HELA, your personal Sri Lankan guide.',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: colors.onSurface,
                   ),
                 ),
               ],
             ),
           ),
           const SizedBox(width: 8),
-          Icon(
-            Icons.chevron_right_rounded,
-            color: colors.secondary,
-            size: 22,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTrendingSection() {
-    final colors = HelaColors.of(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final selectedCat = _selectedCategoryLabel;
-    final experiences = _filteredExperiences;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.baseline,
-          textBaseline: TextBaseline.alphabetic,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    selectedCat == null ? 'Trending This Week' : 'Trending $selectedCat',
-                    style: TextStyle(
-                      color: colors.primary,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 18,
-                      letterSpacing: -0.3,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    selectedCat == null
-                        ? 'Handcrafted slow-travel expeditions'
-                        : 'Authentic $selectedCat experiences (${experiences.length})',
-                    style: TextStyle(
-                      color: colors.onSurfaceVariant,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            TextButton(
-              onPressed: () {},
-              style: TextButton.styleFrom(
-                foregroundColor: colors.secondary,
-                padding: EdgeInsets.zero,
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: const [
-                  Text(
-                    'View All',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 13,
-                    ),
-                  ),
-                  SizedBox(width: 2),
-                  Icon(Icons.arrow_forward_rounded, size: 14),
-                ],
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: 236,
-          child: ListView.separated(
-            key: ValueKey('exp_list_${selectedCat ?? "all"}'),
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            itemCount: experiences.length,
-            separatorBuilder: (context, index) => const SizedBox(width: 14),
-            itemBuilder: (context, index) {
-              final exp = experiences[index];
-              final appState = HelaAppStateProvider.of(context);
-              final isBookmarked = appState.isExperienceSaved(exp.title);
-
-              return Container(
-                width: 250,
-                decoration: BoxDecoration(
-                  color: colors.cardBackground,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(
-                    color: colors.outlineVariant.withValues(alpha: 0.5),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: isDark ? Colors.black.withValues(alpha: 0.25) : Colors.black.withValues(alpha: 0.04),
-                      blurRadius: 8,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(18),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Top Image with duration badge and bookmark
-                      SizedBox(
-                        height: 132,
-                        width: double.infinity,
-                        child: Stack(
-                          children: [
-                            Positioned.fill(
-                              child: _buildNetworkImageWithFallback(
-                                exp.imageUrl,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            // Bookmark button
-                            Positioned(
-                              top: 8,
-                              right: 8,
-                              child: Material(
-                                color: colors.surfaceContainer.withValues(alpha: 0.85),
-                                shape: const CircleBorder(),
-                                child: InkWell(
-                                  customBorder: const CircleBorder(),
-                                  onTap: () {
-                                    appState.toggleSaveExperience(exp);
-                                    final isNowSaved = appState.isExperienceSaved(exp.title);
-                                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          isNowSaved
-                                              ? 'Saved "${exp.title}" to Saved Page'
-                                              : 'Removed "${exp.title}" from Saved Page',
-                                        ),
-                                        action: isNowSaved
-                                            ? SnackBarAction(
-                                                label: 'View Saved',
-                                                textColor: colors.goldenAmber,
-                                                onPressed: () {
-                                                  Navigator.of(context).push(
-                                                    MaterialPageRoute(builder: (_) => const SavedPage()),
-                                                  );
-                                                },
-                                              )
-                                            : null,
-                                        duration: const Duration(seconds: 2),
-                      persist: false,
-                                        behavior: SnackBarBehavior.floating,
-                                      ),
-                                    );
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(5.0),
-                                    child: Icon(
-                                      isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
-                                      size: 16,
-                                      color: isBookmarked ? colors.primary : colors.onSurfaceVariant,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            // Duration badge
-                            Positioned(
-                              bottom: 8,
-                              left: 8,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                                decoration: BoxDecoration(
-                                  color: colors.primaryContainer.withValues(alpha: 0.88),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.schedule_rounded,
-                                      size: 12,
-                                      color: colors.onPrimary,
-                                    ),
-                                    const SizedBox(width: 3),
-                                    Text(
-                                      exp.duration,
-                                      style: TextStyle(
-                                        color: colors.onPrimary,
-                                        fontSize: 10.5,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      // Details
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        exp.categoryIcon,
-                                        size: 13,
-                                        color: colors.secondary,
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        exp.category,
-                                        style: TextStyle(
-                                          color: colors.secondary,
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 11,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 3),
-                                  Text(
-                                    exp.title,
-                                    style: TextStyle(
-                                      color: colors.onSurface,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 13.5,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
-                              Container(
-                                padding: const EdgeInsets.only(top: 6),
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    top: BorderSide(
-                                      color: colors.outlineVariant.withValues(alpha: 0.4),
-                                      width: 1,
-                                    ),
-                                  ),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Flexible(
-                                      child: RichText(
-                                        text: TextSpan(
-                                          children: [
-                                            TextSpan(
-                                              text: exp.price,
-                                              style: TextStyle(
-                                                color: colors.primary,
-                                                fontWeight: FontWeight.w800,
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                            TextSpan(
-                                              text: index == 1 ? ' / jeep' : ' / guest',
-                                              style: TextStyle(
-                                                color: colors.onSurfaceVariant,
-                                                fontSize: 11,
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        const Icon(
-                                          Icons.star_rounded,
-                                          size: 14,
-                                          color: Colors.amber,
-                                        ),
-                                        const SizedBox(width: 2),
-                                        Text(
-                                          '${exp.rating} (${exp.reviewsCount})',
-                                          style: TextStyle(
-                                            color: colors.onSurface,
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 11,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
+          ElevatedButton(
+            onPressed: () {
+              HelaBottomNavBar.openAskHelaSheet(context);
             },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCustomJourneyCard() {
-    final colors = HelaColors.of(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Container(
-      decoration: BoxDecoration(
-        color: isDark ? colors.surfaceContainer : HelaColors.primary,
-        borderRadius: BorderRadius.circular(20),
-        border: isDark ? Border.all(color: colors.primary.withValues(alpha: 0.35)) : null,
-        boxShadow: [
-          BoxShadow(
-            color: isDark ? colors.primary.withValues(alpha: 0.15) : HelaColors.primary.withValues(alpha: 0.3),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: colors.primary,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+              elevation: 1,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                Text('Ask HELA', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
+                SizedBox(width: 4),
+                Icon(Icons.chat_bubble_outline_rounded, size: 13),
+              ],
+            ),
           ),
         ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Stack(
-          children: [
-            // Decorative organic radial glow
-            Positioned(
-              right: -30,
-              bottom: -30,
-              child: Container(
-                width: 170,
-                height: 170,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: (isDark ? colors.primary : HelaColors.secondary).withValues(alpha: 0.25),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'TAILORED ITINERARIES',
-                    style: TextStyle(
-                      color: colors.goldenAmber,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 11,
-                      letterSpacing: 1.2,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Need a custom private journey through Ceylon?',
-                    style: TextStyle(
-                      color: isDark ? colors.onSurface : Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 20,
-                      height: 1.25,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Our native destination specialists curate immersive bespoke routes with private chauffeur guides.',
-                    style: TextStyle(
-                      color: isDark ? colors.onSurfaceVariant : HelaColors.surfaceContainerHigh,
-                      fontSize: 13,
-                      height: 1.35,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const SmartTourHomePage()),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colors.goldenAmber,
-                      foregroundColor: const Color(0xFF132220),
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: const [
-                        Text(
-                          'Start Planning',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 13.5,
-                          ),
-                        ),
-                        SizedBox(width: 6),
-                        Icon(Icons.arrow_forward_rounded, size: 16),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

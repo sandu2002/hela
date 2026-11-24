@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hela/pages/home_page.dart';
-import 'package:hela/pages/saved_page.dart';
-import 'package:hela/pages/travel_preferences_page.dart';
+import 'package:hela/pages/cultural_guide/cultural_guide_page.dart';
 import 'package:hela/pages/trip_planner_page.dart';
+import 'package:hela/pages/bookings_page.dart';
 import 'package:hela/pages/profile_page.dart';
 
 /// Unified, consistent Bottom Navigation Bar for HELA
@@ -10,7 +10,7 @@ import 'package:hela/pages/profile_page.dart';
 /// - 64px docked height + safe area
 /// - Inactive icons/labels: #63736E (colors.outline)
 /// - Active tab: #0B5D56 (colors.primaryContainer) with a 4px active indicator dot below
-/// - Elevated 'Ask HELA' AI Assistant Trigger featuring Primary Teal gradient and Golden Amber ring
+/// - 5 Global Tabs: Home, Explore, My Trips, Bookings, Profile
 class HelaBottomNavBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int>? onTabSelected;
@@ -25,29 +25,29 @@ class HelaBottomNavBar extends StatelessWidget {
 
   static const List<_NavItemData> _items = [
     _NavItemData(
+      label: 'Home',
+      icon: Icons.home_outlined,
+      activeIcon: Icons.home_rounded,
+    ),
+    _NavItemData(
       label: 'Explore',
-      icon: Icons.explore_outlined,
-      activeIcon: Icons.explore_rounded,
+      icon: Icons.near_me_outlined,
+      activeIcon: Icons.near_me_rounded,
     ),
     _NavItemData(
-      label: 'Saved',
-      icon: Icons.bookmark_border_rounded,
-      activeIcon: Icons.bookmark_rounded,
+      label: 'My Trips',
+      icon: Icons.map_outlined,
+      activeIcon: Icons.map_rounded,
     ),
     _NavItemData(
-      label: 'Smart Tour',
-      icon: Icons.auto_awesome_outlined,
-      activeIcon: Icons.auto_awesome_rounded,
-    ),
-    _NavItemData(
-      label: 'Journeys',
-      icon: Icons.route_outlined,
-      activeIcon: Icons.route_rounded,
+      label: 'Bookings',
+      icon: Icons.confirmation_number_outlined,
+      activeIcon: Icons.confirmation_number_rounded,
     ),
     _NavItemData(
       label: 'Profile',
-      icon: Icons.person_outline_rounded,
-      activeIcon: Icons.person_rounded,
+      icon: Icons.account_circle_outlined,
+      activeIcon: Icons.account_circle_rounded,
     ),
   ];
 
@@ -65,13 +65,13 @@ class HelaBottomNavBar extends StatelessWidget {
         targetPage = const HelaHomePage();
         break;
       case 1:
-        targetPage = const SavedPage();
+        targetPage = const CulturalGuidePage();
         break;
       case 2:
-        targetPage = const TravelPreferencesPage();
+        targetPage = const TripPlannerPage();
         break;
       case 3:
-        targetPage = const TripPlannerPage();
+        targetPage = const BookingsPage();
         break;
       case 4:
         targetPage = const ProfilePage();
@@ -89,17 +89,78 @@ class HelaBottomNavBar extends StatelessWidget {
     );
   }
 
-  void _openAskHelaSheet(BuildContext context) {
-    if (onAskHela != null) {
-      onAskHela!();
-      return;
-    }
-
+  static void openAskHelaSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) => const _AskHelaBottomSheet(),
+    );
+  }
+
+  static Widget buildFloatingAskHelaButton(BuildContext context) {
+    final colors = HelaColors.of(context);
+    return InkWell(
+      onTap: () => openAskHelaSheet(context),
+      borderRadius: BorderRadius.circular(999),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+        decoration: BoxDecoration(
+          color: colors.primaryContainer,
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: colors.goldenAmber.withValues(alpha: 0.5), width: 1.2),
+          boxShadow: [
+            BoxShadow(
+              color: colors.primary.withValues(alpha: 0.28),
+              blurRadius: 20,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 26,
+              height: 26,
+              decoration: BoxDecoration(
+                color: colors.tertiaryContainer.withValues(alpha: 0.5),
+                shape: BoxShape.circle,
+                border: Border.all(color: colors.goldenAmber, width: 1.5),
+              ),
+              child: Icon(Icons.psychology_rounded, size: 15, color: colors.goldenAmber),
+            ),
+            const SizedBox(width: 8),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Smart Guide',
+                  style: TextStyle(
+                    fontSize: 9.5,
+                    fontWeight: FontWeight.w600,
+                    color: colors.goldenAmber,
+                    height: 1.0,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                const Text(
+                  'Ask HELA',
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                    height: 1.0,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(width: 8),
+            Icon(Icons.auto_awesome_rounded, size: 15, color: colors.onPrimaryContainer),
+          ],
+        ),
+      ),
     );
   }
 
@@ -131,21 +192,10 @@ class HelaBottomNavBar extends StatelessWidget {
         child: SizedBox(
           height: 64,
           child: Row(
-            children: [
-              // Left two tabs: Explore (0) & Saved (1)
-              Expanded(child: _buildNavItem(context, 0, colors)),
-              Expanded(child: _buildNavItem(context, 1, colors)),
-
-              // Center Floating AI Trigger
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: _buildCenterAiButton(context, colors),
-              ),
-
-              // Right two tabs: Journeys (3) & Profile (4)
-              Expanded(child: _buildNavItem(context, 3, colors)),
-              Expanded(child: _buildNavItem(context, 4, colors)),
-            ],
+            children: List.generate(
+              _items.length,
+              (index) => Expanded(child: _buildNavItem(context, index, colors)),
+            ),
           ),
         ),
       ),
@@ -191,60 +241,6 @@ class HelaBottomNavBar extends StatelessWidget {
               decoration: BoxDecoration(
                 color: isActive ? activeColor : Colors.transparent,
                 shape: BoxShape.circle,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCenterAiButton(BuildContext context, HelaColorPalette colors) {
-    return GestureDetector(
-      onTap: () => _openAskHelaSheet(context),
-      child: Container(
-        width: 52,
-        height: 52,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              colors.primaryContainer,
-              colors.primary,
-            ],
-          ),
-          border: Border.all(
-            color: colors.goldenAmber,
-            width: 2,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: colors.primary.withValues(alpha: 0.35),
-              blurRadius: 10,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            const Icon(
-              Icons.auto_awesome_rounded,
-              color: Colors.white,
-              size: 22,
-            ),
-            Positioned(
-              top: 5,
-              right: 6,
-              child: Container(
-                width: 6,
-                height: 6,
-                decoration: BoxDecoration(
-                  color: colors.goldenAmber,
-                  shape: BoxShape.circle,
-                ),
               ),
             ),
           ],
