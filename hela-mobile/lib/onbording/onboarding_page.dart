@@ -38,6 +38,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   final List<Map<String, dynamic>> _step2Categories = [
     {
       'title': 'Tea Hills',
+      'titleKey': 'tea_hills',
       'icon': '🍃',
       'locationTitle': 'Nine Arch Bridge',
       'locationSubtitle': 'Badulla Railway Line, Ella',
@@ -53,6 +54,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
     },
     {
       'title': 'Golden Beaches',
+      'titleKey': 'golden_beaches',
       'icon': '🏖️',
       'locationTitle': 'Mirissa Coconut Tree Hill',
       'locationSubtitle': 'Southern Coast, Mirissa',
@@ -68,6 +70,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
     },
     {
       'title': 'Wildlife Safari',
+      'titleKey': 'wildlife_safari',
       'icon': '🐾',
       'locationTitle': 'Yala Leopard Sanctuary',
       'locationSubtitle': 'Block 1 & Ruhuna, Hambantota',
@@ -706,11 +709,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  const Column(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
+                      const Text(
                         'HELA',
                         style: TextStyle(
                           fontSize: 16,
@@ -720,8 +723,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         ),
                       ),
                       Text(
-                        'Sri Lanka Travel Companion',
-                        style: TextStyle(
+                        HelaAppStateProvider.of(context).tr('sri_lanka_travel_companion'),
+                        style: const TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w500,
                           color: OnboardingTokens.textMuted,
@@ -877,6 +880,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   // SCREEN 1: Welcome & Overview (Image 1)
   // ──────────────────────────────────────────────────────────────────────────
   Widget _buildScreen1() {
+    final appState = HelaAppStateProvider.of(context);
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -919,18 +923,18 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         color: Colors.black.withValues(alpha: 0.45),
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.wb_sunny_outlined,
                             size: 14,
                             color: Colors.white,
                           ),
-                          SizedBox(width: 5),
+                          const SizedBox(width: 5),
                           Text(
-                            'Golden Dawn',
-                            style: TextStyle(
+                            appState.tr('golden_dawn'),
+                            style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                               color: Colors.white,
@@ -961,18 +965,18 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           ),
                         ],
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.location_on_outlined,
                             size: 16,
                             color: OnboardingTokens.primaryDark,
                           ),
-                          SizedBox(width: 6),
+                          const SizedBox(width: 6),
                           Text(
-                            'Sigiriya, Cultural Triangle',
-                            style: TextStyle(
+                            appState.tr('sigiriya_cultural_triangle'),
+                            style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
                               color: OnboardingTokens.textDark,
@@ -1026,10 +1030,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
           const SizedBox(height: 18),
 
           // Title
-          const Text(
-            'Discover Sri Lanka,\nYour Way',
+          Text(
+            appState.tr('discover_title'),
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 28,
               height: 1.2,
               fontWeight: FontWeight.w800,
@@ -1041,10 +1045,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
           const SizedBox(height: 10),
 
           // Subtitle
-          const Text(
-            'Your island adventure starts with HELA. From ancient kingdoms to sun-kissed coasts, explore effortlessly.',
+          Text(
+            appState.tr('discover_subtitle'),
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               height: 1.45,
               color: OnboardingTokens.textMuted,
@@ -1053,40 +1057,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
           const SizedBox(height: 18),
 
-          // Feature Highlights Card
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            decoration: BoxDecoration(
-              color: OnboardingTokens.mintContainer,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: OnboardingTokens.mintBorder,
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildFeatureBadge(
-                  icon: Icons.check_circle_outline_rounded,
-                  line1: 'Fair-Fare',
-                  line2: 'Taxis',
-                ),
-                _buildBulletSeparator(),
-                _buildFeatureBadge(
-                  icon: Icons.train_outlined,
-                  line1: 'Scenic',
-                  line2: 'Rail',
-                ),
-                _buildBulletSeparator(),
-                _buildFeatureBadge(
-                  icon: Icons.face_retouching_natural_rounded,
-                  line1: 'AI',
-                  line2: 'Concierge',
-                  iconColor: const Color(0xFF9E5C16),
-                ),
-              ],
-            ),
-          ),
+          // Feature Highlight Pills (AI Smart Itineraries, Transparent Fares, Local Heritage)
+          _buildFeaturePills(appState),
 
           const SizedBox(height: 22),
 
@@ -1104,24 +1076,24 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   borderRadius: BorderRadius.circular(16),
                 ),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Get Started',
-                    style: TextStyle(
+                    appState.tr('get_started'),
+                    style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  SizedBox(width: 8),
-                  Icon(Icons.arrow_forward_rounded, size: 18),
+                  const SizedBox(width: 8),
+                  const Icon(Icons.arrow_forward_rounded, size: 18),
                 ],
               ),
             ),
           ),
 
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
 
           // Secondary CTA: Continue as Guest
           SizedBox(
@@ -1130,20 +1102,31 @@ class _OnboardingPageState extends State<OnboardingPage> {
             child: ElevatedButton(
               onPressed: _continueAsGuest,
               style: ElevatedButton.styleFrom(
-                backgroundColor: OnboardingTokens.mintContainer,
+                backgroundColor: const Color(0xFFB6EAE1),
                 foregroundColor: OnboardingTokens.primaryDark,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
               ),
-              child: const Text(
-                'Continue as Guest',
-                style: TextStyle(
-                  fontSize: 14.5,
-                  fontWeight: FontWeight.w700,
-                  color: OnboardingTokens.primaryDark,
-                ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.explore_outlined,
+                    size: 19,
+                    color: OnboardingTokens.primaryDark,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    appState.tr('continue_as_guest'),
+                    style: const TextStyle(
+                      fontSize: 14.5,
+                      fontWeight: FontWeight.w700,
+                      color: OnboardingTokens.primaryDark,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -1154,18 +1137,18 @@ class _OnboardingPageState extends State<OnboardingPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                'Already have an account? ',
-                style: TextStyle(
+              Text(
+                appState.tr('already_have_account'),
+                style: const TextStyle(
                   fontSize: 13,
                   color: OnboardingTokens.textMuted,
                 ),
               ),
               GestureDetector(
                 onTap: _navigateToSignIn,
-                child: const Text(
-                  'Sign In',
-                  style: TextStyle(
+                child: Text(
+                  appState.tr('sign_in'),
+                  style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w800,
                     color: OnboardingTokens.primaryDark,
@@ -1176,61 +1159,142 @@ class _OnboardingPageState extends State<OnboardingPage> {
           ),
 
           const SizedBox(height: 16),
+
+          // Micro Local Tip Card (Sri Lankan Hospitality Touch - Ayubowan)
+          _buildAyubowanCard(appState),
+
+          const SizedBox(height: 20),
         ],
       ),
     );
   }
 
-  Widget _buildFeatureBadge({
-    required IconData icon,
-    required String line1,
-    required String line2,
-    Color? iconColor,
-  }) {
-    return Row(
+  Widget _buildAyubowanCard(HelaAppState appState) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 38,
+            height: 38,
+            decoration: const BoxDecoration(
+              color: Color(0xFFB6EAE1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.wb_twilight_rounded,
+              color: OnboardingTokens.primaryDark,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  appState.tr('ayubowan_greeting_full'),
+                  style: const TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w800,
+                    color: OnboardingTokens.textDark,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  appState.tr('ayubowan_subtext'),
+                  style: const TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w500,
+                    color: OnboardingTokens.textMuted,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeaturePills(HelaAppState appState) {
+    return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          icon,
-          size: 16,
-          color: iconColor ?? OnboardingTokens.primaryDark,
+        // Top Row: AI Smart Itineraries & Transparent Fares
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildFeaturePill(
+                icon: Icons.auto_awesome_rounded,
+                iconColor: OnboardingTokens.primaryDark,
+                label: appState.tr('ai_smart_itineraries'),
+              ),
+              const SizedBox(width: 8),
+              _buildFeaturePill(
+                icon: Icons.verified_rounded,
+                iconColor: const Color(0xFFF3A638),
+                label: appState.tr('transparent_fares'),
+              ),
+            ],
+          ),
         ),
-        const SizedBox(width: 6),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              line1,
-              style: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                color: OnboardingTokens.textDark,
-                height: 1.1,
-              ),
-            ),
-            Text(
-              line2,
-              style: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: OnboardingTokens.textMuted,
-                height: 1.1,
-              ),
-            ),
-          ],
+        const SizedBox(height: 8),
+        // Bottom Row: Local Heritage (Centered)
+        _buildFeaturePill(
+          icon: Icons.temple_buddhist_rounded,
+          iconColor: OnboardingTokens.primaryDark,
+          label: appState.tr('local_heritage'),
         ),
       ],
     );
   }
 
-  Widget _buildBulletSeparator() {
+  Widget _buildFeaturePill({
+    required IconData icon,
+    required Color iconColor,
+    required String label,
+  }) {
     return Container(
-      width: 4,
-      height: 4,
-      decoration: const BoxDecoration(
-        color: OnboardingTokens.mintBorder,
-        shape: BoxShape.circle,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7.5),
+      decoration: BoxDecoration(
+        color: OnboardingTokens.mintContainer,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 15,
+            color: iconColor,
+          ),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w700,
+              color: OnboardingTokens.textDark,
+              letterSpacing: -0.1,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -1239,6 +1303,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   // SCREEN 2: Explore Every Corner (Image 3)
   // ──────────────────────────────────────────────────────────────────────────
   Widget _buildScreen2() {
+    final appState = HelaAppStateProvider.of(context);
     final activeCat = _step2Categories[_selectedCategoryIndex];
 
     return SingleChildScrollView(
@@ -1474,7 +1539,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           Text(cat['icon'] as String),
                           const SizedBox(width: 6),
                           Text(
-                            cat['title'] as String,
+                            appState.tr(cat['titleKey'] as String? ?? 'tea_hills'),
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: isSelected
@@ -1507,9 +1572,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   color: OnboardingTokens.mintBadge,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Text(
-                  'STEP 02 OF 03',
-                  style: TextStyle(
+                child: Text(
+                  appState.tr('step_02_of_03'),
+                  style: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
                     color: OnboardingTokens.primaryDark,
@@ -1517,18 +1582,18 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   ),
                 ),
               ),
-              const Row(
+              Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.verified_user_outlined,
                     size: 15,
                     color: OnboardingTokens.primaryDark,
                   ),
-                  SizedBox(width: 5),
+                  const SizedBox(width: 5),
                   Text(
-                    'Verified Waypoints',
-                    style: TextStyle(
+                    appState.tr('verified_waypoints'),
+                    style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: OnboardingTokens.primaryDark,
@@ -1542,9 +1607,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
           const SizedBox(height: 10),
 
           // Title
-          const Text(
-            'Explore Every Corner',
-            style: TextStyle(
+          Text(
+            appState.tr('explore_every_corner'),
+            style: const TextStyle(
               fontSize: 27,
               fontWeight: FontWeight.w800,
               color: OnboardingTokens.textDark,
@@ -1555,9 +1620,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
           const SizedBox(height: 8),
 
           // Description
-          const Text(
-            'Uncover pristine tropical beaches, misty tea plantations, majestic wildlife, and centuries of vibrant cultural heritage curated for seamless journeys.',
-            style: TextStyle(
+          Text(
+            appState.tr('explore_corner_desc'),
+            style: const TextStyle(
               fontSize: 14,
               height: 1.45,
               color: OnboardingTokens.textMuted,
@@ -1637,18 +1702,18 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   borderRadius: BorderRadius.circular(16),
                 ),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Continue',
-                    style: TextStyle(
+                    appState.tr('continue_btn'),
+                    style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  SizedBox(width: 8),
-                  Icon(Icons.arrow_forward_rounded, size: 18),
+                  const SizedBox(width: 8),
+                  const Icon(Icons.arrow_forward_rounded, size: 18),
                 ],
               ),
             ),
@@ -1660,9 +1725,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
           Center(
             child: TextButton(
               onPressed: _continueAsGuest,
-              child: const Text(
-                'Explore as Guest',
-                style: TextStyle(
+              child: Text(
+                appState.tr('explore_as_guest'),
+                style: const TextStyle(
                   fontSize: 13.5,
                   fontWeight: FontWeight.w700,
                   color: OnboardingTokens.textMuted,
@@ -1681,6 +1746,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   // SCREEN 3: Your Personal Travel Companion (Image 2)
   // ──────────────────────────────────────────────────────────────────────────
   Widget _buildScreen3() {
+    final appState = HelaAppStateProvider.of(context);
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -1873,9 +1939,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
           const SizedBox(height: 10),
 
           // Title
-          const Text(
-            'Your Personal Travel\nCompanion',
-            style: TextStyle(
+          Text(
+            appState.tr('personal_companion_title'),
+            style: const TextStyle(
               fontSize: 27,
               fontWeight: FontWeight.w800,
               height: 1.2,
@@ -1887,9 +1953,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
           const SizedBox(height: 8),
 
           // Description
-          const Text(
-            'Personalized AI trip planning, authentic cultural stories, and transparent local transit — everything you need in the palm of your hand.',
-            style: TextStyle(
+          Text(
+            appState.tr('personal_companion_desc'),
+            style: const TextStyle(
               fontSize: 13.5,
               height: 1.45,
               color: OnboardingTokens.textMuted,
@@ -1903,24 +1969,24 @@ class _OnboardingPageState extends State<OnboardingPage> {
             icon: Icons.explore_outlined,
             iconColor: OnboardingTokens.primaryDark,
             iconBg: OnboardingTokens.mintBadge,
-            title: 'AI Itinerary Planner',
-            subtitle: 'Tailored to your tempo, weather & seasons...',
+            title: appState.tr('ai_itinerary_planner'),
+            subtitle: appState.tr('ai_itinerary_sub'),
           ),
           const SizedBox(height: 8),
           _buildFeatureCard(
             icon: Icons.temple_buddhist_rounded,
             iconColor: const Color(0xFF8A5A1E),
             iconBg: const Color(0xFFF7EBDC),
-            title: 'Local Cultural Guide',
-            subtitle: 'Sacred site etiquette, language tips & folklore...',
+            title: appState.tr('local_cultural_guide'),
+            subtitle: appState.tr('local_cultural_sub'),
           ),
           const SizedBox(height: 8),
           _buildFeatureCard(
             icon: Icons.shield_outlined,
             iconColor: OnboardingTokens.primaryDark,
             iconBg: OnboardingTokens.mintBadge,
-            title: 'Transparent Verified Rides',
-            subtitle: 'Fixed-meter tuk-tuks & trusted island drivers...',
+            title: appState.tr('transparent_rides'),
+            subtitle: appState.tr('transparent_rides_sub'),
           ),
 
           const SizedBox(height: 20),
@@ -1939,18 +2005,18 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   borderRadius: BorderRadius.circular(16),
                 ),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Start Exploring',
-                    style: TextStyle(
+                    appState.tr('start_exploring'),
+                    style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  SizedBox(width: 8),
-                  Icon(Icons.arrow_forward_rounded, size: 18),
+                  const SizedBox(width: 8),
+                  const Icon(Icons.arrow_forward_rounded, size: 18),
                 ],
               ),
             ),
@@ -1962,18 +2028,18 @@ class _OnboardingPageState extends State<OnboardingPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                'Already have an account? ',
-                style: TextStyle(
+              Text(
+                appState.tr('already_have_account'),
+                style: const TextStyle(
                   fontSize: 13,
                   color: OnboardingTokens.textMuted,
                 ),
               ),
               GestureDetector(
                 onTap: _navigateToSignIn,
-                child: const Text(
-                  'Sign In',
-                  style: TextStyle(
+                child: Text(
+                  appState.tr('sign_in'),
+                  style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w800,
                     color: OnboardingTokens.primaryDark,

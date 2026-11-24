@@ -61,7 +61,7 @@ void main() {
       ),
     );
 
-    expect(find.text('Discover Sri Lanka, Your Way'), findsOneWidget);
+    expect(find.textContaining('Discover Sri Lanka'), findsOneWidget);
     expect(find.text('Featured Destinations'), findsOneWidget);
   });
 
@@ -201,6 +201,9 @@ void main() {
     expect(find.text('HELA'), findsWidgets);
     expect(find.text('Sri Lanka Travel Companion'), findsOneWidget);
     expect(find.text('Discover Sri Lanka,\nYour Way'), findsOneWidget);
+    expect(find.text('AI Smart Itineraries'), findsOneWidget);
+    expect(find.text('Transparent Fares'), findsOneWidget);
+    expect(find.text('Local Heritage'), findsOneWidget);
     expect(find.text('Get Started'), findsOneWidget);
     expect(find.text('Continue as Guest'), findsOneWidget);
     expect(find.text('Sign In'), findsOneWidget);
@@ -626,6 +629,49 @@ void main() {
     // Verify app state language updated to SI
     expect(appState.selectedLanguage, 'SI');
     expect(find.text('SI'), findsWidgets);
+    expect(find.text('ආරම්භ කරමු'), findsOneWidget);
+    expect(find.text('ආගන්තුකයෙකු ලෙස යන්න'), findsOneWidget);
+  });
+
+  testWidgets('OnboardingPage texts dynamically translate when language changes to German (DE)', (WidgetTester tester) async {
+    _ignoreOverflow();
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    final appState = HelaAppState();
+    await tester.pumpWidget(
+      HelaAppStateProvider(
+        state: appState,
+        child: const MaterialApp(
+          home: OnboardingPage(),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    // English initially
+    expect(find.text('Get Started'), findsOneWidget);
+    expect(find.text('Continue as Guest'), findsOneWidget);
+
+    // Open language selector
+    await tester.tap(find.text('EN').first);
+    await tester.pumpAndSettle();
+
+    // Select Deutsch
+    await tester.tap(find.text('Deutsch (German)'));
+    await tester.pumpAndSettle();
+
+    // Verify UI translated to German
+    expect(appState.selectedLanguage, 'DE');
+    expect(find.text('DE'), findsWidgets);
+    expect(find.text('Loslegen'), findsOneWidget);
+    expect(find.text('Als Gast fortfahren'), findsOneWidget);
+    expect(find.text('Goldene Morgendämmerung'), findsOneWidget);
+    expect(find.text('Sigiriya, Kulturelles Dreieck'), findsOneWidget);
   });
 
   testWidgets('ProfilePage language setting displays current language and syncs updates with HelaAppState', (WidgetTester tester) async {
@@ -668,6 +714,39 @@ void main() {
     // Verify appState is now SI and ProfilePage reflects it
     expect(appState.selectedLanguage, 'SI');
     expect(find.text('සිංහල (Sinhala)'), findsOneWidget);
+  });
+
+  testWidgets('OnboardingPage renders bottom hospitality card and Continue as Guest with explore icon', (WidgetTester tester) async {
+    _ignoreOverflow();
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    final appState = HelaAppState();
+    await tester.pumpWidget(
+      HelaAppStateProvider(
+        state: appState,
+        child: const MaterialApp(
+          home: OnboardingPage(),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    // Verify Continue as Guest button with explore icon
+    expect(find.text('Continue as Guest'), findsOneWidget);
+    expect(find.byIcon(Icons.explore_outlined), findsOneWidget);
+
+    // Verify Ayubowan hospitality card at the bottom
+    expect(find.text('Ayubowan! "May you live long."'), findsOneWidget);
+    expect(
+      find.text('Authentic local train timetables & meter guides await.'),
+      findsOneWidget,
+    );
+    expect(find.byIcon(Icons.wb_twilight_rounded), findsOneWidget);
   });
 }
 

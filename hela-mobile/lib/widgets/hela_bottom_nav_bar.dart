@@ -4,6 +4,7 @@ import 'package:hela/pages/explore_page.dart';
 import 'package:hela/pages/trip_planner_page.dart';
 import 'package:hela/pages/bookings_page.dart';
 import 'package:hela/pages/profile_page.dart';
+import 'package:hela/state/app_state.dart';
 
 /// Unified, consistent Bottom Navigation Bar for HELA
 /// Conforms to the Stitch Lankan Tropical Modernism specification:
@@ -26,26 +27,31 @@ class HelaBottomNavBar extends StatelessWidget {
   static const List<_NavItemData> _items = [
     _NavItemData(
       label: 'Home',
+      key: 'home',
       icon: Icons.home_outlined,
       activeIcon: Icons.home_rounded,
     ),
     _NavItemData(
       label: 'Explore',
+      key: 'explore',
       icon: Icons.near_me_outlined,
       activeIcon: Icons.near_me_rounded,
     ),
     _NavItemData(
       label: 'Trip Planner',
+      key: 'trip_planner',
       icon: Icons.map_outlined,
       activeIcon: Icons.map_rounded,
     ),
     _NavItemData(
       label: 'Bookings',
+      key: 'bookings',
       icon: Icons.confirmation_number_outlined,
       activeIcon: Icons.confirmation_number_rounded,
     ),
     _NavItemData(
       label: 'Profile',
+      key: 'profile',
       icon: Icons.account_circle_outlined,
       activeIcon: Icons.account_circle_rounded,
     ),
@@ -136,7 +142,7 @@ class HelaBottomNavBar extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Smart Guide',
+                  HelaAppStateProvider.of(context).tr('smart_guide'),
                   style: TextStyle(
                     fontSize: 9.5,
                     fontWeight: FontWeight.w600,
@@ -145,9 +151,9 @@ class HelaBottomNavBar extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 2),
-                const Text(
-                  'Ask HELA',
-                  style: TextStyle(
+                Text(
+                  HelaAppStateProvider.of(context).tr('ask_hela'),
+                  style: const TextStyle(
                     fontSize: 12.5,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
@@ -223,7 +229,7 @@ class HelaBottomNavBar extends StatelessWidget {
             ),
             const SizedBox(height: 3),
             Text(
-              item.label,
+              HelaAppStateProvider.of(context).tr(item.key),
               style: TextStyle(
                 color: isActive ? activeColor : inactiveColor,
                 fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
@@ -252,11 +258,13 @@ class HelaBottomNavBar extends StatelessWidget {
 
 class _NavItemData {
   final String label;
+  final String key;
   final IconData icon;
   final IconData activeIcon;
 
   const _NavItemData({
     required this.label,
+    required this.key,
     required this.icon,
     required this.activeIcon,
   });

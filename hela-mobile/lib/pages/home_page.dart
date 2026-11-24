@@ -7,6 +7,7 @@ import 'package:hela/pages/profile_page.dart';
 import 'package:hela/widgets/theme_switch_button.dart';
 import 'package:hela/widgets/hela_drawer.dart';
 import 'package:hela/widgets/hela_bottom_nav_bar.dart';
+import 'package:hela/state/app_state.dart';
 
 // Re-exports for backward compatibility
 export 'package:hela/models/haven_item.dart';
@@ -382,7 +383,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
                 ),
               ),
               Text(
-                'Home',
+                HelaAppStateProvider.of(context).tr('home'),
                 style: TextStyle(
                   color: colors.onSurface,
                   fontSize: 18,
@@ -436,7 +437,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
             Row(
               children: [
                 Text(
-                  'Hello, Traveller!',
+                  HelaAppStateProvider.of(context).tr('hello_traveller'),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -444,13 +445,11 @@ class _HelaHomePageState extends State<HelaHomePage> {
                     fontFamily: 'Inter',
                   ),
                 ),
-                const SizedBox(width: 4),
-                const Text('🌴', style: TextStyle(fontSize: 16)),
               ],
             ),
             const SizedBox(height: 2),
             Text(
-              'Explore the Pearl of the Indian Ocean',
+              HelaAppStateProvider.of(context).tr('explore_pearl'),
               style: TextStyle(
                 fontSize: 12,
                 color: colors.onSurfaceVariant,
@@ -525,7 +524,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
               decoration: InputDecoration(
                 border: InputBorder.none,
                 isCollapsed: true,
-                hintText: 'Where would you like to go?',
+                hintText: HelaAppStateProvider.of(context).tr('where_to_go'),
                 hintStyle: TextStyle(
                   color: colors.onSurfaceVariant.withValues(alpha: 0.7),
                   fontSize: 13.5,
@@ -599,12 +598,12 @@ class _HelaHomePageState extends State<HelaHomePage> {
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
-                      children: const [
-                        Icon(Icons.auto_awesome_rounded, size: 12, color: Color(0xFF271900)),
-                        SizedBox(width: 4),
+                      children: [
+                        const Icon(Icons.auto_awesome_rounded, size: 12, color: Color(0xFF271900)),
+                        const SizedBox(width: 4),
                         Text(
-                          'SMART ITINERARY',
-                          style: TextStyle(
+                          HelaAppStateProvider.of(context).tr('smart_itinerary'),
+                          style: const TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w800,
                             color: Color(0xFF271900),
@@ -615,9 +614,9 @@ class _HelaHomePageState extends State<HelaHomePage> {
                     ),
                   ),
                   const SizedBox(height: 6),
-                  const Text(
-                    'Discover Sri Lanka, Your Way',
-                    style: TextStyle(
+                  Text(
+                    HelaAppStateProvider.of(context).tr('discover_title'),
+                    style: const TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 21,
                       fontWeight: FontWeight.w800,
@@ -627,7 +626,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
                   ),
                   const SizedBox(height: 3),
                   Text(
-                    'Your perfect island adventure starts here.',
+                    HelaAppStateProvider.of(context).tr('hero_subtitle'),
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.white.withValues(alpha: 0.9),
@@ -652,18 +651,18 @@ class _HelaHomePageState extends State<HelaHomePage> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                         child: Row(
-                          children: const [
+                          children: [
                             Text(
-                              'Plan My Trip',
-                              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                              HelaAppStateProvider.of(context).tr('plan_my_trip'),
+                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
                             ),
-                            SizedBox(width: 6),
-                            Icon(Icons.arrow_forward_rounded, size: 16),
+                            const SizedBox(width: 6),
+                            const Icon(Icons.arrow_forward_rounded, size: 16),
                           ],
                         ),
                       ),
                       Text(
-                        'Instant AI generation',
+                        HelaAppStateProvider.of(context).tr('instant_ai'),
                         style: TextStyle(
                           fontSize: 11,
                           color: Colors.white.withValues(alpha: 0.8),
@@ -682,13 +681,14 @@ class _HelaHomePageState extends State<HelaHomePage> {
   }
 
   Widget _buildQuickActions(HelaColorPalette colors) {
+    final appState = HelaAppStateProvider.of(context);
     return Row(
       children: [
         _buildActionTile(
           icon: Icons.explore_rounded,
           iconBg: colors.secondaryContainer,
           iconColor: colors.onSecondaryContainer,
-          title: 'AI Travel...',
+          title: appState.tr('ai_travel_assistant'),
           onTap: () {
             Navigator.push(context, MaterialPageRoute(builder: (_) => const TripPlannerPage()));
           },
@@ -699,7 +699,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
           icon: Icons.electric_rickshaw_rounded,
           iconBg: colors.surfaceContainerHigh,
           iconColor: colors.primary,
-          title: 'Book a Taxi',
+          title: appState.tr('book_taxi'),
           badgeText: 'Meter',
           badgeColor: colors.goldenAmber,
           onTap: () {
@@ -712,7 +712,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
           icon: Icons.map_rounded,
           iconBg: colors.surfaceContainerHigh,
           iconColor: colors.primary,
-          title: 'Find Places',
+          title: appState.tr('find_places'),
           onTap: () {
             Navigator.push(context, MaterialPageRoute(builder: (_) => const ExplorePage()));
           },
@@ -723,7 +723,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
           icon: Icons.temple_buddhist_rounded,
           iconBg: colors.secondaryContainer,
           iconColor: colors.onSecondaryContainer,
-          title: 'Explore...',
+          title: appState.tr('explore'),
           onTap: () {
             Navigator.push(context, MaterialPageRoute(builder: (_) => const CulturalGuidePage()));
           },
@@ -826,7 +826,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
             Row(
               children: [
                 Text(
-                  'Featured Destinations',
+                  HelaAppStateProvider.of(context).tr('featured_destinations'),
                   style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w800,
@@ -855,7 +855,10 @@ class _HelaHomePageState extends State<HelaHomePage> {
                 minimumSize: Size.zero,
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
-              child: const Text('See All', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
+              child: Text(
+                HelaAppStateProvider.of(context).tr('see_all'),
+                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+              ),
             ),
           ],
         ),
@@ -1013,7 +1016,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Experiences You Will Love',
+              HelaAppStateProvider.of(context).tr('experiences_love'),
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w800,
@@ -1022,7 +1025,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
               ),
             ),
             Text(
-              'Handcrafted',
+              HelaAppStateProvider.of(context).tr('handcrafted'),
               style: TextStyle(
                 fontSize: 11.5,
                 fontWeight: FontWeight.w600,
@@ -1192,7 +1195,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Need travel advice?',
+                  HelaAppStateProvider.of(context).tr('need_advice'),
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
@@ -1200,7 +1203,7 @@ class _HelaHomePageState extends State<HelaHomePage> {
                   ),
                 ),
                 Text(
-                  'Ask HELA, your personal Sri Lankan guide.',
+                  HelaAppStateProvider.of(context).tr('ask_hela_desc'),
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
@@ -1224,10 +1227,13 @@ class _HelaHomePageState extends State<HelaHomePage> {
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              children: const [
-                Text('Ask HELA', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
-                SizedBox(width: 4),
-                Icon(Icons.chat_bubble_outline_rounded, size: 13),
+              children: [
+                Text(
+                  HelaAppStateProvider.of(context).tr('ask_hela'),
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(width: 4),
+                const Icon(Icons.chat_bubble_outline_rounded, size: 13),
               ],
             ),
           ),
