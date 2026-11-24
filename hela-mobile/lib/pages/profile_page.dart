@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:hela/pages/active_journey_page.dart';
+import 'package:hela/pages/ask_hela_page.dart';
 import 'package:hela/pages/auth/signup_page.dart';
+import 'package:hela/pages/bookings_page.dart';
 import 'package:hela/pages/profile/edit_profile_page.dart';
-import 'package:hela/pages/home_page.dart';
 import 'package:hela/pages/saved_page.dart';
-import 'package:hela/pages/travel_preferences_page.dart';
 import 'package:hela/services/insforge_auth_service.dart';
 import 'package:hela/services/localization_service.dart';
 import 'package:hela/state/app_state.dart';
+import 'package:hela/theme/hela_colors.dart';
 import 'package:hela/widgets/hela_bottom_nav_bar.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-/// TripAdvisor-grade professional Profile & Comprehensive Settings Page
+/// HELA Traveler Profile, Travel Hub, Preferences & 24/7 Assistance Page.
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -18,24 +21,13 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  int _selectedTabIndex = 0; // 0: Settings & Preferences, 1: Saved Itineraries, 2: Badges & Reviews
+  static const Color _mintPageBg = Color(0xFFEAF8F4);
+  static const Color _deepTeal = Color(0xFF0B4D42);
+  static const Color _darkInk = Color(0xFF0B2D25);
+  static const Color _mutedTeal = Color(0xFF4C756A);
+  static const Color _softMintTile = Color(0xFFE5F4F0);
+  static const Color _cardBorder = Color(0xFFDCEEE8);
 
-  // ── Interactive Settings State ───────────────────────────────────────────
-  String _currency = 'USD (\$)';
-  String _distanceUnit = 'Kilometers (km)';
-  String _travelPace = 'Balanced';
-  String _profileVisibility = 'Public (All Explorers)';
-
-  bool _biometricEnabled = true;
-  bool _twoFactorEnabled = true;
-  bool _pushNotifications = true;
-  bool _itineraryAlerts = true;
-  bool _dealAlerts = false;
-  bool _weatherAlerts = true;
-  bool _locationServices = true;
-  bool _offlineCache = true;
-
-  // ── Network Image with Robust Error Handling ─────────────────────────────
   Widget _buildNetworkImage(
     String url, {
     double? width,
@@ -51,1673 +43,690 @@ class _ProfilePageState extends State<ProfilePage> {
         return Container(
           width: width,
           height: height,
-          color: HelaColors.primaryContainer,
+          color: const Color(0xFFD4EFE7),
           child: const Center(
-            child: Icon(Icons.person_rounded, color: HelaColors.onPrimaryContainer, size: 36),
+            child: Icon(Icons.person_rounded, color: _deepTeal, size: 30),
           ),
         );
       },
     );
   }
 
+  String _countryCodeFromPhone(String phone) {
+    final trimmed = phone.trim();
+    if (trimmed.startsWith('+94')) return 'LK';
+    if (trimmed.startsWith('+44')) return 'GB';
+    if (trimmed.startsWith('+1')) return 'US';
+    if (trimmed.startsWith('+61')) return 'AU';
+    if (trimmed.startsWith('+91')) return 'IN';
+    return 'LK';
+  }
+
+  Future<void> _dialNumber(String number) async {
+    final uri = Uri(scheme: 'tel', path: number);
+    try {
+      final launched = await launchUrl(uri);
+      if (!launched && mounted) {
+        _showToast('Emergency hotline: Dial $number');
+      }
+    } catch (_) {
+      if (mounted) {
+        _showToast('Emergency hotline: Dial $number');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final appState = HelaAppStateProvider.of(context);
+    final colors = HelaColors.of(context);
+    final isDark = colors.isDark;
+
     return Scaffold(
-      backgroundColor: HelaColors.background,
-      appBar: _buildTopAppBar(),
+      backgroundColor: isDark ? colors.surface : _mintPageBg,
+      appBar: _buildTopAppBar(appState, colors, isDark),
       body: SafeArea(
         top: false,
         bottom: false,
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.only(bottom: 96),
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 110),
           child: Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 540),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 8),
-                    _buildTripAdvisorHeroCard(),
-                    const SizedBox(height: 14),
-                    _buildEcoImpactWidget(),
-                    const SizedBox(height: 18),
-                    _buildTabNavigation(),
-                    const SizedBox(height: 16),
-                    _buildActiveTabContent(),
-                    const SizedBox(height: 24),
-                  ],
-                ),
+              constraints: const BoxConstraints(maxWidth: 500),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeroProfileCard(appState, colors, isDark),
+                  const SizedBox(height: 16),
+                  _buildOngoingJourneyCard(appState),
+                  const SizedBox(height: 22),
+                  _buildSectionHeader(
+                    'MY TRAVEL HUB',
+                    'Active Passports & Itineraries',
+                    colors,
+                  ),
+                  const SizedBox(height: 10),
+                  _buildTravelHubCard(appState, colors, isDark),
+                  const SizedBox(height: 22),
+                  _buildSectionHeader(
+                    'PREFERENCES',
+                    'Locale & Connectivity',
+                    colors,
+                  ),
+                  const SizedBox(height: 10),
+                  _buildPreferencesCard(appState, colors, isDark),
+                  const SizedBox(height: 22),
+                  _buildSectionHeader(
+                    'ASSISTANCE & LEGAL',
+                    '● Support 24/7 Active',
+                    colors,
+                    trailingColor: const Color(0xFF0F766E),
+                  ),
+                  const SizedBox(height: 10),
+                  _buildAssistanceLegalCard(colors, isDark),
+                  const SizedBox(height: 18),
+                  _buildLogoutButton(isDark),
+                  const SizedBox(height: 18),
+                  _buildFooterBranding(colors),
+                ],
               ),
             ),
           ),
         ),
       ),
+      floatingActionButton: HelaBottomNavBar.buildFloatingAskHelaButton(context),
       bottomNavigationBar: const HelaBottomNavBar(currentIndex: 4),
     );
   }
 
   // ── Top App Bar ──────────────────────────────────────────────────────────
-  PreferredSizeWidget _buildTopAppBar() {
+  PreferredSizeWidget _buildTopAppBar(
+    HelaAppState appState,
+    HelaColorPalette colors,
+    bool isDark,
+  ) {
     return AppBar(
-      backgroundColor: HelaColors.surface.withValues(alpha: 0.94),
+      backgroundColor: isDark ? colors.surface : _mintPageBg,
       elevation: 0,
-      scrolledUnderElevation: 1.5,
-      shadowColor: Colors.black12,
-      toolbarHeight: 60,
-      titleSpacing: 0,
+      scrolledUnderElevation: 1,
+      toolbarHeight: 62,
       automaticallyImplyLeading: false,
-      title: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
+      titleSpacing: 16,
+      title: Row(
+        children: [
+          Container(
+            width: 38,
+            height: 38,
+            decoration: const BoxDecoration(
+              color: _deepTeal,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.account_circle_outlined,
+              color: Colors.white,
+              size: 22,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: HelaColors.primary.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Icon(Icons.travel_explore_rounded, color: HelaColors.primary, size: 22),
-                ),
-                const SizedBox(width: 8),
-                const Text(
-                  'HELA TRAVELER',
+                Text(
+                  'HELA TRAVEL',
                   style: TextStyle(
-                    color: HelaColors.primary,
-                    fontSize: 18,
+                    fontSize: 9.5,
                     fontWeight: FontWeight.w800,
+                    letterSpacing: 1.1,
+                    color: isDark ? colors.onSurfaceVariant : _mutedTeal,
+                  ),
+                ),
+                Text(
+                  'My Profile',
+                  style: TextStyle(
+                    fontSize: 17.5,
+                    fontWeight: FontWeight.w800,
+                    color: isDark ? colors.onSurface : _darkInk,
                     letterSpacing: -0.3,
                   ),
                 ),
               ],
             ),
-            Row(
-              children: [
-                // Share profile button
-                IconButton(
-                  tooltip: 'Share Profile',
-                  icon: const Icon(Icons.share_outlined, color: HelaColors.primary, size: 21),
-                  onPressed: _showShareProfileSheet,
-                ),
-                // Settings quick switch
-                IconButton(
-                  tooltip: 'Settings & Preferences',
-                  icon: Icon(
-                    _selectedTabIndex == 0 ? Icons.settings_rounded : Icons.settings_outlined,
-                    color: HelaColors.primary,
-                    size: 22,
+          ),
+          // SOS Pill Button
+          InkWell(
+            onTap: _showEmergencySosSheet,
+            borderRadius: BorderRadius.circular(999),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFDE2E2),
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(color: const Color(0xFFF9B8B8)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFDC2626),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Text(
+                      'SOS',
+                      style: TextStyle(
+                        fontSize: 8.5,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                  onPressed: () {
-                    setState(() => _selectedTabIndex = 0);
-                  },
-                ),
-              ],
+                  const SizedBox(width: 5),
+                  const Text(
+                    'SOS',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFFB91C1C),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(width: 6),
+          // Notifications Bell
+          InkWell(
+            onTap: () => _showNotificationsSheet(appState),
+            borderRadius: BorderRadius.circular(999),
+            child: Padding(
+              padding: const EdgeInsets.all(6),
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Icon(
+                    Icons.notifications_none_rounded,
+                    size: 24,
+                    color: isDark ? colors.onSurface : _darkInk,
+                  ),
+                  if (appState.unreadAlertsCount > 0)
+                    Positioned(
+                      right: 1,
+                      top: 1,
+                      child: Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFEF4444),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: isDark ? colors.surface : _mintPageBg,
+                            width: 1.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  // ── TripAdvisor Traveler Hero Card ───────────────────────────────────────
-  Widget _buildTripAdvisorHeroCard() {
-    final appState = HelaAppStateProvider.of(context);
-    final displayName = appState.userName.isNotEmpty ? appState.userName : 'Kavinda Wickramasinghe';
-    final userTitle = appState.userTitle.isNotEmpty ? appState.userTitle : '🌿 Tea Country Pathfinder · Level 4';
-    final userLocation = appState.userLocation.isNotEmpty ? appState.userLocation : 'Kandy, Central Province';
-    final userBio = appState.userBio.isNotEmpty
-        ? appState.userBio
-        : 'Explorer of Ceylon highlands, tea estates, and ancient sanctuaries.';
+  // ── 1. Hero Profile Card ─────────────────────────────────────────────────
+  Widget _buildHeroProfileCard(
+    HelaAppState appState,
+    HelaColorPalette colors,
+    bool isDark,
+  ) {
+    final displayName =
+        appState.userName.isNotEmpty ? appState.userName : 'Kavinda Wickramasinghe';
+    final displayEmail =
+        appState.userEmail.isNotEmpty ? appState.userEmail : 'kavinda.w@gmail.com';
+    final displayPhone =
+        appState.userPhone.isNotEmpty ? appState.userPhone : '+94 77 123 4567';
     final photoUrl = appState.userPhotoUrl ??
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuCb49WhjEvtkcNC5SxIgicaFGy0FHajTwhLvSgls2jKJllxIgCm3GtnkBey5ISjUv1a3RBHYRJDux9aTGEuQRD2PRzQ7NQpcvmB23kcn9IUgKDRsKdgyX64gwLDMholuf3EBAmflHGPMYYyBMAcXUVZYTfptDrW3y9Os02is22iH1TXaD6SAOV7pDCQz_K7hNqQjavBUoHUUSiFUtmOeylpDB6d6w3LDISl_r_VyPAoA96T32aE2nQtbA';
+        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80';
+    final destinationsCount = 7 + appState.savedHavens.length;
 
     return Container(
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: HelaColors.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: const Color(0xFFE2EBE4), width: 1.2),
+        color: isDark ? colors.cardBackground : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isDark ? colors.architecturalBorder : _cardBorder,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: const Color(0xFF0B4D42).withValues(alpha: 0.05),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(22),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ── Top Panoramic Cover Banner ────────────────────────────────
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Container(
-                  height: 115,
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Color(0xFF1E3A24), Color(0xFF3B6344), Color(0xFF709876)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Image.network(
-                        'https://images.unsplash.com/photo-1546708973-b339540b5162?w=1200&auto=format&fit=crop&q=80',
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => const SizedBox.shrink(),
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.black.withValues(alpha: 0.15),
-                              Colors.black.withValues(alpha: 0.5),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        top: 10,
-                        right: 12,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.45),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Colors.white24, width: 0.8),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: const [
-                              Icon(Icons.photo_camera_outlined, size: 12, color: Colors.white),
-                              SizedBox(width: 4),
-                              Text(
-                                'Highlands, Sri Lanka',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10.5,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // ── Overlapping Avatar (TripAdvisor Signature) ──────────────
-                Positioned(
-                  bottom: -38,
-                  left: 18,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const EditProfilePage()),
-                      );
-                    },
-                    child: Stack(
-                      children: [
-                        Container(
-                          width: 82,
-                          height: 82,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 3.5),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.14),
-                                blurRadius: 10,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: ClipOval(
-                            child: _buildNetworkImage(
-                              photoUrl,
-                              width: 75,
-                              height: 75,
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 2,
-                          right: 2,
-                          child: Container(
-                            width: 26,
-                            height: 26,
-                            decoration: BoxDecoration(
-                              color: HelaColors.primary,
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 2),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.2),
-                                  blurRadius: 4,
-                                ),
-                              ],
-                            ),
-                            child: const Icon(
-                              Icons.camera_alt_rounded,
-                              size: 13,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            // Space below banner for overlapping avatar
-            const SizedBox(height: 44),
-
-            // ── Profile Body Content ──────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Badges Row
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 6,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFE8F5E9),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFFC8E6C9)),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            Icon(Icons.verified_rounded, size: 13, color: Color(0xFF2E7D32)),
-                            SizedBox(width: 4),
-                            Text(
-                              'Verified Resident Explorer',
-                              style: TextStyle(
-                                color: Color(0xFF1B5E20),
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFF8E1),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFFFFECB3)),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            Icon(Icons.military_tech_rounded, size: 14, color: Color(0xFFB78103)),
-                            SizedBox(width: 3),
-                            Text(
-                              'Level 4 Contributor',
-                              style: TextStyle(
-                                color: Color(0xFF7A5400),
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-
-                  // User Display Name
-                  Text(
-                    displayName,
-                    style: const TextStyle(
-                      color: HelaColors.primary,
-                      fontSize: 21,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.4,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 3),
-
-                  // Title & Location
-                  Text(
-                    userTitle,
-                    style: const TextStyle(
-                      color: HelaColors.secondary,
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Icon(Icons.location_on_rounded, size: 13, color: HelaColors.outline),
-                      const SizedBox(width: 3),
-                      Text(
-                        userLocation,
-                        style: const TextStyle(
-                          color: HelaColors.onSurfaceVariant,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (userBio.isNotEmpty) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      userBio,
-                      style: const TextStyle(
-                        color: HelaColors.onSurfaceVariant,
-                        fontSize: 12.5,
-                        height: 1.35,
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: 14),
-
-                  // Action Buttons: Edit Profile & Share
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => const EditProfilePage()),
-                            );
-                          },
-                          icon: const Icon(Icons.edit_outlined, size: 15),
-                          label: const Text(
-                            'Edit Profile',
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: HelaColors.primary,
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            padding: const EdgeInsets.symmetric(vertical: 11),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      OutlinedButton.icon(
-                        onPressed: _showShareProfileSheet,
-                        icon: const Icon(Icons.share_outlined, size: 15),
-                        label: const Text(
-                          'Share',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: HelaColors.primary,
-                          side: const BorderSide(color: Color(0xFFCFDCD0), width: 1.2),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                ],
-              ),
-            ),
-
-            // ── TripAdvisor Stats Section (Clean & High Contrast) ─────────
-            Container(
-              decoration: const BoxDecoration(
-                color: Color(0xFFF6F8F6),
-                border: Border(
-                  top: BorderSide(color: Color(0xFFE5EDE6), width: 1),
-                ),
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
-              child: Row(
-                children: [
-                  _buildStatItem('12', 'Havens'),
-                  _buildDivider(),
-                  _buildStatItem('3', 'Expeditions'),
-                  _buildDivider(),
-                  _buildStatItem('4.9 ★', 'Traveler Score'),
-                  _buildDivider(),
-                  _buildStatItem('2,450', 'Points'),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatItem(String count, String label) {
-    return Expanded(
-      child: Column(
-        children: [
-          Text(
-            count,
-            style: const TextStyle(
-              color: HelaColors.primary,
-              fontSize: 16.5,
-              fontWeight: FontWeight.w800,
-              letterSpacing: -0.2,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: const TextStyle(
-              color: HelaColors.onSurfaceVariant,
-              fontSize: 10.5,
-              fontWeight: FontWeight.w600,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDivider() {
-    return Container(
-      width: 1,
-      height: 24,
-      color: const Color(0xFFDCE5DD),
-    );
-  }
-
-  // ── Eco Impact Widget ────────────────────────────────────────────────────
-  Widget _buildEcoImpactWidget() {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: HelaColors.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: const Color(0xFFE2EBE4),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF1F2E24).withValues(alpha: 0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: const BoxDecoration(
-              color: HelaColors.secondaryFixed,
-              shape: BoxShape.circle,
-            ),
-            child: const Center(
-              child: Icon(
-                Icons.eco_rounded,
-                color: HelaColors.primary,
-                size: 22,
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Text(
-                      'Ceylon Eco-Pledge',
-                      style: TextStyle(
-                        color: HelaColors.primary,
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Container(
-                      width: 6,
-                      height: 6,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFB8C34A),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 2),
-                const Text(
-                  '14 kg plastic offset across your trips',
-                  style: TextStyle(
-                    color: HelaColors.onSurfaceVariant,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(20),
-              onTap: () {
-                _showEcoImpactDialog();
-              },
-              child: const Padding(
-                padding: EdgeInsets.all(6.0),
-                child: Icon(
-                  Icons.arrow_forward_rounded,
-                  color: HelaColors.primary,
-                  size: 19,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ── Tab Navigation ───────────────────────────────────────────────────────
-  Widget _buildTabNavigation() {
-    final tabs = [
-      {'label': 'Settings', 'icon': Icons.tune_rounded},
-      {'label': 'Saved Itineraries', 'icon': Icons.bookmark_rounded},
-      {'label': 'Badges & Stats', 'icon': Icons.military_tech_rounded},
-    ];
-
-    return Container(
-      decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: Color(0xFFE2EBE4), width: 1.5),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: List.generate(tabs.length, (index) {
-          final isSelected = _selectedTabIndex == index;
-          final tab = tabs[index];
-
-          return InkWell(
-            onTap: () {
-              setState(() => _selectedTabIndex = index);
-            },
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 11, left: 8, right: 8),
-              child: Stack(
-                alignment: Alignment.bottomCenter,
-                clipBehavior: Clip.none,
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        tab['icon'] as IconData,
-                        size: 17,
-                        color: isSelected ? HelaColors.primary : HelaColors.onSurfaceVariant,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        tab['label'] as String,
-                        style: TextStyle(
-                          color: isSelected ? HelaColors.primary : HelaColors.onSurfaceVariant,
-                          fontSize: 13,
-                          fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (isSelected)
-                    Positioned(
-                      bottom: -12.5,
-                      left: 0,
-                      right: 0,
-                      child: Container(
-                        height: 3,
-                        decoration: BoxDecoration(
-                          color: HelaColors.primary,
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          );
-        }),
-      ),
-    );
-  }
-
-  Widget _buildActiveTabContent() {
-    switch (_selectedTabIndex) {
-      case 0:
-        return _buildComprehensiveSettingsView();
-      case 1:
-        return _buildSavedItinerariesView();
-      case 2:
-        return _buildBadgesAndReviewsView();
-      default:
-        return _buildComprehensiveSettingsView();
-    }
-  }
-
-  // ═════════════════════════════════════════════════════════════════════════
-  // ── TAB 0: COMPREHENSIVE SETTINGS VIEW (TripAdvisor Standard) ─────────────
-  // ═════════════════════════════════════════════════════════════════════════
-  Widget _buildComprehensiveSettingsView() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Section: Account & Security
-        _buildSettingsSectionHeader('Account & Security', Icons.security_rounded),
-        _buildSettingsCard([
-          _buildSettingsTile(
-            icon: Icons.person_outline_rounded,
-            title: 'Personal Information',
-            subtitle: 'Name, phone, bio & passport details',
-            trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: HelaColors.onSurfaceVariant),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const EditProfilePage()),
-              );
-            },
-          ),
-          _buildSettingsDivider(),
-          _buildSettingsTile(
-            icon: Icons.mail_outline_rounded,
-            title: 'Email Address',
-            subtitle: 'kavinda.w@gmail.com',
-            trailing: _buildVerifiedPill(),
-          ),
-          _buildSettingsDivider(),
-          _buildSettingsTile(
-            icon: Icons.fingerprint_rounded,
-            title: 'Biometric App Lock',
-            subtitle: 'Secure app with Fingerprint / Face ID',
-            trailing: Switch.adaptive(
-              value: _biometricEnabled,
-              activeTrackColor: HelaColors.primary,
-              onChanged: (val) {
-                setState(() => _biometricEnabled = val);
-                _showToast(val ? 'Biometric Lock enabled' : 'Biometric Lock disabled');
-              },
-            ),
-          ),
-          _buildSettingsDivider(),
-          _buildSettingsTile(
-            icon: Icons.lock_clock_outlined,
-            title: 'Two-Factor Authentication',
-            subtitle: 'Extra security for payments & bookings',
-            trailing: Switch.adaptive(
-              value: _twoFactorEnabled,
-              activeTrackColor: HelaColors.primary,
-              onChanged: (val) {
-                setState(() => _twoFactorEnabled = val);
-                _showToast(val ? '2FA Enabled' : '2FA Disabled');
-              },
-            ),
-          ),
-        ]),
-        const SizedBox(height: 18),
-
-        // Section: Travel Preferences & Localization
-        _buildSettingsSectionHeader('Travel & Regional Preferences', Icons.tune_rounded),
-        _buildSettingsCard([
-          _buildSettingsTile(
-            icon: Icons.monetization_on_outlined,
-            title: 'Preferred Currency',
-            subtitle: _currency,
-            trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: HelaColors.onSurfaceVariant),
-            onTap: _showCurrencyPicker,
-          ),
-          _buildSettingsDivider(),
-          _buildSettingsTile(
-            icon: Icons.translate_rounded,
-            title: 'Language',
-            subtitle: HelaAppStateProvider.of(context).languageDisplayName,
-            trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: HelaColors.onSurfaceVariant),
-            onTap: _showLanguagePicker,
-          ),
-          _buildSettingsDivider(),
-          _buildSettingsTile(
-            icon: Icons.straighten_rounded,
-            title: 'Distance Units',
-            subtitle: _distanceUnit,
-            trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: HelaColors.onSurfaceVariant),
-            onTap: _showDistanceUnitPicker,
-          ),
-          _buildSettingsDivider(),
-          _buildSettingsTile(
-            icon: Icons.explore_outlined,
-            title: 'AI Travel Preferences',
-            subtitle: 'Dietary needs, stays & vibe',
-            trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: HelaColors.onSurfaceVariant),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const TravelPreferencesPage()),
-              );
-            },
-          ),
-          _buildSettingsDivider(),
-          _buildSettingsTile(
-            icon: Icons.speed_rounded,
-            title: 'Travel Pacing',
-            subtitle: _travelPace,
-            trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: HelaColors.onSurfaceVariant),
-            onTap: _showTravelPacePicker,
-          ),
-        ]),
-        const SizedBox(height: 18),
-
-        // Section: Notifications & Alerts
-        _buildSettingsSectionHeader('Notifications & Travel Alerts', Icons.notifications_active_outlined),
-        _buildSettingsCard([
-          _buildSettingsTile(
-            icon: Icons.notifications_none_rounded,
-            title: 'Push Notifications',
-            subtitle: 'Trip updates, messages & reminders',
-            trailing: Switch.adaptive(
-              value: _pushNotifications,
-              activeTrackColor: HelaColors.primary,
-              onChanged: (val) {
-                setState(() => _pushNotifications = val);
-              },
-            ),
-          ),
-          _buildSettingsDivider(),
-          _buildSettingsTile(
-            icon: Icons.calendar_month_outlined,
-            title: 'Itinerary Schedule Alerts',
-            subtitle: 'Day-by-day morning briefing & reminders',
-            trailing: Switch.adaptive(
-              value: _itineraryAlerts,
-              activeTrackColor: HelaColors.primary,
-              onChanged: (val) {
-                setState(() => _itineraryAlerts = val);
-              },
-            ),
-          ),
-          _buildSettingsDivider(),
-          _buildSettingsTile(
-            icon: Icons.local_offer_outlined,
-            title: 'Price Drops & Exclusive Deals',
-            subtitle: 'Special discounts on boutique stays & rides',
-            trailing: Switch.adaptive(
-              value: _dealAlerts,
-              activeTrackColor: HelaColors.primary,
-              onChanged: (val) {
-                setState(() => _dealAlerts = val);
-              },
-            ),
-          ),
-          _buildSettingsDivider(),
-          _buildSettingsTile(
-            icon: Icons.cloud_outlined,
-            title: 'Weather & Ocean Safety Warnings',
-            subtitle: 'Monsoon advisories and surf conditions',
-            trailing: Switch.adaptive(
-              value: _weatherAlerts,
-              activeTrackColor: HelaColors.primary,
-              onChanged: (val) {
-                setState(() => _weatherAlerts = val);
-              },
-            ),
-          ),
-        ]),
-        const SizedBox(height: 18),
-
-        // Section: Privacy, Location & Storage
-        _buildSettingsSectionHeader('Privacy, Location & Storage', Icons.shield_outlined),
-        _buildSettingsCard([
-          _buildSettingsTile(
-            icon: Icons.visibility_outlined,
-            title: 'Profile Visibility',
-            subtitle: _profileVisibility,
-            trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: HelaColors.onSurfaceVariant),
-            onTap: _showVisibilityPicker,
-          ),
-          _buildSettingsDivider(),
-          _buildSettingsTile(
-            icon: Icons.location_searching_rounded,
-            title: 'Real-Time Location (GPS)',
-            subtitle: 'Used for nearby haven & fair-ride pricing',
-            trailing: Switch.adaptive(
-              value: _locationServices,
-              activeTrackColor: HelaColors.primary,
-              onChanged: (val) {
-                setState(() => _locationServices = val);
-              },
-            ),
-          ),
-          _buildSettingsDivider(),
-          _buildSettingsTile(
-            icon: Icons.offline_pin_outlined,
-            title: 'Offline Maps & Guides Cache',
-            subtitle: 'Allow downloading maps for hill country trips',
-            trailing: Switch.adaptive(
-              value: _offlineCache,
-              activeTrackColor: HelaColors.primary,
-              onChanged: (val) {
-                setState(() => _offlineCache = val);
-              },
-            ),
-          ),
-          _buildSettingsDivider(),
-          _buildSettingsTile(
-            icon: Icons.cleaning_services_outlined,
-            title: 'Clear Cache & Temp Data',
-            subtitle: '42.8 MB currently cached',
-            trailing: const Icon(Icons.delete_outline_rounded, size: 18, color: HelaColors.onSurfaceVariant),
-            onTap: _showClearCacheDialog,
-          ),
-          _buildSettingsDivider(),
-          _buildSettingsTile(
-            icon: Icons.download_rounded,
-            title: 'Download My Travel Data',
-            subtitle: 'Export trips, bookmarks & reviews as JSON',
-            trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: HelaColors.onSurfaceVariant),
-            onTap: _showExportDataDialog,
-          ),
-        ]),
-        const SizedBox(height: 18),
-
-        // Section: Appearance & Theme
-        _buildSettingsSectionHeader('Display & Appearance', Icons.palette_outlined),
-        _buildSettingsCard([
-          _buildThemeSelectorTile(),
-        ]),
-        const SizedBox(height: 18),
-
-        // Section: Support, Legal & About
-        _buildSettingsSectionHeader('Support, Legal & About', Icons.help_outline_rounded),
-        _buildSettingsCard([
-          _buildSettingsTile(
-            icon: Icons.headset_mic_outlined,
-            title: '24/7 Traveler Assistance',
-            subtitle: 'Sri Lanka Tourist Police (1912) & Hela Support',
-            trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: HelaColors.onSurfaceVariant),
-            onTap: _showSupportDialog,
-          ),
-          _buildSettingsDivider(),
-          _buildSettingsTile(
-            icon: Icons.gavel_rounded,
-            title: 'Community Guidelines',
-            subtitle: 'Ethical & respectful travel standards',
-            trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: HelaColors.onSurfaceVariant),
-            onTap: _showCommunityGuidelinesDialog,
-          ),
-          _buildSettingsDivider(),
-          _buildSettingsTile(
-            icon: Icons.description_outlined,
-            title: 'Terms of Service & Privacy Policy',
-            subtitle: 'Legal agreements & data practices',
-            trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: HelaColors.onSurfaceVariant),
-            onTap: _showTermsDialog,
-          ),
-          _buildSettingsDivider(),
-          _buildSettingsTile(
-            icon: Icons.info_outline_rounded,
-            title: 'App Version',
-            subtitle: 'Hela Travel v2.4.2 · Build 2026.11',
-            trailing: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(
-                color: HelaColors.primary.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Text(
-                'Up to date',
-                style: TextStyle(
-                  color: HelaColors.primary,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ),
-        ]),
-        const SizedBox(height: 24),
-
-        // Section: Account Actions (Logout & Delete)
-        _buildAccountActionsCard(),
-      ],
-    );
-  }
-
-  // ═════════════════════════════════════════════════════════════════════════
-  // ── TAB 1: SAVED ITINERARIES (TripAdvisor Style clean access) ─────────────
-  // ═════════════════════════════════════════════════════════════════════════
-  Widget _buildSavedItinerariesView() {
-    final appState = HelaAppStateProvider.of(context);
-    final totalCount = appState.totalSavedCount;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Main Quick Access Card to Saved Page
-        Container(
-          decoration: BoxDecoration(
-            color: HelaColors.surfaceContainerLowest,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: const Color(0xFFE2EBE4)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 12,
-                offset: const Offset(0, 3),
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: HelaColors.primary.withValues(alpha: 0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.bookmark_rounded, color: HelaColors.primary, size: 22),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Saved Itineraries & Places',
-                            style: TextStyle(
-                              color: HelaColors.primary,
-                              fontSize: 15.5,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            totalCount == 0
-                                ? 'No saved items yet. Tap bookmark on any card!'
-                                : '$totalCount item${totalCount == 1 ? '' : 's'} bookmarked for your trip',
-                            style: const TextStyle(
-                              color: HelaColors.onSurfaceVariant,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const SavedPage()),
-                      );
-                    },
-                    icon: const Icon(Icons.bookmark_added_rounded, size: 18),
-                    label: const Text(
-                      'Open Saved Collection',
-                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: HelaColors.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-
-        // Category breakdown tiles
-        const Text(
-          'Saved Breakdown',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-            color: HelaColors.primary,
-          ),
-        ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              child: _buildBreakdownCard(
-                icon: Icons.landscape_rounded,
-                title: 'Havens',
-                count: '${appState.savedHavens.length}',
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SavedPage()));
-                },
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _buildBreakdownCard(
-                icon: Icons.surfing_rounded,
-                title: 'Experiences',
-                count: '${appState.savedExperiences.length}',
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SavedPage()));
-                },
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              child: _buildBreakdownCard(
-                icon: Icons.hotel_rounded,
-                title: 'Stays',
-                count: '${appState.savedStays.length}',
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SavedPage()));
-                },
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _buildBreakdownCard(
-                icon: Icons.route_rounded,
-                title: 'Smart Tours',
-                count: '${appState.savedTours.length}',
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SavedPage()));
-                },
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 18),
-
-        // Helpful Traveler Tip Card
-        Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: HelaColors.tertiaryFixed.withValues(alpha: 0.16),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: HelaColors.tertiaryFixedDim.withValues(alpha: 0.35),
-            ),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Icon(Icons.lightbulb_outline_rounded, color: HelaColors.tertiary, size: 20),
-              SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  'Tip: All your saved locations sync automatically across devices. You can also export or share them anytime from the Settings tab.',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: HelaColors.tertiary,
-                    height: 1.4,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBreakdownCard({
-    required IconData icon,
-    required String title,
-    required String count,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(16),
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(
-          color: HelaColors.surfaceContainerLowest,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFE2EBE4)),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: HelaColors.primary.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(icon, color: HelaColors.primary, size: 18),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    count,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: HelaColors.primary,
-                    ),
-                  ),
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 11.5,
-                      fontWeight: FontWeight.w500,
-                      color: HelaColors.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Icon(Icons.arrow_forward_ios_rounded, size: 12, color: HelaColors.onSurfaceVariant),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // ═════════════════════════════════════════════════════════════════════════
-  // ── TAB 2: BADGES & REVIEWS (TripAdvisor Explorer Standards) ──────────────
-  // ═════════════════════════════════════════════════════════════════════════
-  Widget _buildBadgesAndReviewsView() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Level Progress Card
-        Container(
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            color: HelaColors.surfaceContainerLowest,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: const Color(0xFFE2EBE4)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: const BoxDecoration(
-                          color: HelaColors.tertiaryFixed,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.military_tech_rounded, color: HelaColors.primary, size: 20),
-                      ),
-                      const SizedBox(width: 10),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text(
-                            'Level 4 Contributor',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w800,
-                              color: HelaColors.primary,
-                            ),
-                          ),
-                          Text(
-                            'Top 5% Sri Lanka Travel Reviewer',
-                            style: TextStyle(
-                              fontSize: 11.5,
-                              color: HelaColors.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const Text(
-                    '2,450 / 3,000 pts',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: HelaColors.primary,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 14),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(6),
-                child: const LinearProgressIndicator(
-                  value: 2450 / 3000,
-                  minHeight: 7,
-                  backgroundColor: Color(0xFFE2EBE4),
-                  valueColor: AlwaysStoppedAnimation<Color>(HelaColors.primary),
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Earn 550 more points by leaving a verified haven review to unlock Level 5 Master Pathfinder status.',
-                style: TextStyle(
-                  fontSize: 11.5,
-                  color: HelaColors.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 18),
-
-        // Badges Grid
-        const Text(
-          'Unlocked Explorer Badges',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-            color: HelaColors.primary,
-          ),
-        ),
-        const SizedBox(height: 10),
-        _buildBadgeTile(
-          icon: Icons.coffee_rounded,
-          iconBg: const Color(0xFFD4E8D6),
-          title: 'Ceylon Tea Pioneer',
-          level: 'Level 4 Badge',
-          description: 'Hiked through 5+ tea estates in Nuwara Eliya & Ella Gap',
-        ),
-        const SizedBox(height: 10),
-        _buildBadgeTile(
-          icon: Icons.surfing_rounded,
-          iconBg: const Color(0xFFCFE5F8),
-          title: 'Southern Coast Scout',
-          level: 'Level 3 Badge',
-          description: 'Explored blue whale sanctuaries & surf bays in Mirissa & Weligama',
-        ),
-        const SizedBox(height: 10),
-        _buildBadgeTile(
-          icon: Icons.temple_buddhist_rounded,
-          iconBg: const Color(0xFFFDE8C7),
-          title: 'Citadel Master',
-          level: 'Level 5 Badge',
-          description: 'Documented sacred historic shrines across Cultural Triangle',
-        ),
-        const SizedBox(height: 10),
-        _buildBadgeTile(
-          icon: Icons.forest_rounded,
-          iconBg: const Color(0xFFE3EDBE),
-          title: 'Ceylon Eco Guardian',
-          level: 'Special Honors',
-          description: 'Carbon-neutral explorer with plastic offset credentials',
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBadgeTile({
-    required IconData icon,
-    required Color iconBg,
-    required String title,
-    required String level,
-    required String description,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: HelaColors.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2EBE4)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: iconBg,
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(icon, color: HelaColors.primary, size: 22),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w700,
-                        color: HelaColors.primary,
-                      ),
-                    ),
-                    Text(
-                      level,
-                      style: const TextStyle(
-                        fontSize: 10.5,
-                        fontWeight: FontWeight.w700,
-                        color: HelaColors.secondary,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  description,
-                  style: const TextStyle(
-                    fontSize: 11.5,
-                    color: HelaColors.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ═════════════════════════════════════════════════════════════════════════
-  // ── REUSABLE SETTINGS WIDGETS ─────────────────────────────────────────────
-  // ═════════════════════════════════════════════════════════════════════════
-  Widget _buildSettingsSectionHeader(String title, IconData icon) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 4, bottom: 8),
-      child: Row(
-        children: [
-          Icon(icon, size: 16, color: HelaColors.primary),
-          const SizedBox(width: 6),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w800,
-              color: HelaColors.primary,
-              letterSpacing: 0.2,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSettingsCard(List<Widget> children) {
-    return Container(
-      decoration: BoxDecoration(
-        color: HelaColors.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFE2EBE4)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(18),
-        child: Column(
-          children: children,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSettingsTile({
-    required IconData icon,
-    required String title,
-    String? subtitle,
-    Widget? trailing,
-    VoidCallback? onTap,
-  }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
-          child: Row(
-            children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: HelaColors.primary.withValues(alpha: 0.07),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(icon, color: HelaColors.primary, size: 19),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w700,
-                        color: HelaColors.onSurface,
-                      ),
-                    ),
-                    if (subtitle != null) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        subtitle,
-                        style: const TextStyle(
-                          fontSize: 11.5,
-                          color: HelaColors.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              ?trailing,
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSettingsDivider() {
-    return const Divider(
-      height: 1,
-      thickness: 1,
-      color: Color(0xFFF0F3F0),
-      indent: 62,
-    );
-  }
-
-  Widget _buildVerifiedPill() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: const Color(0xFFE1F5E3),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: const [
-          Icon(Icons.check_circle_rounded, size: 12, color: Color(0xFF2E7D32)),
-          SizedBox(width: 3),
-          Text(
-            'Verified',
-            style: TextStyle(
-              fontSize: 10.5,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF2E7D32),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ── Theme Selector Tile ──────────────────────────────────────────────────
-  Widget _buildThemeSelectorTile() {
-    final appState = HelaAppStateProvider.of(context);
-    final currentMode = appState.themeMode;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Top Row: Avatar + Tier/ID Pills
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: HelaColors.primary.withValues(alpha: 0.07),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(Icons.brightness_medium_rounded, color: HelaColors.primary, size: 19),
-              ),
-              const SizedBox(width: 14),
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const EditProfilePage()),
+                  );
+                },
+                child: Stack(
+                  clipBehavior: Clip.none,
                   children: [
-                    Text(
-                      'App Theme',
-                      style: TextStyle(
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w700,
-                        color: HelaColors.onSurface,
+                    Container(
+                      width: 68,
+                      height: 68,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: const Color(0xFFCDEBE2), width: 2),
+                      ),
+                      child: ClipOval(
+                        child: _buildNetworkImage(photoUrl, width: 64, height: 64),
                       ),
                     ),
-                    SizedBox(height: 2),
-                    Text(
-                      'Select color palette mode',
-                      style: TextStyle(
-                        fontSize: 11.5,
-                        color: HelaColors.onSurfaceVariant,
+                    Positioned(
+                      right: -2,
+                      bottom: -2,
+                      child: Container(
+                        width: 22,
+                        height: 22,
+                        decoration: BoxDecoration(
+                          color: _deepTeal,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 2),
+                        ),
+                        child: const Icon(
+                          Icons.verified_rounded,
+                          size: 12,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: isDark ? colors.surfaceContainer : _softMintTile,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.workspace_premium_outlined,
+                            size: 13.5,
+                            color: isDark ? colors.primary : _deepTeal,
+                          ),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              'HELA Explorer · Tier 2',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: isDark ? colors.onSurface : _deepTeal,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? colors.surfaceContainerLow
+                            : const Color(0xFFF1F9F6),
+                        borderRadius: BorderRadius.circular(999),
+                        border: Border.all(
+                          color: isDark ? colors.architecturalBorder : _cardBorder,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.circle,
+                            size: 6,
+                            color: Color(0xFF10B981),
+                          ),
+                          const SizedBox(width: 5),
+                          Text(
+                            'SLTDA Tourist ID #8492',
+                            style: TextStyle(
+                              fontSize: 10.5,
+                              fontWeight: FontWeight.w600,
+                              color: isDark ? colors.onSurfaceVariant : _mutedTeal,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+
+          // Name
+          Text(
+            displayName,
+            style: TextStyle(
+              fontSize: 21,
+              fontWeight: FontWeight.w800,
+              color: isDark ? colors.onSurface : _darkInk,
+              letterSpacing: -0.4,
+            ),
+          ),
+          const SizedBox(height: 6),
+
+          // Email
+          Row(
+            children: [
+              Icon(
+                Icons.mail_outline_rounded,
+                size: 15,
+                color: isDark ? colors.onSurfaceVariant : _mutedTeal,
+              ),
+              const SizedBox(width: 7),
+              Expanded(
+                child: Text(
+                  displayEmail,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: isDark ? colors.onSurfaceVariant : const Color(0xFF3E5E56),
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 5),
+
+          // Phone with country badge
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                decoration: BoxDecoration(
+                  color: isDark ? colors.surfaceContainer : const Color(0xFFEAF3F0),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  _countryCodeFromPhone(displayPhone),
+                  style: TextStyle(
+                    fontSize: 9.5,
+                    fontWeight: FontWeight.w800,
+                    color: isDark ? colors.onSurface : _darkInk,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 7),
+              Text(
+                displayPhone,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: isDark ? colors.onSurfaceVariant : const Color(0xFF3E5E56),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+
+          // 3 Stat Tiles
+          Row(
+            children: [
+              Expanded(
+                child: _buildStatBox(
+                  value: '14',
+                  label: 'DAYS IN\nLANKA',
+                  isDark: isDark,
+                  colors: colors,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _buildStatBox(
+                  value: '$destinationsCount',
+                  label: 'DESTINATIONS',
+                  isDark: isDark,
+                  colors: colors,
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const SavedPage()),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _buildStatBox(
+                  value: '100%',
+                  label: 'CARBON\nOFFSET',
+                  isDark: isDark,
+                  colors: colors,
+                  onTap: _showEcoImpactDialog,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          Row(
-            children: [
-              _buildThemeOptionPill(
-                label: 'Light',
-                icon: Icons.light_mode_rounded,
-                isSelected: currentMode == ThemeMode.light,
-                onTap: () => appState.setThemeMode(ThemeMode.light),
+
+          // Edit Personal Profile Button
+          SizedBox(
+            width: double.infinity,
+            height: 44,
+            child: ElevatedButton.icon(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const EditProfilePage()),
+                );
+              },
+              icon: Icon(
+                Icons.edit_note_rounded,
+                size: 19,
+                color: isDark ? colors.onSecondaryContainer : _darkInk,
               ),
-              const SizedBox(width: 8),
-              _buildThemeOptionPill(
-                label: 'Dark',
-                icon: Icons.dark_mode_rounded,
-                isSelected: currentMode == ThemeMode.dark,
-                onTap: () => appState.setThemeMode(ThemeMode.dark),
+              label: Text(
+                'Edit Personal Profile',
+                style: TextStyle(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w700,
+                  color: isDark ? colors.onSecondaryContainer : _darkInk,
+                ),
               ),
-              const SizedBox(width: 8),
-              _buildThemeOptionPill(
-                label: 'System',
-                icon: Icons.settings_brightness_rounded,
-                isSelected: currentMode == ThemeMode.system,
-                onTap: () => appState.setThemeMode(ThemeMode.system),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isDark ? colors.secondaryContainer : _softMintTile,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
-            ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildThemeOptionPill({
+  Widget _buildStatBox({
+    required String value,
     required String label,
-    required IconData icon,
-    required bool isSelected,
-    required VoidCallback onTap,
+    required bool isDark,
+    required HelaColorPalette colors,
+    VoidCallback? onTap,
   }) {
-    return Expanded(
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          decoration: BoxDecoration(
-            color: isSelected ? HelaColors.primary : HelaColors.surfaceContainerHigh.withValues(alpha: 0.4),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: isSelected ? HelaColors.primary : const Color(0xFFE2EBE4),
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                size: 14,
-                color: isSelected ? Colors.white : HelaColors.onSurfaceVariant,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        height: 72,
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+        decoration: BoxDecoration(
+          color: isDark ? colors.surfaceContainer : _softMintTile,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w800,
+                color: isDark ? colors.onSurface : _darkInk,
               ),
-              const SizedBox(width: 5),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: isSelected ? Colors.white : HelaColors.onSurfaceVariant,
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              style: TextStyle(
+                fontSize: 9,
+                height: 1.15,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.3,
+                color: isDark ? colors.onSurfaceVariant : _mutedTeal,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── 2. Ongoing Journey Banner Card ───────────────────────────────────────
+  Widget _buildOngoingJourneyCard(HelaAppState appState) {
+    final activeTourTitle = appState.savedTours.isNotEmpty
+        ? appState.savedTours.first.title
+        : 'Central Highlands &\nSouthern Surf';
+    final totalDays = appState.savedTours.isNotEmpty
+        ? appState.savedTours.first.durationDays
+        : 14;
+    final currentDay = totalDays >= 8 ? 8 : 1;
+
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const ActiveJourneyPage()),
+        );
+      },
+      borderRadius: BorderRadius.circular(18),
+      child: Container(
+        height: 112,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF0B4D42).withValues(alpha: 0.16),
+              blurRadius: 14,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(18),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              _buildNetworkImage(
+                'https://images.unsplash.com/photo-1546708973-b339540b5162?w=1000&auto=format&fit=crop&q=80',
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [
+                      const Color(0xFF072C24).withValues(alpha: 0.88),
+                      const Color(0xFF0B4D42).withValues(alpha: 0.45),
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          const Text(
+                            'Ongoing Journey',
+                            style: TextStyle(
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFFA7F3D0),
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            activeTourTitle,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              height: 1.2,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.42),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.2),
+                        ),
+                      ),
+                      child: Text(
+                        'Day $currentDay of\n$totalDays',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 11.5,
+                          height: 1.2,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -1727,69 +736,34 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // ── Account Actions Card (Log Out & Delete) ──────────────────────────────
-  Widget _buildAccountActionsCard() {
-    return Container(
-      decoration: BoxDecoration(
-        color: HelaColors.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFE2EBE4)),
-      ),
-      child: Column(
+  // ── Section Header ───────────────────────────────────────────────────────
+  Widget _buildSectionHeader(
+    String title,
+    String subtitle,
+    HelaColorPalette colors, {
+    Color? trailingColor,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 2),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Log Out Button
-          Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
-              onTap: _showLogoutDialog,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                child: Row(
-                  children: const [
-                    Icon(Icons.logout_rounded, color: Color(0xFFC62828), size: 20),
-                    SizedBox(width: 14),
-                    Text(
-                      'Log Out of Account',
-                      style: TextStyle(
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFFC62828),
-                      ),
-                    ),
-                    Spacer(),
-                    Icon(Icons.arrow_forward_ios_rounded, size: 13, color: Color(0xFFC62828)),
-                  ],
-                ),
-              ),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 11.5,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.6,
+              color: colors.isDark ? colors.onSurface : _darkInk,
             ),
           ),
-          const Divider(height: 1, thickness: 1, color: Color(0xFFF0F3F0)),
-          // Delete Account Button
-          Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: const BorderRadius.vertical(bottom: Radius.circular(18)),
-              onTap: _showDeleteAccountDialog,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                child: Row(
-                  children: const [
-                    Icon(Icons.no_accounts_outlined, color: HelaColors.outline, size: 20),
-                    SizedBox(width: 14),
-                    Text(
-                      'Delete Account & Data',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: HelaColors.outline,
-                      ),
-                    ),
-                    Spacer(),
-                    Icon(Icons.arrow_forward_ios_rounded, size: 13, color: HelaColors.outline),
-                  ],
-                ),
-              ),
+          Text(
+            subtitle,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: trailingColor ??
+                  (colors.isDark ? colors.onSurfaceVariant : _mutedTeal),
             ),
           ),
         ],
@@ -1797,120 +771,889 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // ═════════════════════════════════════════════════════════════════════════
-  // ── INTERACTIVE MODAL SHEETS & DIALOGS ────────────────────────────────────
-  // ═════════════════════════════════════════════════════════════════════════
+  // ── 3. MY TRAVEL HUB Card ────────────────────────────────────────────────
+  Widget _buildTravelHubCard(
+    HelaAppState appState,
+    HelaColorPalette colors,
+    bool isDark,
+  ) {
+    final savedDestCount = appState.savedHavens.isNotEmpty
+        ? appState.savedHavens.length
+        : 12;
+    final savedDestSubtitle = appState.savedHavens.isNotEmpty
+        ? appState.savedHavens.map((h) => h.title).take(3).join(', ')
+        : 'Mirissa, Sigiriya, Ella & Galle';
 
-  void _showCurrencyPicker() {
-    final currencies = [
-      {'code': 'USD (\$)', 'name': 'US Dollar'},
-      {'code': 'LKR (Rs)', 'name': 'Sri Lankan Rupee'},
-      {'code': 'EUR (€)', 'name': 'Euro'},
-      {'code': 'GBP (£)', 'name': 'British Pound'},
-      {'code': 'AUD (\$)', 'name': 'Australian Dollar'},
-      {'code': 'INR (₹)', 'name': 'Indian Rupee'},
-    ];
+    final savedToursCount = appState.savedTours.isNotEmpty
+        ? appState.savedTours.length
+        : 3;
+    final savedToursSubtitle = appState.savedTours.isNotEmpty
+        ? appState.savedTours.map((t) => t.title).take(2).join(' · ')
+        : 'Scenic Rail & Heritage Loops';
 
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
-      ),
-      builder: (ctx) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Select Currency',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: HelaColors.primary),
-                ),
-                const SizedBox(height: 12),
-                ...currencies.map((c) {
-                  final isSelected = _currency == c['code'];
-                  return ListTile(
-                    dense: true,
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(
-                      '${c['code']} - ${c['name']}',
-                      style: TextStyle(
-                        fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                        color: isSelected ? HelaColors.primary : HelaColors.onSurface,
-                      ),
-                    ),
-                    trailing: isSelected
-                        ? const Icon(Icons.check_circle_rounded, color: HelaColors.primary)
-                        : null,
-                    onTap: () {
-                      setState(() => _currency = c['code']!);
-                      Navigator.pop(ctx);
-                      _showToast('Currency set to $_currency');
-                    },
-                  );
-                }),
-              ],
-            ),
-          ),
-        );
-      },
+    return _buildGroupedCard(
+      colors: colors,
+      isDark: isDark,
+      children: [
+        _buildHubRow(
+          icon: Icons.bookmark_outline_rounded,
+          title: 'Saved Destinations',
+          subtitle: savedDestSubtitle,
+          badgeText: '$savedDestCount places',
+          isDark: isDark,
+          colors: colors,
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const SavedPage()),
+            );
+          },
+        ),
+        _buildRowDivider(isDark, colors),
+        _buildHubRow(
+          icon: Icons.map_outlined,
+          title: 'Saved Itineraries',
+          subtitle: savedToursSubtitle,
+          badgeText: '$savedToursCount trips',
+          isDark: isDark,
+          colors: colors,
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const SavedPage()),
+            );
+          },
+        ),
+        _buildRowDivider(isDark, colors),
+        _buildHubRow(
+          icon: Icons.confirmation_number_outlined,
+          title: 'My Active Bookings',
+          subtitle: 'Blue Train 1st Class & Villa',
+          badgeText: '2 upcoming',
+          isPrimaryBadge: true,
+          isDark: isDark,
+          colors: colors,
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const BookingsPage()),
+            );
+          },
+        ),
+        _buildRowDivider(isDark, colors),
+        _buildHubRow(
+          icon: Icons.history_rounded,
+          title: 'Island Travel History',
+          subtitle: '5 past rides, safaris & homestays',
+          isDark: isDark,
+          colors: colors,
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const BookingsPage()),
+            );
+          },
+        ),
+      ],
     );
   }
 
-  void _showTravelPacePicker() {
-    final paces = [
-      {'pace': 'Relaxed', 'desc': 'Slow, mindful travel with plenty of leisure time'},
-      {'pace': 'Balanced', 'desc': 'Comfortable balance of excursions and downtime'},
-      {'pace': 'High-Energy Adventurer', 'desc': 'Action-packed daily itineraries with sunrise hikes'},
-    ];
+  // ── 4. PREFERENCES Card ──────────────────────────────────────────────────
+  Widget _buildPreferencesCard(
+    HelaAppState appState,
+    HelaColorPalette colors,
+    bool isDark,
+  ) {
+    final activeLangName = LocalizationService.getLanguage(appState.selectedLanguage)
+        .name
+        .split(' ')
+        .first;
+    final isUsd = appState.preferredCurrency.startsWith('USD');
 
+    return _buildGroupedCard(
+      colors: colors,
+      isDark: isDark,
+      children: [
+        // Language
+        _buildRowShell(
+          icon: Icons.translate_rounded,
+          title: 'Language',
+          subtitle: 'Sinhala (සිංහල) & Tamil (தமிழ்...',
+          isDark: isDark,
+          colors: colors,
+          onTap: _showLanguagePicker,
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                activeLangName,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: isDark ? colors.onSurface : _darkInk,
+                ),
+              ),
+              const SizedBox(width: 2),
+              Icon(
+                Icons.unfold_more_rounded,
+                size: 16,
+                color: isDark ? colors.onSurfaceVariant : _mutedTeal,
+              ),
+            ],
+          ),
+        ),
+        _buildRowDivider(isDark, colors),
+
+        // Currency Display Segmented Toggle
+        _buildRowShell(
+          icon: Icons.currency_exchange_rounded,
+          title: 'Currency Display',
+          subtitle: 'Dual live conversion rate',
+          isDark: isDark,
+          colors: colors,
+          trailing: Container(
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              color: isDark ? colors.surfaceContainer : _softMintTile,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildCurrencyOption(
+                  label: 'USD (\$)',
+                  selected: isUsd,
+                  onTap: () {
+                    appState.setPreferredCurrency('USD (\$)');
+                    _showToast('Currency set to USD (\$)');
+                  },
+                ),
+                _buildCurrencyOption(
+                  label: 'LKR (Rs)',
+                  selected: !isUsd,
+                  onTap: () {
+                    appState.setPreferredCurrency('LKR (Rs)');
+                    _showToast('Currency set to LKR (Rs)');
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+        _buildRowDivider(isDark, colors),
+
+        // Smart Travel Alerts Switch
+        _buildRowShell(
+          icon: Icons.notifications_active_outlined,
+          title: 'Smart Travel Alerts',
+          subtitle: 'Train delays, weather & driver arrival',
+          isDark: isDark,
+          colors: colors,
+          trailing: Switch.adaptive(
+            value: appState.smartTravelAlerts,
+            activeTrackColor: _deepTeal,
+            onChanged: (val) {
+              appState.setSmartTravelAlerts(val);
+              _showToast(
+                val ? 'Smart Travel Alerts enabled' : 'Smart Travel Alerts paused',
+              );
+            },
+          ),
+        ),
+        _buildRowDivider(isDark, colors),
+
+        // Map Rendering
+        _buildRowShell(
+          icon: Icons.explore_outlined,
+          title: 'Map Rendering',
+          subtitle: 'Topographic terrain with tuk-tuk trails',
+          isDark: isDark,
+          colors: colors,
+          onTap: () => _showMapRenderingPicker(appState),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                appState.mapRendering,
+                style: TextStyle(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w700,
+                  color: isDark ? colors.onSurface : _darkInk,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Icon(
+                Icons.chevron_right_rounded,
+                size: 18,
+                color: isDark ? colors.onSurfaceVariant : _mutedTeal,
+              ),
+            ],
+          ),
+        ),
+        _buildRowDivider(isDark, colors),
+
+        // Offline Island Guide
+        _buildRowShell(
+          icon: Icons.check_circle_outline_rounded,
+          title: 'Offline Island Guide',
+          subtitle: 'Central Hill Country & South Coast',
+          isDark: isDark,
+          colors: colors,
+          onTap: () => _showOfflineGuideDialog(appState),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: isDark ? colors.surfaceContainer : _softMintTile,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  appState.offlineGuideCached
+                      ? '${appState.offlineGuideSizeMb} MB Cached'
+                      : 'Not Cached',
+                  style: TextStyle(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w700,
+                    color: isDark ? colors.primary : _deepTeal,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 4),
+              Icon(
+                appState.offlineGuideCached
+                    ? Icons.download_done_rounded
+                    : Icons.download_rounded,
+                size: 17,
+                color: isDark ? colors.onSurfaceVariant : _mutedTeal,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCurrencyOption({
+    required String label,
+    required bool selected,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: selected ? Colors.white : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: selected
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.06),
+                    blurRadius: 4,
+                    offset: const Offset(0, 1),
+                  ),
+                ]
+              : null,
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+            color: selected ? _darkInk : _mutedTeal,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ── 5. ASSISTANCE & LEGAL Card ───────────────────────────────────────────
+  Widget _buildAssistanceLegalCard(HelaColorPalette colors, bool isDark) {
+    return _buildGroupedCard(
+      colors: colors,
+      isDark: isDark,
+      children: [
+        _buildRowShell(
+          icon: Icons.support_agent_rounded,
+          title: 'Help Centre & 24/7 Concierge',
+          subtitle: 'Instant chat with Colombo operations desk',
+          isDark: isDark,
+          colors: colors,
+          onTap: _showConciergeSheet,
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.circle, size: 7, color: Color(0xFF10B981)),
+              const SizedBox(width: 4),
+              Text(
+                'Online',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: isDark ? colors.onSurface : _darkInk,
+                ),
+              ),
+              const SizedBox(width: 3),
+              Icon(
+                Icons.chevron_right_rounded,
+                size: 18,
+                color: isDark ? colors.onSurfaceVariant : _mutedTeal,
+              ),
+            ],
+          ),
+        ),
+        _buildRowDivider(isDark, colors),
+        _buildRowShell(
+          icon: Icons.phone_outlined,
+          title: 'Direct Tourist Police & Hotline',
+          subtitle: 'Toll-free emergency dispatch: Dial 1912',
+          isDark: isDark,
+          colors: colors,
+          onTap: () => _dialNumber('1912'),
+          trailing: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFEF3C7),
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: const Text(
+              '1912',
+              style: TextStyle(
+                fontSize: 11.5,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF92400E),
+              ),
+            ),
+          ),
+        ),
+        _buildRowDivider(isDark, colors),
+        _buildRowShell(
+          icon: Icons.quiz_outlined,
+          title: 'Frequently Asked Questions',
+          subtitle: 'Tipping etiquette, train tickets & SIM cards',
+          isDark: isDark,
+          colors: colors,
+          onTap: _showFaqSheet,
+          trailing: Icon(
+            Icons.chevron_right_rounded,
+            size: 18,
+            color: isDark ? colors.onSurfaceVariant : _mutedTeal,
+          ),
+        ),
+        _buildRowDivider(isDark, colors),
+        // Bottom legal strip
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildLegalLink(
+                icon: Icons.alternate_email_rounded,
+                label: 'Privacy\nPolicy',
+                onTap: () => _showLegalInfoDialog(
+                  'Privacy Policy',
+                  'HELA protects your location telemetry, travel preferences, and identity under strict end-to-end encryption. We never sell personal data to third parties.',
+                ),
+                colors: colors,
+              ),
+              _buildLegalLink(
+                icon: Icons.gavel_rounded,
+                label: 'Terms &\nConditions',
+                onTap: () => _showLegalInfoDialog(
+                  'Terms & Conditions',
+                  'HELA provides curated travel routes, fair-ride estimates, and SLTDA-registered partner bookings with transparent pricing and 24h cancellation support.',
+                ),
+                colors: colors,
+              ),
+              _buildLegalLink(
+                icon: Icons.verified_user_outlined,
+                label: 'Trust &\nSafety',
+                onTap: () => _showLegalInfoDialog(
+                  'Trust & Safety',
+                  'All drivers, guides, and eco-stays displayed with verified badges undergo SLTDA credential screening and 24/7 emergency dispatch coverage via 1912.',
+                ),
+                colors: colors,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLegalLink({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    required HelaColorPalette colors,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 14,
+              color: colors.isDark ? colors.onSurfaceVariant : _mutedTeal,
+            ),
+            const SizedBox(width: 5),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                height: 1.15,
+                fontWeight: FontWeight.w600,
+                color: colors.isDark ? colors.onSurfaceVariant : _mutedTeal,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── 6. Log Out Button & SLTDA Footer ─────────────────────────────────────
+  Widget _buildLogoutButton(bool isDark) {
+    return SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: OutlinedButton.icon(
+        onPressed: _showLogoutDialog,
+        icon: const Icon(Icons.logout_rounded, size: 19, color: Color(0xFFDC2626)),
+        label: const Text(
+          'Log Out of HELA Account',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFFDC2626),
+          ),
+        ),
+        style: OutlinedButton.styleFrom(
+          backgroundColor: isDark
+              ? const Color(0xFF3F1D1D)
+              : const Color(0xFFFDECEB),
+          side: BorderSide(
+            color: isDark
+                ? const Color(0xFF7F1D1D)
+                : const Color(0xFFF6C8C4),
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFooterBranding(HelaColorPalette colors) {
+    return Center(
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.badge_outlined,
+                size: 14,
+                color: colors.isDark ? colors.onSurfaceVariant : _mutedTeal,
+              ),
+              const SizedBox(width: 5),
+              Text(
+                'HELA Sri Lanka v2.4.1',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: colors.isDark ? colors.onSurfaceVariant : const Color(0xFF385A52),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Licensed under Sri Lanka Tourism Development\nAuthority (SLTDA). All rights reserved.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 10.5,
+              height: 1.35,
+              color: colors.isDark ? colors.onSurfaceVariant : _mutedTeal,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Shared Card & Row Builders ───────────────────────────────────────────
+  Widget _buildGroupedCard({
+    required List<Widget> children,
+    required HelaColorPalette colors,
+    required bool isDark,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? colors.cardBackground : Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: isDark ? colors.architecturalBorder : _cardBorder,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF0B4D42).withValues(alpha: 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(children: children),
+    );
+  }
+
+  Widget _buildHubRow({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    String? badgeText,
+    bool isPrimaryBadge = false,
+    required bool isDark,
+    required HelaColorPalette colors,
+    required VoidCallback onTap,
+  }) {
+    return _buildRowShell(
+      icon: icon,
+      title: title,
+      subtitle: subtitle,
+      isDark: isDark,
+      colors: colors,
+      onTap: onTap,
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (badgeText != null) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+              decoration: BoxDecoration(
+                color: isPrimaryBadge
+                    ? _deepTeal
+                    : (isDark ? colors.surfaceContainer : _softMintTile),
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Text(
+                badgeText,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: isPrimaryBadge
+                      ? Colors.white
+                      : (isDark ? colors.onSurface : _deepTeal),
+                ),
+              ),
+            ),
+            const SizedBox(width: 4),
+          ],
+          Icon(
+            Icons.chevron_right_rounded,
+            size: 18,
+            color: isDark ? colors.onSurfaceVariant : _mutedTeal,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRowShell({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Widget trailing,
+    required bool isDark,
+    required HelaColorPalette colors,
+    VoidCallback? onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+        child: Row(
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: isDark ? colors.surfaceContainer : _softMintTile,
+                borderRadius: BorderRadius.circular(11),
+              ),
+              child: Icon(
+                icon,
+                size: 19,
+                color: isDark ? colors.primary : _deepTeal,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w700,
+                      color: isDark ? colors.onSurface : _darkInk,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      height: 1.25,
+                      color: isDark ? colors.onSurfaceVariant : _mutedTeal,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            trailing,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRowDivider(bool isDark, HelaColorPalette colors) {
+    return Divider(
+      height: 1,
+      indent: 64,
+      endIndent: 14,
+      color: isDark ? colors.architecturalBorder : const Color(0xFFEAF4F0),
+    );
+  }
+
+  // ── Interactive Sheets & Dialogs ─────────────────────────────────────────
+  void _showEmergencySosSheet() {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
-      ),
-      builder: (ctx) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(22),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
+        ),
+        child: SafeArea(
+          top: false,
+          child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Travel Pacing',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: HelaColors.primary),
-                ),
-                const SizedBox(height: 12),
-                ...paces.map((p) {
-                  final isSelected = _travelPace == p['pace'];
-                  return ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(
-                      p['pace']!,
-                      style: TextStyle(
-                        fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                        color: isSelected ? HelaColors.primary : HelaColors.onSurface,
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFFEE2E2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.emergency_rounded,
+                        color: Color(0xFFDC2626),
+                        size: 24,
                       ),
                     ),
-                    subtitle: Text(p['desc']!, style: const TextStyle(fontSize: 12)),
-                    trailing: isSelected
-                        ? const Icon(Icons.check_circle_rounded, color: HelaColors.primary)
-                        : null,
-                    onTap: () {
-                      setState(() => _travelPace = p['pace']!);
-                      Navigator.pop(ctx);
-                      _showToast('Pace set to $_travelPace');
-                    },
-                  );
-                }),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Tourist Emergency SOS',
+                            style: TextStyle(
+                              fontSize: 17.5,
+                              fontWeight: FontWeight.w800,
+                              color: _darkInk,
+                            ),
+                          ),
+                          Text(
+                            '24/7 Official Sri Lanka Emergency Dispatch',
+                            style: TextStyle(fontSize: 12, color: _mutedTeal),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close_rounded),
+                      onPressed: () => Navigator.pop(ctx),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                _buildSosTile(
+                  icon: Icons.local_police_rounded,
+                  title: 'Sri Lanka Tourist Police',
+                  subtitle: 'Toll-free 24/7 English & Sinhala support • 1912',
+                  badge: '1912',
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _dialNumber('1912');
+                  },
+                ),
+                const SizedBox(height: 8),
+                _buildSosTile(
+                  icon: Icons.medical_services_rounded,
+                  title: 'Suwa Seriya National Ambulance',
+                  subtitle: 'Free island-wide emergency medical response • 1990',
+                  badge: '1990',
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _dialNumber('1990');
+                  },
+                ),
+                const SizedBox(height: 8),
+                _buildSosTile(
+                  icon: Icons.phone_in_talk_rounded,
+                  title: 'General Police Emergency',
+                  subtitle: 'Immediate dispatch • 119',
+                  badge: '119',
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _dialNumber('119');
+                  },
+                ),
               ],
             ),
           ),
-        );
-      },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSosTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required String badge,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFF5F5),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFFFED7D7)),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: const Color(0xFFDC2626), size: 22),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w700,
+                      color: _darkInk,
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(fontSize: 11, color: _mutedTeal),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: const Color(0xFFDC2626),
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Text(
+                badge,
+                style: const TextStyle(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showNotificationsSheet(HelaAppState appState) {
+    appState.clearUnreadAlerts();
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Smart Travel Alerts',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                  color: _darkInk,
+                ),
+              ),
+              const SizedBox(height: 12),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const CircleAvatar(
+                  backgroundColor: _softMintTile,
+                  child: Icon(Icons.train_rounded, color: _deepTeal, size: 20),
+                ),
+                title: const Text(
+                  'Ella Odyssey Train On Schedule',
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5),
+                ),
+                subtitle: const Text(
+                  '08:47 AM departure from Kandy confirmed • Platform 2.',
+                  style: TextStyle(fontSize: 12),
+                ),
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const CircleAvatar(
+                  backgroundColor: Color(0xFFFEF3C7),
+                  child: Icon(Icons.wb_sunny_rounded, color: Color(0xFFD97706), size: 20),
+                ),
+                title: const Text(
+                  'Clear Morning Skies in Central Highlands',
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5),
+                ),
+                subtitle: const Text(
+                  'Ideal visibility for Nine Arch Bridge & Little Adam’s Peak.',
+                  style: TextStyle(fontSize: 12),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -1928,11 +1671,10 @@ class _ProfilePageState extends State<ProfilePage> {
         return SafeArea(
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(ctx).size.height * 0.75,
+              maxHeight: MediaQuery.of(ctx).size.height * 0.72,
             ),
             child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+              padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1942,36 +1684,36 @@ class _ProfilePageState extends State<ProfilePage> {
                     children: [
                       Text(
                         appState.tr('select_language'),
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: HelaColors.primary),
+                        style: const TextStyle(
+                          fontSize: 16.5,
+                          fontWeight: FontWeight.w800,
+                          color: _darkInk,
+                        ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.close_rounded, size: 20, color: HelaColors.onSurfaceVariant),
+                        icon: const Icon(Icons.close_rounded, size: 20),
                         onPressed: () => Navigator.pop(ctx),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 8),
                   ...LocalizationService.supportedLanguages.map((lang) {
-                    final isSelected = lang.code.toUpperCase() == currentCode.toUpperCase();
+                    final isSelected =
+                        lang.code.toUpperCase() == currentCode.toUpperCase();
                     return ListTile(
                       dense: true,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 2),
+                      contentPadding: EdgeInsets.zero,
                       leading: Text(lang.flag, style: const TextStyle(fontSize: 22)),
                       title: Text(
                         lang.name,
                         style: TextStyle(
                           fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                          color: isSelected ? HelaColors.primary : HelaColors.onSurface,
+                          color: isSelected ? _deepTeal : _darkInk,
                         ),
                       ),
-                      subtitle: Text(
-                        lang.nativeName,
-                        style: const TextStyle(fontSize: 12, color: HelaColors.onSurfaceVariant),
-                      ),
+                      subtitle: Text(lang.nativeName, style: const TextStyle(fontSize: 12)),
                       trailing: isSelected
-                          ? const Icon(Icons.check_circle_rounded, color: HelaColors.primary)
+                          ? const Icon(Icons.check_circle_rounded, color: _deepTeal)
                           : null,
                       onTap: () {
                         appState.setLanguage(lang.code);
@@ -1989,58 +1731,12 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  void _showDistanceUnitPicker() {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
-      ),
-      builder: (ctx) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Distance & Measurements',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: HelaColors.primary),
-                ),
-                const SizedBox(height: 12),
-                ListTile(
-                  title: const Text('Kilometers (km) - Sri Lanka standard'),
-                  trailing: _distanceUnit == 'Kilometers (km)'
-                      ? const Icon(Icons.check_circle_rounded, color: HelaColors.primary)
-                      : null,
-                  onTap: () {
-                    setState(() => _distanceUnit = 'Kilometers (km)');
-                    Navigator.pop(ctx);
-                  },
-                ),
-                ListTile(
-                  title: const Text('Miles (mi) - Imperial'),
-                  trailing: _distanceUnit == 'Miles (mi)'
-                      ? const Icon(Icons.check_circle_rounded, color: HelaColors.primary)
-                      : null,
-                  onTap: () {
-                    setState(() => _distanceUnit = 'Miles (mi)');
-                    Navigator.pop(ctx);
-                  },
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _showVisibilityPicker() {
-    final options = [
-      'Public (All Explorers)',
-      'Verified Travelers Only',
-      'Private (Only Me)',
+  void _showMapRenderingPicker(HelaAppState appState) {
+    const modes = [
+      ('Hybrid', 'Satellite imagery with roads & tuk-tuk trails'),
+      ('Topographic', 'Elevation contours for hill country hikes'),
+      ('Standard', 'Clean high-contrast vector streets'),
+      ('Offline Vector', 'Zero-data mountain & coast map tiles'),
     ];
 
     showModalBottomSheet(
@@ -2048,179 +1744,269 @@ class _ProfilePageState extends State<ProfilePage> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
       ),
-      builder: (ctx) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Profile Visibility',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: HelaColors.primary),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Map Rendering Mode',
+                style: TextStyle(
+                  fontSize: 16.5,
+                  fontWeight: FontWeight.w800,
+                  color: _darkInk,
                 ),
-                const SizedBox(height: 12),
-                ...options.map((opt) {
-                  final isSelected = _profileVisibility == opt;
-                  return ListTile(
-                    title: Text(opt),
-                    trailing: isSelected
-                        ? const Icon(Icons.check_circle_rounded, color: HelaColors.primary)
-                        : null,
-                    onTap: () {
-                      setState(() => _profileVisibility = opt);
-                      Navigator.pop(ctx);
-                      _showToast('Visibility set to $opt');
-                    },
-                  );
-                }),
-              ],
-            ),
+              ),
+              const SizedBox(height: 10),
+              ...modes.map((m) {
+                final isSelected = appState.mapRendering == m.$1;
+                return ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(
+                    m.$1,
+                    style: TextStyle(
+                      fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                      color: isSelected ? _deepTeal : _darkInk,
+                    ),
+                  ),
+                  subtitle: Text(m.$2, style: const TextStyle(fontSize: 12)),
+                  trailing: isSelected
+                      ? const Icon(Icons.check_circle_rounded, color: _deepTeal)
+                      : null,
+                  onTap: () {
+                    appState.setMapRendering(m.$1);
+                    Navigator.pop(ctx);
+                    _showToast('Map rendering set to ${m.$1}');
+                  },
+                );
+              }),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
-  void _showClearCacheDialog() {
+  void _showOfflineGuideDialog(HelaAppState appState) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: const Text('Clear App Cache?'),
-        content: const Text(
-          'This will remove temporary map tiles, cached photo previews, and offline itineraries. Your saved bookmarks will remain safe.',
+        title: const Text('Offline Island Guide'),
+        content: Text(
+          appState.offlineGuideCached
+              ? 'Central Hill Country & South Coast offline maps, audio lore, and emergency numbers (${appState.offlineGuideSizeMb} MB) are cached for signal-free zones.'
+              : 'Download 340 MB of Central Hill Country & South Coast maps and cultural guides for offline mountain travel.',
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
+          if (appState.offlineGuideCached)
+            TextButton(
+              onPressed: () {
+                appState.setOfflineGuideCache(cached: false, sizeMb: 0);
+                Navigator.pop(ctx);
+                _showToast('Offline cache cleared.');
+              },
+              child: const Text('Clear Cache'),
+            )
+          else
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancel'),
+            ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: HelaColors.primary,
+              backgroundColor: _deepTeal,
               foregroundColor: Colors.white,
             ),
             onPressed: () {
+              appState.setOfflineGuideCache(cached: true, sizeMb: 340);
               Navigator.pop(ctx);
-              _showToast('Cache cleared successfully! 42.8 MB freed.');
+              _showToast('Offline Island Guide synced (340 MB).');
             },
-            child: const Text('Clear Cache'),
+            child: Text(appState.offlineGuideCached ? 'Sync Updates' : 'Download 340 MB'),
           ),
         ],
       ),
     );
   }
 
-  void _showExportDataDialog() {
-    showDialog(
+  void _showConciergeSheet() {
+    showModalBottomSheet(
       context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: const Text('Export Travel Data'),
-        content: const Text(
-          'Your profile information, saved havens, custom AI itineraries, and Ceylon eco-pledge records have been prepared for export as encrypted JSON.',
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Help Centre & 24/7 Concierge',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                  color: _darkInk,
+                ),
+              ),
+              const SizedBox(height: 6),
+              const Text(
+                'Colombo Operations Desk • Online & ready to help.',
+                style: TextStyle(fontSize: 12.5, color: _mutedTeal),
+              ),
+              const SizedBox(height: 16),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const CircleAvatar(
+                  backgroundColor: _softMintTile,
+                  child: Icon(Icons.auto_awesome_rounded, color: _deepTeal),
+                ),
+                title: const Text(
+                  'Instant Chat with Ask HELA AI',
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
+                subtitle: const Text('24/7 routes, fares & cultural guidance'),
+                trailing: const Icon(Icons.chevron_right_rounded),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const AskHelaPage()),
+                  );
+                },
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const CircleAvatar(
+                  backgroundColor: Color(0xFFFEF3C7),
+                  child: Icon(Icons.phone_rounded, color: Color(0xFF92400E)),
+                ),
+                title: const Text(
+                  'Call Colombo Support Desk',
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
+                subtitle: const Text('+94 11 244 1912 • Direct Concierge'),
+                trailing: const Icon(Icons.call_rounded, color: _deepTeal),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _dialNumber('+94112441912');
+                },
+              ),
+            ],
+          ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Close'),
-          ),
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: HelaColors.primary,
-              foregroundColor: Colors.white,
-            ),
-            icon: const Icon(Icons.download_rounded, size: 16),
-            label: const Text('Download File'),
-            onPressed: () {
-              Navigator.pop(ctx);
-              _showToast('Travel archive downloaded: hela_data_backup.json');
-            },
-          ),
-        ],
       ),
     );
   }
 
-  void _showSupportDialog() {
+  void _showFaqSheet() {
+    const faqs = [
+      (
+        'What is the tipping etiquette in Sri Lanka?',
+        'Tipping 10% at restaurants (when no service charge is added), LKR 1,500–2,500/day for private drivers, and small LKR 200–500 tips for hotel porters is appreciated.'
+      ),
+      (
+        'How do I book Kandy–Ella scenic train tickets?',
+        '1st & 2nd class observation seats open 30 days ahead via the Sri Lanka Railways online portal (seatreservation.railway.gov.lk).'
+      ),
+      (
+        'Which tourist SIM card should I get?',
+        'Dialog and Mobitel both have 24/7 counters at Bandaranaike Intl Airport (CMB) Arrivals offering tourist 4G/5G eSIMs and physical data packs.'
+      ),
+      (
+        'What should I wear at sacred Buddhist temples?',
+        'Cover both shoulders and knees, remove shoes and hats before entering inner courtyards, and avoid posing with your back to Buddha statues.'
+      ),
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Sri Lanka Travel FAQs',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                  color: _darkInk,
+                ),
+              ),
+              const SizedBox(height: 12),
+              ...faqs.map(
+                (item) => ExpansionTile(
+                  tilePadding: EdgeInsets.zero,
+                  childrenPadding: const EdgeInsets.only(bottom: 10),
+                  title: Text(
+                    item.$1,
+                    style: const TextStyle(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w700,
+                      color: _darkInk,
+                    ),
+                  ),
+                  children: [
+                    Text(
+                      item.$2,
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        height: 1.4,
+                        color: _mutedTeal,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showEcoImpactDialog() {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Row(
-          children: const [
-            Icon(Icons.headset_mic_rounded, color: HelaColors.primary),
+        title: const Row(
+          children: [
+            Icon(Icons.eco_rounded, color: Color(0xFF10B981)),
             SizedBox(width: 8),
-            Text('Traveler Support'),
+            Text('100% Carbon Offset'),
           ],
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            Text(
-              'Emergency Contacts in Sri Lanka:',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-            SizedBox(height: 6),
-            Text('• Tourist Police Hotline: 1912 (24/7)'),
-            Text('• Police Emergency: 119'),
-            Text('• National Ambulance Service: 1990'),
-            SizedBox(height: 12),
-            Text(
-              'Hela Traveler Concierge:',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-            SizedBox(height: 6),
-            Text('• In-App Live Support: support@hela.travel'),
-            Text('• Dedicated WhatsApp: +94 77 123 4567'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Done'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showCommunityGuidelinesDialog() {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: const Text('Community Guidelines'),
-        content: const SingleChildScrollView(
-          child: Text(
-            '1. Respect Cultural Heritage:\nAlways dress modestly at temples, remove footwear and headgear, and do not pose with your back to sacred statues.\n\n'
-            '2. Protect Wildlife:\nMaintain safe distances in Yala, Udawalawe, and ocean whale watching. Never feed wild elephants.\n\n'
-            '3. Genuine Reviews:\nShare authentic, firsthand experiences to help fellow explorers navigate Ceylon fairly.\n\n'
-            '4. Support Local Communities:\nEncourage fair wages for local drivers, tuk-tuk guides, and artisan tea pluckers.',
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Understood'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showTermsDialog() {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: const Text('Terms & Privacy'),
         content: const Text(
-          'Hela is committed to traveler privacy and fair-ride transparency. We protect your location data, do not sell private information to third parties, and guarantee transparent, unmanipulated meter rates for island travel.',
+          'Your HELA journeys support certified Sri Lankan mangrove restoration and trailhead plastic removal across the Central Highlands and Southern Coast.',
         ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Great!'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showLegalInfoDialog(String title, String body) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        title: Text(title),
+        content: Text(body, style: const TextStyle(height: 1.4)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -2236,9 +2022,9 @@ class _ProfilePageState extends State<ProfilePage> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: const Text('Log Out of Hela?'),
+        title: const Text('Log Out of HELA Account?'),
         content: const Text(
-          'Are you sure you want to log out? Your saved trips, eco-pledge records, and preferences are safely synchronized to the cloud.',
+          'Your saved destinations, itineraries, and preferences stay safely synced for when you sign back in.',
         ),
         actions: [
           TextButton(
@@ -2247,148 +2033,23 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFC62828),
+              backgroundColor: const Color(0xFFDC2626),
               foregroundColor: Colors.white,
             ),
             onPressed: () async {
               Navigator.pop(ctx);
               await InsForgeAuthService.instance.signOut();
-              if (mounted) {
-                HelaAppStateProvider.of(context).signOut();
-                _showToast('You have been logged out from InsForge.');
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (_) => const SignUpPage(initialMode: AuthMode.signIn)),
-                  (route) => false,
-                );
-              }
+              if (!mounted) return;
+              HelaAppStateProvider.of(context).signOut();
+              _showToast('Logged out of HELA Account.');
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                  builder: (_) => const SignUpPage(initialMode: AuthMode.signIn),
+                ),
+                (route) => false,
+              );
             },
             child: const Text('Log Out'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showDeleteAccountDialog() {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: const Text('Delete Account?'),
-        content: const Text(
-          'This action is irreversible. All your custom itineraries, review contributions, and Ceylon points will be permanently deleted.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            style: TextButton.styleFrom(foregroundColor: const Color(0xFFC62828)),
-            onPressed: () {
-              Navigator.pop(ctx);
-              _showToast('Account deletion request submitted.');
-            },
-            child: const Text('Delete Permanently'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showShareProfileSheet() {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
-      ),
-      builder: (ctx) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Share Explorer Profile',
-                style: TextStyle(fontSize: 16.5, fontWeight: FontWeight.w800, color: HelaColors.primary),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Share your verified traveler passport & reviews with friends:',
-                style: TextStyle(fontSize: 12.5, color: HelaColors.onSurfaceVariant),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                decoration: BoxDecoration(
-                  color: HelaColors.surfaceContainerHigh,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.link_rounded, size: 20, color: HelaColors.primary),
-                    const SizedBox(width: 8),
-                    const Expanded(
-                      child: Text(
-                        'https://hela.travel/@kavinda_w',
-                        style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: HelaColors.primary,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        minimumSize: Size.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                      onPressed: () {
-                        Navigator.pop(ctx);
-                        _showToast('Profile link copied to clipboard!');
-                      },
-                      child: const Text('Copy', style: TextStyle(fontSize: 12)),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showEcoImpactDialog() {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Row(
-          children: const [
-            Icon(Icons.eco_rounded, color: Color(0xFF2E7D32)),
-            SizedBox(width: 8),
-            Text('Ceylon Eco-Impact'),
-          ],
-        ),
-        content: const Text(
-          'Through Hela\'s sustainable partnership with local environmental conservation groups across Sri Lanka, your trips contribute directly to removing non-biodegradable plastics from sacred trailheads and protecting coral reefs in the south.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Great!'),
           ),
         ],
       ),
@@ -2400,13 +2061,10 @@ class _ProfilePageState extends State<ProfilePage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         duration: const Duration(seconds: 2),
-        persist: false,
         content: Text(msg),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
-
-  // ── Bottom Navigation Bar ────────────────────────────────────────────────
 }

@@ -8,21 +8,30 @@
             "name": "hela-mobile",
             "cwd": "hela-mobile",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "args": [
+                "--dart-define-from-file=dart_defines.json"
+            ]
         },
         {
             "name": "hela-mobile (profile mode)",
             "cwd": "hela-mobile",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "profile"
+            "flutterMode": "profile",
+            "args": [
+                "--dart-define-from-file=dart_defines.json"
+            ]
         },
         {
             "name": "hela-mobile (release mode)",
             "cwd": "hela-mobile",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "release"
+            "flutterMode": "release",
+            "args": [
+                "--dart-define-from-file=dart_defines.json"
+            ]
         }
     ]
 }

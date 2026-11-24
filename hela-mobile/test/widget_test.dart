@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:hela/state/app_state.dart';
+import 'package:hela/models/tour_plan.dart';
 import 'package:hela/services/localization_service.dart';
 import 'package:hela/pages/home_page.dart';
 import 'package:hela/pages/trip_planner_page.dart';
@@ -24,6 +25,8 @@ import 'package:hela/pages/auth/signup_page.dart';
 import 'package:hela/pages/explore_page.dart';
 import 'package:hela/pages/itinerary_details_page.dart';
 import 'package:hela/pages/active_journey_page.dart';
+import 'package:hela/pages/ask_hela_page.dart';
+import 'package:hela/pages/itinerary_planning_loading_page.dart';
 import 'package:hela/widgets/haven_card.dart';
 import 'package:hela/widgets/stay_card.dart';
 import 'package:hela/widgets/itinerary_card.dart';
@@ -528,6 +531,12 @@ void main() {
     expect(find.text('HELA Fair-Price Assurance'), findsOneWidget);
     expect(find.text('Start My Journey'), findsOneWidget);
 
+    // Ensure sticky bottom bar stays docked at bottom and does not cover body
+    final bodyRect = tester.getRect(find.byType(SingleChildScrollView).first);
+    final startBtnRect = tester.getRect(find.text('Start My Journey'));
+    expect(bodyRect.height, greaterThan(350));
+    expect(startBtnRect.top, greaterThan(450));
+
     // Tap Start My Journey and verify navigation to ActiveJourneyPage
     await tester.tap(find.text('Start My Journey'));
     await tester.pump();
@@ -883,5 +892,238 @@ void main() {
     expect(find.text('中文 (Mandarin)'), findsOneWidget);
     expect(find.text('Русский (Russian)'), findsOneWidget);
   });
+
+  testWidgets('AskHelaPage smoke test and UI verification', (WidgetTester tester) async {
+    _ignoreOverflow();
+    await tester.pumpWidget(
+      _wrapWithState(const AskHelaPage()),
+    );
+    await tester.pump();
+
+    // Verify top bar and status
+    expect(find.text('Ask HELA'), findsOneWidget);
+    expect(find.text('Online • Island Intelligence Active'), findsOneWidget);
+    expect(find.text('27°C Kandy'), findsOneWidget);
+
+    // Verify welcome intro card & suggested inquiries
+    expect(find.text("Hello! I'm your HELA travel guide."), findsOneWidget);
+    expect(find.text('Temple etiquette'), findsOneWidget);
+    expect(find.text('History of Sigiriya'), findsOneWidget);
+
+    // Verify initial chat message and rich response
+    expect(
+      find.text("What should I know before visiting a Buddhist temple like Kandy's Temple of the Tooth?"),
+      findsOneWidget,
+    );
+    expect(find.text('Ayubowan! 🙏'), findsOneWidget);
+    expect(find.text('Verified Lore'), findsOneWidget);
+    expect(find.text('Modest Attire (White Preferred)'), findsOneWidget);
+    expect(find.text('Footwear & Headwear'), findsOneWidget);
+  });
+
+  testWidgets('HelaHomePage tap Ask HELA redirects to AskHelaPage', (WidgetTester tester) async {
+    _ignoreOverflow();
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+    await tester.pumpWidget(
+      _wrapWithState(const HelaHomePage()),
+    );
+    await tester.pump();
+
+    final askHelaButton = find.text('Ask HELA');
+    expect(askHelaButton, findsWidgets);
+    await tester.tap(askHelaButton.first, warnIfMissed: false);
+    await tester.pumpAndSettle();
+
+    // Now on AskHelaPage
+    expect(find.byType(AskHelaPage), findsOneWidget);
+    expect(find.text('Online • Island Intelligence Active'), findsOneWidget);
+  });
+
+  testWidgets('AskHelaPage smoke test and UI verification', (WidgetTester tester) async {
+    _ignoreOverflow();
+    await tester.pumpWidget(
+      _wrapWithState(const AskHelaPage()),
+    );
+    await tester.pump();
+
+    // Verify top bar and status
+    expect(find.text('Ask HELA'), findsOneWidget);
+    expect(find.text('Online • Island Intelligence Active'), findsOneWidget);
+    expect(find.text('27°C Kandy'), findsOneWidget);
+
+    // Verify welcome intro card & suggested inquiries
+    expect(find.text("Hello! I'm your HELA travel guide."), findsOneWidget);
+    expect(find.text('Temple etiquette'), findsOneWidget);
+    expect(find.text('History of Sigiriya'), findsOneWidget);
+
+    // Verify initial chat message and rich response
+    expect(
+      find.text("What should I know before visiting a Buddhist temple like Kandy's Temple of the Tooth?"),
+      findsOneWidget,
+    );
+    expect(find.text('Ayubowan! 🙏'), findsOneWidget);
+    expect(find.text('Verified Lore'), findsOneWidget);
+    expect(find.text('Modest Attire (White Preferred)'), findsOneWidget);
+    expect(find.text('Footwear & Headwear'), findsOneWidget);
+  });
+
+  testWidgets('HelaHomePage tap Ask HELA redirects to AskHelaPage', (WidgetTester tester) async {
+    _ignoreOverflow();
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(
+      _wrapWithState(const HelaHomePage()),
+    );
+    await tester.pump();
+
+    final askHelaButton = find.text('Ask HELA');
+    expect(askHelaButton, findsWidgets);
+    await tester.ensureVisible(askHelaButton.first);
+    await tester.tap(askHelaButton.first);
+    await tester.pumpAndSettle();
+
+    // Now on AskHelaPage
+    expect(find.byType(AskHelaPage), findsOneWidget);
+    expect(find.text('Online • Island Intelligence Active'), findsOneWidget);
+  });
+
+  testWidgets('ItineraryPlanningLoadingPage smoke test and UI verification', (WidgetTester tester) async {
+    _ignoreOverflow();
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(
+      _wrapWithState(
+        ItineraryPlanningLoadingPage(
+          startLocation: 'Bandaranaike Intl Airport (CMB)',
+          startDate: DateTime.now().add(const Duration(days: 3)),
+          endDate: DateTime.now().add(const Duration(days: 8)),
+          tripDays: 5,
+        ),
+      ),
+    );
+    await tester.pump();
+
+    // Verify header branding
+    expect(find.text('HELA AI • BESPOKE TOUR PLANNER'), findsOneWidget);
+    expect(find.text('HELA'), findsOneWidget);
+
+    // Verify landscape labels
+    expect(find.text('COAST'), findsOneWidget);
+    expect(find.text('HIGHLANDS'), findsOneWidget);
+
+    // Verify main headlines
+    expect(find.text('Creating Your Journey...'), findsOneWidget);
+    expect(
+      find.text('Curating hidden tea trails, coastal tides\n& bespoke stops'),
+      findsOneWidget,
+    );
+
+    // Verify progress indicator and first ticker step
+    expect(find.text('CONNECTING TO GOOGLE GEMINI AI PLANNER...'), findsOneWidget);
+
+    // Dispose cleanly
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('ItineraryDetailsPage renders dynamic AI TourPlan with Stitch timeline UI', (WidgetTester tester) async {
+    _ignoreOverflow();
+    final aiPlan = TourPlan(
+      id: 'tour_ai_test',
+      title: 'Bespoke Misty Highlands & Coast',
+      summary: 'AI-tailored 2-day expedition across Sri Lanka.',
+      matchReason: 'Custom matched for Culture and Beaches.',
+      durationDays: 2,
+      estimatedTotalCostUsd: 280.0,
+      dataSources: const ['Google Gemini AI (gemini-3.6-flash)'],
+      days: const [
+        ItineraryDay(
+          dayNumber: 1,
+          title: 'CMB → Cultural Triangle',
+          summary: 'Heritage gateway',
+          estimatedDayCostUsd: 140.0,
+          overnightStay: 'Sigiriya',
+          activities: [
+            ItineraryActivity(
+              title: 'Arrival & King Coconut Welcome',
+              description: 'Chauffeur pickup at CMB airport.',
+              startTime: '08:30 AM',
+              estimatedDuration: '~1 hr',
+              category: 'Arrival',
+              estimatedCostUsd: 0.0,
+            ),
+            ItineraryActivity(
+              title: 'Sigiriya Lion Rock Sunrise Climb',
+              description: 'Explore ancient frescoes and summit views.',
+              startTime: '03:30 PM',
+              estimatedDuration: 'Must-See Wonder',
+              category: 'UNESCO Ticket',
+              estimatedCostUsd: 36.0,
+              travelMethod: 'Private Chauffeur AC Car',
+              travelTimeFromPrevious: '140 km (~3h 20m)',
+              tips: ['Arrive before 4 PM for golden hour light.'],
+            ),
+          ],
+        ),
+        ItineraryDay(
+          dayNumber: 2,
+          title: 'Kandy Royal Sanctuary',
+          summary: 'Sacred temple visit',
+          estimatedDayCostUsd: 140.0,
+          overnightStay: 'Kandy',
+          activities: [
+            ItineraryActivity(
+              title: 'Temple of the Tooth Relic',
+              description: 'Morning ceremony by Kandy Lake.',
+              startTime: '09:00 AM',
+              estimatedDuration: '~2 hrs',
+              category: 'Culture',
+              estimatedCostUsd: 12.0,
+            ),
+          ],
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      _wrapWithState(
+        ItineraryDetailsPage(
+          startDate: DateTime(2025, 10, 14),
+          endDate: DateTime(2025, 10, 16),
+          aiTourPlan: aiPlan,
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('GEMINI AI PLAN'), findsOneWidget);
+    expect(find.text('Bespoke Misty Highlands & Coast'), findsOneWidget);
+    expect(find.text('Arrival & King Coconut Welcome'), findsOneWidget);
+    expect(find.text('Sigiriya Lion Rock Sunrise Climb'), findsOneWidget);
+    expect(find.text('Private Chauffeur AC Car:'), findsOneWidget);
+    expect(find.textContaining('Arrive before 4 PM for golden hour light.'), findsOneWidget);
+
+    // Switch to Day 2
+    await tester.tap(find.text('Day 2'));
+    await tester.pump();
+    expect(find.text('Temple of the Tooth Relic'), findsWidgets);
+    expect(find.text('Morning ceremony by Kandy Lake.'), findsOneWidget);
+    expect(find.text('Day 2 Route Overview'), findsOneWidget);
+  });
 }
+
 

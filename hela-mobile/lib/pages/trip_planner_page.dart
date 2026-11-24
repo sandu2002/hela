@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hela/models/tour_plan.dart';
-import 'package:hela/models/tour_preferences.dart';
-import 'package:hela/pages/itinerary_details_page.dart';
+import 'package:hela/pages/itinerary_planning_loading_page.dart';
 import 'package:hela/pages/profile_page.dart';
-import 'package:hela/services/ai_service.dart';
 import 'package:hela/theme/hela_colors.dart';
 import 'package:hela/widgets/hela_bottom_nav_bar.dart';
 
@@ -45,7 +42,6 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
   String _selectedPace = 'balanced';
 
   // Navigation & Generation State
-  bool _isGenerating = false;
   bool _isSaved = false;
 
   // Available Interests Data
@@ -82,15 +78,6 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
     return 'Group Journey';
   }
 
-  void _appendPrompt(String text) {
-    final current = _extraNotesController.text.trim();
-    if (current.isEmpty) {
-      _extraNotesController.text = text;
-    } else {
-      _extraNotesController.text = '$current $text';
-    }
-  }
-
   Future<void> _pickDateRange() async {
     final picked = await showDateRangePicker(
       context: context,
@@ -121,45 +108,12 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
     }
   }
 
-  void _triggerGenerate() async {
-    setState(() => _isGenerating = true);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('HELA AI is synthesizing real-time routes, weather & trains...'),
-        duration: Duration(milliseconds: 1400),
-      ),
-    );
-
-    TourPlan? aiTourPlan;
-    try {
-      final prefs = TourPreferences(
-        duration: TravelDuration.custom,
-        customDays: _tripDays,
-        startingLocationName: _startLocationController.text,
-        interests: _selectedInterests.map((name) {
-          return TravelInterest.values.firstWhere(
-            (c) => c.label.toLowerCase() == name.toLowerCase(),
-            orElse: () => TravelInterest.nature,
-          );
-        }).toSet(),
-        numberOfTravelers: _adults + _children,
-        additionalNotes: _extraNotesController.text,
-      );
-
-      aiTourPlan = await AIService()
-          .generateTourPlan(preferences: prefs, selectedDestinations: const [])
-          .timeout(const Duration(seconds: 4));
-    } catch (_) {
-      // Graceful fallback to rich curated itinerary
-    }
-
-    if (!mounted) return;
-    setState(() => _isGenerating = false);
-
+  void _triggerGenerate() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => ItineraryDetailsPage(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            ItineraryPlanningLoadingPage(
           startLocation: _startLocationController.text,
           startDate: _startDate,
           endDate: _endDate,
@@ -169,8 +123,15 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
           interests: _selectedInterests,
           pace: _selectedPace,
           extraNotes: _extraNotesController.text,
-          aiTourPlan: aiTourPlan,
+          tripDays: _tripDays,
         ),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(
+            opacity: CurvedAnimation(parent: animation, curve: Curves.easeInOut),
+            child: child,
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 320),
       ),
     );
   }
@@ -524,11 +485,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
               _buildSectionPaceAndStyle(colors),
               const SizedBox(height: 20),
 
-              // 7. Anything else HELA should know?
-              _buildSectionExtraNotes(colors),
-              const SizedBox(height: 20),
-
-              // 8. AI Engine Preview Card (Island Route Optimizer ACTIVE)
+              // 7. AI Engine Preview Card (Island Route Optimizer ACTIVE)
               _buildRouteOptimizerCard(colors),
               const SizedBox(height: 22),
 
@@ -654,19 +611,33 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: TextField(
-                  controller: _startLocationController,
-                  style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600, color: colors.onSurface),
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    disabledBorder: InputBorder.none,
-                    errorBorder: InputBorder.none,
-                    focusedErrorBorder: InputBorder.none,
-                    filled: false,
-                    isDense: true,
-                    contentPadding: EdgeInsets.symmetric(vertical: 8),
+                child: Theme(
+                  data: Theme.of(context).copyWith(
+                    inputDecorationTheme: const InputDecorationTheme(
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      focusedErrorBorder: InputBorder.none,
+                      filled: false,
+                      fillColor: Colors.transparent,
+                    ),
+                  ),
+                  child: TextField(
+                    controller: _startLocationController,
+                    style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600, color: colors.onSurface),
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      focusedErrorBorder: InputBorder.none,
+                      filled: false,
+                      isCollapsed: true,
+                      contentPadding: EdgeInsets.symmetric(vertical: 8),
+                    ),
                   ),
                 ),
               ),
@@ -1447,120 +1418,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
     );
   }
 
-  // 7. Extra Notes
-  Widget _buildSectionExtraNotes(HelaColorPalette colors) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Anything else HELA should know?',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface),
-            ),
-            Text(
-              'Optional',
-              style: TextStyle(fontSize: 11, color: colors.onSurfaceVariant),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: colors.cardBackground,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: colors.architecturalBorder),
-            boxShadow: [
-              BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 6, offset: const Offset(0, 2)),
-            ],
-          ),
-          child: Column(
-            children: [
-              TextField(
-                controller: _extraNotesController,
-                maxLines: 3,
-                style: TextStyle(fontSize: 12.5, color: colors.onSurface),
-                decoration: InputDecoration(
-                  hintText:
-                      'e.g. Vegetarian dining only, desire first-class Kandy to Ella train observation deck tickets, interested in a Galle Fort cooking masterclass...',
-                  hintStyle: TextStyle(fontSize: 12, color: colors.outline),
-                  border: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  disabledBorder: InputBorder.none,
-                  errorBorder: InputBorder.none,
-                  focusedErrorBorder: InputBorder.none,
-                  filled: false,
-                  isDense: true,
-                  contentPadding: EdgeInsets.zero,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Divider(color: colors.architecturalBorder, height: 1),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Icon(Icons.edit_note_rounded, size: 16, color: colors.secondary),
-                  Text(
-                    'HELA tailors every leg',
-                    style: TextStyle(fontSize: 10.5, color: colors.onSurfaceVariant),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 8),
-
-        // Quick Prompt Pills
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          physics: const BouncingScrollPhysics(),
-          child: Row(
-            children: [
-              _buildPromptPill('Vegetarian Friendly', 'Vegetarian/Vegan friendly meals preferred.', colors),
-              const SizedBox(width: 6),
-              _buildPromptPill('Tuk-Tuk Bookings', 'Pre-book licensed Tuk-Tuk safari drivers.', colors),
-              const SizedBox(width: 6),
-              _buildPromptPill('Family Safe Bays', 'Family friendly pace with safe swimming beaches.', colors),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPromptPill(String title, String promptText, HelaColorPalette colors) {
-    return InkWell(
-      onTap: () => _appendPrompt(promptText),
-      borderRadius: BorderRadius.circular(999),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        decoration: BoxDecoration(
-          color: colors.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: colors.architecturalBorder),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('+', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: colors.secondary)),
-            const SizedBox(width: 4),
-            Text(
-              title,
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: colors.onSurface),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // 8. Island Route Optimizer Card
+  // 7. Island Route Optimizer Card
   Widget _buildRouteOptimizerCard(HelaColorPalette colors) {
     return Container(
       padding: const EdgeInsets.all(14),
@@ -1646,7 +1504,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
           width: double.infinity,
           height: 52,
           child: ElevatedButton(
-            onPressed: _isGenerating ? null : _triggerGenerate,
+            onPressed: _triggerGenerate,
             style: ElevatedButton.styleFrom(
               backgroundColor: colors.primary,
               foregroundColor: Colors.white,
@@ -1654,33 +1512,17 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
               shadowColor: colors.primary.withValues(alpha: 0.35),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             ),
-            child: _isGenerating
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                      ),
-                      SizedBox(width: 10),
-                      Text(
-                        'HELA is Mapping Routes...',
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                      ),
-                    ],
-                  )
-                : Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.auto_awesome_rounded, size: 19, color: colors.goldenAmber),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'Generate My Itinerary ✨',
-                        style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700),
-                      ),
-                    ],
-                  ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.auto_awesome_rounded, size: 19, color: colors.goldenAmber),
+                const SizedBox(width: 8),
+                const Text(
+                  'Generate My Itinerary ✨',
+                  style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700),
+                ),
+              ],
+            ),
           ),
         ),
         const SizedBox(height: 8),

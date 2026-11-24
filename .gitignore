@@ -9,6 +9,8 @@
 hela-backend/.env
 **/.env
 **/.env.local
+dart_defines.json
+**/dart_defines.json
 
 # Node / Backend
 node_modules/

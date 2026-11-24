@@ -4,6 +4,7 @@ import 'package:hela/pages/explore_page.dart';
 import 'package:hela/pages/trip_planner_page.dart';
 import 'package:hela/pages/bookings_page.dart';
 import 'package:hela/pages/profile_page.dart';
+import 'package:hela/pages/ask_hela_page.dart';
 import 'package:hela/state/app_state.dart';
 
 /// Unified, consistent Bottom Navigation Bar for HELA
@@ -96,11 +97,8 @@ class HelaBottomNavBar extends StatelessWidget {
   }
 
   static void openAskHelaSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) => const _AskHelaBottomSheet(),
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const AskHelaPage()),
     );
   }
 

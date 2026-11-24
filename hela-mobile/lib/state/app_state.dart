@@ -287,6 +287,68 @@ class HelaAppState extends ChangeNotifier {
   }
 
   String tr(String key) => LocalizationService.tr(key, _selectedLanguage);
+
+  // ── Travel & App Preferences (Profile Page) ─────────────────────
+  String _preferredCurrency = 'USD (\$)';
+  bool _smartTravelAlerts = true;
+  String _mapRendering = 'Hybrid';
+  bool _offlineGuideCached = true;
+  int _offlineGuideSizeMb = 340;
+  int _unreadAlertsCount = 2;
+
+  String get preferredCurrency => _preferredCurrency;
+  bool get smartTravelAlerts => _smartTravelAlerts;
+  String get mapRendering => _mapRendering;
+  bool get offlineGuideCached => _offlineGuideCached;
+  int get offlineGuideSizeMb => _offlineGuideSizeMb;
+  int get unreadAlertsCount => _unreadAlertsCount;
+
+  void setPreferredCurrency(String currency) {
+    if (_preferredCurrency != currency) {
+      _preferredCurrency = currency;
+      notifyListeners();
+    }
+  }
+
+  void setSmartTravelAlerts(bool enabled) {
+    if (_smartTravelAlerts != enabled) {
+      _smartTravelAlerts = enabled;
+      notifyListeners();
+    }
+  }
+
+  void setMapRendering(String mode) {
+    if (_mapRendering != mode) {
+      _mapRendering = mode;
+      notifyListeners();
+    }
+  }
+
+  void setOfflineGuideCache({required bool cached, int sizeMb = 340}) {
+    _offlineGuideCached = cached;
+    _offlineGuideSizeMb = cached ? sizeMb : 0;
+    notifyListeners();
+  }
+
+  void clearUnreadAlerts() {
+    if (_unreadAlertsCount != 0) {
+      _unreadAlertsCount = 0;
+      notifyListeners();
+    }
+  }
+
+  // ── Live Detected City (Home Header Pill) ───────────────────────
+  String? _detectedCurrentCity;
+
+  String? get detectedCurrentCity => _detectedCurrentCity;
+
+  void setDetectedCurrentCity(String city) {
+    final trimmed = city.trim();
+    if (trimmed.isNotEmpty && _detectedCurrentCity != trimmed) {
+      _detectedCurrentCity = trimmed;
+      notifyListeners();
+    }
+  }
 }
 
 /// An InheritedNotifier that exposes [HelaAppState] down the tree.

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:hela/pages/fair_ride_page.dart';
 import 'package:hela/pages/cultural_guide/cultural_guide_page.dart';
 import 'package:hela/pages/explore_page.dart';
 import 'package:hela/pages/trip_planner_page.dart';
 import 'package:hela/pages/profile_page.dart';
+import 'package:hela/services/live_weather_service.dart';
 import 'package:hela/widgets/hela_drawer.dart';
 import 'package:hela/widgets/hela_bottom_nav_bar.dart';
 import 'package:hela/state/app_state.dart';
@@ -52,17 +54,22 @@ class HomeExperienceItem {
 }
 
 class HelaHomePage extends StatefulWidget {
-  const HelaHomePage({super.key});
+  final LiveWeatherService? weatherService;
+
+  const HelaHomePage({super.key, this.weatherService});
 
   @override
   State<HelaHomePage> createState() => _HelaHomePageState();
 }
 
-class _HelaHomePageState extends State<HelaHomePage> {
+class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _searchController = TextEditingController();
+  late final LiveWeatherService _locationService;
   String _searchQuery = '';
   String _currentCity = 'Colombo';
+  bool _isLocating = false;
+  bool _hasManualCityOverride = false;
   int _selectedExperienceChipIndex = 0; // 0: Nature & Wildlife, 1: Beaches, 2: Cultural Heritage, 3: Hill Country, 4: All
 
   final List<String> _experienceFilters = const [
@@ -161,7 +168,87 @@ class _HelaHomePageState extends State<HelaHomePage> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _locationService = widget.weatherService ?? LiveWeatherService();
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final cachedCity = HelaAppStateProvider.of(context).detectedCurrentCity;
+      if (cachedCity != null && cachedCity.isNotEmpty) {
+        setState(() => _currentCity = cachedCity);
+      }
+      _detectCurrentLocation(requestPermissionIfNeeded: true);
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && !_hasManualCityOverride) {
+      _detectCurrentLocation(requestPermissionIfNeeded: false);
+    }
+  }
+
+  Future<void> _detectCurrentLocation({
+    required bool requestPermissionIfNeeded,
+    bool showSettingsPromptOnDeny = false,
+  }) async {
+    if (!mounted) return;
+    final appState = HelaAppStateProvider.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    setState(() => _isLocating = true);
+
+    if (showSettingsPromptOnDeny) {
+      try {
+        final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+        if (!serviceEnabled && mounted) {
+          messenger.showSnackBar(
+            SnackBar(
+              content: const Text('Please enable phone GPS/location services.'),
+              action: SnackBarAction(
+                label: 'Settings',
+                onPressed: () => Geolocator.openLocationSettings(),
+              ),
+            ),
+          );
+        } else {
+          final permission = await Geolocator.checkPermission();
+          if (permission == LocationPermission.deniedForever && mounted) {
+            messenger.showSnackBar(
+              SnackBar(
+                content: const Text('Location permission is blocked. Enable it in App Settings.'),
+                action: SnackBarAction(
+                  label: 'App Settings',
+                  onPressed: () => Geolocator.openAppSettings(),
+                ),
+              ),
+            );
+          }
+        }
+      } catch (_) {
+        // Ignore on platforms/tests without native Geolocator plugin
+      }
+    }
+
+    final profileFallback = appState.userLocation.split(',').first.trim();
+    final resolved = await _locationService.resolveUserLocation(
+      fallbackLocationName: profileFallback.isNotEmpty ? profileFallback : _currentCity,
+      requestPermissionIfNeeded: requestPermissionIfNeeded,
+    );
+
+    if (!mounted) return;
+    setState(() {
+      if (!_hasManualCityOverride || showSettingsPromptOnDeny) {
+        _currentCity = resolved.cityName;
+        appState.setDetectedCurrentCity(resolved.cityName);
+      }
+      _isLocating = false;
+    });
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _searchController.dispose();
     super.dispose();
   }
@@ -170,62 +257,105 @@ class _HelaHomePageState extends State<HelaHomePage> {
     final cities = ['Colombo', 'Kandy', 'Galle', 'Ella', 'Sigiriya', 'Mirissa', 'Nuwara Eliya', 'Trincomalee'];
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) {
         final colors = HelaColors.of(context);
-        return Container(
-          decoration: BoxDecoration(
-            color: colors.cardBackground,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          ),
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: colors.architecturalBorder,
-                    borderRadius: BorderRadius.circular(999),
+        return Material(
+          color: colors.cardBackground,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
+            child: SafeArea(
+              top: false,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(ctx).size.height * 0.75,
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 40,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: colors.architecturalBorder,
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Select Current Location',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: colors.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: CircleAvatar(
+                          radius: 18,
+                          backgroundColor: colors.primary.withValues(alpha: 0.12),
+                          child: Icon(Icons.my_location_rounded, size: 18, color: colors.primary),
+                        ),
+                        title: Text(
+                          'Use My Current GPS Location',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            color: colors.primary,
+                          ),
+                        ),
+                        subtitle: Text(
+                          'Detect location automatically from your phone',
+                          style: TextStyle(fontSize: 12, color: colors.onSurfaceVariant),
+                        ),
+                        onTap: () {
+                          Navigator.pop(ctx);
+                          _hasManualCityOverride = false;
+                          _detectCurrentLocation(
+                            requestPermissionIfNeeded: true,
+                            showSettingsPromptOnDeny: true,
+                          );
+                        },
+                      ),
+                      Divider(color: colors.architecturalBorder),
+                      ...cities.map(
+                        (city) => ListTile(
+                          leading: Icon(
+                            Icons.location_on_rounded,
+                            color: city == _currentCity ? colors.primary : colors.onSurfaceVariant,
+                          ),
+                          title: Text(
+                            city,
+                            style: TextStyle(
+                              fontWeight: city == _currentCity ? FontWeight.w700 : FontWeight.w500,
+                              color: city == _currentCity ? colors.primary : colors.onSurface,
+                            ),
+                          ),
+                          trailing: city == _currentCity
+                              ? Icon(Icons.check_rounded, color: colors.primary)
+                              : null,
+                          onTap: () {
+                            setState(() {
+                              _hasManualCityOverride = true;
+                              _currentCity = city;
+                            });
+                            HelaAppStateProvider.of(context).setDetectedCurrentCity(city);
+                            Navigator.pop(ctx);
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
-              Text(
-                'Select Current Location',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: colors.onSurface,
-                ),
-              ),
-              const SizedBox(height: 12),
-              ...cities.map(
-                (city) => ListTile(
-                  leading: Icon(
-                    Icons.location_on_rounded,
-                    color: city == _currentCity ? colors.primary : colors.onSurfaceVariant,
-                  ),
-                  title: Text(
-                    city,
-                    style: TextStyle(
-                      fontWeight: city == _currentCity ? FontWeight.w700 : FontWeight.w500,
-                      color: city == _currentCity ? colors.primary : colors.onSurface,
-                    ),
-                  ),
-                  trailing: city == _currentCity
-                      ? Icon(Icons.check_rounded, color: colors.primary)
-                      : null,
-                  onTap: () {
-                    setState(() => _currentCity = city);
-                    Navigator.pop(ctx);
-                  },
-                ),
-              ),
-            ],
+            ),
           ),
         );
       },
@@ -429,37 +559,41 @@ class _HelaHomePageState extends State<HelaHomePage> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  HelaAppStateProvider.of(context).tr('hello_traveller'),
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: colors.onSurface,
-                    fontFamily: 'Inter',
-                  ),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                HelaAppStateProvider.of(context).tr('hello_traveller'),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: colors.onSurface,
+                  fontFamily: 'Inter',
                 ),
-              ],
-            ),
-            const SizedBox(height: 2),
-            Text(
-              HelaAppStateProvider.of(context).tr('explore_pearl'),
-              style: TextStyle(
-                fontSize: 12,
-                color: colors.onSurfaceVariant,
-                fontWeight: FontWeight.w400,
               ),
-            ),
-          ],
+              const SizedBox(height: 2),
+              Text(
+                HelaAppStateProvider.of(context).tr('explore_pearl'),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: colors.onSurfaceVariant,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ],
+          ),
         ),
+        const SizedBox(width: 8),
         InkWell(
           onTap: _openLocationPicker,
           borderRadius: BorderRadius.circular(999),
           child: Container(
+            constraints: const BoxConstraints(maxWidth: 160),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: colors.surfaceContainer,
@@ -471,16 +605,32 @@ class _HelaHomePageState extends State<HelaHomePage> {
               children: [
                 Icon(Icons.location_on_rounded, size: 15, color: colors.primary),
                 const SizedBox(width: 4),
-                Text(
-                  _currentCity,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: colors.primary,
+                Flexible(
+                  child: Text(
+                    _currentCity,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: colors.primary,
+                    ),
                   ),
                 ),
-                const SizedBox(width: 2),
-                Icon(Icons.expand_more_rounded, size: 14, color: colors.onSurfaceVariant),
+                if (_isLocating) ...[
+                  const SizedBox(width: 5),
+                  SizedBox(
+                    width: 10,
+                    height: 10,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 1.6,
+                      color: colors.primary,
+                    ),
+                  ),
+                ] else ...[
+                  const SizedBox(width: 2),
+                  Icon(Icons.expand_more_rounded, size: 14, color: colors.onSurfaceVariant),
+                ],
               ],
             ),
           ),
@@ -666,12 +816,17 @@ class _HelaHomePageState extends State<HelaHomePage> {
                           ],
                         ),
                       ),
-                      Text(
-                        HelaAppStateProvider.of(context).tr('instant_ai'),
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.white.withValues(alpha: 0.8),
-                          fontWeight: FontWeight.w500,
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          HelaAppStateProvider.of(context).tr('instant_ai'),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.white.withValues(alpha: 0.8),
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                     ],
@@ -828,27 +983,33 @@ class _HelaHomePageState extends State<HelaHomePage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Text(
-                  HelaAppStateProvider.of(context).tr('featured_destinations'),
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w800,
-                    color: colors.onSurface,
-                    fontFamily: 'Inter',
+            Expanded(
+              child: Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      HelaAppStateProvider.of(context).tr('featured_destinations'),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                        color: colors.onSurface,
+                        fontFamily: 'Inter',
+                      ),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 5),
-                Container(
-                  width: 6,
-                  height: 6,
-                  decoration: BoxDecoration(
-                    color: colors.primary,
-                    shape: BoxShape.circle,
+                  const SizedBox(width: 5),
+                  Container(
+                    width: 6,
+                    height: 6,
+                    decoration: BoxDecoration(
+                      color: colors.primary,
+                      shape: BoxShape.circle,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             TextButton(
               onPressed: () {
@@ -993,14 +1154,19 @@ class _HelaHomePageState extends State<HelaHomePage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        item.footerTag,
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: colors.primary,
+                      Expanded(
+                        child: Text(
+                          item.footerTag,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: colors.primary,
+                          ),
                         ),
                       ),
+                      const SizedBox(width: 4),
                       Icon(Icons.arrow_forward_rounded, size: 15, color: colors.primary),
                     ],
                   ),
@@ -1161,75 +1327,81 @@ class _HelaHomePageState extends State<HelaHomePage> {
   }
 
   Widget _buildAiAssistantPromoBanner(HelaColorPalette colors) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [colors.surfaceContainerHigh, colors.surfaceContainer],
+    return InkWell(
+      onTap: () {
+        HelaBottomNavBar.openAskHelaSheet(context);
+      },
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [colors.surfaceContainerHigh, colors.surfaceContainer],
+          ),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: colors.architecturalBorder),
         ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.architecturalBorder),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: colors.primaryContainer,
-              borderRadius: BorderRadius.circular(12),
+        child: Row(
+          children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: colors.primaryContainer,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(Icons.smart_toy_rounded, size: 22, color: colors.goldenAmber),
             ),
-            child: Icon(Icons.smart_toy_rounded, size: 22, color: colors.goldenAmber),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  HelaAppStateProvider.of(context).tr('need_advice'),
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: colors.secondary,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    HelaAppStateProvider.of(context).tr('need_advice'),
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: colors.secondary,
+                    ),
                   ),
-                ),
-                Text(
-                  HelaAppStateProvider.of(context).tr('ask_hela_desc'),
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: colors.onSurface,
+                  Text(
+                    HelaAppStateProvider.of(context).tr('ask_hela_desc'),
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: colors.onSurface,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 8),
-          ElevatedButton(
-            onPressed: () {
-              HelaBottomNavBar.openAskHelaSheet(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: colors.primary,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
-              elevation: 1,
+            const SizedBox(width: 8),
+            ElevatedButton(
+              onPressed: () {
+                HelaBottomNavBar.openAskHelaSheet(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: colors.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+                elevation: 1,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    HelaAppStateProvider.of(context).tr('ask_hela'),
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(width: 4),
+                  const Icon(Icons.chat_bubble_outline_rounded, size: 13),
+                ],
+              ),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  HelaAppStateProvider.of(context).tr('ask_hela'),
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(width: 4),
-                const Icon(Icons.chat_bubble_outline_rounded, size: 13),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
