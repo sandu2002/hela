@@ -401,8 +401,8 @@ class _ExplorePageState extends State<ExplorePage> {
                         _buildTitleAndViewSwitcher(colors),
                         const SizedBox(height: 14),
 
-                        // Search & Filter Bar
-                        _buildSearchAndFilterBar(colors),
+                        // Search Bar
+                        _buildSearchBar(colors),
                         const SizedBox(height: 14),
 
                         // Category Filter Pills
@@ -520,87 +520,80 @@ class _ExplorePageState extends State<ExplorePage> {
     );
   }
 
-  Widget _buildSearchAndFilterBar(HelaColorPalette colors) {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            height: 48,
-            padding: const EdgeInsets.symmetric(horizontal: 14),
-            decoration: BoxDecoration(
-              color: colors.surfaceContainerLowest,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: colors.architecturalBorder),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.04),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.search_rounded, size: 20, color: colors.secondary),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    onChanged: (val) => setState(() => _searchQuery = val),
-                    style: TextStyle(
-                      fontSize: 13.5,
-                      color: colors.onSurface,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      focusedErrorBorder: InputBorder.none,
-                      filled: false,
-                      isCollapsed: true,
-                      contentPadding: EdgeInsets.zero,
-                      hintText: HelaAppStateProvider.of(context).tr('search_destinations_gems'),
-                      hintStyle: TextStyle(
-                        fontSize: 13,
-                        color: colors.onSurfaceVariant.withValues(alpha: 0.7),
-                      ),
-                    ),
-                  ),
-                ),
-                if (_searchQuery.isNotEmpty)
-                  GestureDetector(
-                    onTap: () {
-                      _searchController.clear();
-                      setState(() => _searchQuery = '');
-                    },
-                    child: Icon(Icons.close_rounded, size: 18, color: colors.outline),
-                  ),
-              ],
+  Widget _buildSearchBar(HelaColorPalette colors) {
+    return Container(
+      height: 52,
+      decoration: BoxDecoration(
+        color: colors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: colors.architecturalBorder.withValues(alpha: 0.8),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 18, right: 12),
+            child: Icon(
+              Icons.search_rounded,
+              color: colors.onSurface,
+              size: 22,
             ),
           ),
-        ),
-        const SizedBox(width: 8),
-        Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            color: colors.surfaceContainer,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: colors.architecturalBorder),
+          Expanded(
+            child: TextField(
+              controller: _searchController,
+              onChanged: (val) => setState(() => _searchQuery = val),
+              style: TextStyle(
+                fontSize: 14.5,
+                color: colors.onSurface,
+                fontWeight: FontWeight.w500,
+              ),
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                disabledBorder: InputBorder.none,
+                errorBorder: InputBorder.none,
+                focusedErrorBorder: InputBorder.none,
+                filled: false,
+                isCollapsed: true,
+                contentPadding: EdgeInsets.zero,
+                hintText: 'Places to go, things to do, hotels...',
+                hintStyle: TextStyle(
+                  color: colors.onSurfaceVariant.withValues(alpha: 0.8),
+                  fontSize: 14.5,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
           ),
-          child: IconButton(
-            icon: Icon(Icons.tune_rounded, size: 20, color: colors.primary),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Filter presets: All Regions, UNESCO Sites, Free Entry')),
-              );
-            },
-          ),
-        ),
-      ],
+          if (_searchQuery.isNotEmpty)
+            GestureDetector(
+              onTap: () {
+                _searchController.clear();
+                setState(() => _searchQuery = '');
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                child: Icon(
+                  Icons.close_rounded,
+                  size: 20,
+                  color: colors.onSurfaceVariant,
+                ),
+              ),
+            )
+          else
+            const SizedBox(width: 18),
+        ],
+      ),
     );
   }
 
