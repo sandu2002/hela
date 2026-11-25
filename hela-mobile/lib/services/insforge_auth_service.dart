@@ -1,8 +1,14 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:crypto/crypto.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+
+// ── C-2: flutter_secure_storage replaces SharedPreferences for tokens ──────
+// ── C-3: signInWithSocialAccount (deterministic hash password) REMOVED ─────
+// ── H-1: Token refresh + expiry check added ───────────────────────────────
+// ── H-2: All HTTP calls have explicit timeouts ────────────────────────────
 
 /// User model returned by InsForge BaaS
 class InsForgeUser {
@@ -37,7 +43,8 @@ class InsForgeUser {
       name: profile['name']?.toString() ??
           json['name']?.toString() ??
           (json['email']?.toString().split('@').first ?? 'Explorer'),
-      avatarUrl: profile['avatar_url']?.toString() ?? profile['avatar']?.toString(),
+      avatarUrl:
+          profile['avatar_url']?.toString() ?? profile['avatar']?.toString(),
       emailVerified: json['emailVerified'] == true,
       providers: providersList,
       metadata: json['metadata'] as Map<String, dynamic>? ?? {},
@@ -87,14 +94,19 @@ class InsForgeAuthResult {
   }
 
   factory InsForgeAuthResult.failure(String message) {
-    return InsForgeAuthResult(
-      isSuccess: false,
-      errorMessage: message,
-    );
+    return InsForgeAuthResult(isSuccess: false, errorMessage: message);
   }
 }
 
-/// InsForge Authentication Service connected to InsForge BaaS backend
+/// InsForge Authentication Service connected to InsForge BaaS backend.
+///
+/// Security hardening applied (audit 2026-11-25):
+/// • Access & refresh tokens stored in [FlutterSecureStorage] (Keychain /
+///   Android Keystore) — NOT plain SharedPreferences.
+/// • Removed `signInWithSocialAccount` which derived passwords from email
+///   hash — trivially guessable and exploitable for account takeover.
+/// • All HTTP requests carry explicit 15-second timeouts.
+/// • Token refresh attempted on session restore when access token is expired.
 class InsForgeAuthService {
   InsForgeAuthService._();
   static final InsForgeAuthService instance = InsForgeAuthService._();
@@ -106,45 +118,122 @@ class InsForgeAuthService {
   static const String defaultRedirectUri =
       'https://tvf24g8r.us-east.insforge.app/oauth/callback';
 
-  // SharedPreferences Keys
-  static const String _keyAccessToken = 'insforge_access_token';
-  static const String _keyRefreshToken = 'insforge_refresh_token';
+  static const Duration _timeout = Duration(seconds: 15);
+
+  // ── C-2: Secure storage for tokens ──────────────────────────────────────
+  static const _secureStorage = FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
+
+  // Secure keys for tokens
+  static const String _keyAccessToken  = 'hela_secure_access_token_v1';
+  static const String _keyRefreshToken = 'hela_secure_refresh_token_v1';
+  static const String _keyTokenExpiry  = 'hela_secure_token_expiry_v1';
+
+  // Non-sensitive user profile stays in SharedPreferences (no PII beyond name/email)
   static const String _keyUserData = 'insforge_user_data';
 
   InsForgeUser? _currentUser;
   String? _accessToken;
   String? _refreshToken;
 
-  InsForgeUser? get currentUser => _currentUser;
-  String? get accessToken => _accessToken;
-  String? get refreshToken => _refreshToken;
-  bool get isAuthenticated => _accessToken != null && _currentUser != null;
+  InsForgeUser? get currentUser  => _currentUser;
+  String?       get accessToken  => _accessToken;
+  String?       get refreshToken => _refreshToken;
+  bool          get isAuthenticated =>
+      _accessToken != null && _currentUser != null;
 
   Map<String, String> get _baseHeaders => {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ${_accessToken ?? anonKey}',
       };
 
-  /// Restores session on app startup
+  // ── H-1: Restore session with token refresh ──────────────────────────────
+
+  /// Restores session on app startup.
+  /// Attempts a token refresh if the stored access token looks expired.
   Future<InsForgeUser?> restoreSession() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      _accessToken = prefs.getString(_keyAccessToken);
-      _refreshToken = prefs.getString(_keyRefreshToken);
+      _accessToken  = await _secureStorage.read(key: _keyAccessToken);
+      _refreshToken = await _secureStorage.read(key: _keyRefreshToken);
+      final expiryStr = await _secureStorage.read(key: _keyTokenExpiry);
+
+      final prefs   = await SharedPreferences.getInstance();
       final rawUser = prefs.getString(_keyUserData);
 
-      if (_accessToken != null && rawUser != null) {
-        final decoded = jsonDecode(rawUser) as Map<String, dynamic>;
-        _currentUser = InsForgeUser.fromJson(decoded);
-        return _currentUser;
+      if (_accessToken == null || rawUser == null) return null;
+
+      _currentUser = InsForgeUser.fromJson(
+        jsonDecode(rawUser) as Map<String, dynamic>,
+      );
+
+      // Check expiry and try to refresh
+      if (_isTokenExpired(expiryStr)) {
+        final refreshed = await _attemptTokenRefresh();
+        if (!refreshed) {
+          // Refresh failed — clear session so the app prompts sign-in
+          await signOut();
+          return null;
+        }
       }
+
+      return _currentUser;
     } catch (_) {
-      // Corrupt or missing cache
+      return null;
     }
-    return null;
   }
 
-  /// Sign Up with Email & Password
+  bool _isTokenExpired(String? expiryIso) {
+    if (expiryIso == null) return false; // No expiry stored → assume valid
+    final expiry = DateTime.tryParse(expiryIso);
+    if (expiry == null) return false;
+    // Treat as expired 60 seconds before actual expiry for safety margin
+    return DateTime.now().isAfter(expiry.subtract(const Duration(seconds: 60)));
+  }
+
+  /// Attempts to exchange the stored refresh token for a new access token.
+  /// Returns true if successful.
+  Future<bool> _attemptTokenRefresh() async {
+    if (_refreshToken == null) return false;
+    try {
+      final uri = Uri.parse('$baseUrl/api/auth/sessions/refresh');
+      final response = await http
+          .post(
+            uri,
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $anonKey'},
+            body: jsonEncode({'refreshToken': _refreshToken}),
+          )
+          .timeout(_timeout);
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        final body = jsonDecode(response.body) as Map<String, dynamic>;
+        final newAccess  = body['accessToken']?.toString();
+        final newRefresh = body['refreshToken']?.toString();
+        final expiresIn  = (body['expiresIn'] as num?)?.toInt(); // seconds
+
+        if (newAccess != null && newAccess.isNotEmpty) {
+          _accessToken  = newAccess;
+          if (newRefresh != null) _refreshToken = newRefresh;
+
+          await _secureStorage.write(key: _keyAccessToken, value: _accessToken!);
+          if (newRefresh != null) {
+            await _secureStorage.write(key: _keyRefreshToken, value: newRefresh);
+          }
+          if (expiresIn != null) {
+            final expiry = DateTime.now().add(Duration(seconds: expiresIn));
+            await _secureStorage.write(
+                key: _keyTokenExpiry, value: expiry.toIso8601String());
+          }
+          return true;
+        }
+      }
+    } catch (_) {}
+    return false;
+  }
+
+  // ── Sign Up ───────────────────────────────────────────────────────────────
+
   Future<InsForgeAuthResult> signUp({
     required String email,
     required String password,
@@ -158,24 +247,24 @@ class InsForgeAuthService {
         if (name != null && name.trim().isNotEmpty) 'name': name.trim(),
       };
 
-      final response = await http.post(
-        uri,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $anonKey',
-        },
-        body: jsonEncode(payload),
-      );
+      final response = await http
+          .post(
+            uri,
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $anonKey'},
+            body: jsonEncode(payload),
+          )
+          .timeout(_timeout); // H-2
 
       final body = jsonDecode(response.body);
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         final user = InsForgeUser.fromJson(body['user'] as Map<String, dynamic>);
-        final accessToken = body['accessToken']?.toString();
+        final accessToken  = body['accessToken']?.toString();
         final refreshToken = body['refreshToken']?.toString();
+        final expiresIn    = (body['expiresIn'] as num?)?.toInt();
 
         if (accessToken != null) {
-          await _saveSession(user, accessToken, refreshToken);
+          await _saveSession(user, accessToken, refreshToken, expiresIn: expiresIn);
           return InsForgeAuthResult.success(
             user: user,
             accessToken: accessToken,
@@ -187,14 +276,15 @@ class InsForgeAuthService {
         }
       }
 
-      final errorMsg = _extractErrorMessage(body, 'Sign up failed');
-      return InsForgeAuthResult.failure(errorMsg);
+      return InsForgeAuthResult.failure(
+          _extractErrorMessage(body, 'Sign up failed'));
     } catch (e) {
-      return InsForgeAuthResult.failure('Network connection error: $e');
+      return InsForgeAuthResult.failure('Network connection error. Please try again.');
     }
   }
 
-  /// Sign In with Email & Password
+  // ── Sign In ───────────────────────────────────────────────────────────────
+
   Future<InsForgeAuthResult> signIn({
     required String email,
     required String password,
@@ -207,23 +297,23 @@ class InsForgeAuthService {
         'password': password,
       };
 
-      final response = await http.post(
-        uri,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $anonKey',
-        },
-        body: jsonEncode(payload),
-      );
+      final response = await http
+          .post(
+            uri,
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $anonKey'},
+            body: jsonEncode(payload),
+          )
+          .timeout(_timeout); // H-2
 
       final body = jsonDecode(response.body);
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         final user = InsForgeUser.fromJson(body['user'] as Map<String, dynamic>);
-        final accessToken = body['accessToken']?.toString() ?? '';
+        final accessToken  = body['accessToken']?.toString() ?? '';
         final refreshToken = body['refreshToken']?.toString();
+        final expiresIn    = (body['expiresIn'] as num?)?.toInt();
 
-        await _saveSession(user, accessToken, refreshToken);
+        await _saveSession(user, accessToken, refreshToken, expiresIn: expiresIn);
         return InsForgeAuthResult.success(
           user: user,
           accessToken: accessToken,
@@ -231,82 +321,74 @@ class InsForgeAuthService {
         );
       }
 
-      final errorMsg = _extractErrorMessage(body, 'Invalid credentials');
-      return InsForgeAuthResult.failure(errorMsg);
+      return InsForgeAuthResult.failure(
+          _extractErrorMessage(body, 'Invalid credentials'));
     } catch (e) {
-      return InsForgeAuthResult.failure('Network connection error: $e');
+      return InsForgeAuthResult.failure('Network connection error. Please try again.');
     }
   }
 
-  /// Initiates PKCE OAuth Flow (Google / GitHub)
-  ///
-  /// Returns the authorization URL to open and the generated `codeVerifier`
+  // ── PKCE OAuth (Google / GitHub) ──────────────────────────────────────────
+  // C-3: signInWithSocialAccount (email-hash password) has been REMOVED.
+  // Use initiateOAuth → open authUrl in browser → exchangeOAuthCode instead.
+
+  /// Initiates PKCE OAuth Flow (Google / GitHub).
+  /// Returns the authorization URL to open and the generated `codeVerifier`.
   Future<Map<String, String>?> initiateOAuth({
     required String provider,
     String redirectUri = defaultRedirectUri,
   }) async {
     try {
-      // 1. Generate code_verifier (43-128 random chars)
-      final codeVerifier = _generateCodeVerifier();
-
-      // 2. Generate code_challenge (Base64Url SHA256 of code_verifier without padding)
+      final codeVerifier  = _generateCodeVerifier();
       final codeChallenge = _generateCodeChallenge(codeVerifier);
 
-      // 3. Request auth URL from InsForge
       final uri = Uri.parse(
-        '$baseUrl/api/auth/oauth/$provider?redirect_uri=${Uri.encodeComponent(redirectUri)}&code_challenge=${Uri.encodeComponent(codeChallenge)}',
+        '$baseUrl/api/auth/oauth/$provider'
+        '?redirect_uri=${Uri.encodeComponent(redirectUri)}'
+        '&code_challenge=${Uri.encodeComponent(codeChallenge)}',
       );
 
-      final response = await http.get(
-        uri,
-        headers: {'Authorization': 'Bearer $anonKey'},
-      );
+      final response = await http
+          .get(uri, headers: {'Authorization': 'Bearer $anonKey'})
+          .timeout(_timeout); // H-2
 
       if (response.statusCode == 200) {
-        final body = jsonDecode(response.body);
+        final body    = jsonDecode(response.body);
         final authUrl = body['authUrl']?.toString();
         if (authUrl != null && authUrl.isNotEmpty) {
-          return {
-            'authUrl': authUrl,
-            'codeVerifier': codeVerifier,
-          };
+          return {'authUrl': authUrl, 'codeVerifier': codeVerifier};
         }
       }
-    } catch (e) {
-      // ignore
-    }
+    } catch (_) {}
     return null;
   }
 
-  /// Exchanges InsForge authorization code from OAuth callback for session tokens
+  /// Exchanges an InsForge authorization code from OAuth callback for session tokens.
   Future<InsForgeAuthResult> exchangeOAuthCode({
     required String code,
     required String codeVerifier,
   }) async {
     try {
       final uri = Uri.parse('$baseUrl/api/auth/oauth/exchange?client_type=mobile');
-      final payload = {
-        'code': code,
-        'code_verifier': codeVerifier,
-      };
+      final payload = {'code': code, 'code_verifier': codeVerifier};
 
-      final response = await http.post(
-        uri,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $anonKey',
-        },
-        body: jsonEncode(payload),
-      );
+      final response = await http
+          .post(
+            uri,
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $anonKey'},
+            body: jsonEncode(payload),
+          )
+          .timeout(_timeout); // H-2
 
       final body = jsonDecode(response.body);
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         final user = InsForgeUser.fromJson(body['user'] as Map<String, dynamic>);
-        final accessToken = body['accessToken']?.toString() ?? '';
+        final accessToken  = body['accessToken']?.toString() ?? '';
         final refreshToken = body['refreshToken']?.toString();
+        final expiresIn    = (body['expiresIn'] as num?)?.toInt();
 
-        await _saveSession(user, accessToken, refreshToken);
+        await _saveSession(user, accessToken, refreshToken, expiresIn: expiresIn);
         return InsForgeAuthResult.success(
           user: user,
           accessToken: accessToken,
@@ -314,114 +396,87 @@ class InsForgeAuthService {
         );
       }
 
-      final errorMsg = _extractErrorMessage(body, 'OAuth code exchange failed');
-      return InsForgeAuthResult.failure(errorMsg);
+      return InsForgeAuthResult.failure(
+          _extractErrorMessage(body, 'OAuth code exchange failed'));
     } catch (e) {
-      return InsForgeAuthResult.failure('Network connection error: $e');
+      return InsForgeAuthResult.failure('Network connection error. Please try again.');
     }
   }
 
-  /// Fast social sign-in (Google / GitHub account picker)
-  ///
-  /// Integrates with InsForge user accounts and maintains live session tokens
-  Future<InsForgeAuthResult> signInWithSocialAccount({
-    required String provider,
-    required String email,
-    required String name,
-    String? photoUrl,
-  }) async {
-    try {
-      // 1. Attempt login with social provider identity
-      final loginResult = await signIn(
-        email: email,
-        password: 'InsForgeOAuth_${email.hashCode.abs()}',
-      );
+  // ── Sign Out ───────────────────────────────────────────────────────────────
 
-      if (loginResult.isSuccess) {
-        return loginResult;
-      }
-
-      // 2. If user doesn't exist, create account with provider
-      final regResult = await signUp(
-        email: email,
-        password: 'InsForgeOAuth_${email.hashCode.abs()}',
-        name: name,
-      );
-
-      if (regResult.isSuccess) {
-        return regResult;
-      }
-
-      // If registration failed because user exists, retry login
-      return await signIn(
-        email: email,
-        password: 'InsForgeOAuth_${email.hashCode.abs()}',
-      );
-    } catch (e) {
-      return InsForgeAuthResult.failure('Social sign-in failed: $e');
-    }
-  }
-
-  /// Sign Out and purge stored sessions
   Future<void> signOut() async {
     try {
       if (_accessToken != null) {
         final uri = Uri.parse('$baseUrl/api/auth/sessions/current');
-        await http.delete(uri, headers: _baseHeaders).timeout(
-              const Duration(seconds: 3),
-              onTimeout: () => http.Response('', 200),
-            );
+        await http
+            .delete(uri, headers: _baseHeaders)
+            .timeout(const Duration(seconds: 5),
+                onTimeout: () => http.Response('', 200));
       }
     } catch (_) {
-      // Silent cleanup on timeout/offline
+      // Silent cleanup
     } finally {
-      _currentUser = null;
-      _accessToken = null;
+      _currentUser  = null;
+      _accessToken  = null;
       _refreshToken = null;
 
+      // Clear secure token storage
+      try {
+        await _secureStorage.delete(key: _keyAccessToken);
+        await _secureStorage.delete(key: _keyRefreshToken);
+        await _secureStorage.delete(key: _keyTokenExpiry);
+      } catch (_) {}
+
+      // Clear profile cache
       try {
         final prefs = await SharedPreferences.getInstance();
-        await prefs.remove(_keyAccessToken);
-        await prefs.remove(_keyRefreshToken);
         await prefs.remove(_keyUserData);
-      } catch (_) {
-        // Fallback if native platform channel is not yet re-bound
-      }
+      } catch (_) {}
     }
   }
 
-  // ── Helper Utilities ───────────────────────────────────────────────────────
+  // ── Private helpers ───────────────────────────────────────────────────────
 
   Future<void> _saveSession(
     InsForgeUser user,
     String accessToken,
-    String? refreshToken,
-  ) async {
-    _currentUser = user;
-    _accessToken = accessToken;
+    String? refreshToken, {
+    int? expiresIn,
+  }) async {
+    _currentUser  = user;
+    _accessToken  = accessToken;
     _refreshToken = refreshToken;
 
+    // Store tokens in platform-backed secure storage (C-2)
+    try {
+      await _secureStorage.write(key: _keyAccessToken, value: accessToken);
+      if (refreshToken != null) {
+        await _secureStorage.write(key: _keyRefreshToken, value: refreshToken);
+      }
+      if (expiresIn != null) {
+        final expiry = DateTime.now().add(Duration(seconds: expiresIn));
+        await _secureStorage.write(
+            key: _keyTokenExpiry, value: expiry.toIso8601String());
+      }
+    } catch (_) {}
+
+    // Store non-sensitive profile in SharedPreferences
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(_keyAccessToken, accessToken);
-      if (refreshToken != null) {
-        await prefs.setString(_keyRefreshToken, refreshToken);
-      }
       await prefs.setString(_keyUserData, jsonEncode(user.toJson()));
-    } catch (e) {
-      // If native platform channel is not yet registered (e.g. needs full app rebuild),
-      // keep the session active in memory so sign-in and app usage proceed uninterrupted.
-    }
+    } catch (_) {}
   }
 
   String _generateCodeVerifier() {
-    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~';
+    const chars =
+        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~';
     final random = Random.secure();
-    return List.generate(64, (index) => chars[random.nextInt(chars.length)]).join();
+    return List.generate(64, (i) => chars[random.nextInt(chars.length)]).join();
   }
 
   String _generateCodeChallenge(String verifier) {
-    final bytes = utf8.encode(verifier);
+    final bytes  = utf8.encode(verifier);
     final digest = sha256.convert(bytes);
     return base64Url.encode(digest.bytes).replaceAll('=', '');
   }
@@ -429,7 +484,7 @@ class InsForgeAuthService {
   String _extractErrorMessage(dynamic body, String defaultMessage) {
     if (body is Map) {
       if (body['message'] != null) return body['message'].toString();
-      if (body['error'] != null) return body['error'].toString();
+      if (body['error'] != null)   return body['error'].toString();
     }
     return defaultMessage;
   }

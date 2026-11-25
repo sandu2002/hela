@@ -13,7 +13,7 @@ const List<_AvatarPreset> _avatarPresets = [
   _AvatarPreset(
     label: 'Highlands Explorer',
     url:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuCb49WhjEvtkcNC5SxIgicaFGy0FHajTwhLvSgls2jKJllxIgCm3GtnkBey5ISjUv1a3RBHYRJDux9aTGEuQRD2PRzQ7NQpcvmB23kcn9IUgKDRsKdgyX64gwLDMholuf3EBAmflHGPMYYyBMAcXUVZYTfptDrW3y9Os02is22iH1TXaD6SAOV7pDCQz_K7hNqQjavBUoHUUSiFUtmOeylpDB6d6w3LDISl_r_VyPAoA96T32aE2nQtbA',
+        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
   ),
   _AvatarPreset(
     label: 'Coastal Nomad',

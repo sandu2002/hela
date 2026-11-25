@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hela/models/featured_destination_item.dart';
 import 'package:hela/theme/hela_colors.dart';
+import 'package:hela/widgets/hela_network_image.dart';
 
 export 'package:hela/models/featured_destination_item.dart';
 
@@ -48,8 +49,8 @@ class FeaturedDestinationCard extends StatelessWidget {
                   SizedBox(
                     height: 125,
                     width: double.infinity,
-                    child: Image.network(
-                      item.imageUrl,
+                    child: HelaNetworkImage(
+                      imageUrl: item.imageUrl,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) => Container(
                         color: const Color(0xFF0B5D56).withValues(alpha: 0.15),

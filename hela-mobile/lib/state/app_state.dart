@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hela/models/haven_item.dart';
 import 'package:hela/models/tour_plan.dart';
@@ -77,11 +78,37 @@ class HelaAppState extends ChangeNotifier {
   }
 
   // ── Saved / Bookmarked Smart Tours ─────────────────────────────
+  static const String _savedToursPrefsKey = 'hela_saved_tours_v1';
   final List<TourPlan> _savedTours = [];
 
   List<TourPlan> get savedTours => List.unmodifiable(_savedTours);
 
   bool isTourSaved(String id) => _savedTours.any((t) => t.id == id);
+
+  Future<void> restoreSavedTours() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_savedToursPrefsKey);
+      if (raw == null || raw.isEmpty) return;
+      final list = jsonDecode(raw) as List<dynamic>;
+      _savedTours
+        ..clear()
+        ..addAll(
+          list.map((e) => TourPlan.fromJson(e as Map<String, dynamic>)),
+        );
+      notifyListeners();
+    } catch (_) {
+      // Ignore corrupt local cache
+    }
+  }
+
+  Future<void> _persistSavedTours() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final encoded = jsonEncode(_savedTours.map((t) => t.toJson()).toList());
+      await prefs.setString(_savedToursPrefsKey, encoded);
+    } catch (_) {}
+  }
 
   void toggleSaveTour(TourPlan plan) {
     final index = _savedTours.indexWhere((t) => t.id == plan.id);
@@ -91,6 +118,7 @@ class HelaAppState extends ChangeNotifier {
       _savedTours.add(plan.copyWith(isSaved: true));
     }
     notifyListeners();
+    _persistSavedTours();
   }
 
   void saveTour(TourPlan plan) {
@@ -102,16 +130,19 @@ class HelaAppState extends ChangeNotifier {
       _savedTours.add(saved);
     }
     notifyListeners();
+    _persistSavedTours();
   }
 
   void removeSavedTour(String id) {
     _savedTours.removeWhere((t) => t.id == id);
     notifyListeners();
+    _persistSavedTours();
   }
 
   void clearAllSavedTours() {
     _savedTours.clear();
     notifyListeners();
+    _persistSavedTours();
   }
 
   int get totalSavedCount =>
@@ -193,13 +224,14 @@ class HelaAppState extends ChangeNotifier {
   }
 
   // ── Authentication & Profile ────────────────────────────────────
+  // L-1: Removed real-looking hardcoded demo data; defaults to anonymous state
   bool _isAuthenticated = false;
-  String _userName = 'Kavinda Wickramasinghe';
-  String _userEmail = 'kavinda.w@gmail.com';
-  String _userTitle = '🌿 Tea Country Pathfinder · Level 4';
-  String _userBio = 'Explorer of Ceylon highlands, tea estates, and ancient sanctuaries.';
-  String _userPhone = '+94 77 123 4567';
-  String _userLocation = 'Kandy, Central Province';
+  String _userName = 'Explorer';
+  String _userEmail = '';
+  String _userTitle = '🌿 Sri Lanka Traveler';
+  String _userBio = '';
+  String _userPhone = '';
+  String _userLocation = '';
   String? _userPhotoUrl;
 
   bool get isAuthenticated => _isAuthenticated;

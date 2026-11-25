@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hela/pages/home_page.dart';
+import 'package:hela/widgets/hela_network_image.dart';
 
 /// Reusable Destination / Haven Card conforming to Lankan Tropical Modernism:
 /// - 16px radius, subtle architectural border, ambient tea-tinted depth
@@ -366,8 +367,8 @@ class HavenCard extends StatelessWidget {
   }
 
   Widget _buildImage(HelaColorPalette colors) {
-    return Image.network(
-      imageUrl,
+    return HelaNetworkImage(
+      imageUrl: imageUrl,
       fit: BoxFit.cover,
       errorBuilder: (context, error, stackTrace) {
         return Container(
@@ -377,22 +378,6 @@ class HavenCard extends StatelessWidget {
               Icons.landscape_rounded,
               color: colors.onPrimaryContainer,
               size: 40,
-            ),
-          ),
-        );
-      },
-      loadingBuilder: (context, child, loadingProgress) {
-        if (loadingProgress == null) return child;
-        return Container(
-          color: colors.surfaceContainerHigh,
-          child: Center(
-            child: CircularProgressIndicator(
-              value: loadingProgress.expectedTotalBytes != null
-                  ? loadingProgress.cumulativeBytesLoaded /
-                      loadingProgress.expectedTotalBytes!
-                  : null,
-              strokeWidth: 2,
-              color: colors.secondary,
             ),
           ),
         );

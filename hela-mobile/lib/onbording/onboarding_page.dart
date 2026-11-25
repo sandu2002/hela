@@ -1572,7 +1572,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 fit: StackFit.expand,
                 children: [
                   Image.network(
-                    'https://lh3.googleusercontent.com/aida-public/AB6AXuCw5H81UBSW8A11JA-e6aQCq9ri4qIeZSvKxBA3SfX_4SaGGwn6A3C4TFFfW2KASveGMkh_mw2uHpg6jOgBI-ZUBb05AlswnmsbhYz2iaC2B_KtSh7YR-PzFtqzMSXSDOgPbzzXIs5wvokwLVVS4i-uHNgCEl7IIsB53dAXLigo4X3Gyl0Vv9zkJeznRC6omMp2ia5nYq7vC3UAykMNyCtVayl27YBnXKUUT5502G8',
+                    'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=1000&auto=format&fit=crop&q=80',
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) => Image.network(
                       'https://images.unsplash.com/photo-1620619767323-b95a89183081?w=1000&auto=format&fit=crop&q=80',

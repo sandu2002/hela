@@ -1,51 +1,40 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:hela/config/api_config.dart';
-import 'package:hela/models/destination.dart';
 import 'package:hela/models/tour_plan.dart';
 import 'package:hela/models/tour_preferences.dart';
+import 'package:hela/models/destination.dart';
+import 'package:http/http.dart' as http;
+
+// ---------------------------------------------------------------------------
+// Minimal chat-history types (replaces google_generative_ai dependency for
+// the history we pass back to customizeTourPlan).
+// ---------------------------------------------------------------------------
+
+/// A single turn in the customization conversation history.
+class ChatTurn {
+  final bool isUser;
+  final String text;
+  const ChatTurn({required this.isUser, required this.text});
+}
 
 /// Service for generating AI-powered tour recommendations, full day-by-day
-/// itineraries, and conversational customizations using Google Gemini.
+/// itineraries, and conversational customizations via the HELA backend proxy.
+///
+/// The Gemini API key lives **only on the server**; the mobile app never
+/// embeds or ships it (fixes C-1 from the engineering audit).
 class AIService {
-  final GenerativeModel _primaryModel;
-  final GenerativeModel _fallbackModel;
-  final GenerativeModel _liteFallbackModel;
-  final String _primaryModelName;
-  final String _fallbackModelName;
-  final String _liteFallbackModelName;
+  /// HTTP client — injectable for tests.
+  final http.Client _client;
 
-  AIService({
-    String? apiKey,
-    String? primaryModelName,
-    String? fallbackModelName,
-    String? liteFallbackModelName,
-  })  : _primaryModelName = primaryModelName ?? ApiConfig.geminiModel,
-        _fallbackModelName = fallbackModelName ?? ApiConfig.geminiFallbackModel,
-        _liteFallbackModelName =
-            liteFallbackModelName ?? ApiConfig.geminiLiteFallbackModel,
-        _primaryModel = GenerativeModel(
-          model: primaryModelName ?? ApiConfig.geminiModel,
-          apiKey: apiKey ?? ApiConfig.geminiApiKey,
-          generationConfig: GenerationConfig(
-            responseMimeType: 'application/json',
-          ),
-        ),
-        _fallbackModel = GenerativeModel(
-          model: fallbackModelName ?? ApiConfig.geminiFallbackModel,
-          apiKey: apiKey ?? ApiConfig.geminiApiKey,
-          generationConfig: GenerationConfig(
-            responseMimeType: 'application/json',
-          ),
-        ),
-        _liteFallbackModel = GenerativeModel(
-          model: liteFallbackModelName ?? ApiConfig.geminiLiteFallbackModel,
-          apiKey: apiKey ?? ApiConfig.geminiApiKey,
-          generationConfig: GenerationConfig(
-            responseMimeType: 'application/json',
-          ),
-        );
+  /// Backend AI proxy endpoint.
+  final String _backendUrl;
+
+  AIService({http.Client? client, String? backendUrl})
+      : _client = client ?? http.Client(),
+        _backendUrl = backendUrl ?? ApiConfig.tourGenerateUrl;
+
+  // ── Public API ────────────────────────────────────────────────────────────
 
   /// Discovers and enriches Sri Lanka destinations based on user preferences.
   Future<List<Destination>> discoverDestinations({
@@ -97,15 +86,16 @@ Do not include markdown code fence or extra text. Output strictly raw JSON.
 ''';
 
     try {
-      final responseText = await _generateWithFallback(prompt);
+      final responseText = await _callBackend(prompt);
       final cleaned = _cleanJsonResponse(responseText);
       final list = jsonDecode(cleaned) as List<dynamic>;
 
       final results = list.map((item) {
         final map = item as Map<String, dynamic>;
-        // Try to match with existing candidate for image and source url
         final matchedCandidate = candidateDestinations.firstWhere(
-          (c) => c.name.toLowerCase().contains((map['name'] as String? ?? '').toLowerCase()),
+          (c) => c.name
+              .toLowerCase()
+              .contains((map['name'] as String? ?? '').toLowerCase()),
           orElse: () => const Destination(
             sourceId: 'ai_dest',
             name: '',
@@ -115,13 +105,17 @@ Do not include markdown code fence or extra text. Output strictly raw JSON.
         );
 
         return Destination(
-          sourceId: map['sourceId']?.toString() ?? 'ai_${DateTime.now().millisecondsSinceEpoch}',
+          sourceId: map['sourceId']?.toString() ??
+              'ai_${DateTime.now().millisecondsSinceEpoch}',
           name: map['name']?.toString() ?? 'Sri Lanka Destination',
           description: map['description']?.toString() ?? '',
           isDescriptionAIGenerated: true,
-          latitude: (map['latitude'] as num?)?.toDouble() ?? matchedCandidate.latitude,
-          longitude: (map['longitude'] as num?)?.toDouble() ?? matchedCandidate.longitude,
-          region: map['region']?.toString() ?? matchedCandidate.region,
+          latitude: (map['latitude'] as num?)?.toDouble() ??
+              matchedCandidate.latitude,
+          longitude: (map['longitude'] as num?)?.toDouble() ??
+              matchedCandidate.longitude,
+          region:
+              map['region']?.toString() ?? matchedCandidate.region,
           categories: (map['categories'] as List<dynamic>?)
                   ?.map((e) => e.toString())
                   .toList() ??
@@ -132,18 +126,20 @@ Do not include markdown code fence or extra text. Output strictly raw JSON.
           sourceUrl: matchedCandidate.sourceUrl,
           retrievedAt: DateTime.now().toIso8601String(),
           attribution: 'Curated by Gemini AI & OpenStreetMap',
-          relevanceScore: (map['relevanceScore'] as num?)?.toDouble() ?? 0.90,
+          relevanceScore:
+              (map['relevanceScore'] as num?)?.toDouble() ?? 0.90,
         );
       }).toList();
 
-      return results.isNotEmpty ? results : candidateDestinations.take(6).toList();
+      return results.isNotEmpty
+          ? results
+          : candidateDestinations.take(6).toList();
     } catch (_) {
-      // Fallback gracefully to candidate destinations
       return candidateDestinations.take(6).toList();
     }
   }
 
-  /// Generates a comprehensive day-by-day tour plan using Google Gemini AI.
+  /// Generates a comprehensive day-by-day tour plan via the HELA backend.
   Future<TourPlan> generateTourPlan({
     required TourPreferences preferences,
     required List<Destination> selectedDestinations,
@@ -160,7 +156,9 @@ Do not include markdown code fence or extra text. Output strictly raw JSON.
         ? preferences.interests.map((i) => i.label).join(', ')
         : 'Cultural Heritage, Beaches, Nature';
     final destinationsStr = selectedDestinations.isNotEmpty
-        ? selectedDestinations.map((d) => '${d.name} (${d.region})').join(', ')
+        ? selectedDestinations
+            .map((d) => '${d.name} (${d.region})')
+            .join(', ')
         : 'AI-selected optimal Sri Lanka highlights matching traveler profile';
     final startLoc = preferences.startingLocationName.isNotEmpty
         ? preferences.startingLocationName
@@ -196,7 +194,7 @@ Requirements:
 1. Generate ALL $daysCount days (dayNumber 1 through $daysCount) progressing geographically logically across Sri Lanka starting from "$startLoc".
 2. Respect the traveler's "${preferences.pace.label}" pace: include 2-3 stops/activities for Relaxed, 3-4 for Moderate/Balanced, and 4-5 for Active per day.
 3. Tailor stays, dining, and transport to the "${preferences.budgetLevel.label}" budget tier and selected interests ($interestsStr). Keep descriptions crisp (1-2 vivid sentences) and include 1 practical insider tip on key stops.
-4. Include realistic Sri Lanka transit times & methods between consecutive activities (e.g., "140 km (~3h 20m)", "Private Chauffeur AC Car", "Country Road Drive", "Scenic Tuk-Tuk Hop").
+4. Include realistic Sri Lanka transit times & methods between consecutive activities.
 5. Provide estimated costs in USD per person, helpful Sri Lanka local tips, and seasonal/monsoon or safety warnings for the travel dates.
 
 Respond ONLY with a valid JSON object matching this exact schema (no markdown fences, no commentary):
@@ -215,7 +213,7 @@ Respond ONLY with a valid JSON object matching this exact schema (no markdown fe
   "days": [
     {
       "dayNumber": 1,
-      "title": "Short Route Headline (e.g., CMB → Sigiriya)",
+      "title": "Short Route Headline",
       "summary": "Overview of this day",
       "estimatedDayCostUsd": 85.0,
       "overnightStay": "Town/Area to stay overnight",
@@ -239,15 +237,17 @@ Respond ONLY with a valid JSON object matching this exact schema (no markdown fe
 ''';
 
     try {
-      final result = await _generateWithFallbackMeta(prompt);
+      final result = await _callBackendMeta(prompt);
       final parsed = parseTourPlanJson(result.text);
       return parsed.copyWith(
-        dataSources: ['Google Gemini AI (${result.modelName})', 'HELA Route Optimizer'],
+        dataSources: [
+          'Google Gemini AI (${result.modelName})',
+          'HELA Route Optimizer',
+        ],
         generatedAt: DateTime.now().toIso8601String(),
       );
     } catch (e) {
       debugPrint('[AIService] generateTourPlan fallback triggered: $e');
-      // Return a robust pre-calculated fallback plan matching preferences
       return _createFallbackPlan(preferences, selectedDestinations);
     }
   }
@@ -259,34 +259,45 @@ Respond ONLY with a valid JSON object matching this exact schema (no markdown fe
     return TourPlan.fromJson(map);
   }
 
-  /// Customizes an existing tour plan using AI conversational request while
-  /// preserving multi-turn [chatHistory] memory across adjustments.
+  /// Customizes an existing tour plan using conversational [chatHistory].
+  /// Only the **summary** of the current plan and the focused day (if any)
+  /// are sent — not the entire plan JSON — to keep token usage bounded.
   Future<TourPlan> customizeTourPlan({
     required TourPlan currentPlan,
     required String userRequest,
-    List<Content>? chatHistory,
+    List<ChatTurn>? chatHistory,
     int? focusedDayNumber,
   }) async {
-    final currentPlanJson = jsonEncode(currentPlan.toJson());
+    // Build a compact context: plan header + only the relevant day
     final dayFocusNote = focusedDayNumber != null
         ? 'The traveler is currently viewing Day $focusedDayNumber.'
         : '';
 
+    // Send a lightweight plan summary instead of full JSON
+    final planSummary = _buildPlanSummary(currentPlan, focusedDayNumber);
+
+    // Append a brief conversation history (last 6 turns max to bound tokens)
+    final historyStr = (chatHistory ?? [])
+        .reversed
+        .take(6)
+        .toList()
+        .reversed
+        .map((t) => '${t.isUser ? "Traveler" : "HELA"}: ${t.text}')
+        .join('\n');
+
     final prompt = '''
 You are the HELA AI Smart Tour Planner assistant.
-The traveler wants to customize their existing Sri Lanka tour plan. Remember any previous preferences or changes discussed in our conversation history.
+The traveler wants to customize their existing Sri Lanka tour plan.
 $dayFocusNote
-
-Current Latest Tour Plan JSON:
-$currentPlanJson
+${historyStr.isNotEmpty ? '\nConversation so far:\n$historyStr\n' : ''}
+Current Tour Plan Summary:
+$planSummary
 
 Traveler's Latest Request:
 "$userRequest"
 
-Apply the requested changes to the itinerary (e.g. adjust days, swap activities, adjust pace, add beach time, adjust budget) while preserving continuity with earlier conversation turns.
-Maintain realistic travel routes and logistical feasibility within Sri Lanka.
-
-Respond ONLY with a valid JSON object matching the TourPlan schema, plus an extra string field "customizationSummary" explaining what you updated:
+Apply the requested changes while preserving realistic Sri Lanka routing.
+Respond ONLY with a valid JSON object matching the full TourPlan schema, plus "customizationSummary" field:
 {
   "id": "${currentPlan.id}",
   "title": "...",
@@ -299,17 +310,14 @@ Respond ONLY with a valid JSON object matching the TourPlan schema, plus an extr
   "budgetExcludes": [...],
   "travelTips": [...],
   "warnings": [...],
-  "customizationSummary": "Brief 1-2 sentence summary of the exact changes applied.",
+  "customizationSummary": "Brief 1-2 sentence summary of changes applied.",
   "days": [...]
 }
-Do not wrap in markdown or include extra text.
+No markdown or extra text.
 ''';
 
     try {
-      final result = await _generateWithFallbackMeta(
-        prompt,
-        chatHistory: chatHistory,
-      );
+      final result = await _callBackendMeta(prompt);
       final newPlan = parseTourPlanJson(result.text);
       final updatedPlan = newPlan.copyWith(
         id: newPlan.id.isNotEmpty ? newPlan.id : currentPlan.id,
@@ -317,25 +325,23 @@ Do not wrap in markdown or include extra text.
         generatedAt: DateTime.now().toIso8601String(),
         dataSources: [
           'Google Gemini AI (${result.modelName})',
-          ...currentPlan.dataSources.where((s) => !s.startsWith('Google Gemini AI')),
+          ...currentPlan.dataSources
+              .where((s) => !s.startsWith('Google Gemini AI')),
         ],
         isSaved: currentPlan.isSaved,
       );
 
-      // Append concise turn pair to chatHistory so Gemini remembers prior
-      // requests and changes without bloating subsequent context with full JSONs.
-      if (chatHistory != null) {
-        final dayTag = focusedDayNumber != null ? '[Day $focusedDayNumber] ' : '';
-        chatHistory.add(Content.text('$dayTag$userRequest'));
-        final summary = updatedPlan.customizationSummary?.trim().isNotEmpty == true
-            ? updatedPlan.customizationSummary!.trim()
-            : 'Updated itinerary to v${updatedPlan.version}.';
-        chatHistory.add(Content.model([TextPart('Applied v${updatedPlan.version}: $summary')]));
-      }
+      // Record compact turn so the next call has context
+      chatHistory?.add(ChatTurn(isUser: true, text: userRequest));
+      final summary = updatedPlan.customizationSummary?.trim().isNotEmpty == true
+          ? updatedPlan.customizationSummary!.trim()
+          : 'Updated itinerary to v${updatedPlan.version}.';
+      chatHistory?.add(ChatTurn(
+          isUser: false,
+          text: 'Applied v${updatedPlan.version}: $summary'));
 
       return updatedPlan;
     } catch (_) {
-      // If AI customization fails, return current plan with a note
       return currentPlan.copyWith(
         customizationSummary:
             'Adjusted based on: "$userRequest" (offline adjustments applied).',
@@ -343,61 +349,110 @@ Do not wrap in markdown or include extra text.
     }
   }
 
-  /// Builds a Gemini [Content] history list from saved [ChatMessage] items.
-  static List<Content> buildChatHistoryFromMessages(List<ChatMessage> messages) {
+  /// Builds a [ChatTurn] history list from saved [ChatMessage] items.
+  static List<ChatTurn> buildChatHistoryFromMessages(List<ChatMessage> messages) {
     return messages
         .where((m) => m.content.trim().isNotEmpty)
         .map(
-          (m) => m.isUser
-              ? Content.text(m.content)
-              : Content.model([TextPart(m.content)]),
+          (m) => ChatTurn(
+            isUser: m.isUser,
+            text: m.content,
+          ),
         )
         .toList();
   }
 
-  /// Helper to generate with primary model, falling back across Gemini Flash tiers.
-  Future<String> _generateWithFallback(String prompt) async {
-    final result = await _generateWithFallbackMeta(prompt);
+  /// Sends a conversational Ask HELA query through the backend AI proxy.
+  Future<String?> chatWithHela({
+    required String systemInstruction,
+    required List<ChatTurn> history,
+    required String prompt,
+  }) async {
+    final historyStr = history
+        .reversed
+        .take(10)
+        .toList()
+        .reversed
+        .map((t) => '${t.isUser ? "Traveler" : "HELA"}: ${t.text}')
+        .join('\n');
+
+    final fullPrompt = '''
+$systemInstruction
+
+${historyStr.isNotEmpty ? 'Conversation history:\n$historyStr\n\n' : ''}Traveler: $prompt
+HELA:''';
+
+    try {
+      final result = await _callBackendMeta(
+        fullPrompt,
+        responseMimeType: 'text/plain',
+      );
+      history.add(ChatTurn(isUser: true, text: prompt));
+      history.add(ChatTurn(isUser: false, text: result.text));
+      return result.text;
+    } catch (e) {
+      debugPrint('[AIService] chatWithHela error: $e');
+      return null;
+    }
+  }
+
+  // ── Private helpers ───────────────────────────────────────────────────────
+
+  /// Calls the HELA backend AI proxy and returns the raw text.
+  Future<String> _callBackend(String prompt) async {
+    final result = await _callBackendMeta(prompt);
     return result.text;
   }
 
-  Future<({String text, String modelName})> _generateWithFallbackMeta(
+  Future<({String text, String modelName})> _callBackendMeta(
     String prompt, {
-    List<Content>? chatHistory,
+    String responseMimeType = 'application/json',
   }) async {
-    final attempts = [
-      (model: _primaryModel, name: _primaryModelName),
-      (model: _fallbackModel, name: _fallbackModelName),
-      (model: _liteFallbackModel, name: _liteFallbackModelName),
-    ];
+    final response = await _client
+        .post(
+          Uri.parse(_backendUrl),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({
+            'prompt': prompt,
+            'responseMimeType': responseMimeType,
+          }),
+        )
+        .timeout(const Duration(seconds: 90));
 
-    Object? lastError;
-    for (final attempt in attempts) {
-      try {
-        final GenerateContentResponse response;
-        if (chatHistory != null && chatHistory.isNotEmpty) {
-          final chat = attempt.model.startChat(
-            history: List<Content>.from(chatHistory),
-          );
-          response = await chat
-              .sendMessage(Content.text(prompt))
-              .timeout(const Duration(seconds: 60));
-        } else {
-          response = await attempt.model
-              .generateContent([Content.text(prompt)])
-              .timeout(const Duration(seconds: 60));
-        }
-        final text = response.text?.trim();
-        if (text != null && text.isNotEmpty) {
-          return (text: text, modelName: attempt.name);
-        }
-      } catch (e) {
-        lastError = e;
-        debugPrint('[AIService] Model ${attempt.name} error: $e');
-      }
+    if (response.statusCode != 200) {
+      throw StateError(
+          'Backend AI proxy returned ${response.statusCode}: ${response.body}');
     }
 
-    throw StateError('All Gemini models failed: $lastError');
+    final body = jsonDecode(response.body) as Map<String, dynamic>;
+    final text = body['text']?.toString().trim();
+    if (text == null || text.isEmpty) {
+      throw StateError('Backend returned empty AI response');
+    }
+    return (text: text, modelName: body['modelName']?.toString() ?? 'gemini');
+  }
+
+  /// Builds a compact plan summary to reduce token usage in customization.
+  static String _buildPlanSummary(TourPlan plan, int? focusedDay) {
+    final buf = StringBuffer();
+    buf.writeln('Title: ${plan.title}');
+    buf.writeln('Duration: ${plan.durationDays} days');
+    buf.writeln('Summary: ${plan.summary}');
+    if (focusedDay != null) {
+      final day = plan.days.firstWhere(
+        (d) => d.dayNumber == focusedDay,
+        orElse: () => plan.days.first,
+      );
+      buf.writeln('\nFocused Day $focusedDay: ${day.title}');
+      buf.writeln('Activities: ${day.activities.map((a) => a.title).join(', ')}');
+    } else {
+      buf.writeln('\nDays overview:');
+      for (final d in plan.days) {
+        buf.writeln(
+            '  Day ${d.dayNumber}: ${d.title} (${d.activities.length} activities)');
+      }
+    }
+    return buf.toString();
   }
 
   /// Cleans markdown code fences or surrounding prose from a JSON response.
@@ -423,7 +478,7 @@ Do not wrap in markdown or include extra text.
     return cleaned;
   }
 
-  /// Generates a sensible curated fallback plan if offline or AI call hits a network error.
+  /// Generates a sensible curated fallback plan if the backend is unreachable.
   TourPlan _createFallbackPlan(
     TourPreferences prefs,
     List<Destination> destinations,
@@ -533,89 +588,6 @@ Do not wrap in markdown or include extra text.
           ),
         ],
       ),
-      const ItineraryDay(
-        dayNumber: 3,
-        title: 'Misty Tea Hills & Ella Odyssey',
-        summary: 'Emerald plantations & Nine Arch Bridge',
-        estimatedDayCostUsd: 145.0,
-        overnightStay: 'Ella',
-        activities: [
-          ItineraryActivity(
-            title: 'Ceylon Tea Estate Tasting & Factory Walk',
-            description:
-                'Walk among dew-kissed tea terraces and sample golden Pekoe and silver-tip teas straight from a highland estate.',
-            startTime: '09:00 AM',
-            estimatedDuration: '~2 hrs',
-            category: 'Nature',
-            estimatedCostUsd: 10.0,
-          ),
-          ItineraryActivity(
-            title: 'Kandy-to-Ella Scenic Mountain Train',
-            description:
-                'Glide past cascading waterfalls, cloud forests, and colonial viaducts aboard Sri Lanka\'s iconic blue mountain railway.',
-            startTime: '12:30 PM',
-            estimatedDuration: 'Scenic Rail',
-            category: 'Rail Journey',
-            estimatedCostUsd: 18.0,
-            travelMethod: 'Private Transfer to Station',
-            travelTimeFromPrevious: '15 km (~30m)',
-            tips: [
-              'Choose right-side seats heading south from Nanu Oya for sweeping views of tea valleys and Nine Arch Bridge.',
-            ],
-          ),
-          ItineraryActivity(
-            title: 'Nine Arch Bridge Golden Hour & Cafe',
-            description:
-                'Stroll through lush bamboo paths to watch the afternoon train cross the stone arches framed by misty hills.',
-            startTime: '04:30 PM',
-            estimatedDuration: '~1.5 hr',
-            category: 'Landmark',
-            estimatedCostUsd: 0.0,
-            travelMethod: 'Hillside Tuk-Tuk',
-            travelTimeFromPrevious: '4 km (~12m)',
-          ),
-        ],
-      ),
-      const ItineraryDay(
-        dayNumber: 4,
-        title: 'Wild Elephants & Southern Coast',
-        summary: 'Morning safari to golden beaches',
-        estimatedDayCostUsd: 165.0,
-        overnightStay: 'Mirissa / Galle',
-        activities: [
-          ItineraryActivity(
-            title: 'Udawalawe Dawn Elephant Jeep Safari',
-            description:
-                'Track wild Sri Lankan elephant herds, peacocks, and water buffalo across golden grasslands with an expert tracker.',
-            startTime: '06:00 AM',
-            estimatedDuration: 'Must-See Safari',
-            category: 'Wildlife',
-            estimatedCostUsd: 45.0,
-          ),
-          ItineraryActivity(
-            title: 'Coconut Tree Hill & Mirissa Bay Lunch',
-            description:
-                'Fresh grilled seafood and tropical fruit bowls overlooking crescent turquoise waves on the southern coast.',
-            startTime: '01:00 PM',
-            estimatedDuration: '~2 hrs',
-            category: 'Beach & Dining',
-            estimatedCostUsd: 16.0,
-            travelMethod: 'Southern Highway Transfer',
-            travelTimeFromPrevious: '115 km (~2h 15m)',
-          ),
-          ItineraryActivity(
-            title: 'Galle Dutch Fort Ramparts Sunset',
-            description:
-                'Wander cobblestone streets, boutique cafes, and 17th-century coral ramparts as the Indian Ocean turns gold.',
-            startTime: '05:00 PM',
-            estimatedDuration: 'Evening Walk',
-            category: 'Heritage',
-            estimatedCostUsd: 0.0,
-            travelMethod: 'Coastal Drive',
-            travelTimeFromPrevious: '34 km (~50m)',
-          ),
-        ],
-      ),
     ];
 
     final days = List.generate(daysCount, (index) {
@@ -659,7 +631,11 @@ Do not wrap in markdown or include extra text.
         'Boutique Eco-Stays & Breakfast',
         'Curated Cultural & Safari Highlights',
       ],
-      budgetExcludes: const ['International airfare', 'Personal shopping', 'Travel insurance'],
+      budgetExcludes: const [
+        'International airfare',
+        'Personal shopping',
+        'Travel insurance',
+      ],
       travelTips: const [
         'Carry Sri Lankan Rupees (LKR) for tuk-tuks and village cafes',
         'Modest clothing covering shoulders and knees is mandatory at sacred temples',

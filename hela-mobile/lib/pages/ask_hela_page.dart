@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
-import 'package:hela/config/api_config.dart';
+import 'package:hela/services/ai_service.dart';
 import 'package:hela/services/live_weather_service.dart';
 import 'package:hela/services/localization_service.dart';
 import 'package:hela/state/app_state.dart';
@@ -64,16 +63,15 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
   final LiveWeatherService _weatherService = LiveWeatherService();
 
   bool _isAITyping = false;
-  final List<Content> _chatHistory = [];
+  final List<ChatTurn> _chatHistory = [];
 
-  static final Content _systemInstruction = Content.system(
-    'You are HELA, the 24/7 personal Sri Lanka Travel Companion & AI Cultural Guide. '
-    'You provide verified practical tips, cultural etiquette, train schedules, pricing in LKR, '
-    'historical lore, weather-smart routes, and authentic local recommendations for Sri Lanka. '
-    'Keep the tone warm, welcoming, knowledgeable, and concise like a trusted local friend. '
-    'Structure your answers clearly with practical advice and local insights. '
-    'Do not start your response with "Ayubowan!" because the chat card header already greets the user.',
-  );
+  static const String _systemInstruction =
+      'You are HELA, the 24/7 personal Sri Lanka Travel Companion & AI Cultural Guide. '
+      'You provide verified practical tips, cultural etiquette, train schedules, pricing in LKR, '
+      'historical lore, weather-smart routes, and authentic local recommendations for Sri Lanka. '
+      'Keep the tone warm, welcoming, knowledgeable, and concise like a trusted local friend. '
+      'Structure your answers clearly with practical advice and local insights. '
+      'Do not start your response with "Ayubowan!" because the chat card header already greets the user.';
 
   final List<AskHelaMessage> _messages = [];
 
@@ -263,37 +261,13 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
     _scrollToBottom();
   }
 
-  /// Sends [prompt] using multi-turn [_chatHistory], falling back across
-  /// free Gemini Flash tiers if the primary model experiences transient load.
+  /// Sends [prompt] using multi-turn [_chatHistory] via the HELA backend AI proxy.
   Future<String?> _sendToGeminiWithFallback(String prompt) async {
-    final models = [
-      ApiConfig.geminiModel,
-      ApiConfig.geminiFallbackModel,
-      ApiConfig.geminiLiteFallbackModel,
-    ];
-    for (final modelName in models) {
-      try {
-        final model = GenerativeModel(
-          model: modelName,
-          apiKey: ApiConfig.geminiApiKey,
-          systemInstruction: _systemInstruction,
-        );
-        final chat = model.startChat(history: _chatHistory);
-        final response = await chat
-            .sendMessage(Content.text(prompt))
-            .timeout(const Duration(seconds: 20));
-        final text = response.text?.trim();
-        if (text != null && text.isNotEmpty) {
-          _chatHistory
-            ..clear()
-            ..addAll(chat.history);
-          return text;
-        }
-      } catch (e) {
-        debugPrint('[AskHELA] Model $modelName error: $e');
-      }
-    }
-    return null;
+    return AIService().chatWithHela(
+      systemInstruction: _systemInstruction,
+      history: _chatHistory,
+      prompt: prompt,
+    );
   }
 
   AskHelaMessage _buildRichAiMessageFromText(

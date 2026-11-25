@@ -23,17 +23,21 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
       TextEditingController(text: 'Bandaranaike Intl Airport (CMB)');
   final TextEditingController _extraNotesController = TextEditingController();
 
+  late DateTime _startDate;
+  late DateTime _endDate;
+
   @override
   void initState() {
     super.initState();
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    _startDate = today.add(const Duration(days: 7));
+    _endDate = _startDate.add(const Duration(days: 10));
     if (widget.initialExtraNote != null &&
         widget.initialExtraNote!.trim().isNotEmpty) {
       _extraNotesController.text = widget.initialExtraNote!.trim();
     }
   }
-
-  DateTime _startDate = DateTime(2025, 10, 14);
-  DateTime _endDate = DateTime(2025, 10, 24);
 
   int _adults = 2;
   int _children = 0;
@@ -90,32 +94,138 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
     return 'Group Journey';
   }
 
+  static const List<String> _shortMonths = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+  ];
+
+  static const List<String> _fullMonths = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
+  ];
+
+  static const List<String> _weekdays = [
+    'Monday', 'Tuesday', 'Wednesday', 'Thursday',
+    'Friday', 'Saturday', 'Sunday',
+  ];
+
+  DateTime get _today {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day);
+  }
+
+  String _formatShortDate(DateTime date) =>
+      '${_shortMonths[date.month - 1]} ${date.day}, ${date.year}';
+
+  String _weekdayName(DateTime date) => _weekdays[date.weekday - 1];
+
+  String _seasonalTip(int month) {
+    final monthName = _fullMonths[month - 1];
+    if (month == 12 || month <= 4) {
+      return '$monthName is peak dry season for South-West beaches, Hill Country & Yala safaris.';
+    } else if (month >= 5 && month <= 9) {
+      return '$monthName is ideal for sunny East Coast beaches, Trincomalee & Arugam Bay.';
+    } else {
+      return '$monthName brings lush green tea hills & great wildlife sightings across reserves.';
+    }
+  }
+
+  Widget _buildDatePickerTheme(BuildContext context, Widget? child) {
+    final colors = HelaColors.of(context);
+    final isDark = colors.brightness == Brightness.dark;
+    return Theme(
+      data: Theme.of(context).copyWith(
+        colorScheme: ColorScheme(
+          brightness: colors.brightness,
+          primary: colors.primary,
+          onPrimary: colors.onPrimary,
+          secondary: colors.secondary,
+          onSecondary: colors.onSecondary,
+          error: colors.error,
+          onError: colors.onError,
+          surface: colors.cardBackground,
+          onSurface: colors.onSurface,
+        ),
+        dialogTheme: DialogThemeData(
+          backgroundColor: isDark ? colors.surfaceContainer : colors.cardBackground,
+        ),
+      ),
+      child: child!,
+    );
+  }
+
   Future<void> _pickDateRange() async {
+    final firstDate = _today;
+    final lastDate = firstDate.add(const Duration(days: 730));
+    final initialStart =
+        _startDate.isBefore(firstDate) ? firstDate : _startDate;
+    final rawEnd = _endDate.isAfter(initialStart)
+        ? _endDate
+        : initialStart.add(const Duration(days: 1));
+    final initialEnd = rawEnd.isAfter(lastDate) ? lastDate : rawEnd;
+
     final picked = await showDateRangePicker(
       context: context,
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 730)),
-      initialDateRange: DateTimeRange(start: _startDate, end: _endDate),
-      builder: (context, child) {
-        final colors = HelaColors.of(context);
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: colors.primary,
-              onPrimary: Colors.white,
-              surface: colors.cardBackground,
-              onSurface: colors.onSurface,
-            ),
-          ),
-          child: child!,
-        );
-      },
+      firstDate: firstDate,
+      lastDate: lastDate,
+      initialDateRange: DateTimeRange(start: initialStart, end: initialEnd),
+      helpText: 'SELECT TRAVEL DATES',
+      builder: _buildDatePickerTheme,
     );
 
     if (picked != null) {
       setState(() {
         _startDate = picked.start;
-        _endDate = picked.end;
+        _endDate = picked.end.isAfter(picked.start)
+            ? picked.end
+            : picked.start.add(const Duration(days: 1));
+      });
+    }
+  }
+
+  Future<void> _pickArrivalDate() async {
+    final firstDate = _today;
+    final lastDate = firstDate.add(const Duration(days: 730));
+    final initialDate =
+        _startDate.isBefore(firstDate) ? firstDate : _startDate;
+
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate.isAfter(lastDate) ? lastDate : initialDate,
+      firstDate: firstDate,
+      lastDate: lastDate,
+      helpText: 'SELECT ARRIVAL DATE',
+      builder: _buildDatePickerTheme,
+    );
+
+    if (picked != null) {
+      setState(() {
+        final currentDuration = _tripDays;
+        _startDate = picked;
+        if (!_endDate.isAfter(_startDate)) {
+          _endDate = _startDate.add(Duration(days: currentDuration));
+        }
+      });
+    }
+  }
+
+  Future<void> _pickDepartureDate() async {
+    final firstDate = _startDate.add(const Duration(days: 1));
+    final lastDate = _today.add(const Duration(days: 731));
+    final initialDate = _endDate.isBefore(firstDate) ? firstDate : _endDate;
+
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate.isAfter(lastDate) ? lastDate : initialDate,
+      firstDate: firstDate,
+      lastDate: lastDate,
+      helpText: 'SELECT DEPARTURE DATE',
+      builder: _buildDatePickerTheme,
+    );
+
+    if (picked != null) {
+      setState(() {
+        _endDate = picked;
       });
     }
   }
@@ -454,21 +564,21 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                   Expanded(
                     child: _buildShowcaseCard(
                       'Central Highlands',
-                      'https://lh3.googleusercontent.com/aida-public/AB6AXuBs_XTpZKMpdPe-QRpIy4hqdIg9uURYhpyrlSvlOtIRuuS4oWcES1vqSYTj4d1VaviJYn3uj7VRe7ei_uJK8t4PsYK_EyLrtEolEcJGjSWUul5l7l4LfkauA9dpsFuOJSScp_LlXUbzMAWTcKIEvEr8DOu8XPyPG9ocI9-CDD_MKUUfWqXpW8bB5duRqszaVJ01WC7ZIvLL9L-YVQvqk9CUKypvfzEGzw1fUyJ-678',
+                      'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
                     ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: _buildShowcaseCard(
                       'South Coast',
-                      'https://lh3.googleusercontent.com/aida-public/AB6AXuBPkLckqRGKAlatJCUM4gzHwUasDEoxiUV5dsXjSnc19gS9bfJoY2acl0NSPlOg5DQaW4C6jOVdSQmQpqYxFE_es6O_i-QcNsNpsN8djPl1yVSDswCM8Vk9AJYCh9s_QhyElsuPXx6yTFRbEqT2h4h6m9czsbJZhjAf7L1I0wy2n3ap4_0VzJqe7ZEufOFq1A1lqQRXnXu65hu3KLg12iLqCKMwSyKtKDnCSAFA9Do',
+                      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80',
                     ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: _buildShowcaseCard(
                       'Cultural Triangle',
-                      'https://lh3.googleusercontent.com/aida-public/AB6AXuCyl99JeHU0i5pKUTjsb7qgKbHrl5G21ra2Whx8gvRoseh60V0pChotYO705JSrpPKAUXNeDh1MghKukIU8TB4GUvFh4fMmllN7u5iuTcX3lbLGBn77iCHbTANUcvkHudj_JoSPTqfEh4-nsoiT4xvHZfbnSHmTkOaX03VfjzxJXWD_P0nw_b6TIQakMs5VM0W-RiKVzAcoZQLhN1iorttL6YgEkYJUUBCDQak5GAY',
+                      'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
                     ),
                   ),
                 ],
@@ -741,25 +851,31 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                 const Text(' *', style: TextStyle(color: Color(0xFFDC2626), fontWeight: FontWeight.bold)),
               ],
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
-              decoration: BoxDecoration(
-                color: colors.secondaryContainer,
-                borderRadius: BorderRadius.circular(999),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.timelapse_rounded, size: 12, color: colors.onSecondaryContainer),
-                  const SizedBox(width: 4),
-                  Text(
-                    '$_tripDays Days Island Loop',
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: colors.onSecondaryContainer,
+            InkWell(
+              onTap: _pickDateRange,
+              borderRadius: BorderRadius.circular(999),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+                decoration: BoxDecoration(
+                  color: colors.secondaryContainer,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.timelapse_rounded, size: 12, color: colors.onSecondaryContainer),
+                    const SizedBox(width: 4),
+                    Text(
+                      '$_tripDays Days Island Loop',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: colors.onSecondaryContainer,
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 4),
+                    Icon(Icons.edit_calendar_rounded, size: 11, color: colors.onSecondaryContainer),
+                  ],
+                ),
               ),
             ),
           ],
@@ -771,7 +887,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
           children: [
             Expanded(
               child: InkWell(
-                onTap: _pickDateRange,
+                onTap: _pickArrivalDate,
                 borderRadius: BorderRadius.circular(14),
                 child: Container(
                   padding: const EdgeInsets.all(12),
@@ -799,16 +915,18 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                               letterSpacing: 0.6,
                             ),
                           ),
+                          const Spacer(),
+                          Icon(Icons.edit_rounded, size: 12, color: colors.onSurfaceVariant),
                         ],
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Oct ${_startDate.day}, ${_startDate.year}',
+                        _formatShortDate(_startDate),
                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: colors.onSurface),
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Tuesday • Morning',
+                        '${_weekdayName(_startDate)} • Morning',
                         style: TextStyle(fontSize: 11, color: colors.secondary, fontWeight: FontWeight.w500),
                       ),
                     ],
@@ -819,7 +937,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
             const SizedBox(width: 10),
             Expanded(
               child: InkWell(
-                onTap: _pickDateRange,
+                onTap: _pickDepartureDate,
                 borderRadius: BorderRadius.circular(14),
                 child: Container(
                   padding: const EdgeInsets.all(12),
@@ -847,16 +965,18 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                               letterSpacing: 0.6,
                             ),
                           ),
+                          const Spacer(),
+                          Icon(Icons.edit_rounded, size: 12, color: colors.onSurfaceVariant),
                         ],
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Oct ${_endDate.day}, ${_endDate.year}',
+                        _formatShortDate(_endDate),
                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: colors.onSurface),
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Friday • Evening',
+                        '${_weekdayName(_endDate)} • Evening',
                         style: TextStyle(fontSize: 11, color: colors.secondary, fontWeight: FontWeight.w500),
                       ),
                     ],
@@ -873,7 +993,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
             const SizedBox(width: 4),
             Expanded(
               child: Text(
-                'October is peak dry season for South-West beaches & Yala safaris.',
+                _seasonalTip(_startDate.month),
                 style: TextStyle(fontSize: 11, color: colors.onSurfaceVariant),
               ),
             ),

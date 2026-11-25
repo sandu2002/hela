@@ -76,12 +76,14 @@ class LiveWeatherService {
   static const Duration _httpTimeout = Duration(seconds: 8);
 
   final http.Client _client;
+  final bool _hasCustomClient;
   final Future<Position?> Function()? positionProvider;
 
   LiveWeatherService({
     http.Client? client,
     this.positionProvider,
-  }) : _client = client ?? http.Client();
+  })  : _client = client ?? http.Client(),
+        _hasCustomClient = client != null;
 
   /// Loads the most recently cached live weather reading if available.
   Future<LiveWeatherData?> loadCachedWeather() async {
@@ -334,6 +336,7 @@ class LiveWeatherService {
     required double longitude,
     required String locationName,
   }) async {
+    if (!_hasCustomClient && ApiConfig.geminiApiKey.trim().isEmpty) return null;
     final models = [
       ApiConfig.geminiModel,
       ApiConfig.geminiFallbackModel,

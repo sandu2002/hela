@@ -177,7 +177,6 @@ class PlaceDetailCatalog {
     description:
         'An extraordinary 5th-century palace fortress perched atop a towering 180-metre sheer granite monolith, boasting celestial frescoes, mirror-polished parapets, and colossal stone lion paws guarding the clouds.',
     photos: [
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuB470bfrsJ34_Zfz3mF8BpQZOUum-fhawKh51cm1K8-0n16IJnyIRDWCDo-p-4LKlIJL7eWRS6fSHiQ7Y076dniwfTg2-uSNGP-Y1fU4rUt8gQCz0RWM_EspICB8L-E9uu3ZguLz8MSZG0MZai01QaMRbw9u7NFJ6XRoYIDFwFMifvWSsy_XhyQ2UkxBFBJVs0TNFtCkUr-O7xCS0cyKCNy4TCnZZq8uzJM0M3dU9c',
       'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
       'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
       'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
@@ -326,7 +325,7 @@ class PlaceDetailCatalog {
     description:
         'Witness monumental herds of wild Asian elephants grazing along ancient emerald reservoir shores in Minneriya, paired with thrilling dawn 4x4 jeep tracks through Yala\'s dry-zone scrub in search of elusive Sri Lankan leopards and sloth bears.',
     photos: [
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuD0D-R82TA9_SGuSRDfEnwrE2O1k8vnQfZhJ3koSU4dn3zja8bG-1GyYpElMjx7OaMROOj5YIrG_ilEW47rcLiRGDhHJ9XTpTJm5wQdSK6ZbluVAV45sagYlIO4JtR_VMfGHBBecYiAD1gG5dir-RCgv1og-V5_c2KBOHvrr44Kfw5QelxizrzCF9Bhhj9hBwM6Qy65FCruTdgatHraZDf-6C4KhLFPlpc0DpOKZfs',
+      'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?w=800&auto=format&fit=crop&q=80',
       'https://images.unsplash.com/photo-1561731216-c3a4d99437d5?w=800&auto=format&fit=crop&q=80',
       'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
     ],
@@ -462,7 +461,7 @@ class PlaceDetailCatalog {
     description:
         'Embark on an aromatic journey through shaded spice gardens and bustling village kitchens. Grind fresh curry blends on a traditional miris gala granite stone, learn crisp hopper swirling over woodfire, and savour an eight-curry banana-leaf feast.',
     photos: [
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuD2rfOC6O1lEWNIWbhJf_r1GCl1ASdc_1ILTZsnvCFVaqHPPJVjBzyaXrPR1lsA9FFF5W9vKiAcTPRCN53Z0WEr4EqTNXW4tVKuzy04-fiYUbKBRLtuEuz-SVnjSnMumm-Dh4IVwk3eB8rMdw1axmV-frW7vrR441oE8YY6RAqBn8NgN_P5MA87481eCnW137ndaMkyTU49mPguMCtmFLjJscVS6fkCvzyZ4fi4yVA',
+      'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=800&auto=format&fit=crop&q=80',
       'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
     ],
     quickSpecs: [
@@ -577,7 +576,7 @@ class PlaceDetailCatalog {
     description:
         'Ride gentle turquoise rollers along Weligama\'s forgiving sandy crescent in the morning, then cruise the southern coastal road to Tangalle\'s secluded golden bays, mangrove lagoons, and tranquil sunset cliffs.',
     photos: [
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuD_mI8m7U4OG8RLk9jEVrfoZ3MLdCuXE_POyoYiKB7DwHR7fA3C56-fnoLmO3maydv5UPhaBIrOjd8xJ26dOCKDowueQ3cdc2tPTpeK0Nc44gDM1OiLGugPrOVOJipNveFhuHtwKxqF-eP1ZJJKfd_OJXhz9mlAZMNvs6ye70hBOjRqcS3XO8amh6r6tmPbWWlzqhGKW19iXSynZe8CaXaLElc5zIZgJS-YuK_HVgo',
+      'https://images.unsplash.com/photo-1502680390469-be75c86b636f?w=800&auto=format&fit=crop&q=80',
       'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80',
       'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=800&auto=format&fit=crop&q=80',
     ],
@@ -701,7 +700,6 @@ class PlaceDetailCatalog {
     description:
         'Perched amidst emerald mountain ridges and cascading waterfalls, Ella blends iconic colonial railway architecture at the Nine Arch Bridge with ridge-top hikes up Little Adam\'s Peak and Ella Rock.',
     photos: [
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuDvJryELDH6m-aPQfsWTQ16312Y8rBu_auTNO6RdIu6gbV4Pwcooer456mtq4aG-SyKDYKNNg8-VWK0IuqWCpQQjHRKu2phfsvLM138y7tF4c0JEFCRImFso5Q05zKJanq1aBD3Q1iC30zFwaKYXyE_RgKZ0emUZlFa6Gh0qIs2uXJmMge8Zy3FlYNN0tmbm3Q7KzAXiBPuXo-9JhDuJpvmkQQWVWLd7RjEZbw3TYlMvhBaoZt8cQ-eog',
       'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
     ],
     quickSpecs: [
@@ -816,7 +814,6 @@ class PlaceDetailCatalog {
     description:
         'Nestled in a bowl of emerald mountains around a tranquil man-made lake, Kandy is the spiritual heart of Sri Lanka—home to the Temple of the Sacred Tooth Relic, vibrant Kandyan dance traditions, and 147 acres of royal botanical gardens.',
     photos: [
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuAf_ZHki056g4HPCYefzjMlcb2RDYtvjthd-ddHXXVe627O2eS1UoDIgiQ_L-HKdkLD9fKmpLz29XjJCzAX-uHg68hnR6w8d8wJJJasNuOqCFl3pVUmgcPmjQzd1eEzWMovtcNQjv5uQV-wGNks7fK8WOBUFpNVKYzvyjP0oOxlEXwSUQgjWHLC-mO86yMwUkMCo4fc0t_xHB8t1iRNYNQe3OQwojumYbhjBuANTUk',
       'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
     ],
     quickSpecs: [

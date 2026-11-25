@@ -45,7 +45,7 @@ final List<_SearchResultItem> _allSearchData = [
     price: '\$45',
     rating: 4.90,
     imageUrl:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuDvJryELDH6m-aPQfsWTQ16312Y8rBu_auTNO6RdIu6gbV4Pwcooer456mtq4aG-SyKDYKNNg8-VWK0IuqWCpQQjHRKu2phfsvLM138y7tF4c0JEFCRImFso5Q05zKJanq1aBD3Q1iC30zFwaKYXyE_RgKZ0emUZlFa6Gh0qIs2uXJmMge8Zy3FlYNN0tmbm3Q7KzAXiBPuXo-9JhDuJpvmkQQWVWLd7RjEZbw3TYlMvhBaoZt8cQ-eog',
+        'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
     icon: Icons.landscape_rounded,
     type: _ResultType.haven,
   ),
@@ -57,7 +57,7 @@ final List<_SearchResultItem> _allSearchData = [
     price: '\$60',
     rating: 4.95,
     imageUrl:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuAk9mgmweMowAekofzD0DuGrOAM90Q02qbvbSwJ1NfOp_TaTXxz2Noje8nYZerSfDgtvec2fuPDUjyvYWJLayoiDs5yQ4jtV1h14rFarsPaM-hU6LqyLC6UAUGjJw_J4rCjTuDKdMu79p07dxX754f0hvSNi9nWIkZq7Oq6_ReD9ebgcFLX3wztGHOi1lICWZV8WR4VuoyfU1_gN-wLu7Kml64bjQFLF1l4ZkZ_fGb_spDYlqdXwkPjuA',
+        'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
     icon: Icons.account_balance_rounded,
     type: _ResultType.haven,
   ),
@@ -69,7 +69,7 @@ final List<_SearchResultItem> _allSearchData = [
     price: '\$75',
     rating: 4.88,
     imageUrl:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuCdCzzTCfcf96RAY1SbWTlAyxIfFy3sjrYH6c5VUEQnBtz-eqUZsAB6nACMhkwopIPaH431tO5N6rNtmoGQUznd8HwSb0tLMr98CYTP8NgH1ESYJ85k3FQRQsShcSRo2OJhFITaoJkg8ip-J14rP0c5Ma6KyAz8ThZ645a-64Qblmcye38mylwbD-3KX_l-H15_SGoWP6VS53FmY8Eic5Cxwc6vKPpHFCJZCS1bXMJ08GZCO6ATKK6RDw',
+        'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80',
     icon: Icons.sailing_rounded,
     type: _ResultType.haven,
   ),
@@ -82,7 +82,7 @@ final List<_SearchResultItem> _allSearchData = [
     price: '\$148/night',
     rating: 4.96,
     imageUrl:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuA4vF5Vi6-wJ5WCIM27AWVEhd6FYREc7OSSEdKCmAXJK2MXpwJSvGTYeO5vBMTh8vMNT65ogPXz1xWFfEMthgVJrhErItaCXvUl8dvZfsRVuHItTtMGzi9l8-IAOL2qEIHCFDUJ5DtQ8HZFhI3McjzNF1WlpY1k9f4-zguKrzY4Uvm6nAQcEuxTb99anzcl1X9s5DGYA_5a0zc6caeJsJ_7bQa__h7khQlgzmdIPyZ3QBVwVWdVJjiw6g',
+        'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&auto=format&fit=crop&q=80',
     icon: Icons.hotel_rounded,
     type: _ResultType.stay,
   ),
@@ -94,7 +94,7 @@ final List<_SearchResultItem> _allSearchData = [
     price: '\$85/night',
     rating: 4.88,
     imageUrl:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuAmI8PrdgRx9TUZee-t2Qba4VOjkCo57xxKbbdaJYgEiEdykkKEsbftTlfn2FV2SkbbNrGOYjtig2Lbx_XpBVQPozL700F8w-KVLwYAgRh2JUnKmTe_Ala5iBHzImoF6ROPvPaarQYIQgg5LFtd0uFZEswppS0pcSSaOG6J3cPBiPAweweQjoqyeHo74ceXOW4TxMlKjpmNY0hmuEFiuM5BWsCLtVkZ6iYKKh5DIS2WFQwNZmzLch1qiw',
+        'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800&auto=format&fit=crop&q=80',
     icon: Icons.cottage_rounded,
     type: _ResultType.stay,
   ),
@@ -107,7 +107,7 @@ final List<_SearchResultItem> _allSearchData = [
     price: '\$38/person',
     rating: 4.9,
     imageUrl:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuAWc-k1WtCHy2mQ1-JC2KOqg6jy7fs-iXGjjBHckRO8Qmfu3IMmJ__G5Okib5t4lz7hbkIBF1ELU1Vs2v844gjLpMTwiObEkSOh7XHpZZ8dd3Btj3j91sQg9l1CRMGUVu_gfQwIdCwvMPolRTdX7BN9nQFj7BneThOvXuG3aiOtTlz-R4nG2WOc156rKiHSiPeRrIU_nvWG59HwNgvWOuxfamgg4bbPy4krrZT7v38-qykE9u9dKRmMWg',
+        'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&auto=format&fit=crop&q=80',
     icon: Icons.local_florist_rounded,
     type: _ResultType.experience,
   ),
@@ -119,7 +119,7 @@ final List<_SearchResultItem> _allSearchData = [
     price: '\$92/jeep',
     rating: 4.96,
     imageUrl:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuDzX3rEG6vFdMVPdR2IYkb722eLQezhkZlI9-A9h7Id0Xe0tc0XBU3AGMCVpq5OaMFrUZpLK8_ANGsNvGc22u4ZDrosNecG2dQR58pzzFp11iTNtp1nZexE_3rbuxEW9xvc0AvYy3aaJEey7NHg2HIlk7OKKuSeTtKIQLWW-6cm9EMVysGfzpppGGAymEqvqu562Kxmq3DJyRqnszhtNHHwlp49NwCJ6VN-V657OYR7yjq6c8P-IaCr6w',
+        'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?w=800&auto=format&fit=crop&q=80',
     icon: Icons.pets_rounded,
     type: _ResultType.experience,
   ),
@@ -131,7 +131,7 @@ final List<_SearchResultItem> _allSearchData = [
     price: '\$42/person',
     rating: 4.89,
     imageUrl:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuAnsMut8vukazOQQk1YyZCGBLo9YbXlxSvpljkSzTetlNv3S90zTSLVj93s5Ei7ruW9FItfWdv7SRHLba73k0w4GyqyAQYGdhkCc1o4whnZtFwV8Abb_yI23ZzIPm8gDdO_2nT5d6oCv9ULCcpJ2kpwQX-lLLuW3ARIM12y0b5KBn6WwpmleF7f_Gtf9E_ea8_J1ItwLULkwuuwgBd-GdluE3jJgzvYwrwzEE37TaTxbZsfu2ve_Ax6Bw',
+        'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=800&auto=format&fit=crop&q=80',
     icon: Icons.restaurant_rounded,
     type: _ResultType.experience,
   ),

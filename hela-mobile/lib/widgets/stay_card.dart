@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hela/pages/home_page.dart';
 import 'package:hela/pages/stays_page.dart';
+import 'package:hela/widgets/hela_network_image.dart';
 
 /// Reusable Eco-Haven / Stay Card
 ///
@@ -488,8 +489,8 @@ class StayCard extends StatelessWidget {
   }
 
   Widget _buildImage() {
-    return Image.network(
-      imageUrl,
+    return HelaNetworkImage(
+      imageUrl: imageUrl,
       fit: BoxFit.cover,
       errorBuilder: (context, error, stackTrace) {
         return Container(
@@ -499,22 +500,6 @@ class StayCard extends StatelessWidget {
               Icons.hotel_rounded,
               color: HelaColors.secondary,
               size: 44,
-            ),
-          ),
-        );
-      },
-      loadingBuilder: (context, child, loadingProgress) {
-        if (loadingProgress == null) return child;
-        return Container(
-          color: HelaColors.surfaceContainerHigh,
-          child: Center(
-            child: CircularProgressIndicator(
-              value: loadingProgress.expectedTotalBytes != null
-                  ? loadingProgress.cumulativeBytesLoaded /
-                      loadingProgress.expectedTotalBytes!
-                  : null,
-              strokeWidth: 2,
-              color: HelaColors.secondary,
             ),
           ),
         );

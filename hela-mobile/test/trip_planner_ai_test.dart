@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:hela/models/tour_plan.dart';
 import 'package:hela/pages/itinerary_details_page.dart';
 import 'package:hela/services/ai_service.dart';
@@ -187,11 +186,11 @@ void main() {
 
       final history = AIService.buildChatHistoryFromMessages(messages);
       expect(history.length, 2);
-      expect(history[0].role, 'user');
-      expect((history[0].parts.first as TextPart).text, '[Day 1] Add a seafood lunch stop');
-      expect(history[1].role, 'model');
+      expect(history[0].isUser, isTrue);
+      expect(history[0].text, '[Day 1] Add a seafood lunch stop');
+      expect(history[1].isUser, isFalse);
       expect(
-        (history[1].parts.first as TextPart).text,
+        history[1].text,
         'Applied v2: Added Negombo Lagoon seafood lunch on Day 1.',
       );
     });

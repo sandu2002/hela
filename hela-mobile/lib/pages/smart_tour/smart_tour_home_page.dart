@@ -109,7 +109,7 @@ class _SmartTourHomePageState extends State<SmartTourHomePage>
             ),
             // Network hero image
             Image.network(
-              'https://lh3.googleusercontent.com/aida-public/AB6AXuCJM8QYoWW5_TWxP0KiOVmQ39cdSb5L1v6jE2tybVTSnkYEDVzYLErktpPUfudejeQKF1w7AwbOJL2BSV1kjuJVT_Dl8JWT_pal2OPTMwUhWHlcCDX1KaAkhRAwof9M9uP4QlCjDIAzsg8sn4BavVuEfRC-lHdihNbXECiJlYzMhSvsDQG5cG_2hpLYpkjYqXwgpTiS_dQ5Nf2ztFUx98Eg9YM9UnWtWIjhpnkrpPz1Eg1DFsFsgiUU6w',
+              'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=1000&auto=format&fit=crop&q=80',
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
             ),

@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:hela/models/tour_plan.dart';
 import 'package:hela/pages/active_journey_page.dart';
 import 'package:hela/pages/ask_hela_page.dart';
 import 'package:hela/pages/fair_ride_page.dart';
 import 'package:hela/pages/profile_page.dart';
 import 'package:hela/services/ai_service.dart';
+import 'package:hela/widgets/hela_network_image.dart';
 import 'package:hela/services/route_map_service.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/theme/hela_colors.dart';
@@ -50,7 +50,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
   bool _isSaved = false;
   late TourPlan? _currentPlan;
   final List<ChatMessage> _customizationMessages = [];
-  final List<Content> _geminiCustomizationHistory = [];
+  final List<ChatTurn> _geminiCustomizationHistory = [];
 
   static const List<String> _monthNames = [
     'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -357,8 +357,8 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
   }
 
   Widget _buildNetworkImage(String url, {double? width, double? height, BoxFit fit = BoxFit.cover}) {
-    return Image.network(
-      url,
+    return HelaNetworkImage(
+      imageUrl: url,
       width: width,
       height: height,
       fit: fit,
@@ -1883,7 +1883,7 @@ class _AiCustomizeChatSheet extends StatefulWidget {
   final TourPlan initialPlan;
   final int focusedDayNumber;
   final List<ChatMessage> messages;
-  final List<Content> geminiHistory;
+  final List<ChatTurn> geminiHistory;
   final ValueChanged<TourPlan> onPlanUpdated;
   final Future<void> Function() onClearHistory;
 

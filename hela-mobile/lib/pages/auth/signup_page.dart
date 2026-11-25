@@ -563,7 +563,7 @@ class _SignUpPageState extends State<SignUpPage> {
           fit: StackFit.expand,
           children: [
             Image.network(
-              'https://lh3.googleusercontent.com/aida-public/AB6AXuBrQqMy8rAttzZkUnqUW8iyhtco5bFh7n5OWLyDqa9D47vQDKi0lFTLT_jwU4vfFhs3Sd0LcYnkx7bfjZxrxPnD6ymAze6plz6SFCYHy4BrYv8lX7e4F3TwJODXpw_X-wsqI96b-S6REshttJflkYL0rZfXOKLgScQ3Yk7RLg9DlCxarjVgIMRXXRMWSL5HJ2JBd1pM77WDIeGLSt_iI2vlk6BiMO8EbsgEIxV3xc4',
+              'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=1200&auto=format&fit=crop&q=85',
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 return Container(
@@ -926,6 +926,9 @@ class _SignUpPageState extends State<SignUpPage> {
               validator: (v) {
                 if (_mode == AuthMode.signUp && (v == null || v.trim().isEmpty)) {
                   return 'Please enter your full name';
+                }
+                if (v != null && v.trim().length > 100) {
+                  return 'Name must be 100 characters or fewer';
                 }
                 return null;
               },

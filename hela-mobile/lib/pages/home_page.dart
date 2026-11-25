@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hela/data/place_details_catalog.dart';
+import 'package:hela/widgets/hela_network_image.dart';
 import 'package:hela/pages/fair_ride_page.dart';
 import 'package:hela/pages/cultural_guide/cultural_guide_page.dart';
 import 'package:hela/pages/explore_page.dart';
@@ -95,7 +96,7 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
       rating: '4.9',
       filterCategory: 'Nature & Wildlife',
       imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuD0D-R82TA9_SGuSRDfEnwrE2O1k8vnQfZhJ3koSU4dn3zja8bG-1GyYpElMjx7OaMROOj5YIrG_ilEW47rcLiRGDhHJ9XTpTJm5wQdSK6ZbluVAV45sagYlIO4JtR_VMfGHBBecYiAD1gG5dir-RCgv1og-V5_c2KBOHvrr44Kfw5QelxizrzCF9Bhhj9hBwM6Qy65FCruTdgatHraZDf-6C4KhLFPlpc0DpOKZfs',
+          'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?w=800&auto=format&fit=crop&q=80',
     ),
     HomeExperienceItem(
       title: 'Ceylon Spice Trail & Hopper Feast',
@@ -104,7 +105,7 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
       rating: '4.8',
       filterCategory: 'Cultural Heritage',
       imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuD2rfOC6O1lEWNIWbhJf_r1GCl1ASdc_1ILTZsnvCFVaqHPPJVjBzyaXrPR1lsA9FFF5W9vKiAcTPRCN53Z0WEr4EqTNXW4tVKuzy04-fiYUbKBRLtuEuz-SVnjSnMumm-Dh4IVwk3eB8rMdw1axmV-frW7vrR441oE8YY6RAqBn8NgN_P5MA87481eCnW137ndaMkyTU49mPguMCtmFLjJscVS6fkCvzyZ4fi4yVA',
+          'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=800&auto=format&fit=crop&q=80',
     ),
     HomeExperienceItem(
       title: 'Weligama Surfing & Tangalle Bays',
@@ -113,7 +114,7 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
       rating: '4.9',
       filterCategory: 'Beaches',
       imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuD_mI8m7U4OG8RLk9jEVrfoZ3MLdCuXE_POyoYiKB7DwHR7fA3C56-fnoLmO3maydv5UPhaBIrOjd8xJ26dOCKDowueQ3cdc2tPTpeK0Nc44gDM1OiLGugPrOVOJipNveFhuHtwKxqF-eP1ZJJKfd_OJXhz9mlAZMNvs6ye70hBOjRqcS3XO8amh6r6tmPbWWlzqhGKW19iXSynZe8CaXaLElc5zIZgJS-YuK_HVgo',
+          'https://images.unsplash.com/photo-1502680390469-be75c86b636f?w=800&auto=format&fit=crop&q=80',
     ),
     HomeExperienceItem(
       title: 'Nine Arch Bridge & Demodara Tea Valley',
@@ -122,7 +123,7 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
       rating: '4.9',
       filterCategory: 'Hill Country',
       imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuDvJryELDH6m-aPQfsWTQ16312Y8rBu_auTNO6RdIu6gbV4Pwcooer456mtq4aG-SyKDYKNNg8-VWK0IuqWCpQQjHRKu2phfsvLM138y7tF4c0JEFCRImFso5Q05zKJanq1aBD3Q1iC30zFwaKYXyE_RgKZ0emUZlFa6Gh0qIs2uXJmMge8Zy3FlYNN0tmbm3Q7KzAXiBPuXo-9JhDuJpvmkQQWVWLd7RjEZbw3TYlMvhBaoZt8cQ-eog',
+          'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
     ),
   ];
 
@@ -322,8 +323,8 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
   }
 
   Widget _buildNetworkImage(String url, {double? width, double? height, BoxFit fit = BoxFit.cover}) {
-    return Image.network(
-      url,
+    return HelaNetworkImage(
+      imageUrl: url,
       width: width,
       height: height,
       fit: fit,
@@ -683,7 +684,7 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
           fit: StackFit.expand,
           children: [
             _buildNetworkImage(
-              'https://lh3.googleusercontent.com/aida-public/AB6AXuCfLRS1LsxapAszLJa0etMrOi9jdUPktoyWZIMUJLEh7doMRbg20drfraJaI5G8ZirrxpePZwTqZU7JILR8-Eq0jZF0KInaY-Hsc9Vca4f_F4WwJZHI70_-J-IWqwQEPELEOhGvdamVSm4UXl-4O6Y3TK6__pIoTFUGQB1pqOvj5r66yxFmpB4W6-i7-CINSqIJnavY8Z4YbSIQWnaWrLI8d1gBJovsav4axAwuKvw',
+              'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=1200&auto=format&fit=crop&q=85',
             ),
             Container(
               decoration: BoxDecoration(

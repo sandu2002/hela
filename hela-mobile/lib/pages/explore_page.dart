@@ -138,7 +138,7 @@ class _ExplorePageState extends State<ExplorePage> {
       priceTag: '\$36 entry',
       footerTag: '1,200 Steps Climb',
       imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuB470bfrsJ34_Zfz3mF8BpQZOUum-fhawKh51cm1K8-0n16IJnyIRDWCDo-p-4LKlIJL7eWRS6fSHiQ7Y076dniwfTg2-uSNGP-Y1fU4rUt8gQCz0RWM_EspICB8L-E9uu3ZguLz8MSZG0MZai01QaMRbw9u7NFJ6XRoYIDFwFMifvWSsy_XhyQ2UkxBFBJVs0TNFtCkUr-O7xCS0cyKCNy4TCnZZq8uzJM0M3dU9c',
+          'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
       category: 'Culture',
     ),
     ExploreDestination(
@@ -151,7 +151,7 @@ class _ExplorePageState extends State<ExplorePage> {
       priceTag: 'Free Access',
       footerTag: 'Cloud Forest Treks',
       imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuC1-w7059r6Tx8JOuHhGLLm6spMsWw09E48ApBmOWTEe-p-IbOyd8GBmFh3Zvn60CK2ZR0YsjHx75NDRUWyT2eYsmsMBsoNsO380YPX-8NkCVlAl9L84IrpVcJskPmn7bby1SLlQNDsytKDChKgPdcmfeIa6V14oUmNsO-WDDWQZJlHl_dJvco52RzpSUA0AS2JlopPWLNhvwsNiRGcKN4YqXKlwv5GpBLlmhs9TRI',
+          'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
       category: 'Nature',
     ),
     ExploreDestination(
@@ -164,7 +164,7 @@ class _ExplorePageState extends State<ExplorePage> {
       priceTag: '\$6 entry',
       footerTag: 'Cultural Capital',
       imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuAf_ZHki056g4HPCYefzjMlcb2RDYtvjthd-ddHXXVe627O2eS1UoDIgiQ_L-HKdkLD9fKmpLz29XjJCzAX-uHg68hnR6w8d8wJJJasNuOqCFl3pVUmgcPmjQzd1eEzWMovtcNQjv5uQV-wGNks7fK8WOBUFpNVKYzvyjP0oOxlEXwSUQgjWHLC-mO86yMwUkMCo4fc0t_xHB8t1iRNYNQe3OQwojumYbhjBuANTUk',
+          'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
       category: 'Culture',
     ),
     ExploreDestination(
@@ -218,7 +218,7 @@ class _ExplorePageState extends State<ExplorePage> {
       distance: '3.5 hrs from Colombo',
       rating: '4.9',
       imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuDw7m0Jp7z4-JvFq71gT586fO3yK49d4lV04b9p3095s937y0v5F229_Vl-y4U_024b1k5-592f6b3n4n_2b3n5v08_309b5v234n10v09b4n35_283b9c9_489b489d2_0284n308945n_3b940n859_2485',
+          'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&auto=format&fit=crop&q=80',
       category: 'Nature',
     ),
     HiddenGemItem(
@@ -259,7 +259,7 @@ class _ExplorePageState extends State<ExplorePage> {
       verifiedNote: 'Bilingual Guide available',
       ctaText: 'Book Experience',
       imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuDuZqkObEsz32UwPA_EzpkVa72_jKilGK4KaIUYvwiteU_R8AiDFJ53hlPk1G4Q3u2-tlTUR7VzbjKf3G9KxTPb0pzMkXGsCypGxzuLyueX60cPtiewuzkFJP62_eqlXUBWbwVuiUSxCWxWh02iyR0yO2JJ48F0DAWp8xRWg9_iF_FqbrxGelTKtq8qa-h1RCGHewkM0jxcCUJj68H1fgDReRSfX_qRBsI-a8qM2GE',
+          'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
       category: 'Culture',
     ),
     CulturalExperienceItem(
@@ -299,7 +299,7 @@ class _ExplorePageState extends State<ExplorePage> {
       distance: '2.4 km',
       status: 'Open now • Closes 6 PM',
       imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuAsm2mS9aOxobBvTE1d80E9BTn-hH6x46Z0tIyr5jCTqGOsojeN971g0PZtNqJwutVgFpkQCDWJPETS2c3917HMAcgKXbCmCX6bRNOopQKnU5dmZFyqp5sxiyAMYEjb6rCg-YuHzEdP7tWPMISoTlVJhSP8BgBsFzNcZ8mUeaGKiDNK8NUaR7uFM9i2JV7bZbXBJ35ivIWDZIfLBVSqOQ7NBMbqgundXJUe2urCwl8',
+          'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
     ),
     NearbyPlaceItem(
       title: 'Pettah & Red Mosque',

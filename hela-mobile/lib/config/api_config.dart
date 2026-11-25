@@ -1,18 +1,31 @@
 /// Configuration file for API keys and service endpoints.
 class ApiConfig {
-  /// Google Gemini AI API key for HELA Smart Tour Planner & Ask HELA Chat.
-  /// Loaded at build/run time via `--dart-define-from-file=dart_defines.json`
-  /// or `--dart-define=GEMINI_API_KEY=...` (kept out of source control).
+  /// Google Gemini AI API key — only used by [LiveWeatherService] for
+  /// the Google Search grounding weather query. AI tour/chat generation
+  /// routes through the HELA backend so this key is NOT used for those.
+  /// Loaded at build/run time via `--dart-define-from-file=dart_defines.json`.
   static const String geminiApiKey = String.fromEnvironment('GEMINI_API_KEY');
 
-  /// Default Gemini model for fast intelligent chat & tour generation (free tier).
-  static const String geminiModel = 'gemini-3.6-flash';
+  // ── HELA Backend (proxies Gemini so the key stays server-side) ──────────
+  /// HELA backend base URL.  Override with `--dart-define=HELA_BACKEND_URL=...`
+  /// for staging / production.  Defaults to localhost for local dev.
+  static const String helaBackendUrl = String.fromEnvironment(
+    'HELA_BACKEND_URL',
+    defaultValue: 'http://10.0.2.2:5000', // Android emulator loopback
+  );
 
-  /// Fallback Gemini model if the primary model encounters high demand / rate limits.
-  static const String geminiFallbackModel = 'gemini-3.5-flash';
+  /// Endpoint that proxies Gemini on the backend.
+  static const String tourGenerateUrl = '$helaBackendUrl/api/tours/generate';
 
-  /// Ultra-fast lightweight fallback Gemini model.
-  static const String geminiLiteFallbackModel = 'gemini-3.5-flash-lite';
+  // ── Verified Gemini model identifiers (server-side use only) ───────────
+  /// Primary Gemini model — verified as of 2026-11.
+  static const String geminiModel = 'gemini-2.0-flash';
+
+  /// Fallback Gemini model.
+  static const String geminiFallbackModel = 'gemini-1.5-flash';
+
+  /// Lightweight fallback Gemini model.
+  static const String geminiLiteFallbackModel = 'gemini-1.5-flash-8b';
 
   /// OpenStreetMap Overpass API endpoint for querying Sri Lankan tourism data.
   static const String overpassApiUrl =

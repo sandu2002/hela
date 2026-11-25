@@ -24,6 +24,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _appState.restoreLanguage();
+    _appState.restoreSavedTours();
     _restoreAuthSession();
   }
 

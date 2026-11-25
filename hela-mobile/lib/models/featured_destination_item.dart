@@ -26,7 +26,7 @@ const List<FeaturedDestinationItem> kFeaturedDestinations = [
     badge: 'UNESCO',
     footerTag: 'Cultural Wonder',
     imageUrl:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuB470bfrsJ34_Zfz3mF8BpQZOUum-fhawKh51cm1K8-0n16IJnyIRDWCDo-p-4LKlIJL7eWRS6fSHiQ7Y076dniwfTg2-uSNGP-Y1fU4rUt8gQCz0RWM_EspICB8L-E9uu3ZguLz8MSZG0MZai01QaMRbw9u7NFJ6XRoYIDFwFMifvWSsy_XhyQ2UkxBFBJVs0TNFtCkUr-O7xCS0cyKCNy4TCnZZq8uzJM0M3dU9c',
+        'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
   ),
   FeaturedDestinationItem(
     title: 'Ella',
@@ -35,7 +35,7 @@ const List<FeaturedDestinationItem> kFeaturedDestinations = [
     badge: 'Highlands',
     footerTag: 'Scenic Rail & Hike',
     imageUrl:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuC1-w7059r6Tx8JOuHhGLLm6spMsWw09E48ApBmOWTEe-p-IbOyd8GBmFh3Zvn60CK2ZR0YsjHx75NDRUWyT2eYsmsMBsoNsO380YPX-8NkCVlAl9L84IrpVcJskPmn7bby1SLlQNDsytKDChKgPdcmfeIa6V14oUmNsO-WDDWQZJlHl_dJvco52RzpSUA0AS2JlopPWLNhvwsNiRGcKN4YqXKlwv5GpBLlmhs9TRI',
+        'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
   ),
   FeaturedDestinationItem(
     title: 'Kandy',
@@ -44,7 +44,7 @@ const List<FeaturedDestinationItem> kFeaturedDestinations = [
     badge: 'Heritage',
     footerTag: 'Spiritual Heart',
     imageUrl:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuAf_ZHki056g4HPCYefzjMlcb2RDYtvjthd-ddHXXVe627O2eS1UoDIgiQ_L-HKdkLD9fKmpLz29XjJCzAX-uHg68hnR6w8d8wJJJasNuOqCFl3pVUmgcPmjQzd1eEzWMovtcNQjv5uQV-wGNks7fK8WOBUFpNVKYzvyjP0oOxlEXwSUQgjWHLC-mO86yMwUkMCo4fc0t_xHB8t1iRNYNQe3OQwojumYbhjBuANTUk',
+        'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
   ),
   FeaturedDestinationItem(
     title: 'Galle',
@@ -53,7 +53,7 @@ const List<FeaturedDestinationItem> kFeaturedDestinations = [
     badge: 'Colonial Fort',
     footerTag: 'Coastal Heritage',
     imageUrl:
-        'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
+        'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=800&auto=format&fit=crop&q=80',
   ),
   FeaturedDestinationItem(
     title: 'Mirissa',

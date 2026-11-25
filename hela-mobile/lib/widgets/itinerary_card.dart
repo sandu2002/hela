@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hela/pages/home_page.dart';
+import 'package:hela/widgets/hela_network_image.dart';
 
 /// Data model for an itinerary expedition card
 class ItineraryCardData {
@@ -462,8 +463,8 @@ class ItineraryCard extends StatelessWidget {
   }
 
   Widget _buildImage() {
-    return Image.network(
-      imageUrl,
+    return HelaNetworkImage(
+      imageUrl: imageUrl,
       fit: BoxFit.cover,
       errorBuilder: (context, error, stackTrace) {
         return Container(

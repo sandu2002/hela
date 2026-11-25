@@ -92,7 +92,7 @@ class _StaysPageState extends State<StaysPage> {
       pricePerNight: 148,
       feeNote: 'taxes and estate fees included',
       imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuA4vF5Vi6-wJ5WCIM27AWVEhd6FYREc7OSSEdKCmAXJK2MXpwJSvGTYeO5vBMTh8vMNT65ogPXz1xWFfEMthgVJrhErItaCXvUl8dvZfsRVuHItTtMGzi9l8-IAOL2qEIHCFDUJ5DtQ8HZFhI3McjzNF1WlpY1k9f4-zguKrzY4Uvm6nAQcEuxTb99anzcl1X9s5DGYA_5a0zc6caeJsJ_7bQa__h7khQlgzmdIPyZ3QBVwVWdVJjiw6g',
+          'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&auto=format&fit=crop&q=80',
       hasPagerDots: true,
       buttonBgColor: HelaColors.tertiaryFixedDim,
       buttonTextColor: HelaColors.primary,
@@ -111,7 +111,7 @@ class _StaysPageState extends State<StaysPage> {
       pricePerNight: 85,
       feeNote: 'Free cancellation · No pre-payment',
       imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuAmI8PrdgRx9TUZee-t2Qba4VOjkCo57xxKbbdaJYgEiEdykkKEsbftTlfn2FV2SkbbNrGOYjtig2Lbx_XpBVQPozL700F8w-KVLwYAgRh2JUnKmTe_Ala5iBHzImoF6ROPvPaarQYIQgg5LFtd0uFZEswppS0pcSSaOG6J3cPBiPAweweQjoqyeHo74ceXOW4TxMlKjpmNY0hmuEFiuM5BWsCLtVkZ6iYKKh5DIS2WFQwNZmzLch1qiw',
+          'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800&auto=format&fit=crop&q=80',
       buttonBgColor: HelaColors.primaryContainer,
       buttonTextColor: HelaColors.onPrimary,
       amenities: [
@@ -129,7 +129,7 @@ class _StaysPageState extends State<StaysPage> {
       pricePerNight: 195,
       feeNote: 'Estate breakfast & high tea included',
       imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuBiuhiB1a4OTsD5h0-pNgyzwhS0ib1JSQEf8ZqosoYyBqnJeVmNPjvFw4T8Do9gacqBs3U2jJJkljl0PKyhHV__3a2q4RdRzbPGQQn4Wh6tBhcwr616wJkRPIlR2NKHl0eTz4qRS6L_bmyEoISTn5yXV5s0zS5ZXYkUwEORd3IZ0TIa9NydgLPGuX2LdvSxaI6JE-T-wTGZElLs_T5iUquRY0KKyAztlQMcm4vYHKJ65bWEyD5VsUKOdQ',
+          'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&auto=format&fit=crop&q=80',
       buttonBgColor: HelaColors.primaryContainer,
       buttonTextColor: HelaColors.onPrimary,
       amenities: [

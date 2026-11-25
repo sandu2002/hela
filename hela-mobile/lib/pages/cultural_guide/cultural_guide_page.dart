@@ -693,7 +693,7 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
                         height: 220,
                         width: double.infinity,
                         child: _buildNetworkImage(
-                          'https://lh3.googleusercontent.com/aida-public/AB6AXuAYxKw1c9HqNT6wjQDwxM5kvv2d4wqST36qis5qQ20zuDexVTsFD1GGkTL4Az83nyqACt7JvFRjgg1mV8g5g1CPAp7CQfGrz47Mj87TREZv1jz38kyTSauoJWbSPSmkrjEWgpc2qkCZsyqeN_7oPv8N3BKG6kE1oZmd5pG8TRB674PZzI0T9f3RJph8Z6BYSt14p8MWQ3e5X1vH54SM696I-Y3NE_O42ep3KYiUPqS6lxJSrTZIrQdJiA',
+                          'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=1000&auto=format&fit=crop&q=80',
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -901,7 +901,7 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
                         subtitle: 'Rhythm, ritual percussion, and sacred temple fires',
                         authorName: 'Dr. Indika Bandara',
                         readTime: '5 min read',
-                        imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB3-kdVWZM3O-qKSPOTOUjkBhdviLIEcPxbxEwNVv0tAdMZyNHDEokbqtcE8gxycEa8fZ-bqdZ7tD8pqMviT6eXKtTWjF7lh5iXQyKUEQvrVJ48YsVV6lWFMYYif2wsT-tzYEXOySz4879-dYxtyQBAwCo_F9tef029yUlDHPQuFJR8qlnq20rH8-KoyOWlNh_7bBUFrA3tAzSa3VATvdiXW6qqCQzYA8RRVrTUWMMfnrqebVkZFFu6OQ',
+                        imageUrl: 'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
                       ),
                     ),
                   );
@@ -930,7 +930,7 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
                           width: 64,
                           height: 64,
                           child: _buildNetworkImage(
-                            'https://lh3.googleusercontent.com/aida-public/AB6AXuB3-kdVWZM3O-qKSPOTOUjkBhdviLIEcPxbxEwNVv0tAdMZyNHDEokbqtcE8gxycEa8fZ-bqdZ7tD8pqMviT6eXKtTWjF7lh5iXQyKUEQvrVJ48YsVV6lWFMYYif2wsT-tzYEXOySz4879-dYxtyQBAwCo_F9tef029yUlDHPQuFJR8qlnq20rH8-KoyOWlNh_7bBUFrA3tAzSa3VATvdiXW6qqCQzYA8RRVrTUWMMfnrqebVkZFFu6OQ',
+                            'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
                             fit: BoxFit.cover,
                           ),
                         ),

@@ -15,7 +15,16 @@ module.exports = async function(request) {
     const body = await request.json();
     const { preferences } = body;
     const duration = preferences?.duration || 3;
-    const apiKey = 'AQ.Ab8RN6LcBcIS8jiH2GzAdjwITZJtC1IXTrvgdQnvky5gXnv4CA';
+    const apiKey =
+      (typeof process !== 'undefined' && process.env && process.env.GEMINI_API_KEY) ||
+      (typeof Deno !== 'undefined' && Deno.env && Deno.env.get('GEMINI_API_KEY')) ||
+      '';
+    if (!apiKey) {
+      return new Response(JSON.stringify({ error: 'AI service not configured' }), {
+        status: 503,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
 
     const prompt = `You are a Sri Lanka travel assistant. Generate a ${duration}-day itinerary for interests: ${(preferences?.interests || []).join(', ')}. Return JSON only.`;
 
