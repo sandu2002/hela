@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hela/data/sri_lanka_images.dart';
 import 'package:hela/pages/cultural_guide/cultural_guide_page.dart';
-import 'package:hela/pages/profile_page.dart';
 import 'package:hela/pages/saved_page.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/theme/hela_colors.dart';
 import 'package:hela/widgets/hela_bottom_nav_bar.dart';
 import 'package:hela/widgets/hela_drawer.dart';
-import 'package:hela/widgets/real_time_map.dart';
-import 'package:hela/widgets/theme_switch_button.dart';
 
 /// Data models for the Explore Sri Lanka Screen
 class ExploreDestination {
@@ -114,7 +111,6 @@ class _ExplorePageState extends State<ExplorePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
-  bool _isMapView = false;
   int _selectedCategoryIndex = 0; // 0: All, 1: Nature, 2: Beaches, 3: Culture, 4: Wildlife, 5: Adventure, 6: Food
   final Set<String> _savedIds = {'sigiriya', 'ritigala'};
 
@@ -347,7 +343,6 @@ class _ExplorePageState extends State<ExplorePage> {
   @override
   Widget build(BuildContext context) {
     final colors = HelaColors.of(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final selectedCat = _categories[_selectedCategoryIndex]['label'] as String;
     final query = _searchQuery.trim().toLowerCase();
@@ -384,9 +379,8 @@ class _ExplorePageState extends State<ExplorePage> {
       key: _scaffoldKey,
       drawer: const HelaNavigationDrawer(),
       backgroundColor: colors.background,
-      appBar: _buildTopAppBar(colors, isDark),
       body: SafeArea(
-        top: false,
+        top: true,
         bottom: false,
         child: Stack(
           children: [
@@ -401,7 +395,7 @@ class _ExplorePageState extends State<ExplorePage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 16),
 
                         // Title & View Switcher Row
                         _buildTitleAndViewSwitcher(colors),
@@ -414,12 +408,6 @@ class _ExplorePageState extends State<ExplorePage> {
                         // Category Filter Pills
                         _buildCategoryFilterPills(colors),
                         const SizedBox(height: 20),
-
-                        if (_isMapView) ...[
-                          // Interactive Map View
-                          _buildInteractiveMapView(colors),
-                          const SizedBox(height: 20),
-                        ],
 
                         // SECTION 1: Popular Destinations
                         _buildPopularDestinationsSection(colors, filteredDestinations),
@@ -449,7 +437,7 @@ class _ExplorePageState extends State<ExplorePage> {
 
             // Floating "Smart Guide • Ask HELA" Action Button in Bottom Right
             Positioned(
-              bottom: 16,
+              bottom: 20,
               right: 16,
               child: HelaBottomNavBar.buildFloatingAskHelaButton(context),
             ),
@@ -457,86 +445,6 @@ class _ExplorePageState extends State<ExplorePage> {
         ),
       ),
       bottomNavigationBar: const HelaBottomNavBar(currentIndex: 1),
-    );
-  }
-
-  PreferredSizeWidget _buildTopAppBar(HelaColorPalette colors, bool isDark) {
-    return AppBar(
-      backgroundColor: colors.surface.withValues(alpha: isDark ? 0.96 : 0.94),
-      elevation: 0,
-      scrolledUnderElevation: 1.0,
-      shadowColor: Colors.black12,
-      toolbarHeight: 64,
-      titleSpacing: 16,
-      automaticallyImplyLeading: false,
-      title: Row(
-        children: [
-          InkWell(
-            onTap: () => _scaffoldKey.currentState?.openDrawer(),
-            borderRadius: BorderRadius.circular(12),
-            child: Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: colors.primaryContainer,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(Icons.explore_rounded, color: Colors.white, size: 20),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                HelaAppStateProvider.of(context).tr('hela_travel'),
-                style: TextStyle(
-                  color: colors.secondary,
-                  fontSize: 10.5,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.8,
-                  fontFamily: 'Inter',
-                ),
-              ),
-              Text(
-                HelaAppStateProvider.of(context).tr('explore'),
-                style: TextStyle(
-                  color: colors.onSurface,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  fontFamily: 'Inter',
-                  height: 1.15,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-      actions: [
-        const HelaThemeSwitchButton(size: 34),
-        IconButton(
-          icon: Icon(Icons.notifications_outlined, color: colors.onSurfaceVariant, size: 22),
-          tooltip: 'Notifications',
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('No new travel alerts')),
-            );
-          },
-        ),
-        Padding(
-          padding: const EdgeInsets.only(right: 16, left: 4),
-          child: GestureDetector(
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfilePage()));
-            },
-            child: CircleAvatar(
-              radius: 16,
-              backgroundColor: colors.primary,
-              child: const Icon(Icons.person_rounded, color: Colors.white, size: 18),
-            ),
-          ),
-        ),
-      ],
     );
   }
 
@@ -550,20 +458,20 @@ class _ExplorePageState extends State<ExplorePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                HelaAppStateProvider.of(context).tr('explore_sri_lanka'),
+                'Explore',
                 style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w800,
+                  fontSize: 34,
+                  fontWeight: FontWeight.w900,
                   color: colors.onSurface,
                   fontFamily: 'Inter',
-                  letterSpacing: -0.4,
+                  letterSpacing: -0.8,
                 ),
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: 4),
               Text(
-                'Find places worth discovering.',
+                'Find places worth discovering in Sri Lanka',
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: 13.5,
                   color: colors.onSurfaceVariant,
                 ),
                 maxLines: 1,
@@ -573,94 +481,40 @@ class _ExplorePageState extends State<ExplorePage> {
           ),
         ),
         const SizedBox(width: 8),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // List / Map View Switcher Pill
-            Container(
-              padding: const EdgeInsets.all(3),
-              decoration: BoxDecoration(
-                color: colors.surfaceContainer,
-                borderRadius: BorderRadius.circular(999),
-              ),
-              child: Row(
-                children: [
-                  InkResponse(
-                    key: const ValueKey('explore_list_toggle'),
-                    onTap: () => setState(() => _isMapView = false),
-                    radius: 18,
-                    child: Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: !_isMapView ? colors.primary : Colors.transparent,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.format_list_bulleted_rounded,
-                        size: 17,
-                        color: !_isMapView ? Colors.white : colors.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
-                  InkResponse(
-                    key: const ValueKey('explore_map_toggle'),
-                    onTap: () => setState(() => _isMapView = true),
-                    radius: 18,
-                    child: Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: _isMapView ? colors.primary : Colors.transparent,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.map_rounded,
-                        size: 17,
-                        color: _isMapView ? Colors.white : colors.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
 
-            // Favorites Button
-            InkWell(
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const SavedPage()));
-              },
-              borderRadius: BorderRadius.circular(999),
-              child: Container(
-                width: 38,
-                height: 38,
-                decoration: BoxDecoration(
-                  color: colors.surfaceContainerLow,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: colors.architecturalBorder),
-                ),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Icon(Icons.bookmark_rounded, size: 20, color: colors.secondary),
-                    Positioned(
-                      top: 7,
-                      right: 7,
-                      child: Container(
-                        width: 7,
-                        height: 7,
-                        decoration: BoxDecoration(
-                          color: colors.goldenAmber,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+        // Favorites Button
+        InkWell(
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (_) => const SavedPage()));
+          },
+          borderRadius: BorderRadius.circular(999),
+          child: Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: colors.surfaceContainerLow,
+              shape: BoxShape.circle,
+              border: Border.all(color: colors.architecturalBorder),
             ),
-          ],
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Icon(Icons.bookmark_rounded, size: 20, color: colors.secondary),
+                Positioned(
+                  top: 7,
+                  right: 7,
+                  child: Container(
+                    width: 7,
+                    height: 7,
+                    decoration: BoxDecoration(
+                      color: colors.goldenAmber,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ],
     );
@@ -816,39 +670,6 @@ class _ExplorePageState extends State<ExplorePage> {
       default:
         return rawLabel;
     }
-  }
-
-  Widget _buildInteractiveMapView(HelaColorPalette colors) {
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.cardBackground,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: colors.architecturalBorder),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(18),
-        child: Column(
-          children: [
-            RealTimeGoogleMap(
-              pickupLocation: 'Sigiriya Rock Sanctuary',
-              dropoffLocation: 'Kandy Sacred Tooth Relic',
-              durationText: '2h 15m',
-              distanceText: '90 km Scenic Mountain Route',
-              vehicleType: 'All Island Pins Active',
-              height: 240,
-              onSwapLocations: () {},
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   Widget _buildPopularDestinationsSection(HelaColorPalette colors, List<ExploreDestination> items) {

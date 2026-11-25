@@ -48,7 +48,8 @@ class HelaHomePage extends StatefulWidget {
   State<HelaHomePage> createState() => _HelaHomePageState();
 }
 
-class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver {
+class _HelaHomePageState extends State<HelaHomePage>
+    with WidgetsBindingObserver {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _searchController = TextEditingController();
   late final LiveWeatherService _locationService;
@@ -56,7 +57,8 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
   List<FeaturedDestinationItem> _searchedDestinations = [];
   bool _isLiveSearching = false;
   String _currentCity = 'Colombo';
-  int _selectedExperienceChipIndex = 0; // 0: Nature & Wildlife, 1: Beaches, 2: Cultural Heritage, 3: Hill Country, 4: All
+  int _selectedExperienceChipIndex =
+      0; // 0: Nature & Wildlife, 1: Beaches, 2: Cultural Heritage, 3: Hill Country, 4: All
 
   final List<String> _experienceFilters = const [
     'Nature & Wildlife',
@@ -206,7 +208,9 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
           if (permission == LocationPermission.deniedForever && mounted) {
             messenger.showSnackBar(
               SnackBar(
-                content: const Text('Location permission is blocked. Enable it in App Settings.'),
+                content: const Text(
+                  'Location permission is blocked. Enable it in App Settings.',
+                ),
                 action: SnackBarAction(
                   label: 'App Settings',
                   onPressed: () => Geolocator.openAppSettings(),
@@ -222,7 +226,9 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
 
     final profileFallback = appState.userLocation.split(',').first.trim();
     final resolved = await _locationService.resolveUserLocation(
-      fallbackLocationName: profileFallback.isNotEmpty ? profileFallback : _currentCity,
+      fallbackLocationName: profileFallback.isNotEmpty
+          ? profileFallback
+          : _currentCity,
       requestPermissionIfNeeded: requestPermissionIfNeeded,
     );
 
@@ -240,7 +246,12 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
     super.dispose();
   }
 
-  Widget _buildNetworkImage(String url, {double? width, double? height, BoxFit fit = BoxFit.cover}) {
+  Widget _buildNetworkImage(
+    String url, {
+    double? width,
+    double? height,
+    BoxFit fit = BoxFit.cover,
+  }) {
     return HelaNetworkImage(
       imageUrl: url,
       width: width,
@@ -251,7 +262,11 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
         height: height,
         color: const Color(0xFF0B5D56).withValues(alpha: 0.15),
         child: const Center(
-          child: Icon(Icons.landscape_rounded, color: Color(0xFF0B5D56), size: 32),
+          child: Icon(
+            Icons.landscape_rounded,
+            color: Color(0xFF0B5D56),
+            size: 32,
+          ),
         ),
       ),
     );
@@ -266,10 +281,18 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
     final selectedFilter = _experienceFilters[_selectedExperienceChipIndex];
     final baseExperiences = selectedFilter == 'All'
         ? _experiences
-        : _experiences.where((e) => e.filterCategory == selectedFilter).toList();
+        : _experiences
+              .where((e) => e.filterCategory == selectedFilter)
+              .toList();
     final displayedExperiences = query.isEmpty
         ? baseExperiences
-        : baseExperiences.where((e) => e.title.toLowerCase().contains(query) || e.subtitle.toLowerCase().contains(query)).toList();
+        : baseExperiences
+              .where(
+                (e) =>
+                    e.title.toLowerCase().contains(query) ||
+                    e.subtitle.toLowerCase().contains(query),
+              )
+              .toList();
 
     return Scaffold(
       key: _scaffoldKey,
@@ -320,7 +343,7 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
 
                         // AI Assistant Promo Banner
                         _buildAiAssistantPromoBanner(colors),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 52),
                       ],
                     ),
                   ),
@@ -328,9 +351,9 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
               ),
             ),
 
-            // Floating "Smart Guide • Ask HELA" Action Button in Bottom Right
+            // Floating "Ask HELA" Action Capsule in Bottom Right
             Positioned(
-              bottom: 16,
+              bottom: 20,
               right: 16,
               child: HelaBottomNavBar.buildFloatingAskHelaButton(context),
             ),
@@ -345,32 +368,46 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
     return AppBar(
       backgroundColor: colors.surface.withValues(alpha: isDark ? 0.96 : 0.94),
       elevation: 0,
-      scrolledUnderElevation: 1.0,
-      shadowColor: Colors.black12,
-      toolbarHeight: 56,
+      scrolledUnderElevation: 0,
+      toolbarHeight: 68,
       titleSpacing: 16,
       automaticallyImplyLeading: false,
       title: Text(
-        'HELA',
+        'Where to?',
         style: TextStyle(
-          color: colors.primary,
-          fontSize: 28,
+          color: colors.onSurface,
+          fontSize: 34,
           fontWeight: FontWeight.w900,
-          letterSpacing: 1.2,
+          letterSpacing: -0.8,
           fontFamily: 'Inter',
         ),
       ),
       actions: [
         Padding(
-          padding: const EdgeInsets.only(right: 8),
-          child: IconButton(
-            icon: Icon(Icons.notifications_outlined, color: colors.onSurfaceVariant, size: 24),
-            tooltip: 'Notifications',
-            onPressed: () {
+          padding: const EdgeInsets.only(right: 16),
+          child: InkWell(
+            onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('No new travel notifications')),
               );
             },
+            borderRadius: BorderRadius.circular(999),
+            child: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: colors.surfaceContainer,
+                border: Border.all(
+                  color: colors.architecturalBorder.withValues(alpha: 0.6),
+                ),
+              ),
+              child: Icon(
+                Icons.notifications_none_rounded,
+                color: colors.onSurface,
+                size: 22,
+              ),
+            ),
           ),
         ),
       ],
@@ -379,15 +416,17 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
 
   Widget _buildSearchBar(HelaColorPalette colors) {
     return Container(
-      height: 48,
+      height: 52,
       decoration: BoxDecoration(
         color: colors.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: colors.architecturalBorder),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: colors.architecturalBorder.withValues(alpha: 0.8),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
+            blurRadius: 12,
             offset: const Offset(0, 3),
           ),
         ],
@@ -395,8 +434,12 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
       child: Row(
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 14, right: 10),
-            child: Icon(Icons.search_rounded, color: colors.primary, size: 22),
+            padding: const EdgeInsets.only(left: 18, right: 12),
+            child: Icon(
+              Icons.search_rounded,
+              color: colors.onSurface,
+              size: 22,
+            ),
           ),
           Expanded(
             child: TextField(
@@ -404,7 +447,7 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
               onChanged: _onSearchChanged,
               onSubmitted: _onSearchChanged,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 14.5,
                 color: colors.onSurface,
                 fontWeight: FontWeight.w500,
               ),
@@ -418,10 +461,11 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
                 filled: false,
                 isCollapsed: true,
                 contentPadding: EdgeInsets.zero,
-                hintText: HelaAppStateProvider.of(context).tr('where_to_go'),
+                hintText: 'Places to go, things to do, hotels...',
                 hintStyle: TextStyle(
-                  color: colors.onSurfaceVariant.withValues(alpha: 0.7),
-                  fontSize: 13.5,
+                  color: colors.onSurfaceVariant.withValues(alpha: 0.8),
+                  fontSize: 14.5,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
             ),
@@ -430,12 +474,16 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
             GestureDetector(
               onTap: _clearSearch,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Icon(Icons.close_rounded, size: 20, color: colors.onSurfaceVariant),
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                child: Icon(
+                  Icons.close_rounded,
+                  size: 20,
+                  color: colors.onSurfaceVariant,
+                ),
               ),
             )
           else
-            const SizedBox(width: 14),
+            const SizedBox(width: 18),
         ],
       ),
     );
@@ -460,9 +508,7 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
         child: Stack(
           fit: StackFit.expand,
           children: [
-            _buildNetworkImage(
-              SriLankaImages.sigiriya,
-            ),
+            _buildNetworkImage(SriLankaImages.sigiriya),
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -523,7 +569,9 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => const TripPlannerPage()),
+                            MaterialPageRoute(
+                              builder: (_) => const TripPlannerPage(),
+                            ),
                           );
                         },
                         style: ElevatedButton.styleFrom(
@@ -531,15 +579,25 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
                           foregroundColor: colors.primary,
                           elevation: 2,
                           shadowColor: Colors.black.withValues(alpha: 0.2),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              HelaAppStateProvider.of(context).tr('plan_my_trip'),
-                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                              HelaAppStateProvider.of(
+                                context,
+                              ).tr('plan_my_trip'),
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                             const SizedBox(width: 6),
                             const Icon(Icons.arrow_forward_rounded, size: 16),
@@ -551,7 +609,9 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => const FairRidePage()),
+                            MaterialPageRoute(
+                              builder: (_) => const FairRidePage(),
+                            ),
                           );
                         },
                         style: ElevatedButton.styleFrom(
@@ -559,13 +619,22 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
                           foregroundColor: const Color(0xFF00382E),
                           elevation: 2,
                           shadowColor: Colors.black.withValues(alpha: 0.2),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: const [
-                            Icon(Icons.local_taxi_rounded, size: 16, color: Color(0xFF00382E)),
+                            Icon(
+                              Icons.local_taxi_rounded,
+                              size: 16,
+                              color: Color(0xFF00382E),
+                            ),
                             SizedBox(width: 6),
                             Text(
                               'Taxi',
@@ -591,7 +660,9 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
 
   Widget _buildFeaturedDestinationsSection(HelaColorPalette colors) {
     final isSearching = _searchQuery.trim().isNotEmpty;
-    final destinations = isSearching ? _searchedDestinations : kFeaturedDestinations;
+    final destinations = isSearching
+        ? _searchedDestinations
+        : kFeaturedDestinations;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -604,7 +675,9 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
                 children: [
                   Flexible(
                     child: Text(
-                      HelaAppStateProvider.of(context).tr('featured_destinations'),
+                      HelaAppStateProvider.of(
+                        context,
+                      ).tr('featured_destinations'),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -620,18 +693,25 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
                     width: 6,
                     height: 6,
                     decoration: BoxDecoration(
-                      color: isSearching ? const Color(0xFF00E676) : colors.primary,
+                      color: isSearching
+                          ? const Color(0xFF00E676)
+                          : colors.primary,
                       shape: BoxShape.circle,
                     ),
                   ),
                   if (isSearching) ...[
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 7,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: colors.primaryContainer.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(999),
-                        border: Border.all(color: colors.primary.withValues(alpha: 0.3)),
+                        border: Border.all(
+                          color: colors.primary.withValues(alpha: 0.3),
+                        ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -665,7 +745,10 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
             if (!isSearching)
               TextButton(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const ExplorePage()));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ExplorePage()),
+                  );
                 },
                 style: TextButton.styleFrom(
                   foregroundColor: colors.primary,
@@ -675,7 +758,10 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
                 ),
                 child: Text(
                   HelaAppStateProvider.of(context).tr('see_all'),
-                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                  ),
                 ),
               )
             else
@@ -706,13 +792,18 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
                   decoration: BoxDecoration(
                     color: colors.surfaceContainerLowest,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: colors.outlineVariant.withValues(alpha: 0.5)),
+                    border: Border.all(
+                      color: colors.outlineVariant.withValues(alpha: 0.5),
+                    ),
                   ),
                   child: Center(
                     child: Text(
                       'No destinations found for "$_searchQuery". Try searching Sigiriya, Ella, Kandy, Galle, or Nuwara Eliya.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 13, color: colors.onSurfaceVariant),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: colors.onSurfaceVariant,
+                      ),
                     ),
                   ),
                 )
@@ -734,7 +825,10 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
     );
   }
 
-  Widget _buildExperiencesSection(HelaColorPalette colors, List<HomeExperienceItem> items) {
+  Widget _buildExperiencesSection(
+    HelaColorPalette colors,
+    List<HomeExperienceItem> items,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -759,22 +853,34 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
               return Padding(
                 padding: const EdgeInsets.only(right: 8),
                 child: GestureDetector(
-                  onTap: () => setState(() => _selectedExperienceChipIndex = idx),
+                  onTap: () =>
+                      setState(() => _selectedExperienceChipIndex = idx),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 7,
+                    ),
                     decoration: BoxDecoration(
-                      color: isSelected ? colors.primary : colors.cardBackground,
+                      color: isSelected
+                          ? colors.primary
+                          : colors.cardBackground,
                       borderRadius: BorderRadius.circular(999),
                       border: Border.all(
-                        color: isSelected ? colors.primary : colors.architecturalBorder,
+                        color: isSelected
+                            ? colors.primary
+                            : colors.architecturalBorder,
                       ),
                     ),
                     child: Text(
                       _experienceFilters[idx],
                       style: TextStyle(
                         fontSize: 12,
-                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                        color: isSelected ? Colors.white : colors.onSurfaceVariant,
+                        fontWeight: isSelected
+                            ? FontWeight.w700
+                            : FontWeight.w500,
+                        color: isSelected
+                            ? Colors.white
+                            : colors.onSurfaceVariant,
                       ),
                     ),
                   ),
@@ -838,7 +944,11 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
                       ),
                       Row(
                         children: [
-                          Icon(Icons.star_rounded, size: 12, color: colors.goldenAmber),
+                          Icon(
+                            Icons.star_rounded,
+                            size: 12,
+                            color: colors.goldenAmber,
+                          ),
                           const SizedBox(width: 2),
                           Text(
                             exp.rating,
@@ -877,7 +987,11 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
               ),
             ),
             const SizedBox(width: 6),
-            Icon(Icons.chevron_right_rounded, size: 20, color: colors.outlineVariant),
+            Icon(
+              Icons.chevron_right_rounded,
+              size: 20,
+              color: colors.outlineVariant,
+            ),
           ],
         ),
       ),
@@ -908,7 +1022,11 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
                 color: colors.primaryContainer,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(Icons.smart_toy_rounded, size: 22, color: colors.goldenAmber),
+              child: Icon(
+                Icons.smart_toy_rounded,
+                size: 22,
+                color: colors.goldenAmber,
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -942,8 +1060,13 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
               style: ElevatedButton.styleFrom(
                 backgroundColor: colors.primary,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 8,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(999),
+                ),
                 elevation: 1,
               ),
               child: Row(
@@ -951,7 +1074,10 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
                 children: [
                   Text(
                     HelaAppStateProvider.of(context).tr('ask_hela'),
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   const SizedBox(width: 4),
                   const Icon(Icons.chat_bubble_outline_rounded, size: 13),

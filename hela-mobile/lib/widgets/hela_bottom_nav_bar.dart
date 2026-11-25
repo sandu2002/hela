@@ -104,65 +104,83 @@ class HelaBottomNavBar extends StatelessWidget {
 
   static Widget buildFloatingAskHelaButton(BuildContext context) {
     final colors = HelaColors.of(context);
-    return InkWell(
-      onTap: () => openAskHelaSheet(context),
-      borderRadius: BorderRadius.circular(999),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-        decoration: BoxDecoration(
-          color: colors.primaryContainer,
-          borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: colors.goldenAmber.withValues(alpha: 0.5), width: 1.2),
-          boxShadow: [
-            BoxShadow(
-              color: colors.primary.withValues(alpha: 0.28),
-              blurRadius: 20,
-              offset: const Offset(0, 6),
+    final isDark = colors.isDark;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => openAskHelaSheet(context),
+        borderRadius: BorderRadius.circular(999),
+        child: Container(
+          height: 44,
+          padding: const EdgeInsets.only(left: 6, right: 14, top: 4, bottom: 4),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: isDark
+                  ? const [Color(0xFF0F3A34), Color(0xFF06201D)]
+                  : const [Color(0xFF004D40), Color(0xFF002922)],
             ),
-          ],
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 26,
-              height: 26,
-              decoration: BoxDecoration(
-                color: colors.tertiaryContainer.withValues(alpha: 0.5),
-                shape: BoxShape.circle,
-                border: Border.all(color: colors.goldenAmber, width: 1.5),
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.22),
+              width: 1.0,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF002922).withValues(alpha: 0.35),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
+                spreadRadius: 0,
               ),
-              child: Icon(Icons.psychology_rounded, size: 15, color: colors.goldenAmber),
-            ),
-            const SizedBox(width: 8),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  HelaAppStateProvider.of(context).tr('smart_guide'),
-                  style: TextStyle(
-                    fontSize: 9.5,
-                    fontWeight: FontWeight.w600,
-                    color: colors.goldenAmber,
-                    height: 1.0,
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.15),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Luminous round accent containing the official psychology icon
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: 0.16),
+                  border: Border.all(
+                    color: const Color(0xFFFFD54F).withValues(alpha: 0.45),
+                    width: 1.0,
                   ),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  HelaAppStateProvider.of(context).tr('ask_hela'),
-                  style: const TextStyle(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                    height: 1.0,
-                  ),
+                child: const Icon(
+                  Icons.psychology_rounded,
+                  size: 18,
+                  color: Color(0xFFFFD54F), // Luminous warm amber
                 ),
-              ],
-            ),
-            const SizedBox(width: 8),
-            Icon(Icons.auto_awesome_rounded, size: 15, color: colors.onPrimaryContainer),
-          ],
+              ),
+              const SizedBox(width: 8),
+              Text(
+                HelaAppStateProvider.of(context).tr('ask_hela'),
+                style: const TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                  letterSpacing: 0.2,
+                ),
+              ),
+              const SizedBox(width: 6),
+              const Icon(
+                Icons.auto_awesome_rounded,
+                size: 14,
+                color: Color(0xFF80CBC4), // Soft mint sparkle
+              ),
+            ],
+          ),
         ),
       ),
     );

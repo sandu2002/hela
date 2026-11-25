@@ -127,6 +127,13 @@ void main() {
 
   testWidgets('FairRidePage smoke test', (WidgetTester tester) async {
     _ignoreOverflow();
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
     await tester.pumpWidget(
       const MaterialApp(
         home: FairRidePage(),
@@ -136,6 +143,25 @@ void main() {
     expect(find.text('SOS EMERGENCY'), findsOneWidget);
     expect(find.text('Select Ceylon Vehicle'), findsOneWidget);
     expect(find.text('Tuk-Tuk'), findsOneWidget);
+    expect(find.text('Ceylon Pay / Visa'), findsOneWidget);
+
+    // Tap Change to open payment method picker
+    final changeButton = find.text('Change');
+    await tester.ensureVisible(changeButton);
+    await tester.tap(changeButton);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+
+    expect(find.text('Select Payment Method'), findsOneWidget);
+    expect(find.text('Cash on Arrival (LKR)'), findsOneWidget);
+
+    // Select Cash
+    await tester.tap(find.text('Cash on Arrival (LKR)'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+
+    // Verify Cash is now selected on main screen
+    expect(find.text('Cash on Arrival (LKR)'), findsOneWidget);
   });
 
   testWidgets('StaysPage smoke test', (WidgetTester tester) async {
