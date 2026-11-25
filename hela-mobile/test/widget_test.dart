@@ -121,8 +121,6 @@ void main() {
     expect(find.text('Travel Interests'), findsOneWidget);
     expect(find.text('Pace & Travel Style'), findsOneWidget);
     expect(find.text('Generate My Itinerary ✨'), findsOneWidget);
-    expect(find.text('Get Directions'), findsOneWidget);
-    expect(find.text('Add to My Trip'), findsOneWidget);
   });
 
   testWidgets('FairRidePage smoke test', (WidgetTester tester) async {

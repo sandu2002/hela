@@ -96,7 +96,7 @@ void main() {
 
       // Verify the theme switch button is removed from the Home AppBar
       expect(find.byType(HelaThemeSwitchButton), findsNothing);
-      expect(find.byIcon(Icons.notifications_outlined), findsOneWidget);
+      expect(find.byIcon(Icons.notifications_none_rounded), findsOneWidget);
     });
 
     testWidgets('Menu button opens HelaNavigationDrawer with theme mode selector', (tester) async {

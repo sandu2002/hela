@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:hela/data/place_details_catalog.dart';
 import 'package:hela/models/haven_item.dart';
 import 'package:hela/pages/ask_hela_page.dart';
-import 'package:hela/pages/profile_page.dart';
 import 'package:hela/pages/trip_planner_page.dart';
 import 'package:hela/services/route_map_service.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/theme/hela_colors.dart';
+import 'package:hela/widgets/hela_network_image.dart';
 import 'package:hela/widgets/live_route_overview_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// Place / Destination Details Screen matching the HELA Stitch UI:
@@ -40,7 +42,6 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
 
   int _currentPhotoIndex = 0;
   int _selectedTabIndex = 0; // 0: Highlights, 1: History, 2: Visit Tips
-  bool _isLorePlaying = false;
   LatLng? _liveUserLocation;
 
   @override
@@ -100,6 +101,30 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
     );
   }
 
+  Future<void> _sharePlace() async {
+    final place = widget.place;
+    final shareText = '🌟 Discover ${place.title} in Sri Lanka!\n\n'
+        '${place.subtitle}\n'
+        '📍 Location: ${place.locationLine}\n'
+        '⭐ Rating: ${place.rating}\n\n'
+        'Explore with HELA — Your Personal Sri Lanka AI Guide.';
+    try {
+      await Share.share(
+        shareText,
+        subject: 'Discover ${place.title} with HELA',
+      );
+    } catch (_) {
+      await Clipboard.setData(ClipboardData(text: shareText));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Copied ${place.title} details to clipboard! ✨'),
+          ),
+        );
+      }
+    }
+  }
+
   void _openPhotoGallery() {
     showDialog<void>(
       context: context,
@@ -116,8 +141,8 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                   onPageChanged: (idx) => setDialogState(() => active = idx),
                   itemBuilder: (_, idx) => InteractiveViewer(
                     child: Center(
-                      child: Image.network(
-                        widget.place.photos[idx],
+                      child: HelaNetworkImage(
+                        imageUrl: widget.place.photos[idx],
                         fit: BoxFit.contain,
                         errorBuilder: (_, _, _) => const Icon(
                           Icons.landscape_rounded,
@@ -170,121 +195,6 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
         );
       },
     );
-  }
-
-  void _openLoreGuideSheet() {
-    setState(() => _isLorePlaying = true);
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) {
-        final colors = HelaColors.of(ctx);
-        bool playing = true;
-        return StatefulBuilder(
-          builder: (ctx, setSheetState) {
-            return Container(
-              padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
-              decoration: BoxDecoration(
-                color: colors.cardBackground,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(24),
-                ),
-              ),
-              child: SafeArea(
-                top: false,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 40,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: colors.architecturalBorder,
-                          borderRadius: BorderRadius.circular(999),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Container(
-                          width: 42,
-                          height: 42,
-                          decoration: BoxDecoration(
-                            color: colors.primary,
-                            shape: BoxShape.circle,
-                          ),
-                          child: IconButton(
-                            onPressed: () {
-                              setSheetState(() => playing = !playing);
-                              if (mounted) {
-                                setState(() => _isLorePlaying = playing);
-                              }
-                            },
-                            icon: Icon(
-                              playing
-                                  ? Icons.pause_rounded
-                                  : Icons.play_arrow_rounded,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                widget.place.loreGuideLabel,
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w800,
-                                  color: colors.onSurface,
-                                ),
-                              ),
-                              Text(
-                                playing
-                                    ? 'Narrating ${widget.place.title} cultural story...'
-                                    : 'Audio paused',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: colors.primary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 14),
-                    LinearProgressIndicator(
-                      value: playing ? 0.36 : 0.36,
-                      backgroundColor: colors.surfaceContainer,
-                      color: colors.primary,
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                    const SizedBox(height: 14),
-                    Text(
-                      widget.place.loreScript,
-                      style: TextStyle(
-                        fontSize: 13,
-                        height: 1.5,
-                        color: colors.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
-    ).whenComplete(() {
-      if (mounted) setState(() => _isLorePlaying = false);
-    });
   }
 
   List<RouteMapStop> _buildStopsToPlace() {
@@ -504,47 +414,12 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _CircleActionButton(
-                    icon: Icons.arrow_back_rounded,
+                    icon: Icons.arrow_back_ios_new_rounded,
                     tooltip: 'Back',
                     onTap: () => Navigator.pop(context),
                     colors: colors,
                   ),
-                  Row(
-                    children: [
-                      _CircleActionButton(
-                        icon: isFav
-                            ? Icons.favorite_rounded
-                            : Icons.favorite_border_rounded,
-                        iconColor: isFav
-                            ? const Color(0xFFE11D48)
-                            : colors.onSurface,
-                        tooltip: isFav ? 'Saved' : 'Save place',
-                        onTap: _toggleFavorite,
-                        colors: colors,
-                      ),
-                      const SizedBox(width: 10),
-                      InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const ProfilePage(),
-                            ),
-                          );
-                        },
-                        borderRadius: BorderRadius.circular(999),
-                        child: CircleAvatar(
-                          radius: 18,
-                          backgroundColor: colors.primary,
-                          child: const Icon(
-                            Icons.person_outline_rounded,
-                            size: 19,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  _buildTopCapsuleActions(colors, isFav),
                 ],
               ),
             ),
@@ -668,6 +543,59 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
     );
   }
 
+  Widget _buildTopCapsuleActions(HelaColorPalette colors, bool isFav) {
+    return Container(
+      height: 42,
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      decoration: BoxDecoration(
+        color: colors.isDark
+            ? colors.surfaceContainer
+            : Colors.white.withValues(alpha: 0.94),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: colors.architecturalBorder.withValues(alpha: 0.8),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            icon: Icon(
+              Icons.ios_share_rounded,
+              size: 20,
+              color: colors.onSurface,
+            ),
+            tooltip: 'Share',
+            splashRadius: 20,
+            onPressed: _sharePlace,
+          ),
+          Container(
+            width: 1,
+            height: 18,
+            color: colors.architecturalBorder.withValues(alpha: 0.7),
+          ),
+          IconButton(
+            icon: Icon(
+              isFav ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+              size: 21,
+              color: isFav ? const Color(0xFFE11D48) : colors.onSurface,
+            ),
+            tooltip: isFav ? 'Saved' : 'Save place',
+            splashRadius: 20,
+            onPressed: _toggleFavorite,
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildHeroImageCard(HelaColorPalette colors, PlaceDetailData place) {
     return Container(
       height: 270,
@@ -695,8 +623,8 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                   setState(() => _currentPhotoIndex = index);
                 },
                 itemBuilder: (_, index) {
-                  return Image.network(
-                    place.photos[index],
+                  return HelaNetworkImage(
+                    imageUrl: place.photos[index],
                     fit: BoxFit.cover,
                     errorBuilder: (_, _, _) => Container(
                       color: colors.primary.withValues(alpha: 0.14),
@@ -710,121 +638,6 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                     ),
                   );
                 },
-              ),
-            ),
-            // Subtle bottom gradient for badge legibility
-            IgnorePointer(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.black.withValues(alpha: 0.18),
-                      Colors.transparent,
-                      Colors.black.withValues(alpha: 0.35),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            // Top-left category badge
-            Positioned(
-              top: 12,
-              left: 12,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.94),
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.stars_rounded, size: 13, color: colors.goldenAmber),
-                    const SizedBox(width: 5),
-                    Text(
-                      place.categoryBadge,
-                      style: TextStyle(
-                        fontSize: 10.5,
-                        fontWeight: FontWeight.w800,
-                        color: colors.primary,
-                        letterSpacing: 0.4,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            // Top-right era badge
-            Positioned(
-              top: 12,
-              right: 12,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.94),
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.history_edu_rounded, size: 13, color: colors.primary),
-                    const SizedBox(width: 4),
-                    Text(
-                      place.eraBadge,
-                      style: TextStyle(
-                        fontSize: 10.5,
-                        fontWeight: FontWeight.w700,
-                        color: colors.onSurface,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            // Bottom-left Local Lore audio guide button
-            Positioned(
-              bottom: 12,
-              left: 12,
-              child: GestureDetector(
-                onTap: _openLoreGuideSheet,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-                  decoration: BoxDecoration(
-                    color: _isLorePlaying
-                        ? colors.primary
-                        : Colors.white.withValues(alpha: 0.95),
-                    borderRadius: BorderRadius.circular(999),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.15),
-                        blurRadius: 6,
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        _isLorePlaying
-                            ? Icons.graphic_eq_rounded
-                            : Icons.headphones_rounded,
-                        size: 15,
-                        color: _isLorePlaying ? Colors.white : colors.primary,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        place.loreGuideLabel,
-                        style: TextStyle(
-                          fontSize: 11.5,
-                          fontWeight: FontWeight.w700,
-                          color: _isLorePlaying ? Colors.white : colors.onSurface,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
               ),
             ),
             // Bottom-right photo counter
@@ -1902,14 +1715,12 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
 
 class _CircleActionButton extends StatelessWidget {
   final IconData icon;
-  final Color? iconColor;
   final String tooltip;
   final VoidCallback onTap;
   final HelaColorPalette colors;
 
   const _CircleActionButton({
     required this.icon,
-    this.iconColor,
     required this.tooltip,
     required this.onTap,
     required this.colors,
@@ -1923,21 +1734,31 @@ class _CircleActionButton extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(999),
         child: Container(
-          width: 38,
-          height: 38,
+          width: 42,
+          height: 42,
           decoration: BoxDecoration(
-            color: colors.cardBackground,
+            color: colors.isDark
+                ? colors.surfaceContainer
+                : Colors.white.withValues(alpha: 0.94),
             shape: BoxShape.circle,
-            border: Border.all(color: colors.architecturalBorder),
+            border: Border.all(
+              color: colors.architecturalBorder.withValues(alpha: 0.8),
+            ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 6,
-                offset: const Offset(0, 2),
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 10,
+                offset: const Offset(0, 3),
               ),
             ],
           ),
-          child: Icon(icon, size: 19, color: iconColor ?? colors.onSurface),
+          child: Center(
+            child: Icon(
+              icon,
+              size: 18,
+              color: colors.onSurface,
+            ),
+          ),
         ),
       ),
     );

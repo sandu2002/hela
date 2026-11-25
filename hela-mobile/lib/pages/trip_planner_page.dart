@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hela/data/sri_lanka_images.dart';
 import 'package:hela/pages/itinerary_planning_loading_page.dart';
-import 'package:hela/pages/profile_page.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/theme/hela_colors.dart';
 import 'package:hela/widgets/hela_bottom_nav_bar.dart';
@@ -57,9 +56,6 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
 
   // Travel Pace: 'relaxed', 'balanced', 'active'
   String _selectedPace = 'balanced';
-
-  // Navigation & Generation State
-  bool _isSaved = false;
 
   // Available Interests Data
   final List<Map<String, String>> _allInterests = const [
@@ -279,221 +275,25 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
   @override
   Widget build(BuildContext context) {
     final colors = HelaColors.of(context);
-    final isDark = colors.isDark;
 
     return Scaffold(
       backgroundColor: colors.surface,
-      appBar: _buildTopAppBar(colors, isDark),
       body: SafeArea(
-        top: false,
+        top: true,
         bottom: false,
         child: _buildPlannerFormView(colors),
       ),
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildDockedActionBar(colors),
-          const HelaBottomNavBar(currentIndex: 2),
-        ],
-      ),
+      bottomNavigationBar: const HelaBottomNavBar(currentIndex: 2),
     );
   }
 
   // ==========================================
-  // TOP APP BAR
-  // ==========================================
-  PreferredSizeWidget _buildTopAppBar(HelaColorPalette colors, bool isDark) {
-    return AppBar(
-      backgroundColor: colors.surface.withValues(alpha: isDark ? 0.96 : 0.94),
-      elevation: 0,
-      scrolledUnderElevation: 1.0,
-      automaticallyImplyLeading: false,
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          // Back Button
-          InkWell(
-            onTap: () {
-              if (Navigator.canPop(context)) {
-                Navigator.pop(context);
-              }
-            },
-            borderRadius: BorderRadius.circular(999),
-            child: Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                color: colors.cardBackground,
-                shape: BoxShape.circle,
-                border: Border.all(color: colors.architecturalBorder),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Icon(Icons.arrow_back_rounded, size: 19, color: colors.onSurface),
-            ),
-          ),
-
-          // Action Buttons
-          Row(
-            children: [
-              // Bookmark Favorite
-              InkWell(
-                onTap: () {
-                  setState(() => _isSaved = !_isSaved);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(_isSaved ? 'Trip saved to your bookmarks!' : 'Trip removed from bookmarks.'),
-                      duration: const Duration(seconds: 1),
-                    ),
-                  );
-                },
-                borderRadius: BorderRadius.circular(999),
-                child: Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(
-                    color: colors.cardBackground,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: colors.architecturalBorder),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.04),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Icon(
-                    _isSaved ? Icons.favorite_rounded : Icons.favorite_outline_rounded,
-                    size: 19,
-                    color: _isSaved ? const Color(0xFFE11D48) : colors.onSurface,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-
-              // Profile Avatar
-              InkWell(
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfilePage()));
-                },
-                borderRadius: BorderRadius.circular(999),
-                child: CircleAvatar(
-                  radius: 17,
-                  backgroundColor: colors.primary,
-                  child: const Icon(Icons.person_rounded, size: 18, color: Colors.white),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ==========================================
-  // DOCKED ACTION BAR (BOTTOM BUTTONS)
-  // ==========================================
-  Widget _buildDockedActionBar(HelaColorPalette colors) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: colors.surface.withValues(alpha: 0.98),
-        border: Border(top: BorderSide(color: colors.architecturalBorder)),
-      ),
-      child: Center(
-        heightFactor: 1.0,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 480),
-          child: Row(
-            children: [
-              Expanded(
-                child: SizedBox(
-                  height: 46,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Opening live island GPS navigation route...'),
-                          duration: Duration(milliseconds: 1200),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colors.secondaryContainer,
-                      foregroundColor: colors.onSecondaryContainer,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.near_me_rounded, size: 18),
-                        const SizedBox(width: 6),
-                        Text(
-                          HelaAppStateProvider.of(context).tr('get_directions'),
-                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: SizedBox(
-                  height: 46,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Trip successfully added to My Saved Journeys! ✨'),
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colors.primary,
-                      foregroundColor: Colors.white,
-                      elevation: 2,
-                      shadowColor: colors.primary.withValues(alpha: 0.3),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.playlist_add_rounded, size: 19),
-                        const SizedBox(width: 6),
-                        Text(
-                          HelaAppStateProvider.of(context).tr('add_to_my_trip'),
-                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ==========================================
-  // STEP 1: PREFERENCES FORM VIEW
+  // PREFERENCES FORM VIEW
   // ==========================================
   Widget _buildPlannerFormView(HelaColorPalette colors) {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
       child: Center(
         heightFactor: 1.0,
         child: ConstrainedBox(
@@ -501,42 +301,6 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Top Step / AI Aura Chip
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                decoration: BoxDecoration(
-                  color: colors.secondaryContainer.withValues(alpha: 0.7),
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.auto_awesome_rounded, size: 13, color: colors.tertiary),
-                    const SizedBox(width: 5),
-                    Text(
-                      'HELA AI • Live Island Intelligence',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: colors.primary,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Container(width: 4, height: 4, decoration: BoxDecoration(color: colors.primary, shape: BoxShape.circle)),
-                    const SizedBox(width: 6),
-                    Text(
-                      'Step 1 of 2',
-                      style: TextStyle(
-                        fontSize: 10.5,
-                        fontWeight: FontWeight.w600,
-                        color: colors.secondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-
               // Title & Subtitle
               Text(
                 HelaAppStateProvider.of(context).tr('plan_your_adventure'),

@@ -1304,6 +1304,88 @@ class PlaceDetailCatalog {
     'dambulla': dambulla,
   };
 
+  static List<String> _getCategoryPhotos(
+    String query,
+    String? fallbackCategory,
+    String? fallbackImageUrl,
+  ) {
+    final lower = query.toLowerCase();
+    final cat = (fallbackCategory ?? '').toLowerCase();
+
+    final List<String> list = [];
+    if (fallbackImageUrl != null && fallbackImageUrl.trim().isNotEmpty) {
+      list.add(fallbackImageUrl);
+    }
+
+    if (cat.contains('beach') ||
+        lower.contains('beach') ||
+        lower.contains('bay') ||
+        lower.contains('surf') ||
+        lower.contains('mirissa') ||
+        lower.contains('weligama') ||
+        lower.contains('unawatuna') ||
+        lower.contains('bentota') ||
+        lower.contains('tangalle') ||
+        lower.contains('nilaveli') ||
+        lower.contains('hikkaduwa') ||
+        lower.contains('pasikudah')) {
+      list.addAll([
+        SriLankaImages.tropicalPalmBeach,
+        SriLankaImages.weligamaSurfCoast,
+        SriLankaImages.seaTurtleCoast,
+        SriLankaImages.mirissa,
+      ]);
+    } else if (cat.contains('wildlife') ||
+        lower.contains('wildlife') ||
+        lower.contains('safari') ||
+        lower.contains('elephant') ||
+        lower.contains('leopard') ||
+        lower.contains('yala') ||
+        lower.contains('minneriya') ||
+        lower.contains('udawalawe') ||
+        lower.contains('wilpattu') ||
+        lower.contains('park')) {
+      list.addAll([
+        SriLankaImages.wildElephants,
+        SriLankaImages.leopardSanctuary,
+        SriLankaImages.elephant,
+        SriLankaImages.yala,
+      ]);
+    } else if (cat.contains('nature') ||
+        lower.contains('nature') ||
+        lower.contains('waterfall') ||
+        lower.contains('falls') ||
+        lower.contains('hike') ||
+        lower.contains('trek') ||
+        lower.contains('peak') ||
+        lower.contains('tea') ||
+        lower.contains('nuwara eliya') ||
+        lower.contains('ella') ||
+        lower.contains('horton') ||
+        lower.contains('knuckles') ||
+        lower.contains('sinharaja') ||
+        lower.contains('diyaluma')) {
+      list.addAll([
+        SriLankaImages.teaPlantationHills,
+        SriLankaImages.cascadeWaterfall,
+        SriLankaImages.ellaNineArchValley,
+        SriLankaImages.cloudForestTrek,
+        SriLankaImages.ceylonTeaMist,
+      ]);
+    } else {
+      list.addAll([
+        SriLankaImages.sigiriyaRockAerial,
+        SriLankaImages.galleFortLighthouse,
+        SriLankaImages.kandyLakePalace,
+        SriLankaImages.ancientBuddhaStatue,
+        SriLankaImages.sigiriyaMonolith,
+      ]);
+    }
+
+    final seen = <String>{};
+    return list.where((url) => seen.add(url)).take(5).toList();
+  }
+
   static PlaceDetailData resolveByIdOrTitle(
     String query, {
     String? fallbackSubtitle,
@@ -1363,9 +1445,7 @@ class PlaceDetailCatalog {
           prestigeBadge: 'HELA Curated Island Highlight',
           description: fallbackSubtitle ??
               'An authentic Sri Lankan destination featuring rich local heritage, scenic landscapes, and guided cultural immersion.',
-          photos: [
-            fallbackImageUrl ?? SriLankaImages.sigiriya,
-          ],
+          photos: _getCategoryPhotos(query, fallbackCategory, fallbackImageUrl),
           quickSpecs: const [
             PlaceSpecItem(
               icon: Icons.schedule_rounded,

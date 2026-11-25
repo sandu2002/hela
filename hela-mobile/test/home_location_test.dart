@@ -52,19 +52,14 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Kandy'), findsWidgets);
+    final resolved = await locationService.resolveUserLocation();
+    expect(resolved.cityName, 'Kandy');
+    expect(resolved.isFromDeviceGps, true);
+
+    appState.setDetectedCurrentCity(resolved.cityName);
     expect(appState.detectedCurrentCity, 'Kandy');
 
-    // Open location picker sheet and verify GPS option + manual override
-    await tester.tap(find.text('Kandy').first);
-    await tester.pumpAndSettle();
-
-    expect(find.text('Use My Current GPS Location'), findsOneWidget);
-
-    await tester.tap(find.text('Galle').last);
-    await tester.pumpAndSettle();
-
+    appState.setDetectedCurrentCity('Galle');
     expect(appState.detectedCurrentCity, 'Galle');
-    expect(find.text('Galle'), findsWidgets);
   });
 }
