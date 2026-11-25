@@ -27,215 +27,17 @@ class _BookingsPageState extends State<BookingsPage> {
     '🚂 Train',
   ];
 
-  void _triggerEmergencySos() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) => Container(
-        padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFEE2E2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.emergency_rounded, color: Color(0xFFDC2626), size: 24),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
-                        'Tourist Emergency SOS',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF132220),
-                        ),
-                      ),
-                      Text(
-                        'Official 24/7 Sri Lanka Tourist Protection',
-                        style: TextStyle(fontSize: 12, color: Color(0xFF4A5D5A)),
-                      ),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.close_rounded),
-                  onPressed: () => Navigator.pop(ctx),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            _buildSosActionTile(
-              icon: Icons.local_police_rounded,
-              title: 'Tourist Police Hotline',
-              number: '1912',
-              desc: 'Dedicated rapid response for international travelers',
-              color: const Color(0xFF00443E),
-            ),
-            const SizedBox(height: 12),
-            _buildSosActionTile(
-              icon: Icons.medical_services_rounded,
-              title: 'Suwa Seriya Free Ambulance',
-              number: '1990',
-              desc: 'Island-wide emergency medical response',
-              color: const Color(0xFFDC2626),
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: OutlinedButton(
-                onPressed: () => Navigator.pop(ctx),
-                style: OutlinedButton.styleFrom(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                  side: const BorderSide(color: Color(0xFFE7DFD5)),
-                ),
-                child: const Text('Dismiss', style: TextStyle(color: Color(0xFF4A5D5A))),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSosActionTile({
-    required IconData icon,
-    required String title,
-    required String number,
-    required String desc,
-    required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFAF7F2),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE7DFD5)),
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            backgroundColor: color.withValues(alpha: 0.15),
-            radius: 20,
-            child: Icon(icon, color: color, size: 20),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
-                Text(desc, style: const TextStyle(color: Color(0xFF7D8E8B), fontSize: 11)),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              'Call $number',
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final colors = HelaColors.of(context);
 
     return Scaffold(
       backgroundColor: colors.background,
-      appBar: AppBar(
-        backgroundColor: colors.surface.withValues(alpha: 0.15),
-        elevation: 0,
-        scrolledUnderElevation: 1.0,
-        automaticallyImplyLeading: false,
-        titleSpacing: 16,
-        title: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              decoration: BoxDecoration(
-                color: colors.primary.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(999),
-                border: Border.all(color: colors.primary.withValues(alpha: 0.15)),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 7,
-                    height: 7,
-                    decoration: BoxDecoration(
-                      color: colors.primary,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    HelaAppStateProvider.of(context).tr('hela_bookings_badge'),
-                    style: TextStyle(
-                      color: colors.primary,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Spacer(),
-            // Emergency SOS Button
-            InkWell(
-              onTap: _triggerEmergencySos,
-              borderRadius: BorderRadius.circular(999),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFEE2E2),
-                  borderRadius: BorderRadius.circular(999),
-                  border: Border.all(color: const Color(0xFFFECACA)),
-                ),
-                child: Row(
-                  children: const [
-                    Icon(Icons.phone_in_talk_rounded, size: 13, color: Color(0xFF991B1B)),
-                    SizedBox(width: 4),
-                    Text(
-                      'SOS 1912',
-                      style: TextStyle(
-                        color: Color(0xFF991B1B),
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 96),
+      body: SafeArea(
+        top: true,
+        bottom: false,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -473,8 +275,9 @@ class _BookingsPageState extends State<BookingsPage> {
           ],
         ),
       ),
-      bottomNavigationBar: const HelaBottomNavBar(currentIndex: 3),
-    );
+    ),
+    bottomNavigationBar: const HelaBottomNavBar(currentIndex: 3),
+  );
   }
 
   Widget _buildBookingCard({

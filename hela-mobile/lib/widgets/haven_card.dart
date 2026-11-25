@@ -135,42 +135,49 @@ class HavenCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           // Location Badge
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 5,
-                            ),
-                            decoration: BoxDecoration(
-                              color: colors.tertiaryFixed,
-                              borderRadius: BorderRadius.circular(9999),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.12),
-                                  blurRadius: 4,
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.location_on_rounded,
-                                  size: 13,
-                                  color: colors.onTertiaryFixed,
-                                ),
-                                const SizedBox(width: 3),
-                                Text(
-                                  location,
-                                  style: TextStyle(
-                                    color: colors.onTertiaryFixed,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 11,
-                                    fontFamily: 'Inter',
+                          Flexible(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 5,
+                              ),
+                              decoration: BoxDecoration(
+                                color: colors.tertiaryFixed,
+                                borderRadius: BorderRadius.circular(9999),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.12),
+                                    blurRadius: 4,
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.location_on_rounded,
+                                    size: 13,
+                                    color: colors.onTertiaryFixed,
+                                  ),
+                                  const SizedBox(width: 3),
+                                  Flexible(
+                                    child: Text(
+                                      location,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: colors.onTertiaryFixed,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 11,
+                                        fontFamily: 'Inter',
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
+                          const SizedBox(width: 8),
 
                           // Bookmark Button
                           Material(

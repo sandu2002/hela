@@ -32,6 +32,7 @@ import 'package:hela/widgets/stay_card.dart';
 import 'package:hela/widgets/itinerary_card.dart';
 import 'package:hela/widgets/real_time_calendar.dart';
 import 'package:hela/widgets/real_time_map.dart';
+import 'package:hela/widgets/hela_bottom_nav_bar.dart';
 
 /// Helper to wrap a widget with HelaAppStateProvider for testing.
 Widget _wrapWithState(Widget child) {
@@ -468,6 +469,8 @@ void main() {
     expect(find.text('Saved Collection'), findsOneWidget);
     expect(find.text('Your Saved Sanctuary is Empty'), findsOneWidget);
     expect(find.text('Explore Havens & Tours'), findsOneWidget);
+    expect(find.byIcon(Icons.arrow_back_ios_new_rounded), findsOneWidget);
+    expect(find.byType(HelaBottomNavBar), findsNothing);
   });
 
   testWidgets('SavedPage with saved HavenCard renders card with details', (WidgetTester tester) async {
@@ -507,7 +510,6 @@ void main() {
     await tester.pump();
 
     expect(find.text('Explore'), findsAtLeastNWidgets(1));
-    expect(find.text('Find places worth discovering in Sri Lanka'), findsOneWidget);
     expect(find.text('Popular Destinations'), findsOneWidget);
     expect(find.text('Hidden Gems'), findsOneWidget);
     expect(find.text('Cultural Experiences'), findsOneWidget);
@@ -515,6 +517,20 @@ void main() {
     // Verify search bar presence
     expect(find.byType(TextField), findsOneWidget);
     expect(find.text('Places to go, things to do, hotels...'), findsOneWidget);
+
+    // Verify tapping top-right saved bookmark icon opens SavedPage
+    final bookmarkBtn = find.byIcon(Icons.bookmark_rounded);
+    expect(bookmarkBtn, findsOneWidget);
+    await tester.tap(bookmarkBtn);
+    await tester.pumpAndSettle();
+    expect(find.byType(SavedPage), findsOneWidget);
+    expect(find.byIcon(Icons.arrow_back_ios_new_rounded), findsOneWidget);
+    expect(find.byType(HelaBottomNavBar), findsNothing);
+
+    // Tap back button to return to ExplorePage
+    await tester.tap(find.byIcon(Icons.arrow_back_ios_new_rounded));
+    await tester.pumpAndSettle();
+    expect(find.byType(ExplorePage), findsOneWidget);
   });
 
   testWidgets('ItineraryDetailsPage smoke test and stop rendering', (WidgetTester tester) async {
@@ -753,7 +769,7 @@ void main() {
     expect(find.text('Deutsch'), findsOneWidget);
   });
 
-  testWidgets('OnboardingPage renders bottom hospitality card and Continue as Guest with explore icon', (WidgetTester tester) async {
+  testWidgets('OnboardingPage renders Continue as Guest with explore icon and sign-in option', (WidgetTester tester) async {
     _ignoreOverflow();
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 2.0;
@@ -777,13 +793,9 @@ void main() {
     expect(find.text('Continue as Guest'), findsOneWidget);
     expect(find.byIcon(Icons.explore_outlined), findsOneWidget);
 
-    // Verify Ayubowan hospitality card at the bottom
-    expect(find.text('Ayubowan! "May you live long."'), findsOneWidget);
-    expect(
-      find.text('Authentic local train timetables & meter guides await.'),
-      findsOneWidget,
-    );
-    expect(find.byIcon(Icons.wb_twilight_rounded), findsOneWidget);
+    // Verify Ayubowan hospitality card at the bottom was removed
+    expect(find.text('Ayubowan! "May you live long."'), findsNothing);
+    expect(find.byIcon(Icons.wb_twilight_rounded), findsNothing);
   });
 
   testWidgets('OnboardingPage Screen 2 renders highlight pills without tip card', (WidgetTester tester) async {

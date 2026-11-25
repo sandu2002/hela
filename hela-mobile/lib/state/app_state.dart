@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hela/models/haven_item.dart';
+import 'package:hela/models/saved_list.dart';
 import 'package:hela/models/tour_plan.dart';
 import 'package:hela/pages/stays_page.dart' show StayHaven;
 import 'package:hela/services/localization_service.dart';
@@ -147,6 +148,100 @@ class HelaAppState extends ChangeNotifier {
 
   int get totalSavedCount =>
       _savedHavens.length + _savedExperiences.length + _savedStays.length + _savedTours.length;
+
+  // ── User Custom Saved Lists / Themed Collections ──────────────
+  final List<CustomSavedList> _customLists = [
+    CustomSavedList(
+      id: 'list_beach',
+      name: 'Beach Escapes',
+      description: 'Sun, sand & coastal surf sanctuaries',
+      icon: Icons.beach_access_rounded,
+      color: const Color(0xFF0D9488),
+      itemTitles: ['Weligama & Tangalle Bays', 'Mirissa Beach', 'Unawatuna Beach'],
+    ),
+    CustomSavedList(
+      id: 'list_heritage',
+      name: 'Cultural Wonders',
+      description: 'Ancient rock citadels, sacred shrines & history',
+      icon: Icons.temple_buddhist_rounded,
+      color: const Color(0xFFD97706),
+      itemTitles: ['Sigiriya Rock Fortress Guided Dawn Ascent & Museum Tour'],
+    ),
+    CustomSavedList(
+      id: 'list_nature',
+      name: 'Nature & Safaris',
+      description: 'Mist-shrouded peaks, tea valleys & wild elephants',
+      icon: Icons.park_rounded,
+      color: const Color(0xFF059669),
+      itemTitles: ['Nine Arch Bridge & Demodara Tea Valley'],
+    ),
+  ];
+
+  List<CustomSavedList> get customLists => List.unmodifiable(_customLists);
+
+  CustomSavedList? getCustomList(String id) {
+    try {
+      return _customLists.firstWhere((l) => l.id == id);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  void createCustomList({
+    required String name,
+    String? description,
+    IconData? icon,
+    Color? color,
+    List<String>? initialItemTitles,
+  }) {
+    final list = CustomSavedList(
+      id: 'list_${DateTime.now().millisecondsSinceEpoch}',
+      name: name.trim(),
+      description: description?.trim(),
+      icon: icon ?? Icons.bookmark_rounded,
+      color: color ?? const Color(0xFF00443E),
+      itemTitles: initialItemTitles ?? [],
+    );
+    _customLists.add(list);
+    notifyListeners();
+  }
+
+  void deleteCustomList(String id) {
+    _customLists.removeWhere((l) => l.id == id);
+    notifyListeners();
+  }
+
+  void renameCustomList(String id, String newName) {
+    final index = _customLists.indexWhere((l) => l.id == id);
+    if (index >= 0) {
+      _customLists[index] = _customLists[index].copyWith(name: newName.trim());
+      notifyListeners();
+    }
+  }
+
+  void toggleItemInCustomList(String listId, String itemTitle) {
+    final index = _customLists.indexWhere((l) => l.id == listId);
+    if (index >= 0) {
+      final list = _customLists[index];
+      final titles = List<String>.from(list.itemTitles);
+      if (titles.contains(itemTitle)) {
+        titles.remove(itemTitle);
+      } else {
+        titles.add(itemTitle);
+      }
+      _customLists[index] = list.copyWith(itemTitles: titles);
+      notifyListeners();
+    }
+  }
+
+  bool isItemInList(String listId, String itemTitle) {
+    final list = getCustomList(listId);
+    return list?.itemTitles.contains(itemTitle) ?? false;
+  }
+
+  List<CustomSavedList> getListsContainingItem(String itemTitle) {
+    return _customLists.where((l) => l.itemTitles.contains(itemTitle)).toList();
+  }
 
   // ── Saved / Bookmarked Guides ──────────────────────────────────
   final Set<String> _savedGuideIds = <String>{};

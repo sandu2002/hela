@@ -1092,73 +1092,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
             ],
           ),
 
-          const SizedBox(height: 16),
-
-          // Micro Local Tip Card (Sri Lankan Hospitality Touch - Ayubowan)
-          _buildAyubowanCard(appState),
-
           const SizedBox(height: 20),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAyubowanCard(HelaAppState appState) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 38,
-            height: 38,
-            decoration: const BoxDecoration(
-              color: Color(0xFFB6EAE1),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.wb_twilight_rounded,
-              color: OnboardingTokens.primaryDark,
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  appState.tr('ayubowan_greeting_full'),
-                  style: const TextStyle(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w800,
-                    color: OnboardingTokens.textDark,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  appState.tr('ayubowan_subtext'),
-                  style: const TextStyle(
-                    fontSize: 11.5,
-                    fontWeight: FontWeight.w500,
-                    color: OnboardingTokens.textMuted,
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );

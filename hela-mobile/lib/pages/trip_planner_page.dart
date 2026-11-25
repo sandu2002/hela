@@ -323,31 +323,8 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
               ),
               const SizedBox(height: 16),
 
-              // Mini Visual Showcase Strip (3 photo cards)
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildShowcaseCard(
-                      'Central Highlands',
-                      SriLankaImages.nineArchBridge,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: _buildShowcaseCard(
-                      'South Coast',
-                      SriLankaImages.mirissa,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: _buildShowcaseCard(
-                      'Cultural Triangle',
-                      SriLankaImages.sigiriya,
-                    ),
-                  ),
-                ],
-              ),
+              // Hero Visual Showcase Banner (Single large image like home screen hero)
+              _buildHeroShowcaseBanner(),
               const SizedBox(height: 22),
 
               // 1. Where does your journey begin?
@@ -388,50 +365,69 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
     );
   }
 
-  Widget _buildShowcaseCard(String label, String imageUrl) {
+  Widget _buildHeroShowcaseBanner() {
     return Container(
-      height: 78,
+      height: 150,
+      width: double.infinity,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         child: Stack(
           fit: StackFit.expand,
           children: [
-            _buildNetworkImage(imageUrl),
+            _buildNetworkImage(SriLankaImages.sigiriya),
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                   colors: [
-                    Colors.black.withValues(alpha: 0.7),
+                    Colors.black.withValues(alpha: 0.65),
                     Colors.transparent,
                   ],
                 ),
               ),
             ),
             Positioned(
-              bottom: 6,
-              left: 6,
-              right: 6,
-              child: Text(
-                label,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+              bottom: 12,
+              left: 14,
+              right: 14,
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.35),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.location_on_rounded, size: 12, color: Colors.white),
+                        SizedBox(width: 4),
+                        Text(
+                          'Sigiriya Rock Fortress • Cultural Triangle',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.2,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

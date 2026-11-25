@@ -4,7 +4,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:hela/data/place_details_catalog.dart';
 import 'package:hela/models/haven_item.dart';
 import 'package:hela/pages/ask_hela_page.dart';
-import 'package:hela/pages/trip_planner_page.dart';
+import 'package:hela/pages/saved_page.dart';
 import 'package:hela/services/route_map_service.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/theme/hela_colors.dart';
@@ -12,7 +12,6 @@ import 'package:hela/widgets/hela_network_image.dart';
 import 'package:hela/widgets/live_route_overview_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 /// Place / Destination Details Screen matching the HELA Stitch UI:
 /// - Floating back, favorite (synced with HelaAppState), and profile controls
@@ -72,33 +71,7 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
   }
 
   void _toggleFavorite() {
-    final appState = HelaAppStateProvider.of(context);
-    final place = widget.place;
-    appState.toggleSaveHaven(
-      HavenItem(
-        id: place.id,
-        title: place.title,
-        location: place.locationLine,
-        category: place.categoryLabel,
-        price: place.priceEstimate,
-        rating: double.tryParse(place.rating) ?? 4.9,
-        badgeText: place.categoryBadge,
-        imageUrl: place.photos.first,
-      ),
-    );
-    setState(() {});
-
-    final savedNow = _isFavorite(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          savedNow
-              ? '${place.title} added to your Saved Places'
-              : '${place.title} removed from Saved Places',
-        ),
-        duration: const Duration(seconds: 2),
-      ),
-    );
+    _addToMyTrip();
   }
 
   Future<void> _sharePlace() async {
@@ -244,144 +217,51 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
     );
   }
 
-  Future<void> _openExternalDirections() async {
-    final lat = widget.place.latitude;
-    final lon = widget.place.longitude;
-    final googleUri = Uri.parse(
-      'https://www.google.com/maps/dir/?api=1&destination=$lat,$lon',
-    );
-    try {
-      if (await canLaunchUrl(googleUri)) {
-        await launchUrl(googleUri, mode: LaunchMode.externalApplication);
-        return;
-      }
-    } catch (_) {}
-    if (mounted) _openLiveRouteMap();
-  }
-
-  void _openDirectionsOptions() {
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) {
-        final colors = HelaColors.of(ctx);
-        return Container(
-          padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
-          decoration: BoxDecoration(
-            color: colors.cardBackground,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          ),
-          child: SafeArea(
-            top: false,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: colors.architecturalBorder,
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 14),
-                Text(
-                  'Directions to ${widget.place.title}',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    color: colors.onSurface,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  widget.place.formattedCoordinates,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: colors.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 14),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: CircleAvatar(
-                    backgroundColor: colors.primary.withValues(alpha: 0.12),
-                    child: Icon(Icons.my_location_rounded, color: colors.primary),
-                  ),
-                  title: const Text(
-                    'Open HELA Live GPS Route Map',
-                    style: TextStyle(fontWeight: FontWeight.w700),
-                  ),
-                  subtitle: const Text('Interactive map with your live GPS position'),
-                  onTap: () {
-                    Navigator.pop(ctx);
-                    _openLiveRouteMap();
-                  },
-                ),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: CircleAvatar(
-                    backgroundColor: colors.secondaryContainer,
-                    child: Icon(Icons.map_rounded, color: colors.primary),
-                  ),
-                  title: const Text(
-                    'Open in Google Maps',
-                    style: TextStyle(fontWeight: FontWeight.w700),
-                  ),
-                  subtitle: const Text('Launch external turn-by-turn navigation'),
-                  onTap: () {
-                    Navigator.pop(ctx);
-                    _openExternalDirections();
-                  },
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   void _addToMyTrip() {
     final appState = HelaAppStateProvider.of(context);
     final place = widget.place;
-    if (!appState.isHavenSaved(place.title)) {
-      appState.toggleSaveHaven(
-        HavenItem(
-          id: place.id,
-          title: place.title,
-          location: place.locationLine,
-          category: place.categoryLabel,
-          price: place.priceEstimate,
-          rating: double.tryParse(place.rating) ?? 4.9,
-          badgeText: place.categoryBadge,
-          imageUrl: place.photos.first,
-        ),
-      );
-      setState(() {});
-    }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${place.title} saved for your trip!'),
-        action: SnackBarAction(
-          label: 'Plan Trip',
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => TripPlannerPage(
-                  initialExtraNote: 'Must include ${place.title}',
-                ),
-              ),
-            );
-          },
-        ),
+    final alreadySaved = appState.isHavenSaved(place.title);
+    appState.toggleSaveHaven(
+      HavenItem(
+        id: place.id,
+        title: place.title,
+        location: place.locationLine,
+        category: place.categoryLabel,
+        price: place.priceEstimate,
+        rating: double.tryParse(place.rating) ?? 4.9,
+        badgeText: place.categoryBadge,
+        imageUrl: place.photos.first,
+        filterCategory: place.categoryLabel,
       ),
     );
+    setState(() {});
+
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    if (!alreadySaved) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${place.title} saved to your Saved Places! ✨'),
+          duration: const Duration(seconds: 3),
+          action: SnackBarAction(
+            label: 'View Saved',
+            textColor: const Color(0xFFFACC15),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SavedPage()),
+              );
+            },
+          ),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${place.title} removed from Saved Places'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   void _openAskHela([String? topicPrompt]) {
@@ -529,7 +409,11 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
 
                         // 9. Ask HELA Travel Intelligence Card
                         _buildAskHelaCard(colors, place),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 20),
+
+                        // 10. Add to My Trip Button (Scrollable at bottom)
+                        _buildScrollableAddToTripButton(colors, isFav),
+                        const SizedBox(height: 24),
                       ],
                     ),
                   ),
@@ -539,7 +423,6 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildStickyBottomBar(colors),
     );
   }
 
@@ -1628,84 +1511,32 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
     );
   }
 
-  Widget _buildStickyBottomBar(HelaColorPalette colors) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 10, 16, 14),
-      decoration: BoxDecoration(
-        color: colors.surface.withValues(alpha: 0.98),
-        border: Border(top: BorderSide(color: colors.architecturalBorder)),
-      ),
-      child: SafeArea(
-        top: false,
-        child: Center(
-          heightFactor: 1.0,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 480),
-            child: Row(
-              children: [
-                Expanded(
-                  child: SizedBox(
-                    height: 48,
-                    child: ElevatedButton.icon(
-                      onPressed: _openDirectionsOptions,
-                      icon: Icon(
-                        Icons.near_me_outlined,
-                        size: 18,
-                        color: colors.primary,
-                      ),
-                      label: Text(
-                        'Get Directions',
-                        style: TextStyle(
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w700,
-                          color: colors.primary,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: colors.secondaryContainer,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: SizedBox(
-                    height: 48,
-                    child: ElevatedButton.icon(
-                      onPressed: _addToMyTrip,
-                      icon: const Icon(
-                        Icons.playlist_add_rounded,
-                        size: 20,
-                        color: Colors.white,
-                      ),
-                      label: const Text(
-                        'Add to My Trip',
-                        style: TextStyle(
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: colors.primary,
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+  Widget _buildScrollableAddToTripButton(HelaColorPalette colors, bool isFav) {
+    return SizedBox(
+      width: double.infinity,
+      height: 52,
+      child: ElevatedButton.icon(
+        onPressed: _addToMyTrip,
+        icon: Icon(
+          isFav ? Icons.bookmark_added_rounded : Icons.playlist_add_rounded,
+          size: 22,
+          color: Colors.white,
+        ),
+        label: Text(
+          isFav ? 'Saved to My Trip' : 'Add to My Trip',
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+            letterSpacing: 0.3,
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isFav ? colors.primary.withValues(alpha: 0.88) : colors.primary,
+          elevation: 2,
+          shadowColor: colors.primary.withValues(alpha: 0.35),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
         ),
       ),

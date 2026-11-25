@@ -58,8 +58,10 @@ void main() {
       expect(find.text('Minneriya & Yala Safaris'), findsOneWidget);
       expect(find.text('Location & Geography'), findsOneWidget);
       expect(find.byType(FlutterMap), findsOneWidget);
-      expect(find.text('Get Directions'), findsOneWidget);
-      expect(find.text('Add to My Trip'), findsOneWidget);
+      expect(find.text('Get Directions'), findsNothing);
+      final addTripFinder = find.text('Add to My Trip');
+      await tester.ensureVisible(addTripFinder);
+      expect(addTripFinder, findsOneWidget);
     });
 
     testWidgets(

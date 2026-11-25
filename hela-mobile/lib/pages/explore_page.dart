@@ -1562,30 +1562,15 @@ class _ExplorePageState extends State<ExplorePage> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Explore',
-                style: TextStyle(
-                  fontSize: 34,
-                  fontWeight: FontWeight.w900,
-                  color: colors.onSurface,
-                  fontFamily: 'Inter',
-                  letterSpacing: -0.8,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Find places worth discovering in Sri Lanka',
-                style: TextStyle(
-                  fontSize: 13.5,
-                  color: colors.onSurfaceVariant,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+          child: Text(
+            'Explore',
+            style: TextStyle(
+              fontSize: 34,
+              fontWeight: FontWeight.w900,
+              color: colors.onSurface,
+              fontFamily: 'Inter',
+              letterSpacing: -0.8,
+            ),
           ),
         ),
         const SizedBox(width: 8),
