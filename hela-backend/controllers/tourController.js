@@ -1,7 +1,7 @@
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
-const GEMINI_MODEL   = process.env.GEMINI_MODEL   || 'gemini-2.0-flash';
-const GEMINI_FALLBACK      = 'gemini-1.5-flash';
-const GEMINI_LITE_FALLBACK = 'gemini-1.5-flash-8b';
+const GEMINI_MODEL   = process.env.GEMINI_MODEL   || 'gemini-3.5-flash-lite';
+const GEMINI_FALLBACK      = 'gemini-3.1-flash-lite';
+const GEMINI_LITE_FALLBACK = 'gemini-2.5-flash';
 
 const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
 

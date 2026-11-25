@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hela/data/sri_lanka_images.dart';
 import 'package:hela/pages/itinerary_planning_loading_page.dart';
 import 'package:hela/pages/profile_page.dart';
 import 'package:hela/state/app_state.dart';
@@ -564,21 +565,21 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                   Expanded(
                     child: _buildShowcaseCard(
                       'Central Highlands',
-                      'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
+                      SriLankaImages.nineArchBridge,
                     ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: _buildShowcaseCard(
                       'South Coast',
-                      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80',
+                      SriLankaImages.mirissa,
                     ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: _buildShowcaseCard(
                       'Cultural Triangle',
-                      'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
+                      SriLankaImages.sigiriya,
                     ),
                   ),
                 ],

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hela/data/place_details_catalog.dart';
+import 'package:hela/data/sri_lanka_images.dart';
 import 'package:hela/widgets/hela_network_image.dart';
 import 'package:hela/pages/fair_ride_page.dart';
-import 'package:hela/pages/cultural_guide/cultural_guide_page.dart';
 import 'package:hela/pages/explore_page.dart';
 import 'package:hela/pages/place_details_page.dart';
 import 'package:hela/pages/trip_planner_page.dart';
-import 'package:hela/pages/profile_page.dart';
 import 'package:hela/services/live_weather_service.dart';
+import 'package:hela/services/sri_lanka_places_search_service.dart';
 import 'package:hela/widgets/featured_destination_card.dart';
 import 'package:hela/widgets/hela_drawer.dart';
 import 'package:hela/widgets/hela_bottom_nav_bar.dart';
@@ -53,9 +53,9 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
   final TextEditingController _searchController = TextEditingController();
   late final LiveWeatherService _locationService;
   String _searchQuery = '';
+  List<FeaturedDestinationItem> _searchedDestinations = [];
+  bool _isLiveSearching = false;
   String _currentCity = 'Colombo';
-  bool _isLocating = false;
-  bool _hasManualCityOverride = false;
   int _selectedExperienceChipIndex = 0; // 0: Nature & Wildlife, 1: Beaches, 2: Cultural Heritage, 3: Hill Country, 4: All
 
   final List<String> _experienceFilters = const [
@@ -72,6 +72,41 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
       context,
       MaterialPageRoute(builder: (_) => PlaceDetailsPage(place: details)),
     );
+  }
+
+  void _onSearchChanged(String val) {
+    setState(() {
+      _searchQuery = val;
+      _searchedDestinations = SriLankaPlacesSearchService.searchLocal(val);
+    });
+
+    if (val.trim().length >= 2) {
+      _performLiveSearch(val.trim());
+    }
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    setState(() {
+      _searchQuery = '';
+      _searchedDestinations = [];
+      _isLiveSearching = false;
+    });
+  }
+
+  void _performLiveSearch(String q) async {
+    _isLiveSearching = true;
+    try {
+      final liveResults = await SriLankaPlacesSearchService.searchLive(q);
+      if (mounted && _searchQuery.trim().toLowerCase() == q.toLowerCase()) {
+        setState(() {
+          _searchedDestinations = liveResults;
+          _isLiveSearching = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _isLiveSearching = false);
+    }
   }
 
   void _openPlaceDetailsFromExperience(HomeExperienceItem exp) {
@@ -95,8 +130,7 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
       category: 'NATURE & WILDLIFE',
       rating: '4.9',
       filterCategory: 'Nature & Wildlife',
-      imageUrl:
-          'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.elephant,
     ),
     HomeExperienceItem(
       title: 'Ceylon Spice Trail & Hopper Feast',
@@ -104,8 +138,7 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
       category: 'FOOD EXPERIENCES',
       rating: '4.8',
       filterCategory: 'Cultural Heritage',
-      imageUrl:
-          'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.hopper,
     ),
     HomeExperienceItem(
       title: 'Weligama Surfing & Tangalle Bays',
@@ -113,8 +146,7 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
       category: 'BEACHES & OCEAN',
       rating: '4.9',
       filterCategory: 'Beaches',
-      imageUrl:
-          'https://images.unsplash.com/photo-1502680390469-be75c86b636f?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.weligama,
     ),
     HomeExperienceItem(
       title: 'Nine Arch Bridge & Demodara Tea Valley',
@@ -122,8 +154,7 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
       category: 'HILL COUNTRY',
       rating: '4.9',
       filterCategory: 'Hill Country',
-      imageUrl:
-          'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.nineArchBridge,
     ),
   ];
 
@@ -144,7 +175,7 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed && !_hasManualCityOverride) {
+    if (state == AppLifecycleState.resumed) {
       _detectCurrentLocation(requestPermissionIfNeeded: false);
     }
   }
@@ -156,7 +187,6 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
     if (!mounted) return;
     final appState = HelaAppStateProvider.of(context);
     final messenger = ScaffoldMessenger.of(context);
-    setState(() => _isLocating = true);
 
     if (showSettingsPromptOnDeny) {
       try {
@@ -198,11 +228,8 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
 
     if (!mounted) return;
     setState(() {
-      if (!_hasManualCityOverride || showSettingsPromptOnDeny) {
-        _currentCity = resolved.cityName;
-        appState.setDetectedCurrentCity(resolved.cityName);
-      }
-      _isLocating = false;
+      _currentCity = resolved.cityName;
+      appState.setDetectedCurrentCity(resolved.cityName);
     });
   }
 
@@ -211,115 +238,6 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
     WidgetsBinding.instance.removeObserver(this);
     _searchController.dispose();
     super.dispose();
-  }
-
-  void _openLocationPicker() {
-    final cities = ['Colombo', 'Kandy', 'Galle', 'Ella', 'Sigiriya', 'Mirissa', 'Nuwara Eliya', 'Trincomalee'];
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) {
-        final colors = HelaColors.of(context);
-        return Material(
-          color: colors.cardBackground,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
-            child: SafeArea(
-              top: false,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(ctx).size.height * 0.75,
-                ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Center(
-                        child: Container(
-                          width: 40,
-                          height: 4,
-                          decoration: BoxDecoration(
-                            color: colors.architecturalBorder,
-                            borderRadius: BorderRadius.circular(999),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        HelaAppStateProvider.of(ctx).tr('select_current_location'),
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: colors.onSurface,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: CircleAvatar(
-                          radius: 18,
-                          backgroundColor: colors.primary.withValues(alpha: 0.12),
-                          child: Icon(Icons.my_location_rounded, size: 18, color: colors.primary),
-                        ),
-                        title: Text(
-                          HelaAppStateProvider.of(ctx).tr('use_gps_location'),
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            color: colors.primary,
-                          ),
-                        ),
-                        subtitle: Text(
-                          HelaAppStateProvider.of(ctx).tr('detect_gps_sub'),
-                          style: TextStyle(fontSize: 12, color: colors.onSurfaceVariant),
-                        ),
-                        onTap: () {
-                          Navigator.pop(ctx);
-                          _hasManualCityOverride = false;
-                          _detectCurrentLocation(
-                            requestPermissionIfNeeded: true,
-                            showSettingsPromptOnDeny: true,
-                          );
-                        },
-                      ),
-                      Divider(color: colors.architecturalBorder),
-                      ...cities.map(
-                        (city) => ListTile(
-                          leading: Icon(
-                            Icons.location_on_rounded,
-                            color: city == _currentCity ? colors.primary : colors.onSurfaceVariant,
-                          ),
-                          title: Text(
-                            city,
-                            style: TextStyle(
-                              fontWeight: city == _currentCity ? FontWeight.w700 : FontWeight.w500,
-                              color: city == _currentCity ? colors.primary : colors.onSurface,
-                            ),
-                          ),
-                          trailing: city == _currentCity
-                              ? Icon(Icons.check_rounded, color: colors.primary)
-                              : null,
-                          onTap: () {
-                            setState(() {
-                              _hasManualCityOverride = true;
-                              _currentCity = city;
-                            });
-                            HelaAppStateProvider.of(context).setDetectedCurrentCity(city);
-                            Navigator.pop(ctx);
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
   }
 
   Widget _buildNetworkImage(String url, {double? width, double? height, BoxFit fit = BoxFit.cover}) {
@@ -374,27 +292,27 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 12),
-
-                        // Greeting & Location Subbar
-                        _buildGreetingAndLocation(colors),
-                        const SizedBox(height: 14),
+                        const SizedBox(height: 8),
 
                         // Search Interaction Bar
                         _buildSearchBar(colors),
                         const SizedBox(height: 18),
 
-                        // Hero Section: Smart Itinerary Card
-                        _buildHeroSmartItineraryCard(colors),
-                        const SizedBox(height: 20),
+                        // If searching, display matching Featured Destinations with real-time data immediately
+                        if (_searchQuery.trim().isNotEmpty) ...[
+                          _buildFeaturedDestinationsSection(colors),
+                          const SizedBox(height: 22),
+                        ],
 
-                        // Quick Actions: 4-Column Grid
-                        _buildQuickActions(colors),
+                        // Hero Section: Smart Itinerary Card (with Plan My Trip & Taxi actions)
+                        _buildHeroSmartItineraryCard(colors),
                         const SizedBox(height: 24),
 
-                        // Featured Destinations Carousel
-                        _buildFeaturedDestinationsSection(colors),
-                        const SizedBox(height: 26),
+                        // When not searching, keep Featured Destinations in its default place
+                        if (_searchQuery.trim().isEmpty) ...[
+                          _buildFeaturedDestinationsSection(colors),
+                          const SizedBox(height: 26),
+                        ],
 
                         // Experiences You Will Love Section
                         _buildExperiencesSection(colors, displayedExperiences),
@@ -429,170 +347,30 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
       elevation: 0,
       scrolledUnderElevation: 1.0,
       shadowColor: Colors.black12,
-      toolbarHeight: 64,
+      toolbarHeight: 56,
       titleSpacing: 16,
       automaticallyImplyLeading: false,
-      title: Row(
-        children: [
-          // Monogram / Drawer Trigger
-          InkWell(
-            onTap: () {
-              _scaffoldKey.currentState?.openDrawer();
-            },
-            borderRadius: BorderRadius.circular(12),
-            child: Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: colors.primaryContainer,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: colors.primary.withValues(alpha: 0.15),
-                    blurRadius: 6,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: const Icon(Icons.explore_rounded, color: Colors.white, size: 20),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'HELA TRAVEL',
-                style: TextStyle(
-                  color: colors.secondary,
-                  fontSize: 10.5,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.8,
-                  fontFamily: 'Inter',
-                ),
-              ),
-              Text(
-                HelaAppStateProvider.of(context).tr('home'),
-                style: TextStyle(
-                  color: colors.onSurface,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  fontFamily: 'Inter',
-                  height: 1.15,
-                ),
-              ),
-            ],
-          ),
-        ],
+      title: Text(
+        'HELA',
+        style: TextStyle(
+          color: colors.primary,
+          fontSize: 28,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 1.2,
+          fontFamily: 'Inter',
+        ),
       ),
       actions: [
-        IconButton(
-          icon: Icon(Icons.notifications_outlined, color: colors.onSurfaceVariant, size: 22),
-          tooltip: 'Notifications',
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('No new travel notifications')),
-            );
-          },
-        ),
         Padding(
-          padding: const EdgeInsets.only(right: 16, left: 4),
-          child: GestureDetector(
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const ProfilePage()),
+          padding: const EdgeInsets.only(right: 8),
+          child: IconButton(
+            icon: Icon(Icons.notifications_outlined, color: colors.onSurfaceVariant, size: 24),
+            tooltip: 'Notifications',
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('No new travel notifications')),
               );
             },
-            child: CircleAvatar(
-              radius: 16,
-              backgroundColor: colors.primary,
-              child: const Icon(Icons.person_rounded, color: Colors.white, size: 18),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildGreetingAndLocation(HelaColorPalette colors) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                HelaAppStateProvider.of(context).tr('hello_traveller'),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: colors.onSurface,
-                  fontFamily: 'Inter',
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                HelaAppStateProvider.of(context).tr('explore_pearl'),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: colors.onSurfaceVariant,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 8),
-        InkWell(
-          onTap: _openLocationPicker,
-          borderRadius: BorderRadius.circular(999),
-          child: Container(
-            constraints: const BoxConstraints(maxWidth: 160),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: colors.surfaceContainer,
-              borderRadius: BorderRadius.circular(999),
-              border: Border.all(color: colors.architecturalBorder),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.location_on_rounded, size: 15, color: colors.primary),
-                const SizedBox(width: 4),
-                Flexible(
-                  child: Text(
-                    _currentCity,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: colors.primary,
-                    ),
-                  ),
-                ),
-                if (_isLocating) ...[
-                  const SizedBox(width: 5),
-                  SizedBox(
-                    width: 10,
-                    height: 10,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 1.6,
-                      color: colors.primary,
-                    ),
-                  ),
-                ] else ...[
-                  const SizedBox(width: 2),
-                  Icon(Icons.expand_more_rounded, size: 14, color: colors.onSurfaceVariant),
-                ],
-              ],
-            ),
           ),
         ),
       ],
@@ -623,7 +401,8 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
           Expanded(
             child: TextField(
               controller: _searchController,
-              onChanged: (val) => setState(() => _searchQuery = val),
+              onChanged: _onSearchChanged,
+              onSubmitted: _onSearchChanged,
               style: TextStyle(
                 fontSize: 14,
                 color: colors.onSurface,
@@ -647,18 +426,16 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: colors.surfaceContainer,
-                borderRadius: BorderRadius.circular(8),
+          if (_searchQuery.isNotEmpty)
+            GestureDetector(
+              onTap: _clearSearch,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Icon(Icons.close_rounded, size: 20, color: colors.onSurfaceVariant),
               ),
-              child: Icon(Icons.tune_rounded, size: 18, color: colors.primary),
-            ),
-          ),
+            )
+          else
+            const SizedBox(width: 14),
         ],
       ),
     );
@@ -684,7 +461,7 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
           fit: StackFit.expand,
           children: [
             _buildNetworkImage(
-              'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=1200&auto=format&fit=crop&q=85',
+              SriLankaImages.sigiriya,
             ),
             Container(
               decoration: BoxDecoration(
@@ -700,56 +477,47 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: colors.goldenAmber,
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.auto_awesome_rounded, size: 12, color: Color(0xFF271900)),
-                        const SizedBox(width: 4),
-                        Text(
-                          HelaAppStateProvider.of(context).tr('smart_itinerary'),
-                          style: const TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w800,
-                            color: Color(0xFF271900),
-                            letterSpacing: 0.6,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 6),
                   Text(
                     HelaAppStateProvider.of(context).tr('discover_title'),
                     style: const TextStyle(
                       fontFamily: 'Inter',
-                      fontSize: 21,
+                      fontSize: 22,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
                       height: 1.2,
+                      letterSpacing: -0.3,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black38,
+                          offset: Offset(0, 1),
+                          blurRadius: 4,
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 3),
+                  const SizedBox(height: 5),
                   Text(
                     HelaAppStateProvider.of(context).tr('hero_subtitle'),
                     style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.white.withValues(alpha: 0.9),
+                      fontSize: 12.5,
+                      color: Colors.white.withValues(alpha: 0.92),
+                      fontWeight: FontWeight.w500,
+                      shadows: const [
+                        Shadow(
+                          color: Colors.black26,
+                          offset: Offset(0, 1),
+                          blurRadius: 3,
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 14),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       ElevatedButton(
                         onPressed: () {
@@ -761,11 +529,13 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
                         style: ElevatedButton.styleFrom(
                           backgroundColor: colors.primaryFixed,
                           foregroundColor: colors.primary,
-                          elevation: 1,
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          elevation: 2,
+                          shadowColor: Colors.black.withValues(alpha: 0.2),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                         child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
                               HelaAppStateProvider.of(context).tr('plan_my_trip'),
@@ -776,17 +546,36 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
                           ],
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Flexible(
-                        child: Text(
-                          HelaAppStateProvider.of(context).tr('instant_ai'),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.white.withValues(alpha: 0.8),
-                            fontWeight: FontWeight.w500,
-                          ),
+                      const SizedBox(width: 10),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const FairRidePage()),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white.withValues(alpha: 0.96),
+                          foregroundColor: const Color(0xFF00382E),
+                          elevation: 2,
+                          shadowColor: Colors.black.withValues(alpha: 0.2),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Icon(Icons.local_taxi_rounded, size: 16, color: Color(0xFF00382E)),
+                            SizedBox(width: 6),
+                            Text(
+                              'Taxi',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF00382E),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -800,143 +589,10 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
     );
   }
 
-  Widget _buildQuickActions(HelaColorPalette colors) {
-    final appState = HelaAppStateProvider.of(context);
-    return Row(
-      children: [
-        _buildActionTile(
-          icon: Icons.explore_rounded,
-          iconBg: colors.secondaryContainer,
-          iconColor: colors.onSecondaryContainer,
-          title: appState.tr('ai_travel_assistant'),
-          onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const TripPlannerPage()));
-          },
-          colors: colors,
-        ),
-        const SizedBox(width: 8),
-        _buildActionTile(
-          icon: Icons.electric_rickshaw_rounded,
-          iconBg: colors.surfaceContainerHigh,
-          iconColor: colors.primary,
-          title: appState.tr('book_taxi'),
-          badgeText: 'Meter',
-          badgeColor: colors.goldenAmber,
-          onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const FairRidePage()));
-          },
-          colors: colors,
-        ),
-        const SizedBox(width: 8),
-        _buildActionTile(
-          icon: Icons.map_rounded,
-          iconBg: colors.surfaceContainerHigh,
-          iconColor: colors.primary,
-          title: appState.tr('find_places'),
-          onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const ExplorePage()));
-          },
-          colors: colors,
-        ),
-        const SizedBox(width: 8),
-        _buildActionTile(
-          icon: Icons.temple_buddhist_rounded,
-          iconBg: colors.secondaryContainer,
-          iconColor: colors.onSecondaryContainer,
-          title: appState.tr('explore'),
-          onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const CulturalGuidePage()));
-          },
-          colors: colors,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildActionTile({
-    required IconData icon,
-    required Color iconBg,
-    required Color iconColor,
-    required String title,
-    required VoidCallback onTap,
-    required HelaColorPalette colors,
-    String? badgeText,
-    Color? badgeColor,
-  }) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-          decoration: BoxDecoration(
-            color: colors.cardBackground,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: colors.architecturalBorder),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.03),
-                blurRadius: 6,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: iconBg,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(icon, color: iconColor, size: 22),
-                  ),
-                  if (badgeText != null)
-                    Positioned(
-                      top: -6,
-                      right: -6,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
-                        decoration: BoxDecoration(
-                          color: badgeColor ?? colors.goldenAmber,
-                          borderRadius: BorderRadius.circular(999),
-                        ),
-                        child: Text(
-                          badgeText,
-                          style: const TextStyle(
-                            fontSize: 8.5,
-                            fontWeight: FontWeight.w800,
-                            color: Color(0xFF271900),
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 6),
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 10.5,
-                  fontWeight: FontWeight.w700,
-                  color: colors.onSurface,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildFeaturedDestinationsSection(HelaColorPalette colors) {
+    final isSearching = _searchQuery.trim().isNotEmpty;
+    final destinations = isSearching ? _searchedDestinations : kFeaturedDestinations;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -964,48 +620,115 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
                     width: 6,
                     height: 6,
                     decoration: BoxDecoration(
-                      color: colors.primary,
+                      color: isSearching ? const Color(0xFF00E676) : colors.primary,
                       shape: BoxShape.circle,
                     ),
                   ),
+                  if (isSearching) ...[
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: colors.primaryContainer.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(999),
+                        border: Border.all(color: colors.primary.withValues(alpha: 0.3)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (_isLiveSearching) ...[
+                            SizedBox(
+                              width: 8,
+                              height: 8,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 1.5,
+                                color: colors.primary,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                          ],
+                          Text(
+                            'Real-Time (${destinations.length})',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                              color: colors.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const ExplorePage()));
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: colors.primary,
-                padding: EdgeInsets.zero,
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            if (!isSearching)
+              TextButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const ExplorePage()));
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor: colors.primary,
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Text(
+                  HelaAppStateProvider.of(context).tr('see_all'),
+                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+                ),
+              )
+            else
+              TextButton(
+                onPressed: _clearSearch,
+                style: TextButton.styleFrom(
+                  foregroundColor: colors.primary,
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: const Text(
+                  'Clear',
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+                ),
               ),
-              child: Text(
-                HelaAppStateProvider.of(context).tr('see_all'),
-                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
-              ),
-            ),
           ],
         ),
         const SizedBox(height: 12),
 
         // Horizontal Carousel
         SizedBox(
-          height: 220,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            itemCount: kFeaturedDestinations.length,
-            separatorBuilder: (_, _) => const SizedBox(width: 12),
-            itemBuilder: (context, index) {
-              final item = kFeaturedDestinations[index];
-              return FeaturedDestinationCard(
-                item: item,
-                onTap: () => _openPlaceDetailsFromDestination(item),
-              );
-            },
-          ),
+          height: 235,
+          child: destinations.isEmpty
+              ? Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: colors.surfaceContainerLowest,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: colors.outlineVariant.withValues(alpha: 0.5)),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'No destinations found for "$_searchQuery". Try searching Sigiriya, Ella, Kandy, Galle, or Nuwara Eliya.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 13, color: colors.onSurfaceVariant),
+                    ),
+                  ),
+                )
+              : ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: destinations.length,
+                  separatorBuilder: (_, _) => const SizedBox(width: 12),
+                  itemBuilder: (context, index) {
+                    final item = destinations[index];
+                    return FeaturedDestinationCard(
+                      item: item,
+                      onTap: () => _openPlaceDetailsFromDestination(item),
+                    );
+                  },
+                ),
         ),
       ],
     );

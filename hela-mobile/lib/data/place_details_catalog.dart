@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hela/data/sri_lanka_images.dart';
 import 'package:hela/models/featured_destination_item.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -154,6 +155,68 @@ class PlaceDetailData {
     final lonDir = longitude >= 0 ? 'E' : 'W';
     return '${latitude.abs().toStringAsFixed(4)}° $latDir, ${longitude.abs().toStringAsFixed(4)}° $lonDir';
   }
+
+  PlaceDetailData copyWith({
+    String? id,
+    String? title,
+    String? subtitle,
+    String? localScriptName,
+    String? categoryBadge,
+    String? eraBadge,
+    String? loreGuideLabel,
+    String? loreScript,
+    String? rating,
+    String? ratingCaption,
+    String? locationLine,
+    String? prestigeBadge,
+    String? description,
+    List<String>? photos,
+    List<PlaceSpecItem>? quickSpecs,
+    List<PlaceHighlightCardData>? highlightCards,
+    List<PlaceFeatureCallout>? featureCallouts,
+    List<PlaceHistoryEntry>? historyEntries,
+    List<PlaceVisitTip>? visitTips,
+    double? latitude,
+    double? longitude,
+    String? mapMarkerLabel,
+    String? routeOrigin,
+    String? routeSummaryLine,
+    String? nearbyRegionLabel,
+    List<NearbyDiscoveryItem>? nearbyDiscoveries,
+    String? priceEstimate,
+    String? categoryLabel,
+  }) {
+    return PlaceDetailData(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      subtitle: subtitle ?? this.subtitle,
+      localScriptName: localScriptName ?? this.localScriptName,
+      categoryBadge: categoryBadge ?? this.categoryBadge,
+      eraBadge: eraBadge ?? this.eraBadge,
+      loreGuideLabel: loreGuideLabel ?? this.loreGuideLabel,
+      loreScript: loreScript ?? this.loreScript,
+      rating: rating ?? this.rating,
+      ratingCaption: ratingCaption ?? this.ratingCaption,
+      locationLine: locationLine ?? this.locationLine,
+      prestigeBadge: prestigeBadge ?? this.prestigeBadge,
+      description: description ?? this.description,
+      photos: photos ?? this.photos,
+      quickSpecs: quickSpecs ?? this.quickSpecs,
+      highlightCards: highlightCards ?? this.highlightCards,
+      featureCallouts: featureCallouts ?? this.featureCallouts,
+      historyEntries: historyEntries ?? this.historyEntries,
+      visitTips: visitTips ?? this.visitTips,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      mapMarkerLabel: mapMarkerLabel ?? this.mapMarkerLabel,
+      routeOrigin: routeOrigin ?? this.routeOrigin,
+      routeSummaryLine: routeSummaryLine ?? this.routeSummaryLine,
+      nearbyRegionLabel: nearbyRegionLabel ?? this.nearbyRegionLabel,
+      nearbyDiscoveries: nearbyDiscoveries ?? this.nearbyDiscoveries,
+      priceEstimate: priceEstimate ?? this.priceEstimate,
+      categoryLabel: categoryLabel ?? this.categoryLabel,
+    );
+  }
 }
 
 /// Curated constant catalog of Sri Lankan destinations & home experiences.
@@ -177,9 +240,9 @@ class PlaceDetailCatalog {
     description:
         'An extraordinary 5th-century palace fortress perched atop a towering 180-metre sheer granite monolith, boasting celestial frescoes, mirror-polished parapets, and colossal stone lion paws guarding the clouds.',
     photos: [
-      'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
+      SriLankaImages.sigiriya,
+      SriLankaImages.sigiriyaFrescoes,
+      SriLankaImages.pidurangala,
     ],
     quickSpecs: [
       PlaceSpecItem(
@@ -209,16 +272,14 @@ class PlaceDetailCatalog {
         title: 'The Water & Boulder Gardens',
         description:
             'One of the oldest surviving landscaped gardens in the world. Symmetrical canals, subterranean terracotta conduits, and gravity-powered fountains that still surge with water during the seasonal monsoon rains.',
-        imageUrl:
-            'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.sigiriya,
       ),
       PlaceHighlightCardData(
         tag: 'ANCIENT ARTISTRY',
         title: 'The Celestial Maidens (Frescoes)',
         description:
             'Painted in a high sheltered rock pocket 100 metres above ground. These ethereal 5th-century tempera masterpieces showcase graceful cloud maidens carrying delicate water lilies and cascading blossom petals.',
-        imageUrl:
-            'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.sigiriyaFrescoes,
       ),
     ],
     featureCallouts: [
@@ -290,8 +351,7 @@ class PlaceDetailCatalog {
         subtitle: 'Epic panorama facing Lion Rock',
         metaLabel: '1.5 hr sunrise hike',
         metaIcon: Icons.schedule_rounded,
-        imageUrl:
-            'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.pidurangala,
       ),
       NearbyDiscoveryItem(
         id: 'dambulla',
@@ -300,8 +360,7 @@ class PlaceDetailCatalog {
         subtitle: 'UNESCO Golden Rock Shrine',
         metaLabel: 'Ancient sacred caves',
         metaIcon: Icons.temple_buddhist_rounded,
-        imageUrl:
-            'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.dambulla,
       ),
     ],
     priceEstimate: r'$36 / person',
@@ -325,9 +384,9 @@ class PlaceDetailCatalog {
     description:
         'Witness monumental herds of wild Asian elephants grazing along ancient emerald reservoir shores in Minneriya, paired with thrilling dawn 4x4 jeep tracks through Yala\'s dry-zone scrub in search of elusive Sri Lankan leopards and sloth bears.',
     photos: [
-      'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?w=800&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1561731216-c3a4d99437d5?w=800&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
+      SriLankaImages.elephant,
+      SriLankaImages.leopard,
+      SriLankaImages.yala,
     ],
     quickSpecs: [
       PlaceSpecItem(
@@ -357,16 +416,14 @@ class PlaceDetailCatalog {
         title: 'Minneriya Tank Bed Herds',
         description:
             'Up to 300 wild elephants—including playful calves and majestic tuskers—assemble across the receding lush grasslands of King Mahasena\'s 3rd-century reservoir.',
-        imageUrl:
-            'https://images.unsplash.com/photo-1561731216-c3a4d99437d5?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.minneriya,
       ),
       PlaceHighlightCardData(
         tag: 'APEX PREDATOR',
         title: 'Yala Leopard & Lagoon Coast',
         description:
             'Granite outcrops, coastal lagoons, and monsoon forests harbour Panthera pardus kotiya alongside mugger crocodiles, painted storks, and wild water buffalo.',
-        imageUrl:
-            'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.leopard,
       ),
     ],
     featureCallouts: [
@@ -426,8 +483,7 @@ class PlaceDetailCatalog {
         subtitle: '5th-century sky citadel',
         metaLabel: 'UNESCO World Heritage',
         metaIcon: Icons.fort_rounded,
-        imageUrl:
-            'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.sigiriya,
       ),
       NearbyDiscoveryItem(
         id: 'pidurangala',
@@ -436,8 +492,7 @@ class PlaceDetailCatalog {
         subtitle: 'Sunrise view over Sigiriya',
         metaLabel: '1.5 hr scenic climb',
         metaIcon: Icons.terrain_rounded,
-        imageUrl:
-            'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.pidurangala,
       ),
     ],
     priceEstimate: r'$55 / person',
@@ -461,8 +516,8 @@ class PlaceDetailCatalog {
     description:
         'Embark on an aromatic journey through shaded spice gardens and bustling village kitchens. Grind fresh curry blends on a traditional miris gala granite stone, learn crisp hopper swirling over woodfire, and savour an eight-curry banana-leaf feast.',
     photos: [
-      'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=800&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
+      SriLankaImages.riceAndCurry,
+      SriLankaImages.ceylonSpices,
     ],
     quickSpecs: [
       PlaceSpecItem(
@@ -492,8 +547,7 @@ class PlaceDetailCatalog {
         title: 'Woodfire Hopper & Sambol Workshop',
         description:
             'Swirl fermented rice-flour and coconut-milk batter inside a seasoned curved thachchi pan until lacy golden edges form, served hot with spicy katta sambol and seeni sambol.',
-        imageUrl:
-            'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.hopper,
       ),
     ],
     featureCallouts: [
@@ -541,8 +595,7 @@ class PlaceDetailCatalog {
         subtitle: 'Temple of the Tooth & lake walk',
         metaLabel: 'Cultural capital',
         metaIcon: Icons.temple_buddhist_rounded,
-        imageUrl:
-            'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.templeOfTheTooth,
       ),
       NearbyDiscoveryItem(
         id: 'dambulla',
@@ -551,8 +604,7 @@ class PlaceDetailCatalog {
         subtitle: 'UNESCO Golden Rock Shrine',
         metaLabel: '2,000-yr murals',
         metaIcon: Icons.account_balance_rounded,
-        imageUrl:
-            'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.dambulla,
       ),
     ],
     priceEstimate: r'$24 / person',
@@ -576,9 +628,9 @@ class PlaceDetailCatalog {
     description:
         'Ride gentle turquoise rollers along Weligama\'s forgiving sandy crescent in the morning, then cruise the southern coastal road to Tangalle\'s secluded golden bays, mangrove lagoons, and tranquil sunset cliffs.',
     photos: [
-      'https://images.unsplash.com/photo-1502680390469-be75c86b636f?w=800&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=800&auto=format&fit=crop&q=80',
+      SriLankaImages.weligama,
+      SriLankaImages.tangalle,
+      SriLankaImages.unawatuna,
     ],
     quickSpecs: [
       PlaceSpecItem(
@@ -608,16 +660,14 @@ class PlaceDetailCatalog {
         title: 'Weligama Crescent & Taprobane Island',
         description:
             'Soft sandbar waves make Weligama ideal for sunrise surf coaching, framed by iconic stilt fishermen poles and tiny offshore Taprobane Island.',
-        imageUrl:
-            'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.weligama,
       ),
       PlaceHighlightCardData(
         tag: 'HIDDEN LAGOONS',
         title: 'Goyambokka & Silent Beach, Tangalle',
         description:
             'Tucked behind swaying coconut groves, Tangalle\'s coves offer calm crystal shallows, glowing sunsets, and night turtle-conservation walks at Rekawa.',
-        imageUrl:
-            'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.tangalle,
       ),
     ],
     featureCallouts: [
@@ -665,8 +715,7 @@ class PlaceDetailCatalog {
         subtitle: 'Sunset palm cliff & blue whales',
         metaLabel: '12 min by Tuk-Tuk',
         metaIcon: Icons.beach_access_rounded,
-        imageUrl:
-            'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.mirissa,
       ),
       NearbyDiscoveryItem(
         id: 'galle',
@@ -675,8 +724,7 @@ class PlaceDetailCatalog {
         subtitle: '17th-century coastal ramparts',
         metaLabel: 'UNESCO heritage fort',
         metaIcon: Icons.fort_rounded,
-        imageUrl:
-            'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.galleFort,
       ),
     ],
     priceEstimate: r'$25 / person',
@@ -700,7 +748,7 @@ class PlaceDetailCatalog {
     description:
         'Perched amidst emerald mountain ridges and cascading waterfalls, Ella blends iconic colonial railway architecture at the Nine Arch Bridge with ridge-top hikes up Little Adam\'s Peak and Ella Rock.',
     photos: [
-      'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
+      SriLankaImages.nineArchBridge,
     ],
     quickSpecs: [
       PlaceSpecItem(
@@ -730,8 +778,7 @@ class PlaceDetailCatalog {
         title: 'The Nine Arch Stone Viaduct',
         description:
             'Known locally as Ahas Namaye Palama ("Bridge in the Nine Skies"), this graceful 91-metre curved bridge spans a mist-filled gorge flanked by Demodara tea estates.',
-        imageUrl:
-            'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.nineArchBridge,
       ),
     ],
     featureCallouts: [
@@ -779,8 +826,7 @@ class PlaceDetailCatalog {
         subtitle: 'Panoramic sunrise ridge walk',
         metaLabel: '1 hr easy hike',
         metaIcon: Icons.terrain_rounded,
-        imageUrl:
-            'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.ella,
       ),
       NearbyDiscoveryItem(
         id: 'kandy',
@@ -789,8 +835,7 @@ class PlaceDetailCatalog {
         subtitle: 'Start of the scenic tea rail',
         metaLabel: 'UNESCO hill capital',
         metaIcon: Icons.temple_buddhist_rounded,
-        imageUrl:
-            'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.templeOfTheTooth,
       ),
     ],
     priceEstimate: r'$15 / person',
@@ -814,7 +859,7 @@ class PlaceDetailCatalog {
     description:
         'Nestled in a bowl of emerald mountains around a tranquil man-made lake, Kandy is the spiritual heart of Sri Lanka—home to the Temple of the Sacred Tooth Relic, vibrant Kandyan dance traditions, and 147 acres of royal botanical gardens.',
     photos: [
-      'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
+      SriLankaImages.templeOfTheTooth,
     ],
     quickSpecs: [
       PlaceSpecItem(
@@ -844,8 +889,7 @@ class PlaceDetailCatalog {
         title: 'Sri Dalada Maligawa',
         description:
             'Hear traditional hewisi ceremonial drumming during the dawn and evening Thevava offerings at Sri Lanka\'s most revered Buddhist shrine.',
-        imageUrl:
-            'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.kandyLake,
       ),
     ],
     featureCallouts: [
@@ -886,8 +930,7 @@ class PlaceDetailCatalog {
         subtitle: 'Cinnamon & heirloom curry tour',
         metaLabel: '2.5 hr culinary walk',
         metaIcon: Icons.restaurant_rounded,
-        imageUrl:
-            'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.ceylonSpices,
       ),
     ],
     priceEstimate: r'$20 / person',
@@ -911,8 +954,8 @@ class PlaceDetailCatalog {
     description:
         'Wander lantern-lit cobblestone streets lined with Dutch-period villas, boutique galleries, spice merchants, and the iconic white Galle Lighthouse overlooking turquoise surf breaks along the ramparts.',
     photos: [
-      'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=800&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
+      SriLankaImages.galleFort,
+      SriLankaImages.galleLighthouse,
     ],
     quickSpecs: [
       PlaceSpecItem(
@@ -942,8 +985,7 @@ class PlaceDetailCatalog {
         title: 'Galle Lighthouse & Utrecht Bastion',
         description:
             'Sri Lanka\'s oldest light station stands at the southeastern rampart corner, framed by coconut palms and ocean breezes.',
-        imageUrl:
-            'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.galleLighthouse,
       ),
     ],
     featureCallouts: [
@@ -984,8 +1026,7 @@ class PlaceDetailCatalog {
         subtitle: 'Gentle beginner surf & beaches',
         metaLabel: '35 min coastal ride',
         metaIcon: Icons.surfing_rounded,
-        imageUrl:
-            'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.weligama,
       ),
     ],
     priceEstimate: r'Free entry',
@@ -1009,8 +1050,8 @@ class PlaceDetailCatalog {
     description:
         'A laid-back crescent cove famed for responsible dawn whale-watching expeditions, red-laterite Coconut Tree Hill panoramas, beginner-friendly surf swells, and candlelit beachside grilled seafood.',
     photos: [
-      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=800&auto=format&fit=crop&q=80',
+      SriLankaImages.mirissa,
+      SriLankaImages.blueWhale,
     ],
     quickSpecs: [
       PlaceSpecItem(
@@ -1040,8 +1081,7 @@ class PlaceDetailCatalog {
         title: 'Coconut Tree Hill Headland',
         description:
             'A dramatic red-cliff peninsula crowned by tall ocean palms overlooking rolling swells toward Parrot Rock.',
-        imageUrl:
-            'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.mirissa,
       ),
     ],
     featureCallouts: [
@@ -1082,8 +1122,7 @@ class PlaceDetailCatalog {
         subtitle: 'Warm beginner surf swells',
         metaLabel: '12 min by Tuk-Tuk',
         metaIcon: Icons.surfing_rounded,
-        imageUrl:
-            'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.weligama,
       ),
     ],
     priceEstimate: r'$35 / person',
@@ -1107,8 +1146,8 @@ class PlaceDetailCatalog {
     description:
         'A rewarding 40-minute forest and boulder scramble passing an ancient brick reclining Buddha statue to reach a sweeping summit plateau framing Sigiriya Lion Rock at sunrise.',
     photos: [
-      'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
+      SriLankaImages.pidurangala,
+      SriLankaImages.sigiriya,
     ],
     quickSpecs: [
       PlaceSpecItem(icon: Icons.schedule_rounded, label: 'HIKE TIME', value: '1.5 Hours'),
@@ -1122,8 +1161,7 @@ class PlaceDetailCatalog {
         title: 'Lion Rock Horizon Summit',
         description:
             'Look straight across the jungle canopy at Sigiriya illuminated by early morning sunlight.',
-        imageUrl:
-            'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.sigiriya,
       ),
     ],
     featureCallouts: [
@@ -1164,8 +1202,7 @@ class PlaceDetailCatalog {
         subtitle: '5th-century Lion Rock citadel',
         metaLabel: 'UNESCO World Heritage',
         metaIcon: Icons.fort_rounded,
-        imageUrl:
-            'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.sigiriya,
       ),
     ],
     priceEstimate: r'$4 / person',
@@ -1189,8 +1226,8 @@ class PlaceDetailCatalog {
     description:
         'Sri Lanka\'s largest and best-preserved cave-temple complex, ascending granite steps to five serene caverns filled with gilded statues, painted ceilings, and sweeping Cultural Triangle views.',
     photos: [
-      'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
+      SriLankaImages.dambulla,
+      SriLankaImages.sigiriya,
     ],
     quickSpecs: [
       PlaceSpecItem(icon: Icons.schedule_rounded, label: 'SUGGESTED TIME', value: '1.5 – 2 Hours'),
@@ -1204,8 +1241,7 @@ class PlaceDetailCatalog {
         title: 'Maharaja Vihara (Cave 2)',
         description:
             'The grandest cave houses 56 statues beneath intricate lotus ceiling frescoes and a sacred rock spring that drips upward in defiance of gravity.',
-        imageUrl:
-            'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.dambulla,
       ),
     ],
     featureCallouts: [
@@ -1246,8 +1282,7 @@ class PlaceDetailCatalog {
         subtitle: '5th-century Lion Rock citadel',
         metaLabel: '28 min drive',
         metaIcon: Icons.fort_rounded,
-        imageUrl:
-            'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
+        imageUrl: SriLankaImages.sigiriya,
       ),
     ],
     priceEstimate: r'$7 / person',
@@ -1329,8 +1364,7 @@ class PlaceDetailCatalog {
           description: fallbackSubtitle ??
               'An authentic Sri Lankan destination featuring rich local heritage, scenic landscapes, and guided cultural immersion.',
           photos: [
-            fallbackImageUrl ??
-                'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
+            fallbackImageUrl ?? SriLankaImages.sigiriya,
           ],
           quickSpecs: const [
             PlaceSpecItem(
@@ -1360,8 +1394,7 @@ class PlaceDetailCatalog {
               title: query,
               description: fallbackSubtitle ??
                   'Handpicked local experiences, scenic viewpoints, and authentic cultural heritage.',
-              imageUrl: fallbackImageUrl ??
-                  'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
+              imageUrl: fallbackImageUrl ?? SriLankaImages.ella,
             ),
           ],
           featureCallouts: const [
@@ -1402,8 +1435,7 @@ class PlaceDetailCatalog {
               subtitle: 'Ancient Lion Rock fortress',
               metaLabel: 'UNESCO World Heritage',
               metaIcon: Icons.fort_rounded,
-              imageUrl:
-                  'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
+              imageUrl: SriLankaImages.sigiriya,
             ),
           ],
         );
@@ -1412,12 +1444,22 @@ class PlaceDetailCatalog {
   static PlaceDetailData resolveForFeaturedDestination(
     FeaturedDestinationItem item,
   ) {
-    return resolveByIdOrTitle(
+    final base = resolveByIdOrTitle(
       item.title,
       fallbackSubtitle: item.subtitle,
       fallbackRating: item.rating,
       fallbackImageUrl: item.imageUrl,
       fallbackCategory: item.badge,
     );
+
+    if (item.latitude != null && item.longitude != null) {
+      return base.copyWith(
+        latitude: item.latitude,
+        longitude: item.longitude,
+        locationLine: item.locationLine ?? base.locationLine,
+        mapMarkerLabel: item.title,
+      );
+    }
+    return base;
   }
 }

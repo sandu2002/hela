@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hela/data/sri_lanka_images.dart';
 import 'package:hela/onbording/onboarding_page.dart';
 import 'package:hela/pages/home_page.dart';
 import 'package:hela/services/insforge_auth_service.dart';
@@ -563,7 +564,7 @@ class _SignUpPageState extends State<SignUpPage> {
           fit: StackFit.expand,
           children: [
             Image.network(
-              'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=1200&auto=format&fit=crop&q=85',
+              SriLankaImages.sigiriya,
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 return Container(

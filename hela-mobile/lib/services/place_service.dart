@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:hela/models/destination.dart';
 import 'package:hela/models/tour_preferences.dart';
 import 'package:hela/config/api_config.dart';
+import 'package:hela/data/sri_lanka_images.dart';
 
 /// Service for fetching live and curated Sri Lanka place data
 /// from OpenStreetMap (Overpass API) and verified local tourism data.
@@ -24,8 +25,7 @@ class PlaceService {
       region: 'Central Province / Matale',
       categories: ['Historic', 'Cultural', 'UNESCO World Heritage', 'Hiking'],
       sourceUrl: 'https://en.wikipedia.org/wiki/Sigiriya',
-      imageUrl:
-          'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.sigiriya,
       attribution: '© OpenStreetMap contributors / UNESCO',
       relevanceScore: 0.98,
     ),
@@ -40,8 +40,7 @@ class PlaceService {
       region: 'Uva Province / Badulla',
       categories: ['Nature', 'Hiking', 'Scenic Views', 'Tea Country'],
       sourceUrl: 'https://en.wikipedia.org/wiki/Ella,_Sri_Lanka',
-      imageUrl:
-          'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.nineArchBridge,
       attribution: '© OpenStreetMap contributors',
       relevanceScore: 0.96,
     ),
@@ -56,8 +55,7 @@ class PlaceService {
       region: 'Southern Province / Galle',
       categories: ['Historic', 'Coastal', 'Architecture', 'UNESCO World Heritage'],
       sourceUrl: 'https://en.wikipedia.org/wiki/Galle_Fort',
-      imageUrl:
-          'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.galleFort,
       attribution: '© OpenStreetMap contributors',
       relevanceScore: 0.94,
     ),
@@ -72,8 +70,7 @@ class PlaceService {
       region: 'Southern & Uva Province / Hambantota',
       categories: ['Wildlife', 'Safari', 'Nature', 'Photography'],
       sourceUrl: 'https://en.wikipedia.org/wiki/Yala_National_Park',
-      imageUrl:
-          'https://images.unsplash.com/photo-1561731216-c3a4d99437d5?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.leopard,
       attribution: '© OpenStreetMap contributors / Department of Wildlife Conservation',
       relevanceScore: 0.95,
     ),
@@ -88,8 +85,7 @@ class PlaceService {
       region: 'Central Province / Kandy',
       categories: ['Spiritual', 'Cultural', 'UNESCO World Heritage', 'Historic'],
       sourceUrl: 'https://en.wikipedia.org/wiki/Temple_of_the_Tooth',
-      imageUrl:
-          'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.templeOfTheTooth,
       attribution: '© OpenStreetMap contributors',
       relevanceScore: 0.93,
     ),
@@ -104,8 +100,7 @@ class PlaceService {
       region: 'Southern Province / Matara',
       categories: ['Beaches', 'Whale Watching', 'Surfing', 'Relaxation'],
       sourceUrl: 'https://en.wikipedia.org/wiki/Mirissa',
-      imageUrl:
-          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.mirissa,
       attribution: '© OpenStreetMap contributors',
       relevanceScore: 0.91,
     ),
@@ -120,8 +115,7 @@ class PlaceService {
       region: 'Central Province / Nuwara Eliya',
       categories: ['Tea Country', 'Highlands', 'Hiking', 'Cool Climate'],
       sourceUrl: 'https://en.wikipedia.org/wiki/Nuwara_Eliya',
-      imageUrl:
-          'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.nuwaraEliya,
       attribution: '© OpenStreetMap contributors',
       relevanceScore: 0.92,
     ),
@@ -136,8 +130,7 @@ class PlaceService {
       region: 'North Central Province / Polonnaruwa',
       categories: ['Historic', 'Cultural', 'Archaeology', 'UNESCO World Heritage'],
       sourceUrl: 'https://en.wikipedia.org/wiki/Polonnaruwa',
-      imageUrl:
-          'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.polonnaruwa,
       attribution: '© OpenStreetMap contributors',
       relevanceScore: 0.89,
     ),
@@ -152,8 +145,7 @@ class PlaceService {
       region: 'Southern Province / Galle',
       categories: ['Beaches', 'Water Sports', 'Snorkeling', 'Relaxation'],
       sourceUrl: 'https://en.wikipedia.org/wiki/Unawatuna',
-      imageUrl:
-          'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.unawatuna,
       attribution: '© OpenStreetMap contributors',
       relevanceScore: 0.88,
     ),
@@ -168,8 +160,7 @@ class PlaceService {
       region: 'Eastern Province / Trincomalee',
       categories: ['Beaches', 'Marine Wildlife', 'Diving', 'Spiritual'],
       sourceUrl: 'https://en.wikipedia.org/wiki/Trincomalee',
-      imageUrl:
-          'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.trincomalee,
       attribution: '© OpenStreetMap contributors',
       relevanceScore: 0.87,
     ),

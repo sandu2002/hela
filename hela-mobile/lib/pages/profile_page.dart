@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hela/data/sri_lanka_images.dart';
 import 'package:hela/pages/active_journey_page.dart';
 import 'package:hela/pages/ask_hela_page.dart';
 import 'package:hela/pages/auth/signup_page.dart';
@@ -695,7 +696,7 @@ class _ProfilePageState extends State<ProfilePage> {
             fit: StackFit.expand,
             children: [
               _buildNetworkImage(
-                'https://images.unsplash.com/photo-1546708973-b339540b5162?w=1000&auto=format&fit=crop&q=80',
+                SriLankaImages.nineArchBridge,
               ),
               Container(
                 decoration: BoxDecoration(

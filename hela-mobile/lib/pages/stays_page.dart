@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hela/data/sri_lanka_images.dart';
 import 'package:hela/pages/home_page.dart';
 import 'package:hela/pages/saved_page.dart';
 import 'package:hela/state/app_state.dart';
@@ -91,8 +92,7 @@ class _StaysPageState extends State<StaysPage> {
       ratingLabel: 'Exceptional',
       pricePerNight: 148,
       feeNote: 'taxes and estate fees included',
-      imageUrl:
-          'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.ella,
       hasPagerDots: true,
       buttonBgColor: HelaColors.tertiaryFixedDim,
       buttonTextColor: HelaColors.primary,
@@ -110,8 +110,7 @@ class _StaysPageState extends State<StaysPage> {
       ratingLabel: 'Eco-Pioneer',
       pricePerNight: 85,
       feeNote: 'Free cancellation · No pre-payment',
-      imageUrl:
-          'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.ceylonTea,
       buttonBgColor: HelaColors.primaryContainer,
       buttonTextColor: HelaColors.onPrimary,
       amenities: [
@@ -128,8 +127,7 @@ class _StaysPageState extends State<StaysPage> {
       ratingLabel: 'Panoramic Ridge',
       pricePerNight: 195,
       feeNote: 'Estate breakfast & high tea included',
-      imageUrl:
-          'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.knucklesRange,
       buttonBgColor: HelaColors.primaryContainer,
       buttonTextColor: HelaColors.onPrimary,
       amenities: [

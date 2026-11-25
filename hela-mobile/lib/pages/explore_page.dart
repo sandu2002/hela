@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hela/data/sri_lanka_images.dart';
 import 'package:hela/pages/cultural_guide/cultural_guide_page.dart';
 import 'package:hela/pages/profile_page.dart';
 import 'package:hela/pages/saved_page.dart';
@@ -137,8 +138,7 @@ class _ExplorePageState extends State<ExplorePage> {
       badge: 'UNESCO',
       priceTag: '\$36 entry',
       footerTag: '1,200 Steps Climb',
-      imageUrl:
-          'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.sigiriya,
       category: 'Culture',
     ),
     ExploreDestination(
@@ -150,8 +150,7 @@ class _ExplorePageState extends State<ExplorePage> {
       badge: 'Highlands',
       priceTag: 'Free Access',
       footerTag: 'Cloud Forest Treks',
-      imageUrl:
-          'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.nineArchBridge,
       category: 'Nature',
     ),
     ExploreDestination(
@@ -163,8 +162,7 @@ class _ExplorePageState extends State<ExplorePage> {
       badge: 'Heritage',
       priceTag: '\$6 entry',
       footerTag: 'Cultural Capital',
-      imageUrl:
-          'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.templeOfTheTooth,
       category: 'Culture',
     ),
     ExploreDestination(
@@ -176,8 +174,7 @@ class _ExplorePageState extends State<ExplorePage> {
       badge: 'Colonial Fort',
       priceTag: 'Open Ramparts',
       footerTag: 'Coastal History',
-      imageUrl:
-          'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.galleFort,
       category: 'Culture',
     ),
     ExploreDestination(
@@ -189,8 +186,7 @@ class _ExplorePageState extends State<ExplorePage> {
       badge: 'South Coast',
       priceTag: 'Whale Watch',
       footerTag: 'Surf & Sunset',
-      imageUrl:
-          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.mirissa,
       category: 'Beaches',
     ),
     ExploreDestination(
@@ -202,8 +198,7 @@ class _ExplorePageState extends State<ExplorePage> {
       badge: 'Tea Trails',
       priceTag: '16°C Fresh Climate',
       footerTag: 'Tea Trails',
-      imageUrl:
-          'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.nuwaraEliya,
       category: 'Nature',
     ),
   ];
@@ -217,8 +212,7 @@ class _ExplorePageState extends State<ExplorePage> {
       badge: 'OFFBEAT SANCTUARY',
       distance: '3.5 hrs from Colombo',
       rating: '4.9',
-      imageUrl:
-          'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.ritigala,
       category: 'Nature',
     ),
     HiddenGemItem(
@@ -229,8 +223,7 @@ class _ExplorePageState extends State<ExplorePage> {
       badge: 'UNTOUCHED HAVEN',
       distance: '2 hrs from Galle',
       rating: '4.9',
-      imageUrl:
-          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.tangalle,
       category: 'Beaches',
     ),
     HiddenGemItem(
@@ -241,8 +234,7 @@ class _ExplorePageState extends State<ExplorePage> {
       badge: 'CLOUD FOREST TREK',
       distance: '1.5 hrs from Kandy',
       rating: '4.8',
-      imageUrl:
-          'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.knucklesRange,
       category: 'Adventure',
     ),
   ];
@@ -258,8 +250,7 @@ class _ExplorePageState extends State<ExplorePage> {
       tag: 'Audio Guide',
       verifiedNote: 'Bilingual Guide available',
       ctaText: 'Book Experience',
-      imageUrl:
-          'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.dambulla,
       category: 'Culture',
     ),
     CulturalExperienceItem(
@@ -272,8 +263,7 @@ class _ExplorePageState extends State<ExplorePage> {
       tag: 'Walking Tour',
       verifiedNote: 'Local Historian',
       ctaText: 'Explore Trail',
-      imageUrl:
-          'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.galleLighthouse,
       category: 'Culture',
     ),
     CulturalExperienceItem(
@@ -286,8 +276,7 @@ class _ExplorePageState extends State<ExplorePage> {
       tag: 'Live Theatre',
       verifiedNote: 'Reserve Seat',
       ctaText: 'View Schedule',
-      imageUrl:
-          'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.kandyanDance,
       category: 'Culture',
     ),
   ];
@@ -298,24 +287,21 @@ class _ExplorePageState extends State<ExplorePage> {
       subtitle: 'Eclectic Buddhist temple by Beira Lake',
       distance: '2.4 km',
       status: 'Open now • Closes 6 PM',
-      imageUrl:
-          'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.gangaramayaTemple,
     ),
     NearbyPlaceItem(
       title: 'Pettah & Red Mosque',
       subtitle: 'Historic vibrant spice bazaar & candy-striped mosque',
       distance: '3.8 km',
       status: 'Open now • Closes 8 PM',
-      imageUrl:
-          'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.redMosque,
     ),
     NearbyPlaceItem(
       title: 'Mount Lavinia Shore',
       subtitle: 'Colonial beachside sunset promenade',
       distance: '9.5 km',
       status: 'Open 24 hrs • Best at sunset',
-      imageUrl:
-          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80',
+      imageUrl: SriLankaImages.mountLavinia,
     ),
   ];
 

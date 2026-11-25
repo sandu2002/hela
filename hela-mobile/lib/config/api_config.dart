@@ -19,13 +19,13 @@ class ApiConfig {
 
   // ── Verified Gemini model identifiers (server-side use only) ───────────
   /// Primary Gemini model — verified as of 2026-11.
-  static const String geminiModel = 'gemini-2.0-flash';
+  static const String geminiModel = 'gemini-3.5-flash-lite';
 
   /// Fallback Gemini model.
-  static const String geminiFallbackModel = 'gemini-1.5-flash';
+  static const String geminiFallbackModel = 'gemini-3.1-flash-lite';
 
   /// Lightweight fallback Gemini model.
-  static const String geminiLiteFallbackModel = 'gemini-1.5-flash-8b';
+  static const String geminiLiteFallbackModel = 'gemini-2.5-flash';
 
   /// OpenStreetMap Overpass API endpoint for querying Sri Lankan tourism data.
   static const String overpassApiUrl =

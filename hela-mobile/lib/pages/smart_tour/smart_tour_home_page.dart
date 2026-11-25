@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hela/data/sri_lanka_images.dart';
 import 'package:hela/theme/hela_colors.dart';
 import 'package:hela/pages/smart_tour/travel_preferences_page.dart';
 
@@ -109,7 +110,7 @@ class _SmartTourHomePageState extends State<SmartTourHomePage>
             ),
             // Network hero image
             Image.network(
-              'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=1000&auto=format&fit=crop&q=80',
+              SriLankaImages.sigiriya,
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
             ),

@@ -133,7 +133,7 @@ void main() {
       ),
     );
 
-    expect(find.text('Fair Ride Ceylon'), findsOneWidget);
+    expect(find.text('SOS EMERGENCY'), findsOneWidget);
     expect(find.text('Select Ceylon Vehicle'), findsOneWidget);
     expect(find.text('Tuk-Tuk'), findsOneWidget);
   });

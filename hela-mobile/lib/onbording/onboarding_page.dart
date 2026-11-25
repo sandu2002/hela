@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hela/data/sri_lanka_images.dart';
 import 'package:hela/pages/auth/signup_page.dart';
 import 'package:hela/pages/home_page.dart';
 import 'package:hela/state/app_state.dart';
@@ -47,8 +48,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       'tagText': 'Nine Arch Bridge',
       'tagIcon': Icons.location_on_rounded,
       'rating': '4.9',
-      'imageUrl':
-          'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=1200&auto=format&fit=crop&q=85',
+      'imageUrl': SriLankaImages.nineArchBridge,
       'tipTitle': 'Scenic Rail Tip',
       'tipBody':
           'Reserve 1st or 2nd class observation carriage seats at least 30 days ahead during peak season for panoramic misty views.',
@@ -63,8 +63,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       'tagText': 'Southern Coast • Surf & Whales',
       'tagIcon': Icons.surfing_rounded,
       'rating': '4.8',
-      'imageUrl':
-          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1000&auto=format&fit=crop&q=80',
+      'imageUrl': SriLankaImages.mirissa,
       'tipTitle': 'Sunset & Surf Tip',
       'tipBody':
           'Best surf swell runs November to April on the South Coast. Head up Coconut Tree Hill around 5:30 PM for breathtaking sunset vistas.',
@@ -79,8 +78,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       'tagText': 'Yala Wilderness • Big Game',
       'tagIcon': Icons.pets_rounded,
       'rating': '4.9',
-      'imageUrl':
-          'https://images.unsplash.com/photo-1564760055775-d63b17a55c44?w=1000&auto=format&fit=crop&q=80',
+      'imageUrl': SriLankaImages.leopard,
       'tipTitle': 'Safari Etiquette Tip',
       'tipBody':
           'Book an early 5:30 AM morning safari gate entry. Leopards and sloth bears are most active before the afternoon tropical heat.',
@@ -833,7 +831,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 fit: StackFit.expand,
                 children: [
                   Image.network(
-                    'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=1200&auto=format&fit=crop&q=85',
+                    SriLankaImages.sigiriya,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) => Container(
                       color: OnboardingTokens.primaryDark,
@@ -1572,10 +1570,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 fit: StackFit.expand,
                 children: [
                   Image.network(
-                    'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=1000&auto=format&fit=crop&q=80',
+                    SriLankaImages.templeOfTheTooth,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) => Image.network(
-                      'https://images.unsplash.com/photo-1620619767323-b95a89183081?w=1000&auto=format&fit=crop&q=80',
+                      SriLankaImages.dambulla,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) => Container(
                         color: OnboardingTokens.primaryDark,

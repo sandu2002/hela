@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hela/data/sri_lanka_images.dart';
 import 'package:hela/pages/cultural_guide/cultural_guide_page.dart';
 import 'package:hela/pages/smart_tour/smart_tour_home_page.dart';
 import 'package:hela/pages/stays_page.dart';
@@ -44,8 +45,7 @@ final List<_SearchResultItem> _allSearchData = [
     category: 'Guided Excursion',
     price: '\$45',
     rating: 4.90,
-    imageUrl:
-        'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
+    imageUrl: SriLankaImages.nineArchBridge,
     icon: Icons.landscape_rounded,
     type: _ResultType.haven,
   ),
@@ -56,8 +56,7 @@ final List<_SearchResultItem> _allSearchData = [
     category: 'Heritage Tour',
     price: '\$60',
     rating: 4.95,
-    imageUrl:
-        'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
+    imageUrl: SriLankaImages.sigiriya,
     icon: Icons.account_balance_rounded,
     type: _ResultType.haven,
   ),
@@ -68,8 +67,7 @@ final List<_SearchResultItem> _allSearchData = [
     category: 'Coastal Safari',
     price: '\$75',
     rating: 4.88,
-    imageUrl:
-        'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80',
+    imageUrl: SriLankaImages.blueWhale,
     icon: Icons.sailing_rounded,
     type: _ResultType.haven,
   ),
@@ -81,8 +79,7 @@ final List<_SearchResultItem> _allSearchData = [
     category: 'Eco-Stay',
     price: '\$148/night',
     rating: 4.96,
-    imageUrl:
-        'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&auto=format&fit=crop&q=80',
+    imageUrl: SriLankaImages.ella,
     icon: Icons.hotel_rounded,
     type: _ResultType.stay,
   ),
@@ -93,8 +90,7 @@ final List<_SearchResultItem> _allSearchData = [
     category: 'Eco-Stay',
     price: '\$85/night',
     rating: 4.88,
-    imageUrl:
-        'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800&auto=format&fit=crop&q=80',
+    imageUrl: SriLankaImages.ceylonTea,
     icon: Icons.cottage_rounded,
     type: _ResultType.stay,
   ),
@@ -106,8 +102,7 @@ final List<_SearchResultItem> _allSearchData = [
     category: 'Experience',
     price: '\$38/person',
     rating: 4.9,
-    imageUrl:
-        'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&auto=format&fit=crop&q=80',
+    imageUrl: SriLankaImages.kandyLake,
     icon: Icons.local_florist_rounded,
     type: _ResultType.experience,
   ),
@@ -118,8 +113,7 @@ final List<_SearchResultItem> _allSearchData = [
     category: 'Experience',
     price: '\$92/jeep',
     rating: 4.96,
-    imageUrl:
-        'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?w=800&auto=format&fit=crop&q=80',
+    imageUrl: SriLankaImages.leopard,
     icon: Icons.pets_rounded,
     type: _ResultType.experience,
   ),
@@ -130,8 +124,7 @@ final List<_SearchResultItem> _allSearchData = [
     category: 'Experience',
     price: '\$42/person',
     rating: 4.89,
-    imageUrl:
-        'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=800&auto=format&fit=crop&q=80',
+    imageUrl: SriLankaImages.galleFort,
     icon: Icons.restaurant_rounded,
     type: _ResultType.experience,
   ),

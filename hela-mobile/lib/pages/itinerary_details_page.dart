@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:hela/data/sri_lanka_images.dart';
 import 'package:hela/models/tour_plan.dart';
 import 'package:hela/pages/active_journey_page.dart';
 import 'package:hela/pages/ask_hela_page.dart';
@@ -233,7 +234,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
           text.contains('polonnaruwa') ||
           text.contains('anuradhapura') ||
           text.contains('citadel')) {
-        return 'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80';
+        return SriLankaImages.sigiriya;
       }
       if (text.contains('rice') ||
           text.contains('curry') ||
@@ -244,7 +245,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
           text.contains('meal') ||
           text.contains('culinary') ||
           text.contains('food')) {
-        return 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=800&auto=format&fit=crop&q=80';
+        return SriLankaImages.riceAndCurry;
       }
       if (text.contains('villa') ||
           text.contains('hotel') ||
@@ -252,21 +253,21 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
           text.contains('check-in') ||
           text.contains('stay') ||
           text.contains('lodge')) {
-        return 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800&auto=format&fit=crop&q=80';
+        return SriLankaImages.ella;
       }
       if (text.contains('arrival') ||
           text.contains('airport') ||
           text.contains('cmb') ||
           text.contains('pickup') ||
           text.contains('welcome')) {
-        return 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&auto=format&fit=crop&q=80';
+        return SriLankaImages.bandaranaikeAirport;
       }
       if (text.contains('kandy') ||
           text.contains('temple') ||
           text.contains('tooth') ||
           text.contains('dalada') ||
           text.contains('cultural')) {
-        return 'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80';
+        return SriLankaImages.templeOfTheTooth;
       }
       if (text.contains('ella') ||
           text.contains('tea') ||
@@ -274,10 +275,10 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
           text.contains('nuwara') ||
           text.contains('hike') ||
           text.contains('nine arch')) {
-        return 'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80';
+        return SriLankaImages.nineArchBridge;
       }
       if (text.contains('galle') || text.contains('fort')) {
-        return 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=800&auto=format&fit=crop&q=80';
+        return SriLankaImages.galleFort;
       }
       if (text.contains('yala') ||
           text.contains('udawalawe') ||
@@ -285,7 +286,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
           text.contains('wildlife') ||
           text.contains('elephant') ||
           text.contains('leopard')) {
-        return 'https://images.unsplash.com/photo-1561731216-c3a4d99437d5?w=800&auto=format&fit=crop&q=80';
+        return SriLankaImages.leopard;
       }
       if (text.contains('beach') ||
           text.contains('mirissa') ||
@@ -294,15 +295,15 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
           text.contains('surf') ||
           text.contains('coast') ||
           text.contains('ocean')) {
-        return 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80';
+        return SriLankaImages.mirissa;
       }
     }
 
     const fallbacks = [
-      'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1546708973-b339540b5162?w=800&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80',
+      SriLankaImages.sigiriya,
+      SriLankaImages.nineArchBridge,
+      SriLankaImages.templeOfTheTooth,
+      SriLankaImages.mirissa,
     ];
     return fallbacks[index % fallbacks.length];
   }
@@ -1137,7 +1138,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
           time: '08:30 AM',
           duration: '~1 hr',
           title: 'Arrival & Tropical Welcome at CMB',
-          imageUrl: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&auto=format&fit=crop&q=80',
+          imageUrl: SriLankaImages.bandaranaikeAirport,
           description:
               'Private AC car pickup, high-speed Dialog SIM setup, fresh Thambili (king coconut) welcome drink, and departure towards the lush Central Province.',
           costLabel: 'Estimated Cost',
@@ -1150,7 +1151,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
           time: '12:30 PM',
           duration: '~1.5 hr',
           title: 'Traditional Rice & Curry Feast at Kurunegala',
-          imageUrl: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=800&auto=format&fit=crop&q=80',
+          imageUrl: SriLankaImages.riceAndCurry,
           description:
               'Clay-pot village feast with fragrant coconut sambol, creamy dhal curry, polos (jackfruit curry), and fresh lake fish in an open-air garden pavilion.',
           costLabel: 'Meal Estimate',
@@ -1164,7 +1165,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
           time: '03:30 PM',
           duration: 'Must-See Wonder',
           title: 'Ascent of Sigiriya Lion Rock Citadel',
-          imageUrl: 'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
+          imageUrl: SriLankaImages.sigiriya,
           description:
               'Golden-hour climb of King Kashyapa\'s UNESCO 5th-century palace fortress. Explore landscaped water gardens, the ancient Mirror Wall poetry, and sweeping 360° summit views.',
           costLabel: 'UNESCO Official Ticket',
@@ -1180,7 +1181,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
           time: '07:30 PM',
           duration: 'Evening Rest',
           title: 'Boutique Heritage Villa Check-In & Dinner',
-          imageUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800&auto=format&fit=crop&q=80',
+          imageUrl: SriLankaImages.ella,
           description:
               'Unwind at an eco-resort overlooking the misty jungle canopy with traditional herbal tea and curated Sri Lankan fusion dining.',
           costLabel: 'Accommodation Estimate',

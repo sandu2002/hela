@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:hela/data/sri_lanka_images.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hela/config/api_config.dart';
 import 'package:hela/models/tour_plan.dart';
@@ -122,7 +123,7 @@ Do not include markdown code fence or extra text. Output strictly raw JSON.
               matchedCandidate.categories,
           imageUrl: matchedCandidate.imageUrl.isNotEmpty
               ? matchedCandidate.imageUrl
-              : 'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80',
+              : SriLankaImages.sigiriya,
           sourceUrl: matchedCandidate.sourceUrl,
           retrievedAt: DateTime.now().toIso8601String(),
           attribution: 'Curated by Gemini AI & OpenStreetMap',
@@ -391,9 +392,59 @@ HELA:''';
       history.add(ChatTurn(isUser: false, text: result.text));
       return result.text;
     } catch (e) {
-      debugPrint('[AIService] chatWithHela error: $e');
+      debugPrint('[AIService] chatWithHela backend proxy error: $e');
+
+      // Resilient fallback: call Gemini directly if API key is provided
+      if (ApiConfig.geminiApiKey.isNotEmpty) {
+        try {
+          final directResult = await _callGeminiDirectText(fullPrompt);
+          if (directResult != null && directResult.isNotEmpty) {
+            history.add(ChatTurn(isUser: true, text: prompt));
+            history.add(ChatTurn(isUser: false, text: directResult));
+            return directResult;
+          }
+        } catch (directErr) {
+          debugPrint('[AIService] chatWithHela direct fallback error: $directErr');
+        }
+      }
+
       return null;
     }
+  }
+
+  /// Direct client fallback for Ask HELA chat when backend proxy is unreachable.
+  Future<String?> _callGeminiDirectText(String prompt) async {
+    final models = [
+      ApiConfig.geminiModel,
+      ApiConfig.geminiFallbackModel,
+      ApiConfig.geminiLiteFallbackModel,
+    ];
+    for (final model in models) {
+      try {
+        final uri = Uri.parse(
+          'https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=${ApiConfig.geminiApiKey}',
+        );
+        final res = await _client.post(
+          uri,
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({
+            'contents': [
+              {
+                'parts': [{'text': prompt}]
+              }
+            ],
+            'generationConfig': {'responseMimeType': 'text/plain'},
+          }),
+        ).timeout(const Duration(seconds: 15));
+        if (res.statusCode == 200) {
+          final data = jsonDecode(res.body) as Map<String, dynamic>;
+          final candidates = data['candidates'] as List?;
+          final text = candidates?.firstOrNull?['content']?['parts']?.firstOrNull?['text']?.toString().trim();
+          if (text != null && text.isNotEmpty) return text;
+        }
+      } catch (_) {}
+    }
+    return null;
   }
 
   // ── Private helpers ───────────────────────────────────────────────────────

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:hela/data/sri_lanka_images.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:hela/pages/home_page.dart';
 import 'package:hela/state/app_state.dart';
@@ -693,7 +694,7 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
                         height: 220,
                         width: double.infinity,
                         child: _buildNetworkImage(
-                          'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=1000&auto=format&fit=crop&q=80',
+                          SriLankaImages.templeOfTheTooth,
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -901,7 +902,7 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
                         subtitle: 'Rhythm, ritual percussion, and sacred temple fires',
                         authorName: 'Dr. Indika Bandara',
                         readTime: '5 min read',
-                        imageUrl: 'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
+                        imageUrl: SriLankaImages.kandyanDance,
                       ),
                     ),
                   );
@@ -930,7 +931,7 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
                           width: 64,
                           height: 64,
                           child: _buildNetworkImage(
-                            'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80',
+                            SriLankaImages.kandyanDance,
                             fit: BoxFit.cover,
                           ),
                         ),

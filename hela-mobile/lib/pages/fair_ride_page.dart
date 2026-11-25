@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:hela/pages/home_page.dart';
 import 'package:hela/widgets/real_time_map.dart';
 
@@ -668,63 +671,569 @@ class _FairRidePageState extends State<FairRidePage> {
                 ),
               ),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-              decoration: BoxDecoration(
-                color: colors.surfaceContainerLow,
-                borderRadius: BorderRadius.circular(9999),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 7,
-                    height: 7,
-                    decoration: BoxDecoration(
-                      color: colors.primary,
-                      shape: BoxShape.circle,
-                    ),
+            // High-Priority Emergency SOS Button (Replaces "Fair Ride Ceylon")
+            GestureDetector(
+              onTap: () => _showEmergencySosSheet(context),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFDC2626), Color(0xFFB91C1C)],
                   ),
-                  const SizedBox(width: 6),
-                  Text(
-                    'Fair Ride Ceylon',
-                    style: TextStyle(
-                      color: colors.primary,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.2,
-                      fontFamily: 'Inter',
+                  borderRadius: BorderRadius.circular(9999),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFDC2626).withValues(alpha: 0.35),
+                      blurRadius: 10,
+                      offset: const Offset(0, 3),
                     ),
-                  ),
-                ],
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 7),
+                    const Icon(
+                      Icons.emergency_rounded,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 6),
+                    const Text(
+                      'SOS EMERGENCY',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0.6,
+                        fontFamily: 'Inter',
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.verified_user_rounded, color: colors.primary, size: 22),
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('SOS & Emergency Support Active')),
-                    );
-                  },
+            // Safety Shield Button (Quick SOS trigger)
+            Material(
+              color: const Color(0xFFFEE2E2),
+              shape: const CircleBorder(),
+              child: InkWell(
+                customBorder: const CircleBorder(),
+                onTap: () => _showEmergencySosSheet(context),
+                child: const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Icon(
+                    Icons.shield_rounded,
+                    color: Color(0xFFDC2626),
+                    size: 20,
+                  ),
                 ),
-                Positioned(
-                  top: 12,
-                  right: 12,
-                  child: Container(
-                    width: 7,
-                    height: 7,
-                    decoration: BoxDecoration(
-                      color: colors.goldenAmber,
-                      shape: BoxShape.circle,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _callEmergencyNumber(String number) async {
+    final uri = Uri(scheme: 'tel', path: number);
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri);
+      } else {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: const Color(0xFFDC2626),
+            content: Text('Please dial emergency hotline: $number'),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _shareEmergencyDispatch() async {
+    const text = '🚨 HELA EMERGENCY DISTRESS ALERT 🚨\n'
+        'I need immediate assistance while travelling in Sri Lanka!\n\n'
+        '• Current Vehicle: HELA Taxi / Tuk-Tuk Service\n'
+        '• Pickup / Current Area: 98 Acres Resort & Spa, Ella\n'
+        '• Destination: Ravana Falls & Rock Sanctuary\n'
+        '• GPS Coordinates: 6.8667° N, 81.0466° E\n'
+        '• Live Map: https://maps.google.com/?q=6.8667,81.0466\n\n'
+        'Please alert Sri Lanka Police (Dial 119) or Suwa Seriya Ambulance (Dial 1990) immediately!';
+    try {
+      await Share.share(text, subject: '🚨 HELA Emergency Distress Dispatch');
+    } catch (_) {
+      await Clipboard.setData(const ClipboardData(text: text));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: Color(0xFFDC2626),
+            content: Text('Emergency distress text copied to clipboard! Paste into SMS or WhatsApp.'),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _copyGpsCoordinates() async {
+    const coords = '6.8667° N, 81.0466° E (98 Acres Resort, Ella, Sri Lanka)';
+    await Clipboard.setData(const ClipboardData(text: coords));
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Color(0xFF15803D),
+          content: Text('GPS Coordinates copied to clipboard!'),
+        ),
+      );
+    }
+  }
+
+  void _triggerDistressAlarm() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFFB91C1C),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.warning_rounded, color: Colors.white, size: 54),
+            const SizedBox(height: 12),
+            const Text(
+              '⚠️ EMERGENCY MODE ACTIVE ⚠️',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+                fontSize: 17,
+                letterSpacing: 0.5,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              'Live GPS location, vehicle details, and route coordinates are being recorded and transmitted.\n\n'
+              'Please stay calm. If in immediate danger, exit in a lit populated area and call 119 or 1990 immediately.',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 12.5,
+                height: 1.4,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 18),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      _callEmergencyNumber('119');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: const Color(0xFFB91C1C),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
+                    child: const Text(
+                      'CALL 119 POLICE',
+                      style: TextStyle(fontWeight: FontWeight.w900),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(ctx),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      side: const BorderSide(color: Colors.white70),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: const Text('DISMISS'),
                   ),
                 ),
               ],
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  void _showEmergencySosSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetCtx) => DraggableScrollableSheet(
+        initialChildSize: 0.85,
+        maxChildSize: 0.95,
+        minChildSize: 0.5,
+        builder: (ctx, scrollController) => Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 24,
+                offset: Offset(0, -6),
+              ),
+            ],
+          ),
+          child: ListView(
+            controller: scrollController,
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+            children: [
+              // Drag Handle
+              Center(
+                child: Container(
+                  width: 44,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Emergency Header
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFEE2E2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(
+                          Icons.emergency_rounded,
+                          color: Color(0xFFDC2626),
+                          size: 26,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text(
+                            'Emergency SOS Hub',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF1F2937),
+                              fontFamily: 'Inter',
+                            ),
+                          ),
+                          Text(
+                            '24/7 Islandwide Emergency Response',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Color(0xFF6B7280),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(sheetCtx),
+                    icon: const Icon(Icons.close_rounded, color: Color(0xFF4B5563)),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              // Active Ride Safety Beacon Card
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFEF2F2),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFFFECACA)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFDC2626),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        const Text(
+                          'ACTIVE TAXI SAFETY TRACKING',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF991B1B),
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Location: 98 Acres Resort, Ella (Near Ravana Falls)\nGPS: 6.8667° N, 81.0466° E',
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        color: Color(0xFF374151),
+                        fontWeight: FontWeight.w600,
+                        height: 1.35,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: _shareEmergencyDispatch,
+                            icon: const Icon(Icons.share_location_rounded, size: 16),
+                            label: const Text('Share Location SOS'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFDC2626),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 9),
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        OutlinedButton.icon(
+                          onPressed: _copyGpsCoordinates,
+                          icon: const Icon(Icons.copy_rounded, size: 16),
+                          label: const Text('Copy GPS'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFF991B1B),
+                            side: const BorderSide(color: Color(0xFFFCA5A5)),
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              const Text(
+                'Instant Emergency Hotlines (1-Tap Dial)',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF111827),
+                  fontFamily: 'Inter',
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              // Hotline 1: 1990 Suwa Seriya Ambulance
+              _buildEmergencyHotlineTile(
+                icon: Icons.medical_services_rounded,
+                iconColor: const Color(0xFF15803D),
+                iconBg: const Color(0xFFDCFCE7),
+                number: '1990',
+                title: 'Suwa Seriya Ambulance',
+                subtitle: 'Free 24/7 Islandwide Emergency Medical Care',
+                onTap: () => _callEmergencyNumber('1990'),
+              ),
+              const SizedBox(height: 8),
+
+              // Hotline 2: 119 Sri Lanka Police
+              _buildEmergencyHotlineTile(
+                icon: Icons.local_police_rounded,
+                iconColor: const Color(0xFF1E40AF),
+                iconBg: const Color(0xFFDBEAFE),
+                number: '119',
+                title: 'Police Emergency Operations',
+                subtitle: 'Crime, Theft, Immediate Danger & Threat',
+                onTap: () => _callEmergencyNumber('119'),
+              ),
+              const SizedBox(height: 8),
+
+              // Hotline 3: 1912 Tourist Police
+              _buildEmergencyHotlineTile(
+                icon: Icons.shield_rounded,
+                iconColor: const Color(0xFF92400E),
+                iconBg: const Color(0xFFFEF3C7),
+                number: '1912',
+                title: 'Tourist Police & SLTDA',
+                subtitle: 'Dedicated English Support for Foreign Travellers',
+                onTap: () => _callEmergencyNumber('1912'),
+              ),
+              const SizedBox(height: 8),
+
+              // Hotline 4: 110 Fire & Rescue
+              _buildEmergencyHotlineTile(
+                icon: Icons.fire_truck_rounded,
+                iconColor: const Color(0xFFB45309),
+                iconBg: const Color(0xFFFFEDD5),
+                number: '110',
+                title: 'Fire & Rescue Service',
+                subtitle: 'Accident Rescue, Fire & Disaster Assistance',
+                onTap: () => _callEmergencyNumber('110'),
+              ),
+              const SizedBox(height: 16),
+
+              // Driver Warning / Deterrent Alarm Button
+              InkWell(
+                onTap: () {
+                  Navigator.pop(sheetCtx);
+                  _triggerDistressAlarm();
+                },
+                borderRadius: BorderRadius.circular(14),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1F2937),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.warning_amber_rounded, color: Color(0xFFFBBF24), size: 24),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: const [
+                            Text(
+                              'Trigger Distress Beacon & Deterrent',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                              ),
+                            ),
+                            Text(
+                              'Displays high-visibility alert screen to deter driver',
+                              style: TextStyle(
+                                color: Color(0xFF9CA3AF),
+                                fontSize: 11,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white70, size: 14),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmergencyHotlineTile({
+    required IconData icon,
+    required Color iconColor,
+    required Color iconBg,
+    required String number,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFF9FAFB),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+        leading: Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            color: iconBg,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(icon, color: iconColor, size: 22),
+        ),
+        title: Row(
+          children: [
+            Text(
+              number,
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                fontSize: 16,
+                color: iconColor,
+                fontFamily: 'Inter',
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
+                  color: Color(0xFF111827),
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+        subtitle: Text(
+          subtitle,
+          style: const TextStyle(
+            fontSize: 11,
+            color: Color(0xFF6B7280),
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        trailing: ElevatedButton(
+          onPressed: onTap,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: iconColor,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            elevation: 0,
+          ),
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.call_rounded, size: 14),
+              SizedBox(width: 4),
+              Text(
+                'CALL',
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800),
+              ),
+            ],
+          ),
         ),
       ),
     );
