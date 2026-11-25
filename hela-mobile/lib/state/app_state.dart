@@ -3,6 +3,7 @@ import 'package:hela/models/haven_item.dart';
 import 'package:hela/models/tour_plan.dart';
 import 'package:hela/pages/stays_page.dart' show StayHaven;
 import 'package:hela/services/localization_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Global shared state for the HELA app.
 ///
@@ -272,18 +273,42 @@ class HelaAppState extends ChangeNotifier {
   }
 
   // ── Language & Localization ────────────────────────────────────
+  static const String _languagePrefsKey = 'hela_selected_language_v1';
   String _selectedLanguage = 'EN';
 
   String get selectedLanguage => _selectedLanguage;
 
+  bool get isRtl => _selectedLanguage == 'AR';
+
   String get languageDisplayName => LocalizationService.getDisplayName(_selectedLanguage);
+
+  Future<void> restoreLanguage() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final saved = prefs.getString(_languagePrefsKey);
+      if (saved != null && saved.trim().isNotEmpty) {
+        _selectedLanguage = saved.toUpperCase();
+        notifyListeners();
+      }
+    } catch (_) {
+      // Ignore storage failures on startup
+    }
+  }
 
   void setLanguage(String code) {
     final upper = code.toUpperCase();
     if (_selectedLanguage != upper) {
       _selectedLanguage = upper;
       notifyListeners();
+      _persistLanguage(upper);
     }
+  }
+
+  Future<void> _persistLanguage(String code) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_languagePrefsKey, code);
+    } catch (_) {}
   }
 
   String tr(String key) => LocalizationService.tr(key, _selectedLanguage);
@@ -368,5 +393,11 @@ class HelaAppStateProvider extends InheritedNotifier<HelaAppState> {
     final provider =
         context.dependOnInheritedWidgetOfExactType<HelaAppStateProvider>();
     return provider?.notifier ?? _fallbackState;
+  }
+
+  static HelaAppState? maybeOf(BuildContext context) {
+    return context
+        .dependOnInheritedWidgetOfExactType<HelaAppStateProvider>()
+        ?.notifier;
   }
 }

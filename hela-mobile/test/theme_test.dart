@@ -130,7 +130,8 @@ void main() {
       // Open the drawer via Scaffold state
       final scaffoldState = tester.state<ScaffoldState>(find.byType(Scaffold));
       scaffoldState.openDrawer();
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
 
       // Drawer is now open
       expect(find.byType(HelaNavigationDrawer), findsOneWidget);
@@ -141,7 +142,8 @@ void main() {
 
       // Tap "Dark" in drawer
       await tester.tap(find.text('Dark'));
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 250));
 
       expect(appState.themeMode, ThemeMode.dark);
       expect(appState.isDarkMode, true);

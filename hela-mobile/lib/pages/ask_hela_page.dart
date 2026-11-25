@@ -5,6 +5,7 @@ import 'package:hela/config/api_config.dart';
 import 'package:hela/services/live_weather_service.dart';
 import 'package:hela/services/localization_service.dart';
 import 'package:hela/state/app_state.dart';
+import 'package:hela/widgets/language_picker_sheet.dart';
 
 /// Bento item representing structured practical tips or cultural rules
 class AskHelaBentoItem {
@@ -88,7 +89,8 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
     _seedInitialConversation();
     _initLiveWeather();
 
-    if (widget.initialPrompt != null && widget.initialPrompt!.trim().isNotEmpty) {
+    if (widget.initialPrompt != null &&
+        widget.initialPrompt!.trim().isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _handleSendMessage(widget.initialPrompt!);
       });
@@ -203,7 +205,9 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
 
   String _formatCurrentTime() {
     final now = DateTime.now();
-    final hour = now.hour > 12 ? now.hour - 12 : (now.hour == 0 ? 12 : now.hour);
+    final hour = now.hour > 12
+        ? now.hour - 12
+        : (now.hour == 0 ? 12 : now.hour);
     final minute = now.minute.toString().padLeft(2, '0');
     final ampm = now.hour >= 12 ? 'PM' : 'AM';
     return '${hour.toString().padLeft(2, '0')}:$minute $ampm';
@@ -240,7 +244,7 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
         : '';
     final weatherNote = _liveWeather != null
         ? ' [User live location: ${_liveWeather!.locationName}, live temp: ${_liveWeather!.temperatureC.round()}°C'
-            '${_liveWeather!.condition != null ? ', ${_liveWeather!.condition}' : ''}]'
+              '${_liveWeather!.condition != null ? ', ${_liveWeather!.condition}' : ''}]'
         : '';
     final prompt = '$trimmed$langNote$weatherNote';
 
@@ -292,13 +296,18 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
     return null;
   }
 
-  AskHelaMessage _buildRichAiMessageFromText(String userQuery, String geminiText) {
+  AskHelaMessage _buildRichAiMessageFromText(
+    String userQuery,
+    String geminiText,
+  ) {
     final lower = userQuery.toLowerCase();
     String? imageUrl;
     String? imageCaption;
     List<AskHelaBentoItem>? bentoItems;
 
-    if (lower.contains('sigiriya') || lower.contains('rock') || lower.contains('lion')) {
+    if (lower.contains('sigiriya') ||
+        lower.contains('rock') ||
+        lower.contains('lion')) {
       imageUrl =
           'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800&auto=format&fit=crop&q=80';
       imageCaption = 'Sigiriya Rock Fortress • Cultural Triangle';
@@ -316,7 +325,9 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
               'Flash photography and touching ancient graffiti is strictly prohibited to preserve delicate plaster.',
         ),
       ];
-    } else if (lower.contains('train') || lower.contains('ella') || lower.contains('bridge')) {
+    } else if (lower.contains('train') ||
+        lower.contains('ella') ||
+        lower.contains('bridge')) {
       imageUrl =
           'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=1200&auto=format&fit=crop&q=85';
       imageCaption = 'Nine Arch Bridge • Ella Highlands';
@@ -334,7 +345,10 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
               'Reserve 1st or 2nd class observation carriage seats 30 days ahead online via Sri Lanka Railways portal.',
         ),
       ];
-    } else if (lower.contains('tuk') || lower.contains('fare') || lower.contains('meter') || lower.contains('taxi')) {
+    } else if (lower.contains('tuk') ||
+        lower.contains('fare') ||
+        lower.contains('meter') ||
+        lower.contains('taxi')) {
       bentoItems = const [
         AskHelaBentoItem(
           icon: Icons.speed_rounded,
@@ -349,7 +363,9 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
               'Use our in-app Fair Ride calculator before departing to verify fair local market rates.',
         ),
       ];
-    } else if (lower.contains('temple') || lower.contains('tooth') || lower.contains('kandy')) {
+    } else if (lower.contains('temple') ||
+        lower.contains('tooth') ||
+        lower.contains('kandy')) {
       imageUrl =
           'https://images.unsplash.com/photo-1588598198321-9735fd52455b?w=800&auto=format&fit=crop&q=80';
       imageCaption = 'Sri Dalada Maligawa • Kandy';
@@ -411,7 +427,9 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
           ),
         ],
       );
-    } else if (lower.contains('train') || lower.contains('ella') || lower.contains('bridge')) {
+    } else if (lower.contains('train') ||
+        lower.contains('ella') ||
+        lower.contains('bridge')) {
       return AskHelaMessage(
         id: 'ai_${DateTime.now().millisecondsSinceEpoch}',
         isUser: false,
@@ -438,7 +456,9 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
           ),
         ],
       );
-    } else if (lower.contains('tuk') || lower.contains('fare') || lower.contains('meter')) {
+    } else if (lower.contains('tuk') ||
+        lower.contains('fare') ||
+        lower.contains('meter')) {
       return AskHelaMessage(
         id: 'ai_${DateTime.now().millisecondsSinceEpoch}',
         isUser: false,
@@ -490,87 +510,10 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
   }
 
   void _showLanguageSelector() {
-    final appState = HelaAppStateProvider.of(context);
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (ctx) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Select Language',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: Color(0xFF0C2C24),
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close_rounded),
-                      onPressed: () => Navigator.pop(ctx),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                ...LocalizationService.supportedLanguages.map((lang) {
-                  final isSelected = appState.selectedLanguage == lang.code;
-                  return InkWell(
-                    onTap: () {
-                      appState.setLanguage(lang.code);
-                      Navigator.pop(ctx);
-                      setState(() {});
-                    },
-                    borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                      decoration: BoxDecoration(
-                        color: isSelected ? const Color(0xFFD8F5ED) : const Color(0xFFF7FBF9),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: isSelected ? const Color(0xFF105B4B) : const Color(0xFFE2EFEA),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Text(lang.flag, style: const TextStyle(fontSize: 22)),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Text(
-                              '${lang.name} • ${lang.nativeName}',
-                              style: TextStyle(
-                                fontSize: 14.5,
-                                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                                color: const Color(0xFF0C2C24),
-                              ),
-                            ),
-                          ),
-                          if (isSelected)
-                            const Icon(
-                              Icons.check_circle_rounded,
-                              color: Color(0xFF105B4B),
-                              size: 20,
-                            ),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
-              ],
-            ),
-          ),
-        );
+    showHelaLanguagePickerSheet(
+      context,
+      onLanguageSelected: (_) {
+        if (mounted) setState(() {});
       },
     );
   }
@@ -578,10 +521,14 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final appState = HelaAppStateProvider.of(context);
-    final activeLanguageName = LocalizationService.getLanguage(appState.selectedLanguage).name.split(' ').first;
+    final activeLanguageName = LocalizationService.getLanguage(
+      appState.selectedLanguage,
+    ).nativeName;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFEAF8F4), // Mint page background matching reference
+      backgroundColor: const Color(
+        0xFFEAF8F4,
+      ), // Mint page background matching reference
       body: SafeArea(
         bottom: true,
         child: Column(
@@ -596,7 +543,10 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
             Expanded(
               child: ListView(
                 controller: _scrollController,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 children: [
                   // Welcome Introduction Card
                   _buildWelcomeIntroCard(),
@@ -639,7 +589,11 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
         children: [
           // Back button
           IconButton(
-            icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0B2D25), size: 24),
+            icon: const Icon(
+              Icons.arrow_back_rounded,
+              color: Color(0xFF0B2D25),
+              size: 24,
+            ),
             onPressed: () => Navigator.of(context).pop(),
           ),
 
@@ -688,18 +642,18 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
               children: [
                 Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: const [
+                  children: [
                     Text(
-                      'Ask HELA',
-                      style: TextStyle(
+                      HelaAppStateProvider.of(context).tr('ask_hela'),
+                      style: const TextStyle(
                         fontSize: 16.5,
                         fontWeight: FontWeight.w800,
                         color: Color(0xFF0B2D25),
                         fontFamily: 'Inter',
                       ),
                     ),
-                    SizedBox(width: 4),
-                    Icon(
+                    const SizedBox(width: 4),
+                    const Icon(
                       Icons.check_circle_rounded,
                       size: 15,
                       color: Color(0xFF296759),
@@ -707,9 +661,9 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
                   ],
                 ),
                 const SizedBox(height: 1),
-                const Text(
-                  'Your personal Sri Lanka...',
-                  style: TextStyle(
+                Text(
+                  HelaAppStateProvider.of(context).tr('ask_hela_subtitle'),
+                  style: const TextStyle(
                     fontSize: 11.5,
                     fontWeight: FontWeight.w500,
                     color: Color(0xFF4C756A),
@@ -734,7 +688,11 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.translate_rounded, size: 14, color: Color(0xFF105B4B)),
+                  const Icon(
+                    Icons.translate_rounded,
+                    size: 14,
+                    color: Color(0xFF105B4B),
+                  ),
                   const SizedBox(width: 5),
                   Text(
                     languageName,
@@ -745,7 +703,11 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
                     ),
                   ),
                   const SizedBox(width: 2),
-                  const Icon(Icons.keyboard_arrow_down_rounded, size: 16, color: Color(0xFF4C756A)),
+                  const Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    size: 16,
+                    color: Color(0xFF4C756A),
+                  ),
                 ],
               ),
             ),
@@ -773,15 +735,21 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              children: const [
-                Icon(Icons.circle, size: 7, color: Color(0xFF10B981)),
-                SizedBox(width: 6),
-                Text(
-                  'Online • Island Intelligence Active',
-                  style: TextStyle(
-                    fontSize: 11.5,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF0F5444),
+              children: [
+                const Icon(Icons.circle, size: 7, color: Color(0xFF10B981)),
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(
+                    HelaAppStateProvider.of(
+                      context,
+                    ).tr('online_intelligence_active'),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF0F5444),
+                    ),
                   ),
                 ),
               ],
@@ -801,7 +769,11 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.thermostat_rounded, size: 15, color: Color(0xFF38685C)),
+                    const Icon(
+                      Icons.thermostat_rounded,
+                      size: 15,
+                      color: Color(0xFF38685C),
+                    ),
                     const SizedBox(width: 3),
                     Text(
                       _liveWeather?.formattedLabel ??
@@ -876,19 +848,19 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Text(
-                      'Hello! I\'m your HELA travel guide.',
-                      style: TextStyle(
+                      HelaAppStateProvider.of(context).tr('ask_hela_welcome_title'),
+                      style: const TextStyle(
                         fontSize: 15.5,
                         fontWeight: FontWeight.w800,
                         color: Color(0xFF0C2B23),
                       ),
                     ),
-                    SizedBox(height: 2),
+                    const SizedBox(height: 2),
                     Text(
-                      'Ask me anything about Sri Lanka.',
-                      style: TextStyle(
+                      HelaAppStateProvider.of(context).tr('ask_hela_welcome_sub'),
+                      style: const TextStyle(
                         fontSize: 12.5,
                         fontWeight: FontWeight.w500,
                         color: Color(0xFF426C60),
@@ -941,17 +913,20 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
               _buildSuggestionChip(
                 icon: Icons.landscape_rounded,
                 label: 'History of Sigiriya',
-                query: 'Tell me about the history, ancient frescoes, and climbing tips for Sigiriya Rock.',
+                query:
+                    'Tell me about the history, ancient frescoes, and climbing tips for Sigiriya Rock.',
               ),
               _buildSuggestionChip(
                 icon: Icons.train_rounded,
                 label: 'Scenic train tips',
-                query: 'What are the departure times and tips for the Kandy to Ella scenic train?',
+                query:
+                    'What are the departure times and tips for the Kandy to Ella scenic train?',
               ),
               _buildSuggestionChip(
                 icon: Icons.electric_rickshaw_rounded,
                 label: 'Tuk-tuk fair rates',
-                query: 'What are the official meter tuk-tuk rates and travel advice in Sri Lanka?',
+                query:
+                    'What are the official meter tuk-tuk rates and travel advice in Sri Lanka?',
               ),
             ],
           ),
@@ -1153,20 +1128,28 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
                             height: 155,
                             width: double.infinity,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) => Container(
-                              height: 155,
-                              color: const Color(0xFF0B3328),
-                              child: const Center(
-                                child: Icon(Icons.temple_buddhist_rounded, color: Colors.white54, size: 40),
-                              ),
-                            ),
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                                  height: 155,
+                                  color: const Color(0xFF0B3328),
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.temple_buddhist_rounded,
+                                      color: Colors.white54,
+                                      size: 40,
+                                    ),
+                                  ),
+                                ),
                           ),
                           if (msg.imageCaption != null)
                             Positioned(
                               left: 10,
                               bottom: 10,
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
                                 decoration: BoxDecoration(
                                   color: Colors.black.withValues(alpha: 0.6),
                                   borderRadius: BorderRadius.circular(12),
@@ -1174,7 +1157,11 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Icon(Icons.location_on_rounded, size: 12, color: Color(0xFF9AE5D3)),
+                                    const Icon(
+                                      Icons.location_on_rounded,
+                                      size: 12,
+                                      color: Color(0xFF9AE5D3),
+                                    ),
                                     const SizedBox(width: 4),
                                     Text(
                                       msg.imageCaption!,
@@ -1225,11 +1212,7 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
               color: Color(0xFFC2EBE0),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              item.icon,
-              size: 16,
-              color: const Color(0xFF0F5B4B),
-            ),
+            child: Icon(item.icon, size: 16, color: const Color(0xFF0F5B4B)),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -1275,7 +1258,11 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
               shape: BoxShape.circle,
             ),
             child: const Center(
-              child: Icon(Icons.filter_vintage_rounded, color: Color(0xFFDFAC6C), size: 16),
+              child: Icon(
+                Icons.filter_vintage_rounded,
+                color: Color(0xFFDFAC6C),
+                size: 16,
+              ),
             ),
           ),
           Container(
@@ -1292,7 +1279,9 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
                   height: 14,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF105B4B)),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Color(0xFF105B4B),
+                    ),
                   ),
                 ),
                 SizedBox(width: 10),

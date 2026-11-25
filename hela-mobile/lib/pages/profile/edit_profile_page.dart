@@ -278,6 +278,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final appState = HelaAppStateProvider.of(context);
     return Scaffold(
       backgroundColor: HelaColors.surface,
       appBar: AppBar(
@@ -288,9 +289,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
           icon: const Icon(Icons.arrow_back_rounded, color: HelaColors.primary),
           onPressed: () => Navigator.of(context).maybePop(),
         ),
-        title: const Text(
-          'Edit Profile',
-          style: TextStyle(
+        title: Text(
+          appState.tr('edit_profile'),
+          style: const TextStyle(
             color: HelaColors.primary,
             fontSize: 20,
             fontWeight: FontWeight.w800,
@@ -591,14 +592,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               color: HelaColors.onTertiaryFixed,
                             ),
                           )
-                        : const Row(
+                        : Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.save_rounded, size: 20),
-                              SizedBox(width: 8),
+                              const Icon(Icons.save_rounded, size: 20),
+                              const SizedBox(width: 8),
                               Text(
-                                'Save Changes',
-                                style: TextStyle(
+                                appState.tr('save_changes'),
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w800,
                                 ),

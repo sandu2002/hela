@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hela/pages/auth/signup_page.dart';
 import 'package:hela/pages/home_page.dart';
-import 'package:hela/services/localization_service.dart';
 import 'package:hela/state/app_state.dart';
+import 'package:hela/widgets/language_picker_sheet.dart';
 
 /// Design tokens specifically tailored for HELA's Onboarding Experience
 /// Conforms to the Stitch Lankan Tropical Modernism specification
@@ -144,120 +144,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   void _showLanguageSelector() {
     final appState = HelaAppStateProvider.of(context);
-    final currentLang = appState.selectedLanguage;
-    final languages = LocalizationService.supportedLanguages;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (ctx) {
-        return SafeArea(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(ctx).size.height * 0.82,
-            ),
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 44,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    appState.tr('select_language'),
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      color: OnboardingTokens.textDark,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    appState.tr('language_desc'),
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: OnboardingTokens.textMuted,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  ...languages.map((lang) {
-                    final isSelected = currentLang == lang.code;
-                    return ListTile(
-                      dense: true,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 2),
-                      leading: Container(
-                        width: 38,
-                        height: 38,
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? OnboardingTokens.mintBadge
-                              : Colors.grey.shade100,
-                          shape: BoxShape.circle,
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          lang.code,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                            color: isSelected
-                                ? OnboardingTokens.primaryDark
-                                : Colors.grey.shade700,
-                          ),
-                        ),
-                      ),
-                      title: Text(
-                        lang.name,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight:
-                              isSelected ? FontWeight.w700 : FontWeight.w500,
-                          color: OnboardingTokens.textDark,
-                        ),
-                      ),
-                      subtitle: Text(
-                        lang.nativeName,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: OnboardingTokens.textMuted,
-                        ),
-                      ),
-                      trailing: isSelected
-                          ? const Icon(
-                              Icons.check_circle_rounded,
-                              color: OnboardingTokens.primaryDark,
-                            )
-                          : null,
-                      onTap: () {
-                        appState.setLanguage(lang.code);
-                        Navigator.pop(ctx);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('${appState.tr('language_updated')} ${lang.name} (${lang.code}) ✨'),
-                            duration: const Duration(seconds: 2),
-                          ),
-                        );
-                      },
-                    );
-                  }),
-                ],
-              ),
-            ),
+    showHelaLanguagePickerSheet(
+      context,
+      onLanguageSelected: (lang) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${appState.tr('language_updated')} ${lang.nativeName} (${lang.code}) ✨'),
+            duration: const Duration(seconds: 2),
           ),
         );
       },

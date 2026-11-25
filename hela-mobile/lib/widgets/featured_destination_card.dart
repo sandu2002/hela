@@ -153,14 +153,19 @@ class FeaturedDestinationCard extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          item.footerTag,
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: colors.primary,
+                        Expanded(
+                          child: Text(
+                            item.footerTag,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: colors.primary,
+                            ),
                           ),
                         ),
+                        const SizedBox(width: 4),
                         Icon(
                           Icons.arrow_forward_rounded,
                           size: 15,

@@ -41,7 +41,6 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
   int _currentPhotoIndex = 0;
   int _selectedTabIndex = 0; // 0: Highlights, 1: History, 2: Visit Tips
   bool _isLorePlaying = false;
-  bool _localFavorite = false;
   LatLng? _liveUserLocation;
 
   @override
@@ -68,33 +67,25 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
   }
 
   bool _isFavorite(BuildContext context) {
-    final appState = HelaAppStateProvider.maybeOf(context);
-    if (appState != null) {
-      return appState.isHavenSaved(widget.place.title);
-    }
-    return _localFavorite;
+    return HelaAppStateProvider.of(context).isHavenSaved(widget.place.title);
   }
 
   void _toggleFavorite() {
-    final appState = HelaAppStateProvider.maybeOf(context);
+    final appState = HelaAppStateProvider.of(context);
     final place = widget.place;
-    if (appState != null) {
-      appState.toggleSaveHaven(
-        HavenItem(
-          id: place.id,
-          title: place.title,
-          location: place.locationLine,
-          category: place.categoryLabel,
-          price: place.priceEstimate,
-          rating: double.tryParse(place.rating) ?? 4.9,
-          badgeText: place.categoryBadge,
-          imageUrl: place.photos.first,
-        ),
-      );
-      setState(() {});
-    } else {
-      setState(() => _localFavorite = !_localFavorite);
-    }
+    appState.toggleSaveHaven(
+      HavenItem(
+        id: place.id,
+        title: place.title,
+        location: place.locationLine,
+        category: place.categoryLabel,
+        price: place.priceEstimate,
+        rating: double.tryParse(place.rating) ?? 4.9,
+        badgeText: place.categoryBadge,
+        imageUrl: place.photos.first,
+      ),
+    );
+    setState(() {});
 
     final savedNow = _isFavorite(context);
     ScaffoldMessenger.of(context).showSnackBar(
@@ -445,9 +436,9 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
   }
 
   void _addToMyTrip() {
-    final appState = HelaAppStateProvider.maybeOf(context);
+    final appState = HelaAppStateProvider.of(context);
     final place = widget.place;
-    if (appState != null && !appState.isHavenSaved(place.title)) {
+    if (!appState.isHavenSaved(place.title)) {
       appState.toggleSaveHaven(
         HavenItem(
           id: place.id,
@@ -1346,20 +1337,30 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Location & Geography',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w800,
-                color: colors.onSurface,
+            Expanded(
+              child: Text(
+                'Location & Geography',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                  color: colors.onSurface,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
-            Text(
-              place.formattedCoordinates,
-              style: TextStyle(
-                fontSize: 11.5,
-                fontWeight: FontWeight.w700,
-                color: colors.primary,
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                place.formattedCoordinates,
+                style: TextStyle(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w700,
+                  color: colors.primary,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.end,
               ),
             ),
           ],
@@ -1540,20 +1541,30 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Nearby Discoveries',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w800,
-                color: colors.onSurface,
+            Expanded(
+              child: Text(
+                'Nearby Discoveries',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                  color: colors.onSurface,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
-            Text(
-              place.nearbyRegionLabel,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: colors.primary,
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                place.nearbyRegionLabel,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: colors.primary,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.end,
               ),
             ),
           ],

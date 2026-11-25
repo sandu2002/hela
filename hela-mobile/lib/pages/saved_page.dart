@@ -100,17 +100,17 @@ class _SavedPageState extends State<SavedPage> {
           const SizedBox(width: 10),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               Text(
-                'Saved Page',
-                style: TextStyle(
+                appState.tr('saved_collection'),
+                style: const TextStyle(
                   color: HelaColors.primary,
                   fontWeight: FontWeight.w800,
                   fontSize: 20,
                   letterSpacing: -0.4,
                 ),
               ),
-              Text(
+              const Text(
                 'Your Ceylon Wishlist & Bookmarks',
                 style: TextStyle(
                   color: HelaColors.onSurfaceVariant,

@@ -248,7 +248,7 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Select Current Location',
+                        HelaAppStateProvider.of(ctx).tr('select_current_location'),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -264,14 +264,14 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
                           child: Icon(Icons.my_location_rounded, size: 18, color: colors.primary),
                         ),
                         title: Text(
-                          'Use My Current GPS Location',
+                          HelaAppStateProvider.of(ctx).tr('use_gps_location'),
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
                             color: colors.primary,
                           ),
                         ),
                         subtitle: Text(
-                          'Detect location automatically from your phone',
+                          HelaAppStateProvider.of(ctx).tr('detect_gps_sub'),
                           style: TextStyle(fontSize: 12, color: colors.onSurfaceVariant),
                         ),
                         onTap: () {
@@ -995,146 +995,18 @@ class _HelaHomePageState extends State<HelaHomePage> with WidgetsBindingObserver
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
-            itemCount: _destinations.length,
+            itemCount: kFeaturedDestinations.length,
             separatorBuilder: (_, _) => const SizedBox(width: 12),
             itemBuilder: (context, index) {
-              final item = _destinations[index];
-              return _buildDestinationCard(item, colors);
+              final item = kFeaturedDestinations[index];
+              return FeaturedDestinationCard(
+                item: item,
+                onTap: () => _openPlaceDetailsFromDestination(item),
+              );
             },
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildDestinationCard(FeaturedDestinationItem item, HelaColorPalette colors) {
-    return Container(
-      width: 230,
-      decoration: BoxDecoration(
-        color: colors.cardBackground,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.architecturalBorder),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Image Header
-            Stack(
-              children: [
-                SizedBox(
-                  height: 125,
-                  width: double.infinity,
-                  child: _buildNetworkImage(item.imageUrl),
-                ),
-                // Rating pill
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.92),
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.star_rounded, size: 12, color: colors.goldenAmber),
-                        const SizedBox(width: 2),
-                        Text(
-                          item.rating,
-                          style: const TextStyle(
-                            fontSize: 10.5,
-                            fontWeight: FontWeight.w800,
-                            color: Color(0xFF132220),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                // UNESCO / Category badge
-                Positioned(
-                  bottom: 8,
-                  left: 8,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: colors.primaryContainer,
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                    child: Text(
-                      item.badge,
-                      style: const TextStyle(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            // Card Body
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item.title,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: colors.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    item.subtitle,
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: colors.onSurfaceVariant,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 6),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          item.footerTag,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: colors.primary,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Icon(Icons.arrow_forward_rounded, size: 15, color: colors.primary),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 

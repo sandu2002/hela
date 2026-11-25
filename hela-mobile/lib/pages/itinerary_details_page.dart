@@ -442,6 +442,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
   // TOP APP BAR
   // ==========================================
   PreferredSizeWidget _buildAppBar(HelaColorPalette colors, bool isDark) {
+    final appState = HelaAppStateProvider.of(context);
     return AppBar(
       backgroundColor: colors.surface.withValues(alpha: isDark ? 0.96 : 0.94),
       elevation: 0,
@@ -470,7 +471,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
         ),
       ),
       title: Text(
-        'Itinerary Details',
+        appState.tr('itinerary_details'),
         style: TextStyle(
           fontSize: 17,
           fontWeight: FontWeight.w700,
@@ -1758,6 +1759,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
   // FIXED BOTTOM STICKY BOOKING BAR
   // ==========================================
   Widget _buildStickyBottomBar(HelaColorPalette colors) {
+    final appState = HelaAppStateProvider.of(context);
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
       decoration: BoxDecoration(
@@ -1810,10 +1812,10 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Text('Start My Journey', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
-                        SizedBox(width: 8),
-                        Icon(Icons.arrow_forward_rounded, size: 19),
+                      children: [
+                        Text(appState.tr('start_my_journey'), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                        const SizedBox(width: 8),
+                        const Icon(Icons.arrow_forward_rounded, size: 19),
                       ],
                     ),
                   ),

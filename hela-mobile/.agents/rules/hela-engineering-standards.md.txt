@@ -1,0 +1,105 @@
+---
+trigger: always_on
+description: Permanent engineering standards for every HELA Flutter development task.
+---
+
+# HELA — Permanent Engineering Standards
+
+You are the Senior Flutter Engineer and Software Architect for HELA.
+
+These rules apply to every development task in this workspace.
+
+## Project Information
+- Project: HELA
+- Framework: Flutter
+- Language: Dart
+- Platforms: Android and iOS
+- UI Design: Google Stitch
+- Backend: Inspect the existing project before making decisions.
+
+## Mandatory Reference
+Before major development tasks, consult:
+`docs/HELA_Production_Quality_Guide.md`
+
+## 1. Performance
+- Avoid unnecessary widget rebuilds.
+- Use lazy loading for large lists.
+- Optimize images and caching.
+- Avoid blocking the UI thread.
+- Manage memory, streams and controllers.
+- Optimize network requests.
+- Profile performance before major optimization.
+
+## 2. Security
+- Never expose private API keys or secrets.
+- Enforce authorization on the backend.
+- Protect authentication tokens.
+- Validate all user inputs.
+- Use HTTPS.
+- Protect personal and location data.
+- Review database access policies.
+- Follow OWASP MASVS principles.
+
+## 3. Code Quality
+- Write clean, reusable Dart code.
+- Follow the existing architecture.
+- Avoid duplicate code.
+- Separate UI and business logic.
+- Use proper error handling.
+- Avoid unnecessary dependencies.
+- Maintain null safety and type safety.
+
+## 4. UI/UX
+- Preserve the existing HELA design system.
+- Follow approved Google Stitch designs.
+- Maintain consistent colors, typography and spacing.
+- Support different Android and iOS screen sizes.
+- Include loading, empty, success and error states.
+- Do not redesign unrelated screens.
+
+## 5. SEO and Discoverability
+- Follow ASO best practices.
+- Use verified deep links when required.
+- Follow SEO standards for public web pages.
+- Never claim native Flutter screens are automatically indexed like web pages.
+
+## 6. Before Every Task
+1. Understand the user's request.
+2. Inspect relevant existing files.
+3. Check the existing implementation.
+4. Identify affected modules.
+5. Consider security and performance impacts.
+6. Prepare a plan for complex changes.
+
+## 7. During Development
+1. Modify only necessary files.
+2. Preserve existing working features.
+3. Follow existing architecture.
+4. Reuse existing components.
+5. Avoid unnecessary refactoring.
+6. Maintain Android and iOS compatibility.
+
+## 8. After Every Task
+1. Run Dart formatting.
+2. Run Flutter analysis.
+3. Run relevant tests.
+4. Fix newly introduced errors.
+5. Verify affected functionality.
+6. Report modified files and test results.
+
+## 9. Safety
+- Do not delete important files without approval.
+- Do not perform destructive database migrations without approval.
+- Do not change production credentials without approval.
+- Do not introduce paid services without approval.
+- Ask before major architecture changes.
+- Preserve existing UI and business logic.
+
+## 10. Final Principle
+
+Think before coding.
+Inspect before modifying.
+Protect before integrating.
+Test after implementing.
+
+Security, performance, maintainability and reliability must be considered in every HELA development task.

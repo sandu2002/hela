@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hela/pages/itinerary_planning_loading_page.dart';
 import 'package:hela/pages/profile_page.dart';
+import 'package:hela/state/app_state.dart';
 import 'package:hela/theme/hela_colors.dart';
 import 'package:hela/widgets/hela_bottom_nav_bar.dart';
 
@@ -295,6 +296,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
         border: Border(top: BorderSide(color: colors.architecturalBorder)),
       ),
       child: Center(
+        heightFactor: 1.0,
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 480),
           child: Row(
@@ -320,12 +322,12 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Icon(Icons.near_me_rounded, size: 18),
-                        SizedBox(width: 6),
+                      children: [
+                        const Icon(Icons.near_me_rounded, size: 18),
+                        const SizedBox(width: 6),
                         Text(
-                          'Get Directions',
-                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                          HelaAppStateProvider.of(context).tr('get_directions'),
+                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
                         ),
                       ],
                     ),
@@ -355,12 +357,12 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Icon(Icons.playlist_add_rounded, size: 19),
-                        SizedBox(width: 6),
+                      children: [
+                        const Icon(Icons.playlist_add_rounded, size: 19),
+                        const SizedBox(width: 6),
                         Text(
-                          'Add to My Trip',
-                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                          HelaAppStateProvider.of(context).tr('add_to_my_trip'),
+                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
                         ),
                       ],
                     ),
@@ -382,6 +384,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       child: Center(
+        heightFactor: 1.0,
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 480),
           child: Column(
@@ -425,7 +428,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
 
               // Title & Subtitle
               Text(
-                'Plan Your Sri Lankan Adventure',
+                HelaAppStateProvider.of(context).tr('plan_your_adventure'),
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w800,
@@ -436,7 +439,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
               ),
               const SizedBox(height: 4),
               Text(
-                'Tell us what you love. HELA will synthesize real-time weather, train timetables, and heritage gems into your bespoke itinerary.',
+                HelaAppStateProvider.of(context).tr('planner_subtitle'),
                 style: TextStyle(
                   fontSize: 12.5,
                   color: colors.onSurfaceVariant,
@@ -570,22 +573,28 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Text(
-                  'Where does your journey begin?',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: colors.onSurface,
+            Expanded(
+              child: Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      HelaAppStateProvider.of(context).tr('starting_location'),
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: colors.onSurface,
+                      ),
+                    ),
                   ),
-                ),
-                const Text(
-                  ' *',
-                  style: TextStyle(color: Color(0xFFDC2626), fontWeight: FontWeight.bold),
-                ),
-              ],
+                  const Text(
+                    ' *',
+                    style: TextStyle(color: Color(0xFFDC2626), fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
             ),
+            const SizedBox(width: 8),
             Text(
               'Required',
               style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600, color: colors.secondary),
@@ -726,7 +735,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
             Row(
               children: [
                 Text(
-                  'Travel Dates',
+                  HelaAppStateProvider.of(context).tr('travel_dates'),
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface),
                 ),
                 const Text(' *', style: TextStyle(color: Color(0xFFDC2626), fontWeight: FontWeight.bold)),
@@ -883,7 +892,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Travel Party',
+              HelaAppStateProvider.of(context).tr('travel_party'),
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface),
             ),
             Container(
@@ -1033,7 +1042,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
         Row(
           children: [
             Text(
-              'Travel Budget',
+              HelaAppStateProvider.of(context).tr('travel_budget'),
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface),
             ),
             const Text(' *', style: TextStyle(color: Color(0xFFDC2626), fontWeight: FontWeight.bold)),
@@ -1232,7 +1241,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                 Row(
                   children: [
                     Text(
-                      'Travel Interests',
+                      HelaAppStateProvider.of(context).tr('travel_interests'),
                       style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface),
                     ),
                     const Text(' *', style: TextStyle(color: Color(0xFFDC2626), fontWeight: FontWeight.bold)),
@@ -1326,7 +1335,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Pace & Travel Style',
+          HelaAppStateProvider.of(context).tr('pace_travel_style'),
           style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface),
         ),
         const SizedBox(height: 8),
@@ -1465,7 +1474,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                 Row(
                   children: [
                     Text(
-                      'Island Route Optimizer',
+                      HelaAppStateProvider.of(context).tr('island_route_optimizer'),
                       style: TextStyle(
                         fontSize: 13.5,
                         fontWeight: FontWeight.w700,
@@ -1528,9 +1537,13 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
               children: [
                 Icon(Icons.auto_awesome_rounded, size: 19, color: colors.goldenAmber),
                 const SizedBox(width: 8),
-                const Text(
-                  'Generate My Itinerary ✨',
-                  style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700),
+                Flexible(
+                  child: Text(
+                    HelaAppStateProvider.of(context).tr('generate_my_itinerary'),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700),
+                  ),
                 ),
               ],
             ),
@@ -1542,9 +1555,13 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
           children: [
             Icon(Icons.verified_user_rounded, size: 13, color: colors.secondary),
             const SizedBox(width: 4),
-            Text(
-              'Free instant generation • 100% customizable with your local guide',
-              style: TextStyle(fontSize: 11, color: colors.onSurfaceVariant),
+            Flexible(
+              child: Text(
+                HelaAppStateProvider.of(context).tr('free_instant_generation'),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 11, color: colors.onSurfaceVariant),
+              ),
             ),
           ],
         ),

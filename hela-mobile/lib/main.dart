@@ -23,6 +23,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    _appState.restoreLanguage();
     _restoreAuthSession();
   }
 
@@ -59,6 +60,12 @@ class _MyAppState extends State<MyApp> {
               theme: HelaTheme.lightTheme,
               darkTheme: HelaTheme.darkTheme,
               themeMode: _appState.themeMode,
+              builder: (context, child) => Directionality(
+                textDirection: _appState.isRtl
+                    ? TextDirection.rtl
+                    : TextDirection.ltr,
+                child: child ?? const SizedBox.shrink(),
+              ),
               home: const OnboardingPage(),
             );
           },

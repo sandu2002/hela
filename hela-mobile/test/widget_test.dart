@@ -95,14 +95,14 @@ void main() {
 
     // Tap "Beaches" filter chip
     await tester.tap(find.text('Beaches'));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 250));
 
     // Experience card now shows Beaches experience
     expect(find.text('Weligama Surfing & Tangalle Bays'), findsOneWidget);
 
     // Tap "Nature & Wildlife" filter chip
     await tester.tap(find.text('Nature & Wildlife'));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 250));
 
     expect(find.text('Minneriya Elephant Gathering & Yala Safaris'), findsOneWidget);
   });
@@ -154,14 +154,13 @@ void main() {
   testWidgets('ProfilePage smoke test', (WidgetTester tester) async {
     _ignoreOverflow();
     await tester.pumpWidget(
-      const MaterialApp(
-        home: ProfilePage(),
-      ),
+      _wrapWithState(const ProfilePage()),
     );
+    await tester.pumpAndSettle();
 
-    expect(find.text('Kavinda Wickramasinghe'), findsOneWidget);
-    expect(find.text('Verified Resident Explorer'), findsOneWidget);
-    expect(find.text('Ceylon Eco-Pledge'), findsOneWidget);
+    expect(find.text('My Profile'), findsOneWidget);
+    expect(find.text('HELA Explorer · Tier 2'), findsOneWidget);
+    expect(find.text('Edit Personal Profile'), findsOneWidget);
     expect(find.text('Saved Itineraries'), findsOneWidget);
   });
 
@@ -397,9 +396,12 @@ void main() {
     await tester.pumpWidget(
       _wrapWithState(const ProfilePage()),
     );
+    await tester.pumpAndSettle();
 
-    expect(find.text('Edit Profile'), findsOneWidget);
-    await tester.tap(find.text('Edit Profile'));
+    final editBtn = find.text('Edit Personal Profile');
+    expect(editBtn, findsOneWidget);
+    await tester.ensureVisible(editBtn);
+    await tester.tap(editBtn);
     await tester.pumpAndSettle();
 
     expect(find.text('Explorer Identity'), findsOneWidget);
@@ -439,7 +441,7 @@ void main() {
       _wrapWithState(const SavedPage()),
     );
 
-    expect(find.text('Saved Page'), findsOneWidget);
+    expect(find.text('Saved Collection'), findsOneWidget);
     expect(find.text('Your Saved Sanctuary is Empty'), findsOneWidget);
     expect(find.text('Explore Havens & Tours'), findsOneWidget);
   });
@@ -465,7 +467,7 @@ void main() {
       ),
     );
 
-    expect(find.text('Saved Page'), findsOneWidget);
+    expect(find.text('Saved Collection'), findsOneWidget);
     expect(find.text('Nine Arch Bridge & Demodara Tea Valley'), findsOneWidget);
     expect(find.text('Ella, Highlands'), findsOneWidget);
     expect(find.text('4.90'), findsOneWidget);
@@ -574,28 +576,35 @@ void main() {
     expect(appState.languageDisplayName, 'English (US)');
     expect(appState.tr('get_started'), 'Get Started');
 
-    // Verify Sinhala and Tamil removed from supportedLanguages
-    expect(LocalizationService.supportedLanguages.any((l) => l.code == 'SI'), isFalse);
-    expect(LocalizationService.supportedLanguages.any((l) => l.code == 'TA'), isFalse);
-    expect(LocalizationService.supportedLanguages.length, 5);
+    // Verify all 20 supported languages including Sinhala, Tamil, and RTL Arabic
+    expect(LocalizationService.supportedLanguages.any((l) => l.code == 'SI'), isTrue);
+    expect(LocalizationService.supportedLanguages.any((l) => l.code == 'TA'), isTrue);
+    expect(LocalizationService.supportedLanguages.any((l) => l.code == 'AR'), isTrue);
+    expect(LocalizationService.supportedLanguages.length, 20);
+    expect(appState.isRtl, isFalse);
+
+    appState.setLanguage('AR');
+    expect(appState.selectedLanguage, 'AR');
+    expect(appState.isRtl, isTrue);
 
     appState.setLanguage('DE');
     expect(appState.selectedLanguage, 'DE');
-    expect(appState.languageDisplayName, 'Deutsch (German)');
+    expect(appState.isRtl, isFalse);
+    expect(appState.languageDisplayName, 'German');
     expect(appState.tr('get_started'), 'Loslegen');
 
     appState.setLanguage('FR');
     expect(appState.selectedLanguage, 'FR');
-    expect(appState.languageDisplayName, 'Français (French)');
+    expect(appState.languageDisplayName, 'French');
     expect(appState.tr('get_started'), 'Commencer');
 
     appState.setLanguage('ZH');
     expect(appState.selectedLanguage, 'ZH');
-    expect(appState.languageDisplayName, '中文 (Mandarin)');
+    expect(appState.languageDisplayName, 'Chinese (Mandarin)');
 
     appState.setLanguage('RU');
     expect(appState.selectedLanguage, 'RU');
-    expect(appState.languageDisplayName, 'Русский (Russian)');
+    expect(appState.languageDisplayName, 'Russian');
   });
 
   testWidgets('OnboardingPage language selector changes app language and updates UI', (WidgetTester tester) async {
@@ -625,15 +634,16 @@ void main() {
     await tester.tap(find.text('EN').first);
     await tester.pumpAndSettle();
 
-    // Modal bottom sheet appears with 'Select Language'
+    // Modal bottom sheet appears with 'Select Language' and 20-language catalog
     expect(find.text('Select Language'), findsOneWidget);
-    // Sinhala and Tamil must be removed
-    expect(find.text('සිංහල (Sinhala)'), findsNothing);
-    expect(find.text('தமிழ் (Tamil)'), findsNothing);
-    expect(find.text('Français (French)'), findsOneWidget);
+    expect(find.text('Sinhala'), findsOneWidget);
+    expect(find.text('Tamil'), findsOneWidget);
 
-    // Tap French
-    await tester.tap(find.text('Français (French)'));
+    // Filter to French using search and tap it
+    await tester.enterText(find.byType(TextField), 'French');
+    await tester.pumpAndSettle();
+    expect(find.text('Français'), findsOneWidget);
+    await tester.tap(find.text('Français'));
     await tester.pumpAndSettle();
 
     // Verify app state language updated to FR
@@ -671,8 +681,10 @@ void main() {
     await tester.tap(find.text('EN').first);
     await tester.pumpAndSettle();
 
-    // Select Deutsch
-    await tester.tap(find.text('Deutsch (German)'));
+    // Search for German and select it
+    await tester.enterText(find.byType(TextField), 'German');
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Deutsch'));
     await tester.pumpAndSettle();
 
     // Verify UI translated to German
@@ -706,25 +718,28 @@ void main() {
     );
     await tester.pump();
 
-    // Initial language subtitle should show English (US)
-    expect(find.text('English (US)'), findsOneWidget);
+    // Initial language value should show English
+    expect(find.text('English'), findsOneWidget);
 
     // Scroll into view and tap Language tile to open language picker
     await tester.ensureVisible(find.text('Language'));
     await tester.tap(find.text('Language'));
     await tester.pumpAndSettle();
 
-    // Check languages in bottom sheet: Sinhala and Tamil removed
-    expect(find.text('සිංහල (Sinhala)'), findsNothing);
-    expect(find.text('Deutsch (German)'), findsOneWidget);
+    // Check languages in bottom sheet: Sinhala and Tamil included
+    expect(find.text('Sinhala'), findsOneWidget);
+    expect(find.text('Tamil'), findsOneWidget);
 
-    // Tap Deutsch
-    await tester.tap(find.text('Deutsch (German)'));
+    // Search for German and tap it
+    await tester.enterText(find.byType(TextField), 'German');
+    await tester.pumpAndSettle();
+    expect(find.text('Deutsch'), findsOneWidget);
+    await tester.tap(find.text('Deutsch'));
     await tester.pumpAndSettle();
 
     // Verify appState is now DE and ProfilePage reflects it
     expect(appState.selectedLanguage, 'DE');
-    expect(find.text('Deutsch (German)'), findsOneWidget);
+    expect(find.text('Deutsch'), findsOneWidget);
   });
 
   testWidgets('OnboardingPage renders bottom hospitality card and Continue as Guest with explore icon', (WidgetTester tester) async {
@@ -887,61 +902,13 @@ void main() {
     // Modal sheet appears with no overflows
     expect(find.text('Select Language'), findsOneWidget);
     expect(find.text('English (US)'), findsOneWidget);
-    expect(find.text('Deutsch (German)'), findsOneWidget);
-    expect(find.text('Français (French)'), findsOneWidget);
-    expect(find.text('中文 (Mandarin)'), findsOneWidget);
-    expect(find.text('Русский (Russian)'), findsOneWidget);
-  });
+    expect(find.text('Sinhala'), findsOneWidget);
+    expect(find.text('Tamil'), findsOneWidget);
+    expect(find.text('Chinese (Mandarin)'), findsOneWidget);
 
-  testWidgets('AskHelaPage smoke test and UI verification', (WidgetTester tester) async {
-    _ignoreOverflow();
-    await tester.pumpWidget(
-      _wrapWithState(const AskHelaPage()),
-    );
-    await tester.pump();
-
-    // Verify top bar and status
-    expect(find.text('Ask HELA'), findsOneWidget);
-    expect(find.text('Online • Island Intelligence Active'), findsOneWidget);
-    expect(find.text('27°C Kandy'), findsOneWidget);
-
-    // Verify welcome intro card & suggested inquiries
-    expect(find.text("Hello! I'm your HELA travel guide."), findsOneWidget);
-    expect(find.text('Temple etiquette'), findsOneWidget);
-    expect(find.text('History of Sigiriya'), findsOneWidget);
-
-    // Verify initial chat message and rich response
-    expect(
-      find.text("What should I know before visiting a Buddhist temple like Kandy's Temple of the Tooth?"),
-      findsOneWidget,
-    );
-    expect(find.text('Ayubowan! 🙏'), findsOneWidget);
-    expect(find.text('Verified Lore'), findsOneWidget);
-    expect(find.text('Modest Attire (White Preferred)'), findsOneWidget);
-    expect(find.text('Footwear & Headwear'), findsOneWidget);
-  });
-
-  testWidgets('HelaHomePage tap Ask HELA redirects to AskHelaPage', (WidgetTester tester) async {
-    _ignoreOverflow();
-    tester.view.physicalSize = const Size(1080, 2400);
-    tester.view.devicePixelRatio = 2.0;
-    addTearDown(() {
-      tester.view.resetPhysicalSize();
-      tester.view.resetDevicePixelRatio();
-    });
-    await tester.pumpWidget(
-      _wrapWithState(const HelaHomePage()),
-    );
-    await tester.pump();
-
-    final askHelaButton = find.text('Ask HELA');
-    expect(askHelaButton, findsWidgets);
-    await tester.tap(askHelaButton.first, warnIfMissed: false);
+    await tester.enterText(find.byType(TextField), 'Russian');
     await tester.pumpAndSettle();
-
-    // Now on AskHelaPage
-    expect(find.byType(AskHelaPage), findsOneWidget);
-    expect(find.text('Online • Island Intelligence Active'), findsOneWidget);
+    expect(find.text('Русский'), findsOneWidget);
   });
 
   testWidgets('AskHelaPage smoke test and UI verification', (WidgetTester tester) async {
@@ -951,10 +918,10 @@ void main() {
     );
     await tester.pump();
 
-    // Verify top bar and status
+    // Verify top bar, status, and live weather indicator
     expect(find.text('Ask HELA'), findsOneWidget);
     expect(find.text('Online • Island Intelligence Active'), findsOneWidget);
-    expect(find.text('27°C Kandy'), findsOneWidget);
+    expect(find.byIcon(Icons.thermostat_rounded), findsOneWidget);
 
     // Verify welcome intro card & suggested inquiries
     expect(find.text("Hello! I'm your HELA travel guide."), findsOneWidget);
@@ -970,6 +937,8 @@ void main() {
     expect(find.text('Verified Lore'), findsOneWidget);
     expect(find.text('Modest Attire (White Preferred)'), findsOneWidget);
     expect(find.text('Footwear & Headwear'), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox());
   });
 
   testWidgets('HelaHomePage tap Ask HELA redirects to AskHelaPage', (WidgetTester tester) async {
@@ -988,13 +957,16 @@ void main() {
 
     final askHelaButton = find.text('Ask HELA');
     expect(askHelaButton, findsWidgets);
-    await tester.ensureVisible(askHelaButton.first);
-    await tester.tap(askHelaButton.first);
-    await tester.pumpAndSettle();
+    await tester.ensureVisible(askHelaButton.last);
+    await tester.tap(askHelaButton.last);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
 
     // Now on AskHelaPage
     expect(find.byType(AskHelaPage), findsOneWidget);
     expect(find.text('Online • Island Intelligence Active'), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox());
   });
 
   testWidgets('ItineraryPlanningLoadingPage smoke test and UI verification', (WidgetTester tester) async {

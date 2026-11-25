@@ -10,6 +10,7 @@ import 'package:hela/services/localization_service.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/theme/hela_colors.dart';
 import 'package:hela/widgets/hela_bottom_nav_bar.dart';
+import 'package:hela/widgets/language_picker_sheet.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// HELA Traveler Profile, Travel Hub, Preferences & 24/7 Assistance Page.
@@ -102,40 +103,42 @@ class _ProfilePageState extends State<ProfilePage> {
                   _buildOngoingJourneyCard(appState),
                   const SizedBox(height: 22),
                   _buildSectionHeader(
-                    'MY TRAVEL HUB',
-                    'Active Passports & Itineraries',
+                    appState.tr('my_travel_hub'),
+                    appState.tr('active_passports_itineraries'),
                     colors,
                   ),
                   const SizedBox(height: 10),
                   _buildTravelHubCard(appState, colors, isDark),
                   const SizedBox(height: 22),
                   _buildSectionHeader(
-                    'PREFERENCES',
-                    'Locale & Connectivity',
+                    appState.tr('preferences'),
+                    appState.tr('locale_connectivity'),
                     colors,
                   ),
                   const SizedBox(height: 10),
                   _buildPreferencesCard(appState, colors, isDark),
                   const SizedBox(height: 22),
                   _buildSectionHeader(
-                    'ASSISTANCE & LEGAL',
-                    '● Support 24/7 Active',
+                    appState.tr('assistance_legal'),
+                    appState.tr('support_24_7_active'),
                     colors,
                     trailingColor: const Color(0xFF0F766E),
                   ),
                   const SizedBox(height: 10),
-                  _buildAssistanceLegalCard(colors, isDark),
+                  _buildAssistanceLegalCard(appState, colors, isDark),
                   const SizedBox(height: 18),
-                  _buildLogoutButton(isDark),
+                  _buildLogoutButton(appState, isDark),
                   const SizedBox(height: 18),
-                  _buildFooterBranding(colors),
+                  _buildFooterBranding(appState, colors),
                 ],
               ),
             ),
           ),
         ),
       ),
-      floatingActionButton: HelaBottomNavBar.buildFloatingAskHelaButton(context),
+      floatingActionButton: HelaBottomNavBar.buildFloatingAskHelaButton(
+        context,
+      ),
       bottomNavigationBar: const HelaBottomNavBar(currentIndex: 4),
     );
   }
@@ -175,7 +178,7 @@ class _ProfilePageState extends State<ProfilePage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'HELA TRAVEL',
+                  appState.tr('hela_travel'),
                   style: TextStyle(
                     fontSize: 9.5,
                     fontWeight: FontWeight.w800,
@@ -184,7 +187,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 Text(
-                  'My Profile',
+                  appState.tr('my_profile'),
                   style: TextStyle(
                     fontSize: 17.5,
                     fontWeight: FontWeight.w800,
@@ -210,7 +213,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 1,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFDC2626),
                       borderRadius: BorderRadius.circular(4),
@@ -284,13 +290,17 @@ class _ProfilePageState extends State<ProfilePage> {
     HelaColorPalette colors,
     bool isDark,
   ) {
-    final displayName =
-        appState.userName.isNotEmpty ? appState.userName : 'Kavinda Wickramasinghe';
-    final displayEmail =
-        appState.userEmail.isNotEmpty ? appState.userEmail : 'kavinda.w@gmail.com';
-    final displayPhone =
-        appState.userPhone.isNotEmpty ? appState.userPhone : '+94 77 123 4567';
-    final photoUrl = appState.userPhotoUrl ??
+    final displayName = appState.userName.isNotEmpty
+        ? appState.userName
+        : 'Kavinda Wickramasinghe';
+    final displayEmail = appState.userEmail.isNotEmpty
+        ? appState.userEmail
+        : 'kavinda.w@gmail.com';
+    final displayPhone = appState.userPhone.isNotEmpty
+        ? appState.userPhone
+        : '+94 77 123 4567';
+    final photoUrl =
+        appState.userPhotoUrl ??
         'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80';
     final destinationsCount = 7 + appState.savedHavens.length;
 
@@ -331,10 +341,17 @@ class _ProfilePageState extends State<ProfilePage> {
                       height: 68,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: const Color(0xFFCDEBE2), width: 2),
+                        border: Border.all(
+                          color: const Color(0xFFCDEBE2),
+                          width: 2,
+                        ),
                       ),
                       child: ClipOval(
-                        child: _buildNetworkImage(photoUrl, width: 64, height: 64),
+                        child: _buildNetworkImage(
+                          photoUrl,
+                          width: 64,
+                          height: 64,
+                        ),
                       ),
                     ),
                     Positioned(
@@ -364,7 +381,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
                       decoration: BoxDecoration(
                         color: isDark ? colors.surfaceContainer : _softMintTile,
                         borderRadius: BorderRadius.circular(999),
@@ -380,7 +400,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           const SizedBox(width: 4),
                           Flexible(
                             child: Text(
-                              'HELA Explorer · Tier 2',
+                              appState.tr('hela_explorer_tier'),
                               style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
@@ -394,14 +414,19 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     const SizedBox(height: 6),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: isDark
                             ? colors.surfaceContainerLow
                             : const Color(0xFFF1F9F6),
                         borderRadius: BorderRadius.circular(999),
                         border: Border.all(
-                          color: isDark ? colors.architecturalBorder : _cardBorder,
+                          color: isDark
+                              ? colors.architecturalBorder
+                              : _cardBorder,
                         ),
                       ),
                       child: Row(
@@ -414,11 +439,13 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                           const SizedBox(width: 5),
                           Text(
-                            'SLTDA Tourist ID #8492',
+                            appState.tr('sltda_id'),
                             style: TextStyle(
                               fontSize: 10.5,
                               fontWeight: FontWeight.w600,
-                              color: isDark ? colors.onSurfaceVariant : _mutedTeal,
+                              color: isDark
+                                  ? colors.onSurfaceVariant
+                                  : _mutedTeal,
                             ),
                           ),
                         ],
@@ -458,7 +485,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
-                    color: isDark ? colors.onSurfaceVariant : const Color(0xFF3E5E56),
+                    color: isDark
+                        ? colors.onSurfaceVariant
+                        : const Color(0xFF3E5E56),
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -471,9 +500,14 @@ class _ProfilePageState extends State<ProfilePage> {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 5,
+                  vertical: 1.5,
+                ),
                 decoration: BoxDecoration(
-                  color: isDark ? colors.surfaceContainer : const Color(0xFFEAF3F0),
+                  color: isDark
+                      ? colors.surfaceContainer
+                      : const Color(0xFFEAF3F0),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
@@ -491,7 +525,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
-                  color: isDark ? colors.onSurfaceVariant : const Color(0xFF3E5E56),
+                  color: isDark
+                      ? colors.onSurfaceVariant
+                      : const Color(0xFF3E5E56),
                 ),
               ),
             ],
@@ -504,7 +540,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Expanded(
                 child: _buildStatBox(
                   value: '14',
-                  label: 'DAYS IN\nLANKA',
+                  label: appState.tr('days_in_lanka'),
                   isDark: isDark,
                   colors: colors,
                 ),
@@ -513,7 +549,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Expanded(
                 child: _buildStatBox(
                   value: '$destinationsCount',
-                  label: 'DESTINATIONS',
+                  label: appState.tr('destinations_stat'),
                   isDark: isDark,
                   colors: colors,
                   onTap: () {
@@ -527,7 +563,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Expanded(
                 child: _buildStatBox(
                   value: '100%',
-                  label: 'CARBON\nOFFSET',
+                  label: appState.tr('carbon_offset'),
                   isDark: isDark,
                   colors: colors,
                   onTap: _showEcoImpactDialog,
@@ -553,7 +589,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 color: isDark ? colors.onSecondaryContainer : _darkInk,
               ),
               label: Text(
-                'Edit Personal Profile',
+                appState.tr('edit_personal_profile'),
                 style: TextStyle(
                   fontSize: 13.5,
                   fontWeight: FontWeight.w700,
@@ -561,7 +597,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: isDark ? colors.secondaryContainer : _softMintTile,
+                backgroundColor: isDark
+                    ? colors.secondaryContainer
+                    : _softMintTile,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -625,7 +663,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildOngoingJourneyCard(HelaAppState appState) {
     final activeTourTitle = appState.savedTours.isNotEmpty
         ? appState.savedTours.first.title
-        : 'Central Highlands &\nSouthern Surf';
+        : appState.tr('central_highlands_surf');
     final totalDays = appState.savedTours.isNotEmpty
         ? appState.savedTours.first.durationDays
         : 14;
@@ -633,9 +671,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return InkWell(
       onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const ActiveJourneyPage()),
-        );
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => const ActiveJourneyPage()));
       },
       borderRadius: BorderRadius.circular(18),
       child: Container(
@@ -672,7 +710,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -682,9 +723,9 @@ class _ProfilePageState extends State<ProfilePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          const Text(
-                            'Ongoing Journey',
-                            style: TextStyle(
+                          Text(
+                            appState.tr('ongoing_journey'),
+                            style: const TextStyle(
                               fontSize: 11.5,
                               fontWeight: FontWeight.w600,
                               color: Color(0xFFA7F3D0),
@@ -707,7 +748,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     const SizedBox(width: 12),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 7,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.black.withValues(alpha: 0.42),
                         borderRadius: BorderRadius.circular(12),
@@ -762,7 +806,8 @@ class _ProfilePageState extends State<ProfilePage> {
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: trailingColor ??
+              color:
+                  trailingColor ??
                   (colors.isDark ? colors.onSurfaceVariant : _mutedTeal),
             ),
           ),
@@ -797,57 +842,57 @@ class _ProfilePageState extends State<ProfilePage> {
       children: [
         _buildHubRow(
           icon: Icons.bookmark_outline_rounded,
-          title: 'Saved Destinations',
+          title: appState.tr('saved_destinations'),
           subtitle: savedDestSubtitle,
-          badgeText: '$savedDestCount places',
+          badgeText: '$savedDestCount ${appState.tr('places_count')}',
           isDark: isDark,
           colors: colors,
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const SavedPage()),
-            );
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const SavedPage()));
           },
         ),
         _buildRowDivider(isDark, colors),
         _buildHubRow(
           icon: Icons.map_outlined,
-          title: 'Saved Itineraries',
+          title: appState.tr('saved_itineraries'),
           subtitle: savedToursSubtitle,
-          badgeText: '$savedToursCount trips',
+          badgeText: '$savedToursCount ${appState.tr('trips_count')}',
           isDark: isDark,
           colors: colors,
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const SavedPage()),
-            );
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const SavedPage()));
           },
         ),
         _buildRowDivider(isDark, colors),
         _buildHubRow(
           icon: Icons.confirmation_number_outlined,
-          title: 'My Active Bookings',
+          title: appState.tr('my_active_bookings'),
           subtitle: 'Blue Train 1st Class & Villa',
-          badgeText: '2 upcoming',
+          badgeText: '2 ${appState.tr('upcoming_count')}',
           isPrimaryBadge: true,
           isDark: isDark,
           colors: colors,
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const BookingsPage()),
-            );
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const BookingsPage()));
           },
         ),
         _buildRowDivider(isDark, colors),
         _buildHubRow(
           icon: Icons.history_rounded,
-          title: 'Island Travel History',
+          title: appState.tr('island_travel_history'),
           subtitle: '5 past rides, safaris & homestays',
           isDark: isDark,
           colors: colors,
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const BookingsPage()),
-            );
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const BookingsPage()));
           },
         ),
       ],
@@ -860,10 +905,9 @@ class _ProfilePageState extends State<ProfilePage> {
     HelaColorPalette colors,
     bool isDark,
   ) {
-    final activeLangName = LocalizationService.getLanguage(appState.selectedLanguage)
-        .name
-        .split(' ')
-        .first;
+    final activeLangName = LocalizationService.getLanguage(
+      appState.selectedLanguage,
+    ).nativeName;
     final isUsd = appState.preferredCurrency.startsWith('USD');
 
     return _buildGroupedCard(
@@ -873,8 +917,8 @@ class _ProfilePageState extends State<ProfilePage> {
         // Language
         _buildRowShell(
           icon: Icons.translate_rounded,
-          title: 'Language',
-          subtitle: 'Sinhala (සිංහල) & Tamil (தமிழ்...',
+          title: appState.tr('language'),
+          subtitle: appState.tr('language_sub'),
           isDark: isDark,
           colors: colors,
           onTap: _showLanguagePicker,
@@ -903,8 +947,8 @@ class _ProfilePageState extends State<ProfilePage> {
         // Currency Display Segmented Toggle
         _buildRowShell(
           icon: Icons.currency_exchange_rounded,
-          title: 'Currency Display',
-          subtitle: 'Dual live conversion rate',
+          title: appState.tr('currency_display'),
+          subtitle: appState.tr('dual_live_rate'),
           isDark: isDark,
           colors: colors,
           trailing: Container(
@@ -941,8 +985,8 @@ class _ProfilePageState extends State<ProfilePage> {
         // Smart Travel Alerts Switch
         _buildRowShell(
           icon: Icons.notifications_active_outlined,
-          title: 'Smart Travel Alerts',
-          subtitle: 'Train delays, weather & driver arrival',
+          title: appState.tr('smart_travel_alerts'),
+          subtitle: appState.tr('alerts_sub'),
           isDark: isDark,
           colors: colors,
           trailing: Switch.adaptive(
@@ -951,7 +995,9 @@ class _ProfilePageState extends State<ProfilePage> {
             onChanged: (val) {
               appState.setSmartTravelAlerts(val);
               _showToast(
-                val ? 'Smart Travel Alerts enabled' : 'Smart Travel Alerts paused',
+                val
+                    ? 'Smart Travel Alerts enabled'
+                    : 'Smart Travel Alerts paused',
               );
             },
           ),
@@ -961,8 +1007,8 @@ class _ProfilePageState extends State<ProfilePage> {
         // Map Rendering
         _buildRowShell(
           icon: Icons.explore_outlined,
-          title: 'Map Rendering',
-          subtitle: 'Topographic terrain with tuk-tuk trails',
+          title: appState.tr('map_rendering'),
+          subtitle: appState.tr('map_rendering_sub'),
           isDark: isDark,
           colors: colors,
           onTap: () => _showMapRenderingPicker(appState),
@@ -991,8 +1037,8 @@ class _ProfilePageState extends State<ProfilePage> {
         // Offline Island Guide
         _buildRowShell(
           icon: Icons.check_circle_outline_rounded,
-          title: 'Offline Island Guide',
-          subtitle: 'Central Hill Country & South Coast',
+          title: appState.tr('offline_island_guide'),
+          subtitle: appState.tr('offline_guide_sub'),
           isDark: isDark,
           colors: colors,
           onTap: () => _showOfflineGuideDialog(appState),
@@ -1067,15 +1113,19 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   // ── 5. ASSISTANCE & LEGAL Card ───────────────────────────────────────────
-  Widget _buildAssistanceLegalCard(HelaColorPalette colors, bool isDark) {
+  Widget _buildAssistanceLegalCard(
+    HelaAppState appState,
+    HelaColorPalette colors,
+    bool isDark,
+  ) {
     return _buildGroupedCard(
       colors: colors,
       isDark: isDark,
       children: [
         _buildRowShell(
           icon: Icons.support_agent_rounded,
-          title: 'Help Centre & 24/7 Concierge',
-          subtitle: 'Instant chat with Colombo operations desk',
+          title: appState.tr('help_centre_concierge'),
+          subtitle: appState.tr('concierge_sub'),
           isDark: isDark,
           colors: colors,
           onTap: _showConciergeSheet,
@@ -1085,7 +1135,7 @@ class _ProfilePageState extends State<ProfilePage> {
               const Icon(Icons.circle, size: 7, color: Color(0xFF10B981)),
               const SizedBox(width: 4),
               Text(
-                'Online',
+                appState.tr('online'),
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
@@ -1104,8 +1154,8 @@ class _ProfilePageState extends State<ProfilePage> {
         _buildRowDivider(isDark, colors),
         _buildRowShell(
           icon: Icons.phone_outlined,
-          title: 'Direct Tourist Police & Hotline',
-          subtitle: 'Toll-free emergency dispatch: Dial 1912',
+          title: appState.tr('tourist_police_hotline'),
+          subtitle: appState.tr('dial_1912'),
           isDark: isDark,
           colors: colors,
           onTap: () => _dialNumber('1912'),
@@ -1128,8 +1178,8 @@ class _ProfilePageState extends State<ProfilePage> {
         _buildRowDivider(isDark, colors),
         _buildRowShell(
           icon: Icons.quiz_outlined,
-          title: 'Frequently Asked Questions',
-          subtitle: 'Tipping etiquette, train tickets & SIM cards',
+          title: appState.tr('faq_title'),
+          subtitle: appState.tr('faq_sub'),
           isDark: isDark,
           colors: colors,
           onTap: _showFaqSheet,
@@ -1143,37 +1193,42 @@ class _ProfilePageState extends State<ProfilePage> {
         // Bottom legal strip
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildLegalLink(
-                icon: Icons.alternate_email_rounded,
-                label: 'Privacy\nPolicy',
-                onTap: () => _showLegalInfoDialog(
-                  'Privacy Policy',
-                  'HELA protects your location telemetry, travel preferences, and identity under strict end-to-end encryption. We never sell personal data to third parties.',
+          child: SizedBox(
+            width: double.infinity,
+            child: Wrap(
+              alignment: WrapAlignment.spaceEvenly,
+              spacing: 12,
+              runSpacing: 8,
+              children: [
+                _buildLegalLink(
+                  icon: Icons.alternate_email_rounded,
+                  label: appState.tr('privacy_policy'),
+                  onTap: () => _showLegalInfoDialog(
+                    'Privacy Policy',
+                    'HELA protects your location telemetry, travel preferences, and identity under strict end-to-end encryption. We never sell personal data to third parties.',
+                  ),
+                  colors: colors,
                 ),
-                colors: colors,
-              ),
-              _buildLegalLink(
-                icon: Icons.gavel_rounded,
-                label: 'Terms &\nConditions',
-                onTap: () => _showLegalInfoDialog(
-                  'Terms & Conditions',
-                  'HELA provides curated travel routes, fair-ride estimates, and SLTDA-registered partner bookings with transparent pricing and 24h cancellation support.',
+                _buildLegalLink(
+                  icon: Icons.gavel_rounded,
+                  label: appState.tr('terms_conditions'),
+                  onTap: () => _showLegalInfoDialog(
+                    'Terms & Conditions',
+                    'HELA provides curated travel routes, fair-ride estimates, and SLTDA-registered partner bookings with transparent pricing and 24h cancellation support.',
+                  ),
+                  colors: colors,
                 ),
-                colors: colors,
-              ),
-              _buildLegalLink(
-                icon: Icons.verified_user_outlined,
-                label: 'Trust &\nSafety',
-                onTap: () => _showLegalInfoDialog(
-                  'Trust & Safety',
-                  'All drivers, guides, and eco-stays displayed with verified badges undergo SLTDA credential screening and 24/7 emergency dispatch coverage via 1912.',
+                _buildLegalLink(
+                  icon: Icons.verified_user_outlined,
+                  label: appState.tr('trust_safety'),
+                  onTap: () => _showLegalInfoDialog(
+                    'Trust & Safety',
+                    'All drivers, guides, and eco-stays displayed with verified badges undergo SLTDA credential screening and 24/7 emergency dispatch coverage via 1912.',
+                  ),
+                  colors: colors,
                 ),
-                colors: colors,
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ],
@@ -1190,7 +1245,7 @@ class _ProfilePageState extends State<ProfilePage> {
       onTap: onTap,
       borderRadius: BorderRadius.circular(10),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -1199,14 +1254,18 @@ class _ProfilePageState extends State<ProfilePage> {
               size: 14,
               color: colors.isDark ? colors.onSurfaceVariant : _mutedTeal,
             ),
-            const SizedBox(width: 5),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 11,
-                height: 1.15,
-                fontWeight: FontWeight.w600,
-                color: colors.isDark ? colors.onSurfaceVariant : _mutedTeal,
+            const SizedBox(width: 4),
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 11,
+                  height: 1.15,
+                  fontWeight: FontWeight.w600,
+                  color: colors.isDark ? colors.onSurfaceVariant : _mutedTeal,
+                ),
               ),
             ),
           ],
@@ -1216,16 +1275,20 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   // ── 6. Log Out Button & SLTDA Footer ─────────────────────────────────────
-  Widget _buildLogoutButton(bool isDark) {
+  Widget _buildLogoutButton(HelaAppState appState, bool isDark) {
     return SizedBox(
       width: double.infinity,
       height: 50,
       child: OutlinedButton.icon(
         onPressed: _showLogoutDialog,
-        icon: const Icon(Icons.logout_rounded, size: 19, color: Color(0xFFDC2626)),
-        label: const Text(
-          'Log Out of HELA Account',
-          style: TextStyle(
+        icon: const Icon(
+          Icons.logout_rounded,
+          size: 19,
+          color: Color(0xFFDC2626),
+        ),
+        label: Text(
+          appState.tr('logout_account'),
+          style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w700,
             color: Color(0xFFDC2626),
@@ -1236,9 +1299,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ? const Color(0xFF3F1D1D)
               : const Color(0xFFFDECEB),
           side: BorderSide(
-            color: isDark
-                ? const Color(0xFF7F1D1D)
-                : const Color(0xFFF6C8C4),
+            color: isDark ? const Color(0xFF7F1D1D) : const Color(0xFFF6C8C4),
           ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
@@ -1248,7 +1309,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildFooterBranding(HelaColorPalette colors) {
+  Widget _buildFooterBranding(HelaAppState appState, HelaColorPalette colors) {
     return Center(
       child: Column(
         children: [
@@ -1266,14 +1327,16 @@ class _ProfilePageState extends State<ProfilePage> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
-                  color: colors.isDark ? colors.onSurfaceVariant : const Color(0xFF385A52),
+                  color: colors.isDark
+                      ? colors.onSurfaceVariant
+                      : const Color(0xFF385A52),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 4),
           Text(
-            'Licensed under Sri Lanka Tourism Development\nAuthority (SLTDA). All rights reserved.',
+            appState.tr('sltda_footer'),
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 10.5,
@@ -1510,7 +1573,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 _buildSosTile(
                   icon: Icons.medical_services_rounded,
                   title: 'Suwa Seriya National Ambulance',
-                  subtitle: 'Free island-wide emergency medical response • 1990',
+                  subtitle:
+                      'Free island-wide emergency medical response • 1990',
                   badge: '1990',
                   onTap: () {
                     Navigator.pop(ctx);
@@ -1639,7 +1703,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 contentPadding: EdgeInsets.zero,
                 leading: const CircleAvatar(
                   backgroundColor: Color(0xFFFEF3C7),
-                  child: Icon(Icons.wb_sunny_rounded, color: Color(0xFFD97706), size: 20),
+                  child: Icon(
+                    Icons.wb_sunny_rounded,
+                    color: Color(0xFFD97706),
+                    size: 20,
+                  ),
                 ),
                 title: const Text(
                   'Clear Morning Skies in Central Highlands',
@@ -1659,74 +1727,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void _showLanguagePicker() {
     final appState = HelaAppStateProvider.of(context);
-    final currentCode = appState.selectedLanguage;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
-      ),
-      builder: (ctx) {
-        return SafeArea(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(ctx).size.height * 0.72,
-            ),
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        appState.tr('select_language'),
-                        style: const TextStyle(
-                          fontSize: 16.5,
-                          fontWeight: FontWeight.w800,
-                          color: _darkInk,
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.close_rounded, size: 20),
-                        onPressed: () => Navigator.pop(ctx),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  ...LocalizationService.supportedLanguages.map((lang) {
-                    final isSelected =
-                        lang.code.toUpperCase() == currentCode.toUpperCase();
-                    return ListTile(
-                      dense: true,
-                      contentPadding: EdgeInsets.zero,
-                      leading: Text(lang.flag, style: const TextStyle(fontSize: 22)),
-                      title: Text(
-                        lang.name,
-                        style: TextStyle(
-                          fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                          color: isSelected ? _deepTeal : _darkInk,
-                        ),
-                      ),
-                      subtitle: Text(lang.nativeName, style: const TextStyle(fontSize: 12)),
-                      trailing: isSelected
-                          ? const Icon(Icons.check_circle_rounded, color: _deepTeal)
-                          : null,
-                      onTap: () {
-                        appState.setLanguage(lang.code);
-                        Navigator.pop(ctx);
-                        _showToast('${appState.tr('language_updated')} ${lang.name}');
-                      },
-                    );
-                  }),
-                ],
-              ),
-            ),
-          ),
-        );
+    showHelaLanguagePickerSheet(
+      context,
+      onLanguageSelected: (lang) {
+        if (!mounted) return;
+        _showToast('${appState.tr('language_updated')} ${lang.nativeName}');
       },
     );
   }
@@ -1767,7 +1772,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   title: Text(
                     m.$1,
                     style: TextStyle(
-                      fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                      fontWeight: isSelected
+                          ? FontWeight.w800
+                          : FontWeight.w600,
                       color: isSelected ? _deepTeal : _darkInk,
                     ),
                   ),
@@ -1825,7 +1832,9 @@ class _ProfilePageState extends State<ProfilePage> {
               Navigator.pop(ctx);
               _showToast('Offline Island Guide synced (340 MB).');
             },
-            child: Text(appState.offlineGuideCached ? 'Sync Updates' : 'Download 340 MB'),
+            child: Text(
+              appState.offlineGuideCached ? 'Sync Updates' : 'Download 340 MB',
+            ),
           ),
         ],
       ),
@@ -1906,19 +1915,19 @@ class _ProfilePageState extends State<ProfilePage> {
     const faqs = [
       (
         'What is the tipping etiquette in Sri Lanka?',
-        'Tipping 10% at restaurants (when no service charge is added), LKR 1,500–2,500/day for private drivers, and small LKR 200–500 tips for hotel porters is appreciated.'
+        'Tipping 10% at restaurants (when no service charge is added), LKR 1,500–2,500/day for private drivers, and small LKR 200–500 tips for hotel porters is appreciated.',
       ),
       (
         'How do I book Kandy–Ella scenic train tickets?',
-        '1st & 2nd class observation seats open 30 days ahead via the Sri Lanka Railways online portal (seatreservation.railway.gov.lk).'
+        '1st & 2nd class observation seats open 30 days ahead via the Sri Lanka Railways online portal (seatreservation.railway.gov.lk).',
       ),
       (
         'Which tourist SIM card should I get?',
-        'Dialog and Mobitel both have 24/7 counters at Bandaranaike Intl Airport (CMB) Arrivals offering tourist 4G/5G eSIMs and physical data packs.'
+        'Dialog and Mobitel both have 24/7 counters at Bandaranaike Intl Airport (CMB) Arrivals offering tourist 4G/5G eSIMs and physical data packs.',
       ),
       (
         'What should I wear at sacred Buddhist temples?',
-        'Cover both shoulders and knees, remove shoes and hats before entering inner courtyards, and avoid posing with your back to Buddha statues.'
+        'Cover both shoulders and knees, remove shoes and hats before entering inner courtyards, and avoid posing with your back to Buddha statues.',
       ),
     ];
 
@@ -2044,7 +2053,8 @@ class _ProfilePageState extends State<ProfilePage> {
               _showToast('Logged out of HELA Account.');
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(
-                  builder: (_) => const SignUpPage(initialMode: AuthMode.signIn),
+                  builder: (_) =>
+                      const SignUpPage(initialMode: AuthMode.signIn),
                 ),
                 (route) => false,
               );

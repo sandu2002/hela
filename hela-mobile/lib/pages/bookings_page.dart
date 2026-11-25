@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hela/theme/hela_colors.dart';
 import 'package:hela/pages/fair_ride_page.dart';
 import 'package:hela/pages/home_page.dart';
+import 'package:hela/state/app_state.dart';
 import 'package:hela/widgets/hela_bottom_nav_bar.dart';
 
 /// HELA - My Bookings Page
@@ -191,7 +192,7 @@ class _BookingsPageState extends State<BookingsPage> {
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    'HELA • BOOKINGS',
+                    HelaAppStateProvider.of(context).tr('hela_bookings_badge'),
                     style: TextStyle(
                       color: colors.primary,
                       fontSize: 12,
@@ -243,28 +244,31 @@ class _BookingsPageState extends State<BookingsPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'My Bookings',
-                      style: TextStyle(
-                        fontFamily: 'Playfair Display',
-                        fontSize: 26,
-                        fontWeight: FontWeight.w800,
-                        color: colors.onBackground,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        HelaAppStateProvider.of(context).tr('my_bookings'),
+                        style: TextStyle(
+                          fontFamily: 'Playfair Display',
+                          fontSize: 26,
+                          fontWeight: FontWeight.w800,
+                          color: colors.onBackground,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'All your travel reservations in one place',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: colors.onSurfaceVariant,
+                      const SizedBox(height: 2),
+                      Text(
+                        HelaAppStateProvider.of(context).tr('bookings_subtitle'),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: colors.onSurfaceVariant,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
+                const SizedBox(width: 8),
                 ElevatedButton.icon(
                   onPressed: () {
                     Navigator.push(
@@ -273,7 +277,7 @@ class _BookingsPageState extends State<BookingsPage> {
                     );
                   },
                   icon: const Icon(Icons.add_rounded, size: 16),
-                  label: const Text('New Ride'),
+                  label: Text(HelaAppStateProvider.of(context).tr('new_ride')),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colors.primary,
                     foregroundColor: Colors.white,
@@ -307,7 +311,7 @@ class _BookingsPageState extends State<BookingsPage> {
                         ),
                         alignment: Alignment.center,
                         child: Text(
-                          'Upcoming (3)',
+                          '${HelaAppStateProvider.of(context).tr('upcoming')} (3)',
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
@@ -328,7 +332,7 @@ class _BookingsPageState extends State<BookingsPage> {
                         ),
                         alignment: Alignment.center,
                         child: Text(
-                          'Past (4)',
+                          '${HelaAppStateProvider.of(context).tr('past')} (4)',
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,

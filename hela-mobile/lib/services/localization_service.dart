@@ -1,13 +1,9 @@
+import 'package:hela/services/localization_app_strings.dart';
+
 /// Central Localization Service for HELA Travel Companion.
 ///
-/// Provides localized translations for UI strings across supported languages:
-/// - EN: English
-/// - SI: Sinhala (සිංහල)
-/// - TA: Tamil (தமிழ்)
-/// - DE: German (Deutsch)
-/// - FR: French (Français)
-/// - ZH: Chinese (中文)
-/// - RU: Russian (Русский)
+/// Provides localized translations across the world's most widely spoken
+/// languages plus Sri Lanka's official languages (Sinhala & Tamil).
 class HelaLanguageItem {
   final String code;
   final String name;
@@ -25,10 +21,25 @@ class HelaLanguageItem {
 class LocalizationService {
   static const List<HelaLanguageItem> supportedLanguages = [
     HelaLanguageItem(code: 'EN', name: 'English (US)', nativeName: 'English', flag: '🇺🇸'),
-    HelaLanguageItem(code: 'DE', name: 'Deutsch (German)', nativeName: 'Deutsch', flag: '🇩🇪'),
-    HelaLanguageItem(code: 'FR', name: 'Français (French)', nativeName: 'Français', flag: '🇫🇷'),
-    HelaLanguageItem(code: 'ZH', name: '中文 (Mandarin)', nativeName: '中文', flag: '🇨🇳'),
-    HelaLanguageItem(code: 'RU', name: 'Русский (Russian)', nativeName: 'Русский', flag: '🇷🇺'),
+    HelaLanguageItem(code: 'SI', name: 'Sinhala', nativeName: 'සිංහල', flag: '🇱🇰'),
+    HelaLanguageItem(code: 'TA', name: 'Tamil', nativeName: 'தமிழ்', flag: '🇱🇰'),
+    HelaLanguageItem(code: 'ZH', name: 'Chinese (Mandarin)', nativeName: '中文', flag: '🇨🇳'),
+    HelaLanguageItem(code: 'ES', name: 'Spanish', nativeName: 'Español', flag: '🇪🇸'),
+    HelaLanguageItem(code: 'HI', name: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳'),
+    HelaLanguageItem(code: 'AR', name: 'Arabic', nativeName: 'العربية', flag: '🇸🇦'),
+    HelaLanguageItem(code: 'PT', name: 'Portuguese', nativeName: 'Português', flag: '🇧🇷'),
+    HelaLanguageItem(code: 'BN', name: 'Bengali', nativeName: 'বাংলা', flag: '🇧🇩'),
+    HelaLanguageItem(code: 'RU', name: 'Russian', nativeName: 'Русский', flag: '🇷🇺'),
+    HelaLanguageItem(code: 'JA', name: 'Japanese', nativeName: '日本語', flag: '🇯🇵'),
+    HelaLanguageItem(code: 'DE', name: 'German', nativeName: 'Deutsch', flag: '🇩🇪'),
+    HelaLanguageItem(code: 'FR', name: 'French', nativeName: 'Français', flag: '🇫🇷'),
+    HelaLanguageItem(code: 'KO', name: 'Korean', nativeName: '한국어', flag: '🇰🇷'),
+    HelaLanguageItem(code: 'IT', name: 'Italian', nativeName: 'Italiano', flag: '🇮🇹'),
+    HelaLanguageItem(code: 'TR', name: 'Turkish', nativeName: 'Türkçe', flag: '🇹🇷'),
+    HelaLanguageItem(code: 'ID', name: 'Indonesian', nativeName: 'Bahasa Indonesia', flag: '🇮🇩'),
+    HelaLanguageItem(code: 'NL', name: 'Dutch', nativeName: 'Nederlands', flag: '🇳🇱'),
+    HelaLanguageItem(code: 'TH', name: 'Thai', nativeName: 'ไทย', flag: '🇹🇭'),
+    HelaLanguageItem(code: 'VI', name: 'Vietnamese', nativeName: 'Tiếng Việt', flag: '🇻🇳'),
   ];
 
   static HelaLanguageItem getLanguage(String code) {
@@ -630,9 +641,10 @@ class LocalizationService {
   /// Translate a key into the active language, falling back to English.
   static String tr(String key, String langCode) {
     final code = langCode.toUpperCase();
-    if (_translations.containsKey(code) && _translations[code]!.containsKey(key)) {
-      return _translations[code]![key]!;
-    }
-    return _translations['EN']?[key] ?? key;
+    return LocalizationAppStrings.translations[code]?[key] ??
+        _translations[code]?[key] ??
+        LocalizationAppStrings.translations['EN']?[key] ??
+        _translations['EN']?[key] ??
+        key;
   }
 }

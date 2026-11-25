@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hela/pages/cultural_guide/cultural_guide_page.dart';
 import 'package:hela/pages/profile_page.dart';
 import 'package:hela/pages/saved_page.dart';
+import 'package:hela/state/app_state.dart';
 import 'package:hela/theme/hela_colors.dart';
 import 'package:hela/widgets/hela_bottom_nav_bar.dart';
 import 'package:hela/widgets/hela_drawer.dart';
@@ -502,7 +503,7 @@ class _ExplorePageState extends State<ExplorePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'HELA TRAVEL',
+                HelaAppStateProvider.of(context).tr('hela_travel'),
                 style: TextStyle(
                   color: colors.secondary,
                   fontSize: 10.5,
@@ -512,7 +513,7 @@ class _ExplorePageState extends State<ExplorePage> {
                 ),
               ),
               Text(
-                'Explore',
+                HelaAppStateProvider.of(context).tr('explore'),
                 style: TextStyle(
                   color: colors.onSurface,
                   fontSize: 18,
@@ -563,7 +564,7 @@ class _ExplorePageState extends State<ExplorePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Explore Sri Lanka',
+                HelaAppStateProvider.of(context).tr('explore_sri_lanka'),
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w800,
@@ -721,7 +722,7 @@ class _ExplorePageState extends State<ExplorePage> {
                       filled: false,
                       isCollapsed: true,
                       contentPadding: EdgeInsets.zero,
-                      hintText: 'Search destinations, attractions...',
+                      hintText: HelaAppStateProvider.of(context).tr('search_destinations_gems'),
                       hintStyle: TextStyle(
                         fontSize: 13,
                         color: colors.onSurfaceVariant.withValues(alpha: 0.7),
@@ -792,7 +793,7 @@ class _ExplorePageState extends State<ExplorePage> {
                       const SizedBox(width: 5),
                     ],
                     Text(
-                      cat['label'] as String,
+                      _translatedCategoryLabel(context, cat['label'] as String),
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
@@ -807,6 +808,28 @@ class _ExplorePageState extends State<ExplorePage> {
         }),
       ),
     );
+  }
+
+  String _translatedCategoryLabel(BuildContext context, String rawLabel) {
+    final appState = HelaAppStateProvider.of(context);
+    switch (rawLabel) {
+      case 'All':
+        return appState.tr('cat_all');
+      case 'Nature':
+        return appState.tr('cat_nature');
+      case 'Beaches':
+        return appState.tr('cat_beaches');
+      case 'Culture':
+        return appState.tr('cat_culture');
+      case 'Wildlife':
+        return appState.tr('cat_wildlife');
+      case 'Adventure':
+        return appState.tr('cat_adventure');
+      case 'Food':
+        return appState.tr('cat_food');
+      default:
+        return rawLabel;
+    }
   }
 
   Widget _buildInteractiveMapView(HelaColorPalette colors) {
@@ -861,7 +884,7 @@ class _ExplorePageState extends State<ExplorePage> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Popular Destinations',
+                  HelaAppStateProvider.of(context).tr('popular_destinations'),
                   style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w800,
@@ -1099,7 +1122,7 @@ class _ExplorePageState extends State<ExplorePage> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Hidden Gems',
+                  HelaAppStateProvider.of(context).tr('hidden_gems'),
                   style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w800,
@@ -1260,7 +1283,7 @@ class _ExplorePageState extends State<ExplorePage> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Cultural Experiences',
+                  HelaAppStateProvider.of(context).tr('cultural_experiences'),
                   style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w800,
@@ -1464,7 +1487,7 @@ class _ExplorePageState extends State<ExplorePage> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Nearby Discoveries',
+                  HelaAppStateProvider.of(context).tr('nearby_discoveries'),
                   style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w800,

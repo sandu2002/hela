@@ -24,13 +24,12 @@ void main() {
       return;
     }
 
-    final model = GenerativeModel(
-      model: ApiConfig.geminiModel,
-      apiKey: apiKey,
-    );
+    final model = GenerativeModel(model: ApiConfig.geminiModel, apiKey: apiKey);
     try {
       final response = await model.generateContent([
-        Content.text('List 2 top places in Sri Lanka. Reply in JSON: [{"name": "...", "region": "..."}]'),
+        Content.text(
+          'List 2 top places in Sri Lanka. Reply in JSON: [{"name": "...", "region": "..."}]',
+        ),
       ]);
       expect(response.text, isNotNull);
       expect(response.text!.isNotEmpty, isTrue);
