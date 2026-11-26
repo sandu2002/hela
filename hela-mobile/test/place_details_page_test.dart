@@ -83,15 +83,23 @@ void main() {
 
       expect(find.byType(PlaceDetailsPage), findsOneWidget);
       expect(find.text('සීගිරිය'), findsOneWidget);
+      expect(find.text('Tourist Essentials'), findsOneWidget);
+      expect(find.text('Opening Hours'), findsOneWidget);
+      expect(find.text('Entry & Ticket Fee'), findsOneWidget);
+      expect(find.text('Dress Code & Rules'), findsOneWidget);
       expect(find.text('The Water & Boulder Gardens'), findsOneWidget);
 
       // Switch to History tab
-      await tester.tap(find.text('History'));
+      final historyTab = find.text('History');
+      await tester.ensureVisible(historyTab);
+      await tester.tap(historyTab);
       await tester.pumpAndSettle();
       expect(find.text('King Kashyapa\'s Sky Palace'), findsOneWidget);
 
       // Switch to Visit Tips tab
-      await tester.tap(find.text('Visit Tips'));
+      final tipsTab = find.text('Visit Tips');
+      await tester.ensureVisible(tipsTab);
+      await tester.tap(tipsTab);
       await tester.pumpAndSettle();
       expect(find.text('Best Climbing Window'), findsOneWidget);
 

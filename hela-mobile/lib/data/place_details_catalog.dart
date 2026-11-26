@@ -87,6 +87,24 @@ class NearbyDiscoveryItem {
   });
 }
 
+class PlaceTouristGuide {
+  final String openingHours;
+  final String entryFee;
+  final String bestSeason;
+  final String howToGetThere;
+  final String dressCodeAndRules;
+  final String facilitiesAndSafety;
+
+  const PlaceTouristGuide({
+    required this.openingHours,
+    required this.entryFee,
+    required this.bestSeason,
+    required this.howToGetThere,
+    required this.dressCodeAndRules,
+    required this.facilitiesAndSafety,
+  });
+}
+
 class PlaceDetailData {
   final String id;
   final String title;
@@ -116,6 +134,7 @@ class PlaceDetailData {
   final List<NearbyDiscoveryItem> nearbyDiscoveries;
   final String priceEstimate;
   final String categoryLabel;
+  final PlaceTouristGuide? touristGuide;
 
   const PlaceDetailData({
     required this.id,
@@ -146,7 +165,19 @@ class PlaceDetailData {
     required this.nearbyDiscoveries,
     this.priceEstimate = r'$30 / person',
     this.categoryLabel = 'Heritage & Nature',
+    this.touristGuide,
   });
+
+  PlaceTouristGuide get effectiveTouristGuide =>
+      touristGuide ??
+      PlaceTouristGuide(
+        openingHours: 'Daily, 6:00 AM – 6:00 PM (Peak light: early morning & late afternoon)',
+        entryFee: '$priceEstimate (Carry LKR cash for local tickets, parking & guides)',
+        bestSeason: 'Dec – Apr (West/South/Hills dry) • May – Sep (East Coast dry)',
+        howToGetThere: '$routeSummaryLine from $routeOrigin via private car, train or tuk-tuk',
+        dressCodeAndRules: 'Respect local heritage etiquette; cover shoulders & knees at sacred sites; no littering',
+        facilitiesAndSafety: 'Local guides & refreshments available; carry 1.5L water, sun protection & cash',
+      );
 
   LatLng get coordinates => LatLng(latitude, longitude);
 
@@ -185,6 +216,7 @@ class PlaceDetailData {
     List<NearbyDiscoveryItem>? nearbyDiscoveries,
     String? priceEstimate,
     String? categoryLabel,
+    PlaceTouristGuide? touristGuide,
   }) {
     return PlaceDetailData(
       id: id ?? this.id,
@@ -215,6 +247,7 @@ class PlaceDetailData {
       nearbyDiscoveries: nearbyDiscoveries ?? this.nearbyDiscoveries,
       priceEstimate: priceEstimate ?? this.priceEstimate,
       categoryLabel: categoryLabel ?? this.categoryLabel,
+      touristGuide: touristGuide ?? this.touristGuide,
     );
   }
 }
@@ -365,6 +398,14 @@ class PlaceDetailCatalog {
     ],
     priceEstimate: r'$36 / person',
     categoryLabel: 'UNESCO Heritage',
+    touristGuide: PlaceTouristGuide(
+      openingHours: 'Daily, 7:00 AM – 5:30 PM (Ticket counter closes 5:00 PM)',
+      entryFee: r'~$35 USD Foreign Adult • ~$18 USD SAARC • Half price ages 6–12',
+      bestSeason: 'Jan – Apr & Jul – Sep • Climb at 7:00 AM or 4:00 PM to avoid midday heat',
+      howToGetThere: '~170 km (3.5–4h) from Colombo or 2.5h from Kandy via Dambulla/Habarana',
+      dressCodeAndRules: 'Modest breathable wear & grippy shoes (1,200 steps); no flash on frescoes; drone permit needed',
+      facilitiesAndSafety: 'Ticket museum, restrooms & certified guides; carry 1.5L water, hat & heed hornet signs',
+    ),
   );
 
   static const PlaceDetailData minneriyaYala = PlaceDetailData(
@@ -497,6 +538,14 @@ class PlaceDetailCatalog {
     ],
     priceEstimate: r'$55 / person',
     categoryLabel: 'Nature & Wildlife',
+    touristGuide: PlaceTouristGuide(
+      openingHours: 'Daily, 6:00 AM – 6:00 PM (Morning 6–10 AM & Afternoon 2–6 PM safaris)',
+      entryFee: r'~$35–$42 USD gate entry (incl. taxes & VAT) + private 4WD jeep hire',
+      bestSeason: 'Minneriya Gathering: Jul – Oct • Yala Leopards: Feb – Jul (Block 1 closes Sep/Oct)',
+      howToGetThere: 'Minneriya: 30 min from Sigiriya • Yala: ~3.5h from Colombo via Southern Expressway',
+      dressCodeAndRules: 'Neutral earthy clothing; stay inside 4WD jeep; single-use plastics banned at gates',
+      facilitiesAndSafety: 'Licensed 4WD jeeps & park trackers required; carry LKR cash, binoculars & dust scarf',
+    ),
   );
 
   static const PlaceDetailData ceylonSpiceTrail = PlaceDetailData(
@@ -609,6 +658,14 @@ class PlaceDetailCatalog {
     ],
     priceEstimate: r'$24 / person',
     categoryLabel: 'Food & Culture',
+    touristGuide: PlaceTouristGuide(
+      openingHours: 'Daily, 8:30 AM – 5:30 PM (Hands-on cooking classes ~10:00 AM & 4:00 PM)',
+      entryFee: r'Garden walks often free; curated tastings & cooking classes ~$15 – $30 USD',
+      bestSeason: 'Year-round • Dec – Apr offers driest hill weather in Matale & Kandy',
+      howToGetThere: '25 km north of Kandy (~45 min) along A9 highway toward Dambulla via car or tuk-tuk',
+      dressCodeAndRules: 'Casual comfortable attire; share food allergies or spice preferences before tasting',
+      facilitiesAndSafety: 'Shaded outdoor kitchens, restrooms & filtered water; zero obligation to buy shop spices',
+    ),
   );
 
   static const PlaceDetailData weligamaTangalle = PlaceDetailData(
@@ -729,6 +786,14 @@ class PlaceDetailCatalog {
     ],
     priceEstimate: r'$25 / person',
     categoryLabel: 'Beaches & Ocean',
+    touristGuide: PlaceTouristGuide(
+      openingHours: 'Open 24 Hours (Surf schools & lagoon tours operate 6:30 AM – 6:00 PM)',
+      entryFee: r'Free Public Beaches • Surfboard rental ~$8–$12 USD • Surf lesson ~$20–$30 USD',
+      bestSeason: 'November – April (Calm turquoise seas, gentle swells & sunny weather)',
+      howToGetThere: '~2h 15m from Colombo via Southern Expressway (E01) or Coastal Train to Weligama',
+      dressCodeAndRules: 'Beachwear on shore; cover up in town; respect local stilt fishermen & reef habitats',
+      facilitiesAndSafety: 'Surf schools, showers & cafes in Weligama; check local flags for currents in Tangalle',
+    ),
   );
 
   static const PlaceDetailData ellaNineArch = PlaceDetailData(
@@ -840,6 +905,14 @@ class PlaceDetailCatalog {
     ],
     priceEstimate: r'$15 / person',
     categoryLabel: 'Hill Country',
+    touristGuide: PlaceTouristGuide(
+      openingHours: 'Open 24/7 • Trains cross ~9:30 AM, 11:30 AM, 3:30 PM & 5:30 PM daily',
+      entryFee: r'Free Entry (Tuk-tuk drop-off ~300–500 LKR; Flying Ravana zipline ~$25–$30 USD)',
+      bestSeason: 'January – May (Clear misty mornings, dry trails & sunny highland vistas)',
+      howToGetThere: 'Scenic Kandy–Ella Blue Train (~6–7h) or 30 min walk / 10 min tuk-tuk from Ella town',
+      dressCodeAndRules: 'Sturdy sneakers for forest path; step well clear of railway tracks when trains approach',
+      facilitiesAndSafety: 'Viewpoint tea cafes & zipline park nearby; verify daily train times; pack light rain shell',
+    ),
   );
 
   static const PlaceDetailData kandy = PlaceDetailData(
@@ -935,6 +1008,14 @@ class PlaceDetailCatalog {
     ],
     priceEstimate: r'$20 / person',
     categoryLabel: 'Cultural Heritage',
+    touristGuide: PlaceTouristGuide(
+      openingHours: 'Daily, 5:30 AM – 8:00 PM • Sacred Puja rituals at 5:30 AM, 9:30 AM & 6:30 PM',
+      entryFee: r'LKR 3,000 (~$10 USD) Foreign Adult (Locals free; SAARC discounts apply)',
+      bestSeason: 'December – April (Mild highland weather) & July/August for Esala Perahera',
+      howToGetThere: '2.5–3.5h scenic train or highway drive from Colombo; short walk from central Kandy',
+      dressCodeAndRules: 'Strict temple dress code: shoulders & knees covered; remove shoes & hats at entrance',
+      facilitiesAndSafety: 'Official shoe storage (~100–200 LKR), lockers & ATMs nearby; beware touts outside gates',
+    ),
   );
 
   static const PlaceDetailData galle = PlaceDetailData(
@@ -1031,6 +1112,14 @@ class PlaceDetailCatalog {
     ],
     priceEstimate: r'Free entry',
     categoryLabel: 'Coastal Heritage',
+    touristGuide: PlaceTouristGuide(
+      openingHours: 'Ramparts open 24/7 • Boutiques, cafes & museums operate ~9:00 AM – 7:00 PM',
+      entryFee: r'Free entry to Fort & ramparts (Maritime & Dutch Museums ~$3–$5 USD optional)',
+      bestSeason: 'November – April (Dry coastal sunshine; iconic sunset rampart walk 5:00–6:15 PM)',
+      howToGetThere: '~1h 45m from Colombo via Southern Expressway (E01) or Coastal Train to Galle Station',
+      dressCodeAndRules: 'Casual resort wear; modest attire when entering Fort mosques, churches or Buddhist temple',
+      facilitiesAndSafety: 'Boutique stays, cafes, ATMs & pharmacies inside Fort; watch footing on unrailed walls',
+    ),
   );
 
   static const PlaceDetailData mirissa = PlaceDetailData(
@@ -1127,6 +1216,14 @@ class PlaceDetailCatalog {
     ],
     priceEstimate: r'$35 / person',
     categoryLabel: 'Ocean & Whales',
+    touristGuide: PlaceTouristGuide(
+      openingHours: 'Beach open 24/7 • Whale watching boats depart 6:00 AM – 6:30 AM daily',
+      entryFee: r'Free Public Beach • Whale Watching Tours ~$40 – $80 USD (incl. breakfast)',
+      bestSeason: 'November – April (Peak Blue Whale & calm sea window: December – March)',
+      howToGetThere: '~2.5h via Southern Expressway from Colombo or scenic Coastal Train to Weligama/Mirissa',
+      dressCodeAndRules: 'Beachwear on sand; cover up in town; book ethical boats keeping safe distance from whales',
+      facilitiesAndSafety: 'Beachfront dining, guesthouses & ATMs; take seasickness meds prior; watch rip currents',
+    ),
   );
 
   static const PlaceDetailData pidurangala = PlaceDetailData(
@@ -1207,6 +1304,14 @@ class PlaceDetailCatalog {
     ],
     priceEstimate: r'$4 / person',
     categoryLabel: 'Hikes & Adventure',
+    touristGuide: PlaceTouristGuide(
+      openingHours: 'Daily, 5:00 AM – 6:00 PM (Best for 5:15 AM sunrise & 5:00 PM sunset hikes)',
+      entryFee: r'LKR 1,000 (~$3.30 USD) per person • Cash only at temple base counter',
+      bestSeason: 'January – April & July – September (Clear dawn panoramas over Lion Rock)',
+      howToGetThere: '1–2 km north of Sigiriya Rock (~10 min tuk-tuk ride from Sigiriya village)',
+      dressCodeAndRules: 'Cover shoulders & knees passing temple gate (sarongs rented); sneakers for boulder scramble',
+      facilitiesAndSafety: 'Basic temple restrooms & kiosk at base; carry headlamp/phone torch for pre-dawn climb',
+    ),
   );
 
   static const PlaceDetailData dambulla = PlaceDetailData(
@@ -1287,6 +1392,14 @@ class PlaceDetailCatalog {
     ],
     priceEstimate: r'$7 / person',
     categoryLabel: 'UNESCO Heritage',
+    touristGuide: PlaceTouristGuide(
+      openingHours: 'Daily, 7:00 AM – 7:00 PM (Ticket counter closes ~6:30 PM; quieter before 9:30 AM)',
+      entryFee: r'LKR 3,000 (~$10 USD) Foreign Adult • Cash only at lower ticket booth',
+      bestSeason: 'Year-round • Jan – Apr & Jul – Sep offer mildest climbing conditions',
+      howToGetThere: '20 min bus or tuk-tuk from Sigiriya; direct highway stop between Kandy & Habarana',
+      dressCodeAndRules: 'Strict temple dress code: shoulders & knees covered; remove shoes/hats on upper terrace',
+      facilitiesAndSafety: 'Shoe storage (~100–200 LKR) & water stalls; carry socks for hot stone; guard snacks from monkeys',
+    ),
   );
 
   static const PlaceDetailData arugamBay = PlaceDetailData(
@@ -1384,6 +1497,14 @@ class PlaceDetailCatalog {
     ],
     priceEstimate: r'$15 / board rental',
     categoryLabel: 'Beaches',
+    touristGuide: PlaceTouristGuide(
+      openingHours: 'Open 24 Hours (Surf schools, rentals & beach clubs operate 6:00 AM – 10:00 PM)',
+      entryFee: r'Free Public Beaches • Board rental ~$10–$15 USD/day • Lagoon safari ~$25–$40 USD',
+      bestSeason: 'May – October (East coast dry season & peak right-hand surf swells)',
+      howToGetThere: '~6–7h drive from Colombo or ~2.5–3h scenic descent from Ella via Pottuvil',
+      dressCodeAndRules: 'Relaxed surf & beach wear; assess Main Point reef breaks before paddling out',
+      facilitiesAndSafety: 'Surf camps, cafes & ATMs in Pottuvil; carry reef-safe sunscreen & check seasonal currents',
+    ),
   );
 
   static const PlaceDetailData unawatuna = PlaceDetailData(
@@ -1481,6 +1602,14 @@ class PlaceDetailCatalog {
     ],
     priceEstimate: 'Free Public Beach',
     categoryLabel: 'Beaches',
+    touristGuide: PlaceTouristGuide(
+      openingHours: 'Open 24 Hours (Dive shops & beach restaurants operate 8:00 AM – 11:00 PM)',
+      entryFee: r'Free Public Beach • Snorkel gear rental ~$5–$10 USD • Sunbeds often free with order',
+      bestSeason: 'November – April (Calm, crystal-clear bay sheltered by offshore coral reef)',
+      howToGetThere: '15 min (6 km) tuk-tuk south of Galle Fort or ~2h via Southern Expressway from Colombo',
+      dressCodeAndRules: 'Swimwear on shore; carry sarong if hiking up to Japanese Peace Pagoda or temples',
+      facilitiesAndSafety: 'Reef-calm water ideal for families; restaurants, showers & dive schools along the crescent',
+    ),
   );
 
   static const PlaceDetailData polonnaruwa = PlaceDetailData(
@@ -1578,6 +1707,14 @@ class PlaceDetailCatalog {
     ],
     priceEstimate: r'$25 / person',
     categoryLabel: 'Cultural Heritage',
+    touristGuide: PlaceTouristGuide(
+      openingHours: 'Daily, 7:00 AM – 5:30 PM (Ticket counters close around 5:00 PM)',
+      entryFee: r'$30 USD Foreign Adult • $15 USD Children (6–12) • 50% off for SAARC nationals',
+      bestSeason: 'Jan – Apr & Jul – Sep (Best cycled 7:30 – 11:00 AM before afternoon heat)',
+      howToGetThere: '~55 km (1–1.5h) east of Sigiriya by car or bus; rent bicycles (~300–500 LKR) at gate',
+      dressCodeAndRules: 'Modest clothing covering shoulders & knees at sacred ruins; remove shoes at stone shrines',
+      facilitiesAndSafety: 'Archaeological museum, cycle rentals & drink stalls; wear thick socks on sun-heated stone',
+    ),
   );
 
   static const PlaceDetailData udawalawe = PlaceDetailData(
@@ -1675,6 +1812,14 @@ class PlaceDetailCatalog {
     ],
     priceEstimate: r'$35 / person + jeep',
     categoryLabel: 'Nature & Wildlife',
+    touristGuide: PlaceTouristGuide(
+      openingHours: 'Daily, 6:00 AM – 6:00 PM (Best safaris depart 6:00 AM & 2:30 PM)',
+      entryFee: r'~$35–$42 USD total gate fee (incl. taxes & VAT) + private 4WD jeep hire',
+      bestSeason: 'Year-round guaranteed elephant sightings • Transit Home feeds at 10:30 AM & 2:30 PM',
+      howToGetThere: '~90 km (2h) south of Ella or ~3h from Colombo/Galle via Southern Expressway',
+      dressCodeAndRules: 'Neutral casual wear; stay inside safari jeep; zero single-use plastics allowed in park',
+      facilitiesAndSafety: 'Park restrooms & Transit Home viewing deck; carry LKR cash, binoculars & sunscreen',
+    ),
   );
 
   static const PlaceDetailData hortonPlains = PlaceDetailData(
@@ -1773,6 +1918,14 @@ class PlaceDetailCatalog {
     ],
     priceEstimate: r'$30 / person',
     categoryLabel: 'Nature & Wildlife',
+    touristGuide: PlaceTouristGuide(
+      openingHours: 'Daily, 6:00 AM – 6:00 PM (Enter right at 6:00 AM to see World\'s End before 9:30 AM fog)',
+      entryFee: r'~$35–$45 USD total foreign gate charge (incl. taxes, service fees & vehicle levy)',
+      bestSeason: 'January – March (Driest weather & clearest cliff views; avoid heavy Jun–Sep rains)',
+      howToGetThere: '~1h drive (32 km) from Nuwara Eliya or tuk-tuk uphill from Ohiya Railway Station',
+      dressCodeAndRules: 'Walking trail only (no jeeps inside); plastic bags & wrappers strictly confiscated at gate',
+      facilitiesAndSafety: 'Visitor center & restrooms at trailhead; pack warm fleece, 2L water & sturdy hiking shoes',
+    ),
   );
 
   static const PlaceDetailData sinharaja = PlaceDetailData(
@@ -1870,6 +2023,14 @@ class PlaceDetailCatalog {
     ],
     priceEstimate: r'$15 – $25 / person',
     categoryLabel: 'Nature & Wildlife',
+    touristGuide: PlaceTouristGuide(
+      openingHours: 'Daily, 6:00 AM – 4:30 PM (Morning treks start 6:30–8:30 AM)',
+      entryFee: r'LKR 2,700–4,500 (~$10–$15 USD) gate fee • Guided packages ~$30–$40 USD',
+      bestSeason: 'December – April & August – September (Relatively drier rainforest conditions)',
+      howToGetThere: 'Enter via Deniyaya Gate (~2h from Galle) or Kudawa Gate (Ratnapura side)',
+      dressCodeAndRules: 'Certified Forest Dept guide strictly mandatory; zero single-use plastics in UNESCO forest',
+      facilitiesAndSafety: 'Leech socks available at gates; carry waterproof shell, insect repellent & LKR cash',
+    ),
   );
 
   static const PlaceDetailData adamsPeak = PlaceDetailData(
@@ -1967,6 +2128,14 @@ class PlaceDetailCatalog {
     ],
     priceEstimate: 'Free Public Trail',
     categoryLabel: 'Adventure',
+    touristGuide: PlaceTouristGuide(
+      openingHours: '24/7 illuminated trail in season (Dec–May); start climb 1:00–2:00 AM for sunrise',
+      entryFee: r'Free Entry (Small voluntary offerings welcome at base/summit shrines)',
+      bestSeason: 'December Poya – May Vesak Poya (Clearest weather: Jan – Mar; avoid Poya weekend crowds)',
+      howToGetThere: 'Scenic train to Hatton, then 1–1.5h bus or taxi to Dalhousie (Nallathanniya) trailhead',
+      dressCodeAndRules: 'Modest pilgrimage wear; remove shoes at summit shrine (bring thick socks for cold stone)',
+      facilitiesAndSafety: 'Tea & roti stalls lit all night in season; bring warm fleece, gloves, water & headlamp',
+    ),
   );
 
   static const PlaceDetailData kitulgala = PlaceDetailData(
@@ -2064,6 +2233,14 @@ class PlaceDetailCatalog {
     ],
     priceEstimate: r'$25 – $40 / person',
     categoryLabel: 'Adventure',
+    touristGuide: PlaceTouristGuide(
+      openingHours: 'Daily rafting 10:00 AM – 3:00 PM (Aligned with upstream dam water releases)',
+      entryFee: r'~$20–$35 USD standard 5 km rafting • ~$50–$80 USD bundled with canyoning & lunch',
+      bestSeason: 'Year-round • Jan – Apr (Family-friendly flows) • May – Sep (Stronger Grade 3 rapids)',
+      howToGetThere: '~2.5–3h (90 km) east of Colombo or ~1.5–2h from Kandy along A7 highway',
+      dressCodeAndRules: 'Helmet & life jacket mandatory (provided); minimum age ~10–14 yrs per SLTDA safety rules',
+      facilitiesAndSafety: 'Base camp showers & changing rooms; wear secure strap water sandals & quick-dry clothes',
+    ),
   );
 
   static const PlaceDetailData knucklesRange = PlaceDetailData(
@@ -2161,6 +2338,14 @@ class PlaceDetailCatalog {
     ],
     priceEstimate: r'$30 / guided trek',
     categoryLabel: 'Adventure',
+    touristGuide: PlaceTouristGuide(
+      openingHours: 'Daylight trekking 6:00 AM – 5:30 PM (Early morning departure recommended)',
+      entryFee: r'Conservation permit ~LKR 2,000–3,000 (~$7–$10 USD) + local guide ~$25–$40 USD',
+      bestSeason: 'January – February & May – September (Driest windows for cloud-forest ridge trails)',
+      howToGetThere: '~1.5–2h (42 km) northeast of Kandy via Hunnasgiriya, Bambarella or Meemure',
+      dressCodeAndRules: 'Certified local guide strongly advised for unmarked trails; strict carry-in, carry-out rule',
+      facilitiesAndSafety: 'Remote wilderness with few shops; carry 2L water, leech socks, trail shoes & rain jacket',
+    ),
   );
 
   static const Map<String, PlaceDetailData> _byId = {

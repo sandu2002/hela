@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hela/data/place_details_catalog.dart';
@@ -663,86 +665,183 @@ class _HelaHomePageState extends State<HelaHomePage>
                   const SizedBox(height: 14),
                   Row(
                     children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const TripPlannerPage(),
+                      // Primary Eye-Catching CTA: Plan My Trip (Ceylon Gold Gradient)
+                      Expanded(
+                        flex: 6,
+                        child: Container(
+                          height: 46,
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Color(0xFFFDE047),
+                                Color(0xFFF59E0B),
+                              ],
                             ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: colors.primaryFixed,
-                          foregroundColor: colors.primary,
-                          elevation: 2,
-                          shadowColor: Colors.black.withValues(alpha: 0.2),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 10,
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.55),
+                              width: 1,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFFF59E0B)
+                                    .withValues(alpha: 0.38),
+                                blurRadius: 12,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
                           ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              HelaAppStateProvider.of(
-                                context,
-                              ).tr('plan_my_trip'),
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(14),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const TripPlannerPage(),
+                                  ),
+                                );
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.auto_awesome_rounded,
+                                      size: 16,
+                                      color: Color(0xFF052E26),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Flexible(
+                                      child: Text(
+                                        HelaAppStateProvider.of(
+                                          context,
+                                        ).tr('plan_my_trip'),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontFamily: 'Inter',
+                                          fontSize: 13.5,
+                                          fontWeight: FontWeight.w800,
+                                          color: Color(0xFF052E26),
+                                          letterSpacing: -0.1,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Container(
+                                      width: 22,
+                                      height: 22,
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFF052E26)
+                                            .withValues(alpha: 0.14),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(
+                                        Icons.arrow_forward_rounded,
+                                        size: 13.5,
+                                        color: Color(0xFF052E26),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                            const SizedBox(width: 6),
-                            const Icon(Icons.arrow_forward_rounded, size: 16),
-                          ],
+                          ),
                         ),
                       ),
                       const SizedBox(width: 10),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const FairRidePage(),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white.withValues(alpha: 0.96),
-                          foregroundColor: const Color(0xFF00382E),
-                          elevation: 2,
-                          shadowColor: Colors.black.withValues(alpha: 0.2),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 10,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            Icon(
-                              Icons.local_taxi_rounded,
-                              size: 16,
-                              color: Color(0xFF00382E),
-                            ),
-                            SizedBox(width: 6),
-                            Text(
-                              'Taxi',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFF00382E),
+                      // Secondary Quick Action: Taxi (Frosted Glass with Amber Badge)
+                      Expanded(
+                        flex: 4,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(14),
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                            child: Container(
+                              height: 46,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.18),
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.44),
+                                  width: 1.2,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.18),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(14),
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => const FairRidePage(),
+                                      ),
+                                    );
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          width: 26,
+                                          height: 26,
+                                          decoration: const BoxDecoration(
+                                            color: Color(0xFFFBBF24),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(
+                                            Icons.local_taxi_rounded,
+                                            size: 14.5,
+                                            color: Color(0xFF052E26),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 7),
+                                        const Flexible(
+                                          child: Text(
+                                            'Taxi',
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontFamily: 'Inter',
+                                              fontSize: 13.5,
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 2),
+                                        Icon(
+                                          Icons.chevron_right_rounded,
+                                          size: 16,
+                                          color: Colors.white
+                                              .withValues(alpha: 0.85),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
-                          ],
+                          ),
                         ),
                       ),
                     ],

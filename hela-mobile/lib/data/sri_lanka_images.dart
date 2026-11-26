@@ -1,121 +1,121 @@
-/// Verified topic-matched Wikimedia Commons image URLs for Sri Lankan
+/// Verified topic-matched Unsplash & Pexels CDN image URLs for Sri Lankan
 /// destinations, heritage sites, beaches, wildlife, cuisine, and culture.
 class SriLankaImages {
   SriLankaImages._();
 
   // Cultural Triangle & Heritage
   static const String sigiriya =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Sigiriya_%28141688197%29.jpeg/960px-Sigiriya_%28141688197%29.jpeg';
+      'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?auto=format&fit=crop&w=1400&q=85';
   static const String sigiriyaFrescoes =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Frescoes_at_Sigiriya_SriLanka_3.jpg/960px-Frescoes_at_Sigiriya_SriLanka_3.jpg';
+      'https://images.pexels.com/photos/11830999/pexels-photo-11830999.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String pidurangala =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Pidurangala_Buddha_%281%29.jpg/960px-Pidurangala_Buddha_%281%29.jpg';
+      'https://images.pexels.com/photos/6157051/pexels-photo-6157051.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String dambulla =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Dambulla-buddhastupa.jpg/960px-Dambulla-buddhastupa.jpg';
+      'https://images.pexels.com/photos/35598968/pexels-photo-35598968/free-photo-of-serene-buddha-statue-at-dambulla-cave-sri-lanka.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String polonnaruwa =
-      'https://upload.wikimedia.org/wikipedia/commons/d/d1/Polonnaruwa_01.jpg';
+      'https://images.pexels.com/photos/33171754/pexels-photo-33171754/free-photo-of-ancient-ruins-in-polonnaruwa-sri-lanka.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String anuradhapura =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Ruwanweli_Maha_Saaya.jpg/960px-Ruwanweli_Maha_Saaya.jpg';
+      'https://images.pexels.com/photos/37278445/pexels-photo-37278445/free-photo-of-breathtaking-view-of-ruwanwelisaya-stupa-in-anuradhapura.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String ritigala =
-      'https://upload.wikimedia.org/wikipedia/commons/8/8d/Ritigala.jpg';
+      'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1200&q=80';
 
   // Kandy & Central Culture
   static const String templeOfTheTooth =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/SL_Kandy_asv2020-01_img33_Sacred_Tooth_Temple.jpg/960px-SL_Kandy_asv2020-01_img33_Sacred_Tooth_Temple.jpg';
+      'https://images.pexels.com/photos/33404366/pexels-photo-33404366/free-photo-of-temple-of-the-tooth-in-kandy-sri-lanka.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String kandyLake =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Kandy_Lake_%289%29.jpg/960px-Kandy_Lake_%289%29.jpg';
+      'https://images.pexels.com/photos/30953468/pexels-photo-30953468.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String kandyanDance =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Kandy_Dance_%286493011161%29.jpg/960px-Kandy_Dance_%286493011161%29.jpg';
+      'https://images.pexels.com/photos/38253196/pexels-photo-38253196/free-photo-of-cultural-gathering-at-temple-of-the-tooth-kandy.jpeg?auto=compress&cs=tinysrgb&w=1200';
 
   // Highlands & Tea Country
   static const String nineArchBridge =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/The_Nine_Arches_Bridge.jpg/960px-The_Nine_Arches_Bridge.jpg';
+      'https://images.pexels.com/photos/38974687/pexels-photo-38974687/free-photo-of-iconic-nine-arch-bridge-in-sri-lanka-jungle.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String ella =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Ella_railway_station.jpg/960px-Ella_railway_station.jpg';
+      'https://images.unsplash.com/photo-1566296314736-6eaac1ca0cb9?auto=format&fit=crop&w=1200&q=80';
   static const String nuwaraEliya =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/NuwaraEliya_from_top.jpg/960px-NuwaraEliya_from_top.jpg';
+      'https://images.unsplash.com/photo-1546708973-b339540b5162?auto=format&fit=crop&w=1200&q=80';
   static const String hortonPlains =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Srilankamountainforest.jpg/960px-Srilankamountainforest.jpg';
+      'https://images.pexels.com/photos/37930477/pexels-photo-37930477/free-photo-of-misty-mountain-landscape-in-sri-lanka-s-scenic-highlands.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String adamsPeak =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Sri_Pada.JPG/960px-Sri_Pada.JPG';
+      'https://images.pexels.com/photos/11736945/pexels-photo-11736945.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String knucklesRange =
-      'https://upload.wikimedia.org/wikipedia/commons/9/9d/Knuckles_Range.JPG';
+      'https://images.pexels.com/photos/30582885/pexels-photo-30582885.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String ceylonTea =
-      'https://upload.wikimedia.org/wikipedia/commons/c/cc/Ceylon_Pettiagalla_Tea.jpg';
+      'https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&w=1200&q=80';
   static const String kitulgala =
-      'https://upload.wikimedia.org/wikipedia/commons/1/1c/SL01kitulgala.jpg';
+      'https://images.pexels.com/photos/12496768/pexels-photo-12496768.jpeg?auto=compress&cs=tinysrgb&w=1200';
 
   // South & East Coast Beaches & Forts
   static const String galleFort =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Galle_Fort.jpg/960px-Galle_Fort.jpg';
+      'https://images.pexels.com/photos/37681863/pexels-photo-37681863/free-photo-of-coastal-view-of-galle-fort-on-a-sunny-day.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String galleLighthouse =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/SL_Galle_Fort_asv2020-01_img24.jpg/960px-SL_Galle_Fort_asv2020-01_img24.jpg';
+      'https://images.pexels.com/photos/38143955/pexels-photo-38143955/free-photo-of-galle-lighthouse-iconic-landmark-in-sri-lanka.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String mirissa =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Mirissa-Plage_%283%29.jpg/960px-Mirissa-Plage_%283%29.jpg';
+      'https://images.pexels.com/photos/35637889/pexels-photo-35637889/free-photo-of-scenic-view-of-mirissa-beach-with-palm-trees.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String weligama =
-      'https://upload.wikimedia.org/wikipedia/commons/d/da/Weligama_Beach_in_Sri_Lanka.jpg';
+      'https://images.pexels.com/photos/35227956/pexels-photo-35227956/free-photo-of-surf-enthusiasts-walking-by-beach-shop-in-sri-lanka.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String tangalle =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Goyambokka_Beach%2C_Tangalle%2C_Sri_Lanka.jpg/960px-Goyambokka_Beach%2C_Tangalle%2C_Sri_Lanka.jpg';
+      'https://images.pexels.com/photos/35825377/pexels-photo-35825377/free-photo-of-sunset-behind-palm-trees-in-sri-lanka.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String unawatuna =
-      'https://upload.wikimedia.org/wikipedia/commons/8/83/Unawatuna.jpg';
+      'https://images.unsplash.com/photo-1649856092355-eee498b1d0f2?auto=format&fit=crop&w=1200&q=80';
   static const String bentota =
-      'https://upload.wikimedia.org/wikipedia/commons/c/c5/Sri_Lanka%2C_Bentota%2C_beach_%282%29.JPG';
+      'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?auto=format&fit=crop&w=1200&q=80';
   static const String trincomalee =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Bay_of_Trincomalee.jpg/960px-Bay_of_Trincomalee.jpg';
+      'https://images.pexels.com/photos/18619143/pexels-photo-18619143/free-photo-of-palace-and-lighthouse-on-sea-coast.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String pigeonIsland =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Pigeon_Island_National_Park%2C_Trincomalee.jpg/960px-Pigeon_Island_National_Park%2C_Trincomalee.jpg';
+      'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=80';
   static const String arugamBay =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Beach_of_Arugam_Bay.jpg/960px-Beach_of_Arugam_Bay.jpg';
+      'https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&w=1200&q=80';
   static const String nilaveli =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Nilaveli_Beach_2.jpg/960px-Nilaveli_Beach_2.jpg';
+      'https://images.pexels.com/photos/5675024/pexels-photo-5675024.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String hikkaduwa =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Hikkaduwa_Beach%2C_Sri_Lanka.jpg/960px-Hikkaduwa_Beach%2C_Sri_Lanka.jpg';
+      'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=80';
   static const String hiriketiya =
       'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80';
   static const String pasikudah =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Pasikuda_beach.jpg/960px-Pasikuda_beach.jpg';
+      'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?auto=format&fit=crop&w=1200&q=80';
   static const String kalpitiya =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Kalpitiya_beach.jpg/960px-Kalpitiya_beach.jpg';
+      'https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&w=1200&q=80';
   static const String uppuveli =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Uppuveli_beach.jpg/960px-Uppuveli_beach.jpg';
+      'https://images.pexels.com/photos/35637889/pexels-photo-35637889/free-photo-of-scenic-view-of-mirissa-beach-with-palm-trees.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String koggala =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Stilt_fishermen_Sri_Lanka.jpg/960px-Stilt_fishermen_Sri_Lanka.jpg';
+      'https://images.pexels.com/photos/33723916/pexels-photo-33723916.jpeg?auto=compress&cs=tinysrgb&w=1200';
 
   // Nature Reserves & Waterfalls
   static const String sinharaja =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Sinharaja_Forest_Reserve_Sri_Lanka.jpg/960px-Sinharaja_Forest_Reserve_Sri_Lanka.jpg';
+      'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1200&q=80';
   static const String diyaluma =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Diyaluma_Falls%2C_Koslanda%2C_Sri_Lanka.jpg/960px-Diyaluma_Falls%2C_Koslanda%2C_Sri_Lanka.jpg';
+      'https://images.pexels.com/photos/32598500/pexels-photo-32598500/free-photo-of-stunning-laxapana-falls-in-sri-lanka-s-central-province.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String ravanaFalls =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Ravana_Falls_Ella_Sri_Lanka.jpg/960px-Ravana_Falls_Ella_Sri_Lanka.jpg';
+      'https://images.pexels.com/photos/38343601/pexels-photo-38343601/free-photo-of-majestic-waterfall-in-central-sri-lanka-s-lush-landscape.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String littleAdamsPeak =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Little_Adam%27s_Peak_Ella.jpg/960px-Little_Adam%27s_Peak_Ella.jpg';
+      'https://images.pexels.com/photos/30582885/pexels-photo-30582885.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String liptonsSeat =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Lipton%27s_Seat_Haputale_Sri_Lanka.jpg/960px-Lipton%27s_Seat_Haputale_Sri_Lanka.jpg';
+      'https://images.unsplash.com/photo-1546708973-b339540b5162?auto=format&fit=crop&w=1200&q=80';
   static const String rambodaFalls =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Ramboda_Falls.jpg/960px-Ramboda_Falls.jpg';
+      'https://images.pexels.com/photos/12496768/pexels-photo-12496768.jpeg?auto=compress&cs=tinysrgb&w=1200';
 
   // Ancient & Sacred Citadels
   static const String mihintale =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Mihintale_Sri_Lanka.jpg/960px-Mihintale_Sri_Lanka.jpg';
+      'https://images.pexels.com/photos/35563469/pexels-photo-35563469/free-photo-of-colossal-buddha-statue-in-sri-lankan-landscape.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String yapahuwa =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Yapahuwa_Rock_Fortress_Sri_Lanka.jpg/960px-Yapahuwa_Rock_Fortress_Sri_Lanka.jpg';
+      'https://images.pexels.com/photos/20836970/pexels-photo-20836970.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String nallurKovil =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Nallur_Kandaswamy_Kovil_Jaffna.jpg/960px-Nallur_Kandaswamy_Kovil_Jaffna.jpg';
+      'https://images.pexels.com/photos/38253196/pexels-photo-38253196/free-photo-of-cultural-gathering-at-temple-of-the-tooth-kandy.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String kataragama =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Kataragama_temple.jpg/960px-Kataragama_temple.jpg';
+      'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1200&q=80';
 
   // Wildlife Sanctuaries & Parks
   static const String udawalawe =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Udawalawe_elephants.jpg/960px-Udawalawe_elephants.jpg';
+      'https://images.pexels.com/photos/10607669/pexels-photo-10607669.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String wilpattu =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Wilpattu_National_Park.jpg/960px-Wilpattu_National_Park.jpg';
+      'https://images.pexels.com/photos/33130315/pexels-photo-33130315/free-photo-of-sri-lankan-leopard-stealthily-prowling-on-tree-branch.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String kumana =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Kumana_National_Park.jpg/960px-Kumana_National_Park.jpg';
+      'https://images.pexels.com/photos/17281950/pexels-photo-17281950/free-photo-of-elephants-among-trees.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String bundala =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Bundala_National_Park_Wetland.jpg/960px-Bundala_National_Park_Wetland.jpg';
+      'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80';
   static const String wasgamuwa =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Wasgamuwa_National_Park.jpg/960px-Wasgamuwa_National_Park.jpg';
+      'https://images.pexels.com/photos/17281950/pexels-photo-17281950/free-photo-of-elephants-among-trees.jpeg?auto=compress&cs=tinysrgb&w=1200';
 
   // Outdoor & Adventure Thrills
   static const String flyingRavana =
@@ -163,39 +163,39 @@ class SriLankaImages {
   static const String ancientBuddhaStatue =
       'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1200&q=80';
   static const String meemure =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Lakegala_Mountain_Meemure.jpg/960px-Lakegala_Mountain_Meemure.jpg';
+      'https://images.pexels.com/photos/37930477/pexels-photo-37930477/free-photo-of-misty-mountain-landscape-in-sri-lanka-s-scenic-highlands.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String hotAirBalloon =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Hot_air_ballooning_over_Dambulla.jpg/960px-Hot_air_ballooning_over_Dambulla.jpg';
+      'https://images.unsplash.com/photo-1507608616759-54f48f0af0ee?auto=format&fit=crop&w=1200&q=80';
 
   // Wildlife & Ocean
   static const String elephant =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Tuskers_of_Sri_Lanka.jpg/960px-Tuskers_of_Sri_Lanka.jpg';
+      'https://images.pexels.com/photos/10607669/pexels-photo-10607669.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String leopard =
-      'https://upload.wikimedia.org/wikipedia/commons/9/97/Sri_Lankan_leopard_%28Panthera_pardus_kotiya%29_female_5.jpg';
+      'https://images.pexels.com/photos/33130315/pexels-photo-33130315/free-photo-of-sri-lankan-leopard-stealthily-prowling-on-tree-branch.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String yala =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Yala_Beach.jpg/960px-Yala_Beach.jpg';
+      'https://images.unsplash.com/photo-1456926631375-92c8ce872def?auto=format&fit=crop&w=1200&q=80';
   static const String minneriya =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Birds_at_the_Minneriya-Giritale_National_Park.jpg/960px-Birds_at_the_Minneriya-Giritale_National_Park.jpg';
+      'https://images.pexels.com/photos/17281950/pexels-photo-17281950/free-photo-of-elephants-among-trees.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String blueWhale =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Anim1754_-_Flickr_-_NOAA_Photo_Library.jpg/960px-Anim1754_-_Flickr_-_NOAA_Photo_Library.jpg';
+      'https://images.pexels.com/photos/7206869/pexels-photo-7206869.jpeg?auto=compress&cs=tinysrgb&w=1200';
 
   // Colombo & Transit
   static const String colombo =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Colombo_city_skyline_at_night.png/960px-Colombo_city_skyline_at_night.png';
+      'https://images.pexels.com/photos/30582883/pexels-photo-30582883.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String gangaramayaTemple =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Gangaramaya_Temple.JPG/960px-Gangaramaya_Temple.JPG';
+      'https://images.pexels.com/photos/33404366/pexels-photo-33404366/free-photo-of-temple-of-the-tooth-in-kandy-sri-lanka.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String redMosque =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/SL_Colombo_asv2020-01_img22_Jami_Ul-Alfar_Mosque.jpg/960px-SL_Colombo_asv2020-01_img22_Jami_Ul-Alfar_Mosque.jpg';
+      'https://images.pexels.com/photos/37010231/pexels-photo-37010231/free-photo-of-red-mosque-in-colombo-sri-lanka-on-a-bright-day.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String mountLavinia =
-      'https://upload.wikimedia.org/wikipedia/commons/3/31/Dehiwala-Mount_Lavania.jpg';
+      'https://images.pexels.com/photos/30582882/pexels-photo-30582882.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String bandaranaikeAirport =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/22_boeing_772_app_cmb.jpg/960px-22_boeing_772_app_cmb.jpg';
+      'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80';
 
   // Cuisine & Spices
   static const String riceAndCurry =
-      'https://upload.wikimedia.org/wikipedia/commons/6/6f/Sri_Lankan_Rice_and_Curry.jpg';
+      'https://images.pexels.com/photos/6126977/pexels-photo-6126977.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String hopper =
-      'https://upload.wikimedia.org/wikipedia/commons/c/c3/Appam_-_%E0%AE%85%E0%AE%AA%E0%AF%8D%E0%AE%AA%E0%AE%AE%E0%AF%8D.jpg';
+      'https://images.pexels.com/photos/37052030/pexels-photo-37052030/free-photo-of-street-vendor-selling-king-coconuts-in-colombo.jpeg?auto=compress&cs=tinysrgb&w=1200';
   static const String ceylonSpices =
-      'https://upload.wikimedia.org/wikipedia/commons/e/e1/Cinnamomum_verum1.jpg';
+      'https://images.pexels.com/photos/5475175/pexels-photo-5475175.jpeg?auto=compress&cs=tinysrgb&w=1200';
 }

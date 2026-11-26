@@ -6,7 +6,7 @@ import 'package:hela/onbording/onboarding_page.dart';
 import 'package:hela/pages/home_page.dart';
 import 'package:hela/services/insforge_auth_service.dart';
 import 'package:hela/state/app_state.dart';
-import 'package:hela/widgets/hela_logo.dart';
+import 'package:hela/widgets/hela_network_image.dart';
 
 /// Authentication mode — Sign Up or Sign In
 enum AuthMode { signUp, signIn }
@@ -384,18 +384,22 @@ class _SignUpPageState extends State<SignUpPage> {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          Image.network(
-            SriLankaImages.sigiriya,
+          HelaNetworkImage(
+            imageUrl: SriLankaImages.sigiriya,
+            width: double.infinity,
+            height: 300 + topPadding,
             fit: BoxFit.cover,
             errorBuilder: (context, error, stackTrace) {
-              return Container(
-                color: colors.primaryContainer,
-                child: Center(
-                  child: Icon(
-                    Icons.landscape_rounded,
-                    color: colors.onPrimaryContainer,
-                    size: 48,
-                  ),
+              return Image.network(
+                SriLankaImages.sigiriyaMonolith,
+                width: double.infinity,
+                height: 300 + topPadding,
+                fit: BoxFit.cover,
+                errorBuilder: (ctx, err, stack) => Image.network(
+                  'https://images.unsplash.com/photo-1580794749460-76f97b7180d8?auto=format&fit=crop&w=1200&q=80',
+                  width: double.infinity,
+                  height: 300 + topPadding,
+                  fit: BoxFit.cover,
                 ),
               );
             },
@@ -459,18 +463,6 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                           ),
                         ),
-                      ),
-                    ),
-
-                    // Floating Brand Logo (top-right)
-                    Positioned(
-                      top: topPadding + 10,
-                      right: 16,
-                      child: const HelaLogo(
-                        size: 42,
-                        framed: true,
-                        isCircle: true,
-                        padding: 4,
                       ),
                     ),
 

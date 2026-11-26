@@ -29,6 +29,9 @@ class HelaNetworkImage extends StatelessWidget {
 
     return CachedNetworkImage(
       imageUrl: imageUrl,
+      httpHeaders: const {
+        'User-Agent': 'HELA-Travel-App/1.0 (https://hela.lk; contact@hela.lk)',
+      },
       width: width,
       height: height,
       fit: fit,

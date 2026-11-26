@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -280,285 +282,316 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
     final colors = HelaColors.of(context);
     final place = widget.place;
     final isFav = _isFavorite(context);
+    final topPadding = MediaQuery.paddingOf(context).top;
 
     return Scaffold(
       backgroundColor: colors.surface,
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            // Top Floating Navigation Row
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 10, 16, 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _CircleActionButton(
-                    icon: Icons.arrow_back_ios_new_rounded,
-                    tooltip: 'Back',
-                    onTap: () => Navigator.pop(context),
-                    colors: colors,
-                  ),
-                  _buildTopCapsuleActions(colors, isFav),
-                ],
-              ),
-            ),
+      body: Stack(
+        children: [
+          // Scrollable Body starting edge-to-edge from top of screen
+          SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.only(bottom: 28),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // 1. Full-Bleed Edge-to-Edge Hero Photo
+                _buildHeroImageCard(colors, place, topPadding),
 
-            // Scrollable Body
-            Expanded(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(16, 4, 16, 28),
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 480),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // 1. Hero Photo Card
-                        _buildHeroImageCard(colors, place),
-                        const SizedBox(height: 16),
+                // 2. Padded Editorial Content
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 18, 16, 0),
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 480),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // 2. Title + Sinhala Script + Rating
+                          _buildTitleAndRating(colors, place),
+                          const SizedBox(height: 10),
 
-                        // 2. Title + Sinhala Script + Rating
-                        _buildTitleAndRating(colors, place),
-                        const SizedBox(height: 10),
-
-                        // 3. Location Line + Prestige Pill
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.location_on_outlined,
-                              size: 16,
-                              color: colors.primary,
-                            ),
-                            const SizedBox(width: 5),
-                            Expanded(
-                              child: Text(
-                                place.locationLine,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: colors.onSurfaceVariant,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 7,
-                          ),
-                          decoration: BoxDecoration(
-                            color: colors.secondaryContainer.withValues(alpha: 0.75),
-                            borderRadius: BorderRadius.circular(999),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
+                          // 3. Location Line + Prestige Pill
+                          Row(
                             children: [
                               Icon(
-                                Icons.verified_outlined,
-                                size: 15,
+                                Icons.location_on_outlined,
+                                size: 16,
                                 color: colors.primary,
                               ),
-                              const SizedBox(width: 6),
-                              Flexible(
+                              const SizedBox(width: 5),
+                              Expanded(
                                 child: Text(
-                                  place.prestigeBadge,
+                                  place.locationLine,
                                   style: TextStyle(
-                                    fontSize: 11.5,
-                                    fontWeight: FontWeight.w700,
-                                    color: colors.primary,
+                                    fontSize: 13,
+                                    color: colors.onSurfaceVariant,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                               ),
                             ],
                           ),
-                        ),
-                        const SizedBox(height: 16),
-
-                        // 4. Editorial Description
-                        Text(
-                          place.description,
-                          style: TextStyle(
-                            fontSize: 14.5,
-                            color: colors.onSurface,
-                            height: 1.5,
+                          const SizedBox(height: 10),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 7,
+                            ),
+                            decoration: BoxDecoration(
+                              color: colors.secondaryContainer.withValues(alpha: 0.75),
+                              borderRadius: BorderRadius.circular(999),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.verified_outlined,
+                                  size: 15,
+                                  color: colors.primary,
+                                ),
+                                const SizedBox(width: 6),
+                                Flexible(
+                                  child: Text(
+                                    place.prestigeBadge,
+                                    style: TextStyle(
+                                      fontSize: 11.5,
+                                      fontWeight: FontWeight.w700,
+                                      color: colors.primary,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 18),
+                          const SizedBox(height: 16),
 
-                        // 5. 2x2 Quick Specs Grid
-                        _buildQuickSpecsGrid(colors, place),
-                        const SizedBox(height: 20),
+                          // 4. Editorial Description
+                          Text(
+                            place.description,
+                            style: TextStyle(
+                              fontSize: 14.5,
+                              color: colors.onSurface,
+                              height: 1.5,
+                            ),
+                          ),
+                          const SizedBox(height: 18),
 
-                        // 6. Segmented Tabs (Highlights / History / Visit Tips)
-                        _buildSegmentedTabs(colors),
-                        const SizedBox(height: 16),
-                        _buildActiveTabContent(colors, place),
-                        const SizedBox(height: 22),
+                          // 5. 2x2 Quick Specs Grid
+                          _buildQuickSpecsGrid(colors, place),
+                          const SizedBox(height: 22),
 
-                        // 7. Location & Geography Map + Route Bar
-                        _buildLocationAndGeography(colors, place),
-                        const SizedBox(height: 24),
+                          // 6. Tourist Essentials & Practical Guide (Google-sourced)
+                          _buildTouristEssentialsSection(colors, place),
+                          const SizedBox(height: 22),
 
-                        // 8. Nearby Discoveries
-                        _buildNearbyDiscoveries(colors, place),
-                        const SizedBox(height: 20),
+                          // 7. Segmented Tabs (Highlights / History / Visit Tips)
+                          _buildSegmentedTabs(colors),
+                          const SizedBox(height: 16),
+                          _buildActiveTabContent(colors, place),
+                          const SizedBox(height: 22),
 
-                        // 9. Ask HELA Travel Intelligence Card
-                        _buildAskHelaCard(colors, place),
-                        const SizedBox(height: 20),
+                          // 7. Location & Geography Map + Route Bar
+                          _buildLocationAndGeography(colors, place),
+                          const SizedBox(height: 24),
 
-                        // 10. Add to My Trip Button (Scrollable at bottom)
-                        _buildScrollableAddToTripButton(colors, isFav),
-                        const SizedBox(height: 24),
-                      ],
+                          // 8. Nearby Discoveries
+                          _buildNearbyDiscoveries(colors, place),
+                          const SizedBox(height: 20),
+
+                          // 9. Ask HELA Travel Intelligence Card
+                          _buildAskHelaCard(colors, place),
+                          const SizedBox(height: 20),
+
+                          // 10. Add to My Trip Button (Scrollable at bottom)
+                          _buildScrollableAddToTripButton(colors, isFav),
+                          const SizedBox(height: 24),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+
+          // Top Floating Navigation Row overlaid on the Hero Photo
+          Positioned(
+            top: topPadding + 10,
+            left: 16,
+            right: 16,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _CircleActionButton(
+                  icon: Icons.arrow_back_ios_new_rounded,
+                  tooltip: 'Back',
+                  onTap: () => Navigator.pop(context),
+                  colors: colors,
+                ),
+                _buildTopCapsuleActions(colors, isFav),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildTopCapsuleActions(HelaColorPalette colors, bool isFav) {
-    return Container(
-      height: 42,
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      decoration: BoxDecoration(
-        color: colors.isDark
-            ? colors.surfaceContainer
-            : Colors.white.withValues(alpha: 0.94),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(
-          color: colors.architecturalBorder.withValues(alpha: 0.8),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(999),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        child: Container(
+          height: 44,
+          padding: const EdgeInsets.symmetric(horizontal: 6),
+          decoration: BoxDecoration(
+            color: colors.isDark
+                ? colors.surfaceContainer.withValues(alpha: 0.72)
+                : Colors.white.withValues(alpha: 0.72),
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: colors.isDark ? 0.25 : 0.65),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 12,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: Icon(
+                  Icons.ios_share_rounded,
+                  size: 20,
+                  color: colors.onSurface,
+                ),
+                tooltip: 'Share',
+                splashRadius: 20,
+                onPressed: _sharePlace,
+              ),
+              Container(
+                width: 1,
+                height: 18,
+                color: colors.onSurface.withValues(alpha: 0.14),
+              ),
+              IconButton(
+                icon: Icon(
+                  isFav ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                  size: 21,
+                  color: isFav ? const Color(0xFFE11D48) : colors.onSurface,
+                ),
+                tooltip: isFav ? 'Saved' : 'Save place',
+                splashRadius: 20,
+                onPressed: _toggleFavorite,
+              ),
+            ],
+          ),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            icon: Icon(
-              Icons.ios_share_rounded,
-              size: 20,
-              color: colors.onSurface,
-            ),
-            tooltip: 'Share',
-            splashRadius: 20,
-            onPressed: _sharePlace,
-          ),
-          Container(
-            width: 1,
-            height: 18,
-            color: colors.architecturalBorder.withValues(alpha: 0.7),
-          ),
-          IconButton(
-            icon: Icon(
-              isFav ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-              size: 21,
-              color: isFav ? const Color(0xFFE11D48) : colors.onSurface,
-            ),
-            tooltip: isFav ? 'Saved' : 'Save place',
-            splashRadius: 20,
-            onPressed: _toggleFavorite,
-          ),
-        ],
       ),
     );
   }
 
-  Widget _buildHeroImageCard(HelaColorPalette colors, PlaceDetailData place) {
-    return Container(
-      height: 270,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.14),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(22),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            GestureDetector(
-              onTap: _openPhotoGallery,
-              child: PageView.builder(
-                controller: _photoController,
-                itemCount: place.photos.length,
-                onPageChanged: (index) {
-                  setState(() => _currentPhotoIndex = index);
-                },
-                itemBuilder: (_, index) {
-                  return HelaNetworkImage(
-                    imageUrl: place.photos[index],
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => Container(
-                      color: colors.primary.withValues(alpha: 0.14),
-                      child: Center(
-                        child: Icon(
-                          Icons.landscape_rounded,
-                          size: 48,
-                          color: colors.primary,
-                        ),
+  Widget _buildHeroImageCard(
+    HelaColorPalette colors,
+    PlaceDetailData place,
+    double topPadding,
+  ) {
+    return SizedBox(
+      width: double.infinity,
+      height: 310 + topPadding,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          GestureDetector(
+            onTap: _openPhotoGallery,
+            child: PageView.builder(
+              controller: _photoController,
+              itemCount: place.photos.length,
+              onPageChanged: (index) {
+                setState(() => _currentPhotoIndex = index);
+              },
+              itemBuilder: (_, index) {
+                return HelaNetworkImage(
+                  imageUrl: place.photos[index],
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity,
+                  errorBuilder: (_, _, _) => Container(
+                    color: colors.primary.withValues(alpha: 0.14),
+                    child: Center(
+                      child: Icon(
+                        Icons.landscape_rounded,
+                        size: 48,
+                        color: colors.primary,
                       ),
                     ),
-                  );
-                },
-              ),
-            ),
-            // Bottom-right photo counter
-            Positioned(
-              bottom: 12,
-              right: 12,
-              child: GestureDetector(
-                onTap: _openPhotoGallery,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.65),
-                    borderRadius: BorderRadius.circular(999),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.photo_library_outlined,
-                        size: 13,
-                        color: Colors.white,
-                      ),
-                      const SizedBox(width: 5),
-                      Text(
-                        '${_currentPhotoIndex + 1} / ${place.photos.length} PHOTOS',
-                        style: const TextStyle(
-                          fontSize: 10.5,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                      ),
+                );
+              },
+            ),
+          ),
+          // Subtle top gradient scrim for status bar and floating button contrast
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: topPadding + 72,
+            child: IgnorePointer(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withValues(alpha: 0.28),
+                      Colors.transparent,
                     ],
                   ),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+          // Bottom-right photo counter
+          Positioned(
+            bottom: 14,
+            right: 16,
+            child: GestureDetector(
+              onTap: _openPhotoGallery,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.62),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.photo_library_outlined,
+                      size: 13,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      '${_currentPhotoIndex + 1} / ${place.photos.length} PHOTOS',
+                      style: const TextStyle(
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -712,6 +745,169 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildTouristEssentialsSection(
+    HelaColorPalette colors,
+    PlaceDetailData place,
+  ) {
+    final guide = place.effectiveTouristGuide;
+    final items = [
+      (
+        icon: Icons.schedule_rounded,
+        label: 'Opening Hours',
+        value: guide.openingHours,
+      ),
+      (
+        icon: Icons.confirmation_number_outlined,
+        label: 'Entry & Ticket Fee',
+        value: guide.entryFee,
+      ),
+      (
+        icon: Icons.wb_sunny_outlined,
+        label: 'Best Season & Time',
+        value: guide.bestSeason,
+      ),
+      (
+        icon: Icons.directions_transit_rounded,
+        label: 'How to Get There',
+        value: guide.howToGetThere,
+      ),
+      (
+        icon: Icons.policy_outlined,
+        label: 'Dress Code & Rules',
+        value: guide.dressCodeAndRules,
+      ),
+      (
+        icon: Icons.health_and_safety_outlined,
+        label: 'Facilities & Safety',
+        value: guide.facilitiesAndSafety,
+      ),
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Tourist Essentials',
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w800,
+                color: colors.onSurface,
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3.5),
+              decoration: BoxDecoration(
+                color: colors.secondaryContainer.withValues(alpha: 0.7),
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Text(
+                'Visitor Guide',
+                style: TextStyle(
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w700,
+                  color: colors.primary,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Container(
+          decoration: BoxDecoration(
+            color: colors.cardBackground,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: colors.architecturalBorder),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            children: List.generate(items.length, (i) {
+              final item = items[i];
+              final isLast = i == items.length - 1;
+              return Column(
+                children: [
+                  _buildEssentialInfoRow(
+                    colors: colors,
+                    icon: item.icon,
+                    label: item.label,
+                    value: item.value,
+                  ),
+                  if (!isLast)
+                    Divider(
+                      height: 1,
+                      indent: 56,
+                      endIndent: 14,
+                      color: colors.architecturalBorder.withValues(alpha: 0.6),
+                    ),
+                ],
+              );
+            }),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEssentialInfoRow({
+    required HelaColorPalette colors,
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color: colors.secondaryContainer.withValues(alpha: 0.7),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, size: 17, color: colors.primary),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: colors.primary,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 12.8,
+                    height: 1.38,
+                    fontWeight: FontWeight.w500,
+                    color: colors.onSurface,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -896,8 +1092,8 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                       SizedBox(
                         height: 155,
                         width: double.infinity,
-                        child: Image.network(
-                          card.imageUrl,
+                        child: HelaNetworkImage(
+                          imageUrl: card.imageUrl,
                           fit: BoxFit.cover,
                           errorBuilder: (_, _, _) => Container(
                             color: colors.primary.withValues(alpha: 0.12),
@@ -1307,8 +1503,8 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                             SizedBox(
                               height: 98,
                               width: double.infinity,
-                              child: Image.network(
-                                nearby.imageUrl,
+                              child: HelaNetworkImage(
+                                imageUrl: nearby.imageUrl,
                                 fit: BoxFit.cover,
                                 errorBuilder: (_, _, _) => Container(
                                   color: colors.primary.withValues(alpha: 0.12),
@@ -1561,33 +1757,38 @@ class _CircleActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Tooltip(
       message: tooltip,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(999),
-        child: Container(
-          width: 42,
-          height: 42,
-          decoration: BoxDecoration(
-            color: colors.isDark
-                ? colors.surfaceContainer
-                : Colors.white.withValues(alpha: 0.94),
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: colors.architecturalBorder.withValues(alpha: 0.8),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.08),
-                blurRadius: 10,
-                offset: const Offset(0, 3),
+      child: ClipOval(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(999),
+            child: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: colors.isDark
+                    ? colors.surfaceContainer.withValues(alpha: 0.72)
+                    : Colors.white.withValues(alpha: 0.72),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: colors.isDark ? 0.25 : 0.65),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    blurRadius: 12,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: Center(
-            child: Icon(
-              icon,
-              size: 18,
-              color: colors.onSurface,
+              child: Center(
+                child: Icon(
+                  icon,
+                  size: 18,
+                  color: colors.onSurface,
+                ),
+              ),
             ),
           ),
         ),
