@@ -157,7 +157,7 @@ class HelaAppState extends ChangeNotifier {
       description: 'Sun, sand & coastal surf sanctuaries',
       icon: Icons.beach_access_rounded,
       color: const Color(0xFF0D9488),
-      itemTitles: ['Weligama & Tangalle Bays', 'Mirissa Beach', 'Unawatuna Beach'],
+      itemTitles: [],
     ),
     CustomSavedList(
       id: 'list_heritage',
@@ -165,7 +165,7 @@ class HelaAppState extends ChangeNotifier {
       description: 'Ancient rock citadels, sacred shrines & history',
       icon: Icons.temple_buddhist_rounded,
       color: const Color(0xFFD97706),
-      itemTitles: ['Sigiriya Rock Fortress Guided Dawn Ascent & Museum Tour'],
+      itemTitles: [],
     ),
     CustomSavedList(
       id: 'list_nature',
@@ -173,7 +173,7 @@ class HelaAppState extends ChangeNotifier {
       description: 'Mist-shrouded peaks, tea valleys & wild elephants',
       icon: Icons.park_rounded,
       color: const Color(0xFF059669),
-      itemTitles: ['Nine Arch Bridge & Demodara Tea Valley'],
+      itemTitles: [],
     ),
   ];
 
@@ -185,6 +185,99 @@ class HelaAppState extends ChangeNotifier {
     } catch (_) {
       return null;
     }
+  }
+
+  /// Checks whether a given saved item matches a custom collection.
+  /// Matches if the title is explicitly included in the collection,
+  /// or for preset themed collections, if the title/category matches relevant keywords.
+  bool itemMatchesList(String title, String category, CustomSavedList list) {
+    if (list.itemTitles.contains(title)) {
+      return true;
+    }
+
+    final t = title.toLowerCase();
+    final c = category.toLowerCase();
+
+    if (list.id == 'list_beach' || list.name.toLowerCase().contains('beach')) {
+      return c.contains('beach') ||
+          c.contains('coast') ||
+          c.contains('surf') ||
+          t.contains('beach') ||
+          t.contains('bay') ||
+          t.contains('coast') ||
+          t.contains('surf');
+    }
+
+    if (list.id == 'list_heritage' ||
+        list.name.toLowerCase().contains('cultural') ||
+        list.name.toLowerCase().contains('heritage')) {
+      return c.contains('cultural') ||
+          c.contains('heritage') ||
+          c.contains('temple') ||
+          c.contains('fort') ||
+          c.contains('history') ||
+          t.contains('sigiriya') ||
+          t.contains('rock fortress') ||
+          t.contains('temple') ||
+          t.contains('fort') ||
+          t.contains('citadel') ||
+          t.contains('sacred') ||
+          t.contains('ancient') ||
+          t.contains('monastery');
+    }
+
+    if (list.id == 'list_nature' ||
+        list.name.toLowerCase().contains('nature') ||
+        list.name.toLowerCase().contains('safari')) {
+      return c.contains('nature') ||
+          c.contains('wildlife') ||
+          c.contains('safari') ||
+          c.contains('mountain') ||
+          c.contains('highlands') ||
+          c.contains('park') ||
+          t.contains('park') ||
+          t.contains('bridge') ||
+          t.contains('falls') ||
+          t.contains('valley') ||
+          t.contains('plains') ||
+          t.contains('peak') ||
+          t.contains('rainforest') ||
+          t.contains('forest');
+    }
+
+    return false;
+  }
+
+  /// Computes the exact real-time count of user-saved items belonging to this collection.
+  int getSavedItemCountForList(CustomSavedList list) {
+    int count = 0;
+    final countedTitles = <String>{};
+
+    for (final haven in _savedHavens) {
+      if (!countedTitles.contains(haven.title) && itemMatchesList(haven.title, haven.category, list)) {
+        countedTitles.add(haven.title);
+        count++;
+      }
+    }
+    for (final tour in _savedTours) {
+      if (!countedTitles.contains(tour.title) && itemMatchesList(tour.title, 'tour', list)) {
+        countedTitles.add(tour.title);
+        count++;
+      }
+    }
+    for (final stay in _savedStays) {
+      if (!countedTitles.contains(stay.title) && itemMatchesList(stay.title, '${stay.location} ${stay.ratingLabel}', list)) {
+        countedTitles.add(stay.title);
+        count++;
+      }
+    }
+    for (final exp in _savedExperiences) {
+      if (!countedTitles.contains(exp.title) && itemMatchesList(exp.title, exp.category, list)) {
+        countedTitles.add(exp.title);
+        count++;
+      }
+    }
+    return count;
   }
 
   void createCustomList({
@@ -234,13 +327,14 @@ class HelaAppState extends ChangeNotifier {
     }
   }
 
-  bool isItemInList(String listId, String itemTitle) {
+  bool isItemInList(String listId, String itemTitle, [String category = '']) {
     final list = getCustomList(listId);
-    return list?.itemTitles.contains(itemTitle) ?? false;
+    if (list == null) return false;
+    return itemMatchesList(itemTitle, category, list);
   }
 
-  List<CustomSavedList> getListsContainingItem(String itemTitle) {
-    return _customLists.where((l) => l.itemTitles.contains(itemTitle)).toList();
+  List<CustomSavedList> getListsContainingItem(String itemTitle, [String category = '']) {
+    return _customLists.where((l) => itemMatchesList(itemTitle, category, l)).toList();
   }
 
   // ── Saved / Bookmarked Guides ──────────────────────────────────

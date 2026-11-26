@@ -183,8 +183,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('My Profile'), findsOneWidget);
-    expect(find.text('HELA Explorer · Tier 2'), findsOneWidget);
+    expect(find.text('Profile'), findsAtLeastNWidgets(1));
     expect(find.text('Edit Personal Profile'), findsOneWidget);
     expect(find.text('Saved Itineraries'), findsOneWidget);
   });
@@ -705,7 +704,6 @@ void main() {
     expect(find.text('DE'), findsWidgets);
     expect(find.text('Loslegen'), findsOneWidget);
     expect(find.text('Als Gast fortfahren'), findsOneWidget);
-    expect(find.text('Goldene Morgendämmerung'), findsOneWidget);
     expect(find.text('Sigiriya, Kulturelles Dreieck'), findsOneWidget);
   });
 
@@ -858,9 +856,8 @@ void main() {
     // Verify top progress indicator shows 3/3
     expect(find.text('3/3'), findsOneWidget);
 
-    // Verify top bar has language selector and brand monogram
-    expect(find.text('EN / සිංහල'), findsOneWidget);
-    expect(find.text('HELA'), findsWidgets);
+    // Verify top bar language selector is removed on Screen 3
+    expect(find.text('EN / සිංහල'), findsNothing);
 
     // Verify visual showcase card tags
     expect(find.text('Cultural Immersion • Kandy Heritage'), findsOneWidget);

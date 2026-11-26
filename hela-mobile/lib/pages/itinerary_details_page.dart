@@ -313,7 +313,12 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
         _currentPlan!.estimatedTotalCostUsd! > 0) {
       return '~\$${_currentPlan!.estimatedTotalCostUsd!.round()} est. total';
     }
-    switch (widget.budgetTier.toLowerCase()) {
+    final lower = widget.budgetTier.toLowerCase();
+    if (lower.startsWith('custom:')) {
+      final amount = int.tryParse(lower.split(':').last) ?? 120;
+      return 'Custom (~\$$amount/day)';
+    }
+    switch (lower) {
       case 'value':
         return r'Value (~$55/day)';
       case 'luxury':

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hela/data/place_details_catalog.dart';
 import 'package:hela/data/sri_lanka_images.dart';
+import 'package:hela/models/haven_item.dart';
 import 'package:hela/pages/cultural_guide/cultural_guide_page.dart';
 import 'package:hela/pages/place_details_page.dart';
 import 'package:hela/state/app_state.dart';
@@ -115,7 +116,7 @@ class _ExplorePageState extends State<ExplorePage> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   int _selectedCategoryIndex = 0; // 0: All, 1: Nature, 2: Beaches, 3: Culture, 4: Wildlife, 5: Adventure, 6: Food
-  final Set<String> _savedIds = {'sigiriya', 'ritigala'};
+  final Set<String> _savedIds = <String>{};
 
   final List<Map<String, dynamic>> _categories = const [
     {'label': 'All', 'icon': null},
@@ -1397,17 +1398,46 @@ class _ExplorePageState extends State<ExplorePage> {
     super.dispose();
   }
 
-  void _toggleSave(String id, String title) {
+  void _toggleSaveDestination(ExploreDestination d) {
+    final appState = HelaAppStateProvider.of(context);
+    final isSaved = appState.isHavenSaved(d.name) || _savedIds.contains(d.id);
+
+    final haven = HavenItem(
+      id: d.id,
+      title: d.name,
+      location: d.region,
+      category: d.category,
+      price: d.priceTag,
+      rating: double.tryParse(d.rating.split(' ').first) ?? 4.8,
+      badgeText: d.badge,
+      imageUrl: d.imageUrl,
+      filterCategory: d.category,
+    );
+
     setState(() {
-      if (_savedIds.contains(id)) {
-        _savedIds.remove(id);
+      if (isSaved) {
+        _savedIds.remove(d.id);
+        if (appState.isHavenSaved(d.name)) {
+          appState.removeSavedHaven(d.name);
+        }
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Removed "$title" from Saved Sanctuary')),
+          SnackBar(
+            content: Text('Removed "${d.name}" from Saved Sanctuary'),
+            behavior: SnackBarBehavior.floating,
+          ),
         );
       } else {
-        _savedIds.add(id);
+        _savedIds.add(d.id);
+        if (!appState.isHavenSaved(d.name)) {
+          appState.toggleSaveHaven(haven);
+        }
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Saved "$title" to Wishlist')),
+          SnackBar(
+            content: Text('Saved "${d.name}" to Wishlist ✨'),
+            behavior: SnackBarBehavior.floating,
+          ),
         );
       }
     });
@@ -1790,7 +1820,7 @@ class _ExplorePageState extends State<ExplorePage> {
             separatorBuilder: (_, _) => const SizedBox(width: 12),
             itemBuilder: (context, index) {
               final d = items[index];
-              final isSaved = _savedIds.contains(d.id);
+              final isSaved = HelaAppStateProvider.of(context).isHavenSaved(d.name) || _savedIds.contains(d.id);
               return GestureDetector(
                 onTap: () => _openPlaceDetails(d.name, subtitle: d.subtitle, rating: d.rating, imageUrl: d.imageUrl),
                 child: Container(
@@ -1851,7 +1881,7 @@ class _ExplorePageState extends State<ExplorePage> {
                             top: 6,
                             right: 6,
                             child: GestureDetector(
-                              onTap: () => _toggleSave(d.id, d.name),
+                              onTap: () => _toggleSaveDestination(d),
                               child: Container(
                                 width: 30,
                                 height: 30,

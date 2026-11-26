@@ -133,7 +133,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('My Profile'), findsOneWidget);
+      expect(find.text('Profile'), findsAtLeastNWidgets(1));
       expect(find.text('Explore'), findsOneWidget);
 
       // Scroll to Language setting row and open the language picker sheet
@@ -152,7 +152,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(appState.selectedLanguage, 'DE');
-      expect(find.text('Mein Profil'), findsOneWidget);
+      expect(find.text('Profil'), findsAtLeastNWidgets(1));
       expect(find.text('EINSTELLUNGEN'), findsOneWidget);
       expect(find.text('Entdecken'), findsOneWidget);
       expect(find.text('Gespeichert'), findsOneWidget);
@@ -170,7 +170,7 @@ void main() {
 
       expect(appState.selectedLanguage, 'AR');
       expect(appState.isRtl, isTrue);
-      expect(find.text('ملفي الشخصي'), findsOneWidget);
+      expect(find.text('الملف الشخصي'), findsAtLeastNWidgets(1));
     });
   });
 }

@@ -154,134 +154,67 @@ class _ProfilePageState extends State<ProfilePage> {
       backgroundColor: isDark ? colors.surface : _mintPageBg,
       elevation: 0,
       scrolledUnderElevation: 1,
-      toolbarHeight: 62,
+      toolbarHeight: 64,
       automaticallyImplyLeading: false,
       titleSpacing: 16,
-      title: Row(
-        children: [
-          Container(
-            width: 38,
-            height: 38,
-            decoration: const BoxDecoration(
-              color: _deepTeal,
-              shape: BoxShape.circle,
+      title: Text(
+        appState.tr('profile'),
+        style: TextStyle(
+          fontSize: 32,
+          fontWeight: FontWeight.w900,
+          color: isDark ? colors.onSurface : _darkInk,
+          letterSpacing: -0.8,
+          fontFamily: 'Inter',
+        ),
+      ),
+      actions: [
+        // SOS Pill Button
+        InkWell(
+          onTap: _showEmergencySosSheet,
+          borderRadius: BorderRadius.circular(999),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFDE2E2),
+              borderRadius: BorderRadius.circular(999),
+              border: Border.all(color: const Color(0xFFF9B8B8)),
             ),
-            child: const Icon(
-              Icons.account_circle_outlined,
-              color: Colors.white,
-              size: 22,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  appState.tr('hela_travel'),
-                  style: TextStyle(
-                    fontSize: 9.5,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.1,
-                    color: isDark ? colors.onSurfaceVariant : _mutedTeal,
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                    vertical: 1,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFDC2626),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: const Text(
+                    'SOS',
+                    style: TextStyle(
+                      fontSize: 8.5,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-                Text(
-                  appState.tr('my_profile'),
+                const SizedBox(width: 5),
+                const Text(
+                  'SOS',
                   style: TextStyle(
-                    fontSize: 17.5,
+                    fontSize: 12,
                     fontWeight: FontWeight.w800,
-                    color: isDark ? colors.onSurface : _darkInk,
-                    letterSpacing: -0.3,
+                    color: Color(0xFFB91C1C),
                   ),
                 ),
               ],
             ),
           ),
-          // SOS Pill Button
-          InkWell(
-            onTap: _showEmergencySosSheet,
-            borderRadius: BorderRadius.circular(999),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFDE2E2),
-                borderRadius: BorderRadius.circular(999),
-                border: Border.all(color: const Color(0xFFF9B8B8)),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 4,
-                      vertical: 1,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFDC2626),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: const Text(
-                      'SOS',
-                      style: TextStyle(
-                        fontSize: 8.5,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 5),
-                  const Text(
-                    'SOS',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w800,
-                      color: Color(0xFFB91C1C),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(width: 6),
-          // Notifications Bell
-          InkWell(
-            onTap: () => _showNotificationsSheet(appState),
-            borderRadius: BorderRadius.circular(999),
-            child: Padding(
-              padding: const EdgeInsets.all(6),
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Icon(
-                    Icons.notifications_none_rounded,
-                    size: 24,
-                    color: isDark ? colors.onSurface : _darkInk,
-                  ),
-                  if (appState.unreadAlertsCount > 0)
-                    Positioned(
-                      right: 1,
-                      top: 1,
-                      child: Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFEF4444),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: isDark ? colors.surface : _mintPageBg,
-                            width: 1.5,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(width: 16),
+      ],
     );
   }
 
@@ -381,39 +314,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isDark ? colors.surfaceContainer : _softMintTile,
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.workspace_premium_outlined,
-                            size: 13.5,
-                            color: isDark ? colors.primary : _deepTeal,
-                          ),
-                          const SizedBox(width: 4),
-                          Flexible(
-                            child: Text(
-                              appState.tr('hela_explorer_tier'),
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                color: isDark ? colors.onSurface : _deepTeal,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 6),
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 10,
@@ -1662,69 +1562,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  void _showNotificationsSheet(HelaAppState appState) {
-    appState.clearUnreadAlerts();
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (ctx) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Smart Travel Alerts',
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w800,
-                  color: _darkInk,
-                ),
-              ),
-              const SizedBox(height: 12),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const CircleAvatar(
-                  backgroundColor: _softMintTile,
-                  child: Icon(Icons.train_rounded, color: _deepTeal, size: 20),
-                ),
-                title: const Text(
-                  'Ella Odyssey Train On Schedule',
-                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5),
-                ),
-                subtitle: const Text(
-                  '08:47 AM departure from Kandy confirmed • Platform 2.',
-                  style: TextStyle(fontSize: 12),
-                ),
-              ),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const CircleAvatar(
-                  backgroundColor: Color(0xFFFEF3C7),
-                  child: Icon(
-                    Icons.wb_sunny_rounded,
-                    color: Color(0xFFD97706),
-                    size: 20,
-                  ),
-                ),
-                title: const Text(
-                  'Clear Morning Skies in Central Highlands',
-                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5),
-                ),
-                subtitle: const Text(
-                  'Ideal visibility for Nine Arch Bridge & Little Adam’s Peak.',
-                  style: TextStyle(fontSize: 12),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
   void _showLanguagePicker() {
     final appState = HelaAppStateProvider.of(context);

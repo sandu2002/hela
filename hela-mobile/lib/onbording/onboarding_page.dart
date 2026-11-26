@@ -746,64 +746,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 ),
               )
             else
-              // Screen 3: Language Pill + Brand Monogram Token (matching Stitch design)
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  InkWell(
-                    onTap: _showLanguageSelector,
-                    borderRadius: BorderRadius.circular(20),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: OnboardingTokens.mintContainer,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.translate_rounded,
-                            size: 15,
-                            color: Color(0xFF5F4100),
-                          ),
-                          const SizedBox(width: 5),
-                          Text(
-                            '${HelaAppStateProvider.of(context).selectedLanguage} / සිංහල',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: OnboardingTokens.primaryDark,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFB6EAE1),
-                      shape: BoxShape.circle,
-                    ),
-                    alignment: Alignment.center,
-                    child: const Text(
-                      'HELA',
-                      style: TextStyle(
-                        fontSize: 9.5,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: -0.5,
-                        color: OnboardingTokens.primaryDark,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              // Screen 3: Clean placeholder balancing the back button
+              const SizedBox(width: 42),
           ],
         ),
       ),
@@ -840,41 +784,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         Icons.landscape_rounded,
                         color: Colors.white70,
                         size: 54,
-                      ),
-                    ),
-                  ),
-
-                  // Top-Right Pill: Golden Dawn
-                  Positioned(
-                    top: 14,
-                    right: 14,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.45),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.wb_sunny_outlined,
-                            size: 14,
-                            color: Colors.white,
-                          ),
-                          const SizedBox(width: 5),
-                          Text(
-                            appState.tr('golden_dawn'),
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
                       ),
                     ),
                   ),

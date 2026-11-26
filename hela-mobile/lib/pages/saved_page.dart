@@ -85,7 +85,7 @@ class _SavedPageState extends State<SavedPage> {
                     _buildCustomCollectionsSection(appState),
                     const SizedBox(height: 18),
                     if (selectedList != null) ...[
-                      _buildActiveListBanner(selectedList),
+                      _buildActiveListBanner(selectedList, appState),
                       const SizedBox(height: 14),
                     ],
                     _buildContent(appState),
@@ -103,12 +103,13 @@ class _SavedPageState extends State<SavedPage> {
   }
 
   PreferredSizeWidget _buildAppBar(int totalCount, HelaAppState appState) {
+    final colors = HelaColors.of(context);
     return AppBar(
       backgroundColor: HelaColors.surface.withValues(alpha: 0.94),
       elevation: 0,
       scrolledUnderElevation: 1.5,
       shadowColor: Colors.black12,
-      toolbarHeight: 64,
+      toolbarHeight: 68,
       automaticallyImplyLeading: false,
       leading: _shouldShowBack
           ? Padding(
@@ -143,10 +144,11 @@ class _SavedPageState extends State<SavedPage> {
       title: Text(
         appState.tr('saved_collection'),
         style: TextStyle(
-          color: HelaColors.primary,
-          fontWeight: FontWeight.w800,
-          fontSize: _shouldShowBack ? 18 : 22,
-          letterSpacing: -0.4,
+          color: colors.onSurface,
+          fontWeight: FontWeight.w900,
+          fontSize: _shouldShowBack ? 24 : 32,
+          letterSpacing: -0.8,
+          fontFamily: 'Inter',
         ),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
@@ -482,7 +484,7 @@ class _SavedPageState extends State<SavedPage> {
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                '${list.itemTitles.length} saved',
+                                '${appState.getSavedItemCountForList(list)} saved',
                                 style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
@@ -504,7 +506,8 @@ class _SavedPageState extends State<SavedPage> {
     );
   }
 
-  Widget _buildActiveListBanner(CustomSavedList list) {
+  Widget _buildActiveListBanner(CustomSavedList list, HelaAppState appState) {
+    final itemCount = appState.getSavedItemCountForList(list);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
@@ -526,7 +529,7 @@ class _SavedPageState extends State<SavedPage> {
                     text: list.name,
                     style: TextStyle(fontWeight: FontWeight.w800, color: list.color),
                   ),
-                  TextSpan(text: ' (${list.itemTitles.length} items)'),
+                  TextSpan(text: ' ($itemCount ${itemCount == 1 ? 'item' : 'items'})'),
                 ],
               ),
             ),
@@ -565,16 +568,16 @@ class _SavedPageState extends State<SavedPage> {
     final showExp = _selectedFilterIndex == 0 || _selectedFilterIndex == 4;
 
     final visibleTours = showTours
-        ? appState.savedTours.where((t) => selectedList == null || selectedList.itemTitles.contains(t.title)).toList()
+        ? appState.savedTours.where((t) => selectedList == null || appState.itemMatchesList(t.title, 'tour', selectedList)).toList()
         : <TourPlan>[];
     final visibleHavens = showHavens
-        ? appState.savedHavens.where((h) => selectedList == null || selectedList.itemTitles.contains(h.title)).toList()
+        ? appState.savedHavens.where((h) => selectedList == null || appState.itemMatchesList(h.title, h.category, selectedList)).toList()
         : <HavenItem>[];
     final visibleStays = showStays
-        ? appState.savedStays.where((s) => selectedList == null || selectedList.itemTitles.contains(s.title)).toList()
+        ? appState.savedStays.where((s) => selectedList == null || appState.itemMatchesList(s.title, '${s.location} ${s.ratingLabel}', selectedList)).toList()
         : <StayHaven>[];
     final visibleExp = showExp
-        ? appState.savedExperiences.where((e) => selectedList == null || selectedList.itemTitles.contains(e.title)).toList()
+        ? appState.savedExperiences.where((e) => selectedList == null || appState.itemMatchesList(e.title, e.category, selectedList)).toList()
         : <ExperienceItem>[];
 
     final totalVisible = visibleTours.length + visibleHavens.length + visibleStays.length + visibleExp.length;
@@ -584,6 +587,19 @@ class _SavedPageState extends State<SavedPage> {
         return _buildCustomListEmptyState(selectedList);
       }
       return _buildEmptyState();
+    }
+
+    if (selectedList != null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSectionHeader(selectedList.name, totalVisible),
+          ...visibleTours.map((tour) => _buildSavedTourCardItem(tour, appState)),
+          ...visibleHavens.map((haven) => _buildHavenCardItem(haven, appState)),
+          ...visibleStays.map((stay) => _buildStayCardItem(stay, appState)),
+          ...visibleExp.map((exp) => _buildExperienceCardItem(exp, appState)),
+        ],
+      );
     }
 
     return Column(
@@ -1430,7 +1446,7 @@ class _SavedPageState extends State<SavedPage> {
                                   ),
                                 ),
                                 Text(
-                                  '${list.itemTitles.length}',
+                                  '${appState.getSavedItemCountForList(list)}',
                                   style: const TextStyle(
                                     fontSize: 12,
                                     color: HelaColors.onSurfaceVariant,

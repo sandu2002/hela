@@ -121,7 +121,14 @@ class _ItineraryPlanningLoadingPageState
   }
 
   BudgetLevel _mapBudgetTier(String tier) {
-    switch (tier.toLowerCase()) {
+    final lower = tier.toLowerCase();
+    if (lower.startsWith('custom:')) {
+      final amount = int.tryParse(lower.split(':').last) ?? 120;
+      if (amount <= 75) return BudgetLevel.low;
+      if (amount >= 220) return BudgetLevel.high;
+      return BudgetLevel.medium;
+    }
+    switch (lower) {
       case 'value':
         return BudgetLevel.low;
       case 'luxury':
@@ -177,6 +184,12 @@ class _ItineraryPlanningLoadingPageState
     TourPlan? aiTourPlan;
     try {
       final notesBuffer = <String>[];
+      if (widget.budgetTier.toLowerCase().startsWith('custom:')) {
+        final amount = int.tryParse(widget.budgetTier.split(':').last);
+        if (amount != null && amount > 0) {
+          notesBuffer.add('Target custom daily budget: \$$amount USD per day');
+        }
+      }
       if (widget.interests.isNotEmpty) {
         notesBuffer.add('Preferred experiences: ${widget.interests.join(", ")}');
       }

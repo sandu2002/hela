@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hela/data/sri_lanka_images.dart';
 import 'package:hela/pages/itinerary_planning_loading_page.dart';
 import 'package:hela/state/app_state.dart';
@@ -43,8 +44,22 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
   int _adults = 2;
   int _children = 0;
 
-  // Budget Tier: 'value', 'comfort', 'luxury'
+  // Budget Tier: 'value', 'comfort', 'luxury', 'custom'
   String _selectedBudgetTier = 'comfort';
+  int _customDailyBudget = 120;
+  final TextEditingController _customBudgetController =
+      TextEditingController(text: '120');
+
+  String get _effectiveBudgetTier => _selectedBudgetTier == 'custom'
+      ? 'custom:$_customDailyBudget'
+      : _selectedBudgetTier;
+
+  String get _customBudgetStyleHint {
+    if (_customDailyBudget <= 75) return 'Guesthouses & scenic trains';
+    if (_customDailyBudget <= 180) return 'Boutique villas & private AC car';
+    if (_customDailyBudget <= 320) return 'Upscale resorts & chauffeur-guide';
+    return '5-star luxury & bespoke transfers';
+  }
 
   // Multi-select Travel Interests
   final Set<String> _selectedInterests = {
@@ -76,6 +91,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
   void dispose() {
     _startLocationController.dispose();
     _extraNotesController.dispose();
+    _customBudgetController.dispose();
     super.dispose();
   }
 
@@ -239,7 +255,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
           endDate: _endDate,
           adults: _adults,
           children: _children,
-          budgetTier: _selectedBudgetTier,
+          budgetTier: _effectiveBudgetTier,
           interests: _selectedInterests,
           pace: _selectedPace,
           extraNotes: _extraNotesController.text,
@@ -1110,45 +1126,238 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
           children: [
             Text(
               HelaAppStateProvider.of(context).tr('travel_budget'),
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface),
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: colors.onSurface,
+              ),
             ),
-            const Text(' *', style: TextStyle(color: Color(0xFFDC2626), fontWeight: FontWeight.bold)),
+            const Text(
+              ' *',
+              style: TextStyle(
+                color: Color(0xFFDC2626),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ],
         ),
-        Text('Choose your lodging & transit tier', style: TextStyle(fontSize: 11, color: colors.onSurfaceVariant)),
-        const SizedBox(height: 8),
+        const SizedBox(height: 2),
+        Text(
+          'Choose your lodging & transit tier',
+          style: TextStyle(fontSize: 11.5, color: colors.onSurfaceVariant),
+        ),
+        const SizedBox(height: 12),
 
         // Tier 1: Value Explorer
         _buildBudgetCard(
           id: 'value',
           title: 'Value Explorer',
-          priceRange: r'~$40 - $70 / day',
-          description: 'Guesthouses, scenic 2nd/3rd class train rides, and vibrant local rice & curry spots.',
+          priceAmount: r'~$40 – $70',
+          priceUnit: '/ day',
+          description: 'Cozy guesthouses · Scenic trains · Local dining',
           icon: Icons.backpack_rounded,
           colors: colors,
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
 
-        // Tier 2: Comfort & Boutique (Most Popular)
+        // Tier 2: Comfort & Boutique (Popular)
         _buildBudgetCard(
           id: 'comfort',
           title: 'Comfort & Boutique',
-          priceRange: r'~$100 - $180 / day',
-          description: 'Boutique heritage villas, private AC car/tuk-tuk connections, and curated guided tours.',
+          priceAmount: r'~$100 – $180',
+          priceUnit: '/ day',
+          description: 'Heritage boutique villas · Private AC car · Guided tours',
           icon: Icons.hotel_rounded,
           isPopular: true,
           colors: colors,
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
 
         // Tier 3: Luxury Ceylon
         _buildBudgetCard(
           id: 'luxury',
           title: 'Luxury Ceylon',
-          priceRange: r'~$250+ / day',
-          description: '5-star colonial tea bungalows, dedicated chauffeur-guide, chartered seaplane hops.',
+          priceAmount: r'~$250+',
+          priceUnit: '/ day',
+          description: '5-star tea bungalows · Chauffeur-guide · Seaplane hops',
           icon: Icons.villa_rounded,
           colors: colors,
+        ),
+        const SizedBox(height: 10),
+
+        // Tier 4: Custom Budget
+        _buildBudgetCard(
+          id: 'custom',
+          title: 'Custom Budget',
+          priceAmount: '\$$_customDailyBudget',
+          priceUnit: '/ day',
+          description: _selectedBudgetTier == 'custom'
+              ? _customBudgetStyleHint
+              : 'Set your own daily USD budget for stays & transit',
+          icon: Icons.tune_rounded,
+          colors: colors,
+          expandedChild: _buildCustomBudgetControls(colors),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCustomBudgetControls(HelaColorPalette colors) {
+    final isDark = colors.brightness == Brightness.dark;
+    final sliderValue = _customDailyBudget.clamp(30, 500).toDouble();
+    final estimatedTotal = _customDailyBudget * _tripDays;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 12),
+        Divider(
+          height: 1,
+          color: isDark
+              ? colors.architecturalBorder
+              : const Color(0xFFD6ECE5),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            // Editable Daily Amount Pill
+            Container(
+              width: 112,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: isDark ? colors.surfaceContainerLowest : Colors.white,
+                borderRadius: BorderRadius.circular(11),
+                border: Border.all(
+                  color: colors.primary.withValues(alpha: 0.45),
+                  width: 1.2,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Text(
+                    r'$',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                      color: colors.primary,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: TextField(
+                      controller: _customBudgetController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(5),
+                      ],
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        color: colors.onSurface,
+                      ),
+                      decoration: const InputDecoration(
+                        isDense: true,
+                        contentPadding: EdgeInsets.zero,
+                        border: InputBorder.none,
+                      ),
+                      onChanged: (val) {
+                        final parsed = int.tryParse(val);
+                        if (parsed != null && parsed > 0) {
+                          setState(() => _customDailyBudget = parsed);
+                        }
+                      },
+                    ),
+                  ),
+                  Text(
+                    '/d',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    'Est. ~\$$estimatedTotal total',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: colors.onSurface,
+                    ),
+                  ),
+                  Text(
+                    'for $_tripDays ${_tripDays == 1 ? 'day' : 'days'}',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            activeTrackColor: colors.primary,
+            inactiveTrackColor: colors.primary.withValues(alpha: 0.16),
+            thumbColor: colors.primary,
+            overlayColor: colors.primary.withValues(alpha: 0.14),
+            trackHeight: 4,
+            thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
+          ),
+          child: Slider(
+            value: sliderValue,
+            min: 30,
+            max: 500,
+            divisions: 47,
+            onChanged: (value) {
+              final rounded = value.round();
+              setState(() {
+                _customDailyBudget = rounded;
+                _customBudgetController.text = '$rounded';
+                _customBudgetController.selection = TextSelection.collapsed(
+                  offset: _customBudgetController.text.length,
+                );
+              });
+            },
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                r'$30 / day',
+                style: TextStyle(
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w600,
+                  color: colors.onSurfaceVariant,
+                ),
+              ),
+              Text(
+                r'$500+ / day',
+                style: TextStyle(
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w600,
+                  color: colors.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -1157,136 +1366,198 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
   Widget _buildBudgetCard({
     required String id,
     required String title,
-    required String priceRange,
+    required String priceAmount,
+    required String priceUnit,
     required String description,
     required IconData icon,
     bool isPopular = false,
+    Widget? expandedChild,
     required HelaColorPalette colors,
   }) {
     final isSelected = _selectedBudgetTier == id;
+    final isDark = colors.brightness == Brightness.dark;
 
-    return InkWell(
-      onTap: () => setState(() => _selectedBudgetTier = id),
-      borderRadius: BorderRadius.circular(14),
-      child: Container(
-        decoration: BoxDecoration(
-          color: isSelected ? colors.primary : colors.cardBackground,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: isSelected ? colors.primary : colors.architecturalBorder,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: isSelected ? colors.primary.withValues(alpha: 0.22) : Colors.black.withValues(alpha: 0.03),
-              blurRadius: isSelected ? 12 : 6,
-              offset: const Offset(0, 3),
+    final cardBg = isSelected
+        ? (isDark
+              ? colors.primaryContainer.withValues(alpha: 0.28)
+              : const Color(0xFFF2FBF8))
+        : colors.cardBackground;
+
+    final borderColor = isSelected ? colors.primary : colors.architecturalBorder;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => setState(() => _selectedBudgetTier = id),
+        borderRadius: BorderRadius.circular(16),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: cardBg,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: borderColor,
+              width: isSelected ? 1.8 : 1.0,
             ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(14),
-          child: Stack(
+            boxShadow: [
+              BoxShadow(
+                color: isSelected
+                    ? colors.primary.withValues(alpha: isDark ? 0.2 : 0.1)
+                    : Colors.black.withValues(alpha: 0.03),
+                blurRadius: isSelected ? 14 : 6,
+                offset: Offset(0, isSelected ? 4 : 2),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (isPopular)
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: 42,
+                    height: 42,
                     decoration: BoxDecoration(
-                      color: colors.tertiaryFixed,
-                      borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(10)),
+                      color: isSelected ? colors.primary : colors.surfaceContainer,
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Row(
+                    child: Icon(
+                      icon,
+                      size: 20,
+                      color: isSelected ? Colors.white : colors.primary,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(Icons.star_rounded, size: 12, color: colors.onTertiaryFixed),
-                        const SizedBox(width: 3),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Wrap(
+                                spacing: 8,
+                                runSpacing: 4,
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: [
+                                  Text(
+                                    title,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: -0.3,
+                                      color: colors.onSurface,
+                                    ),
+                                  ),
+                                  if (isPopular)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 7,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFFEF3C7),
+                                        borderRadius: BorderRadius.circular(999),
+                                        border: Border.all(
+                                          color: const Color(0xFFFDE68A),
+                                        ),
+                                      ),
+                                      child: const Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.star_rounded,
+                                            size: 11,
+                                            color: Color(0xFFB45309),
+                                          ),
+                                          SizedBox(width: 3),
+                                          Text(
+                                            'Popular',
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w800,
+                                              color: Color(0xFF92400E),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              width: 22,
+                              height: 22,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: isSelected
+                                    ? colors.primary
+                                    : Colors.transparent,
+                                border: Border.all(
+                                  color: isSelected
+                                      ? colors.primary
+                                      : colors.outlineVariant,
+                                  width: 1.6,
+                                ),
+                              ),
+                              child: isSelected
+                                  ? const Icon(
+                                      Icons.check_rounded,
+                                      size: 14,
+                                      color: Colors.white,
+                                    )
+                                  : null,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: priceAmount,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: -0.2,
+                                  color: isSelected
+                                      ? colors.primary
+                                      : colors.onSurface,
+                                ),
+                              ),
+                              TextSpan(
+                                text: ' $priceUnit',
+                                style: TextStyle(
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w500,
+                                  color: colors.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 4),
                         Text(
-                          'Most Popular',
+                          description,
                           style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w800,
-                            color: colors.onTertiaryFixed,
+                            fontSize: 11.5,
+                            color: colors.onSurfaceVariant,
+                            height: 1.35,
                           ),
                         ),
                       ],
                     ),
                   ),
-                ),
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 38,
-                      height: 38,
-                      decoration: BoxDecoration(
-                        color: isSelected ? colors.primaryContainer : colors.surfaceContainer,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        icon,
-                        size: 20,
-                        color: isSelected ? Colors.white : colors.primary,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                title,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  color: isSelected ? Colors.white : colors.onSurface,
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(right: isPopular ? 80 : 0),
-                                child: Text(
-                                  priceRange,
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w800,
-                                    color: isSelected ? colors.goldenAmber : colors.primary,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 3),
-                          Text(
-                            description,
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: isSelected ? Colors.white.withValues(alpha: 0.9) : colors.onSurfaceVariant,
-                              height: 1.35,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      width: 20,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: isSelected ? Colors.white : colors.surfaceContainer,
-                      ),
-                      child: isSelected
-                          ? Icon(Icons.check_rounded, size: 14, color: colors.primary)
-                          : null,
-                    ),
-                  ],
-                ),
+                ],
               ),
+              if (expandedChild != null && isSelected) expandedChild,
             ],
           ),
         ),

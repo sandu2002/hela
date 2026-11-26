@@ -25,12 +25,11 @@ void main() {
       await tester.pumpWidget(wrapProfile(appState));
       await tester.pumpAndSettle();
 
-      expect(find.text('My Profile'), findsOneWidget);
+      expect(find.text('Profile'), findsAtLeastNWidgets(1));
       expect(find.text('Elena Rostova'), findsOneWidget);
       expect(find.text('elena.travels@worldmail.com'), findsOneWidget);
       expect(find.text('+44 7911 123456'), findsOneWidget);
       expect(find.text('GB'), findsOneWidget);
-      expect(find.text('HELA Explorer · Tier 2'), findsOneWidget);
       expect(find.text('SLTDA Tourist ID #8492'), findsOneWidget);
       expect(find.text('Edit Personal Profile'), findsOneWidget);
       expect(find.text('MY TRAVEL HUB'), findsOneWidget);
