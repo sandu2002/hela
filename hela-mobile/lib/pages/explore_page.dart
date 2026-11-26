@@ -1435,7 +1435,7 @@ class _ExplorePageState extends State<ExplorePage> {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Saved "${d.name}" to Wishlist ✨'),
+            content: Text('Saved "${d.name}" to Wishlist'),
             behavior: SnackBarBehavior.floating,
           ),
         );

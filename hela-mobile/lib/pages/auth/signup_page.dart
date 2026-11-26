@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:hela/data/sri_lanka_images.dart';
 import 'package:hela/onbording/onboarding_page.dart';
@@ -311,221 +313,266 @@ class _SignUpPageState extends State<SignUpPage> {
 
     return Scaffold(
       backgroundColor: colors.background,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 440),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // ── Mini Cultural Banner with Floating Back Button ───
-                  _buildCulturalBanner(colors),
-                  const SizedBox(height: 16),
+      body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // ── Full-Bleed Hero Banner with Floating Controls & Tabs ──
+            _buildCulturalBanner(colors),
 
-                  // ── Mode Tab Bar (Sign Up / Sign In Switcher) ──────────
-                  _buildModeTabBar(colors),
-                  const SizedBox(height: 16),
+            // ── Body Content ──────────────────────────────────────────
+            SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 440),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // ── Header Intro Copy ──────────────────────────
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: Text(
+                            _mode == AuthMode.signUp
+                                ? 'Unlock personalized AI itineraries, verified tuk-tuk fares, and scenic tea train connections across Sri Lanka.'
+                                : 'Sign in to access your saved itineraries, Sri Lanka transit passes, and offline island guides.',
+                            style: TextStyle(
+                              fontSize: 14,
+                              height: 1.45,
+                              color: colors.onSurfaceVariant,
+                              fontFamily: 'Inter',
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
 
-                  // ── Header Intro Copy ──────────────────────────────────
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: Text(
-                      _mode == AuthMode.signUp
-                          ? 'Unlock personalized AI itineraries, verified tuk-tuk fares, and scenic tea train connections across Sri Lanka.'
-                          : 'Sign in to access your saved itineraries, Sri Lanka transit passes, and offline island guides.',
-                      style: TextStyle(
-                        fontSize: 14,
-                        height: 1.45,
-                        color: colors.onSurfaceVariant,
-                        fontFamily: 'Inter',
-                      ),
+                        // ── Social Sign-Up Options ─────────────────────
+                        _buildSocialButtons(colors, isDark),
+                        const SizedBox(height: 20),
+
+                        // ── Divider ────────────────────────────────────
+                        _buildDivider(colors),
+                        const SizedBox(height: 20),
+
+                        // ── Form ───────────────────────────────────────
+                        _buildForm(colors),
+                        const SizedBox(height: 24),
+
+                        // ── Guest & Sign In / Sign Up Footer ───────────
+                        _buildFooter(colors),
+                        const SizedBox(height: 12),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 20),
-
-                  // ── Social Sign-Up Options ─────────────────────────────
-                  _buildSocialButtons(colors, isDark),
-                  const SizedBox(height: 20),
-
-                  // ── Divider ────────────────────────────────────────────
-                  _buildDivider(colors),
-                  const SizedBox(height: 20),
-
-                  // ── Form ───────────────────────────────────────────────
-                  _buildForm(colors),
-                  const SizedBox(height: 24),
-
-                  // ── Guest & Sign In / Sign Up Footer ───────────────────
-                  _buildFooter(colors),
-                  const SizedBox(height: 24),
-                ],
+                ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildCulturalBanner(HelaColorPalette colors) {
-    return Container(
+    final topPadding = MediaQuery.paddingOf(context).top;
+    return SizedBox(
       width: double.infinity,
-      height: 220,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: colors.primary.withValues(alpha: 0.16),
-            blurRadius: 14,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Image.network(
-              SriLankaImages.sigiriya,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  color: colors.primaryContainer,
-                  child: Center(
-                    child: Icon(Icons.landscape_rounded, color: colors.onPrimaryContainer, size: 40),
+      height: 300 + topPadding,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.network(
+            SriLankaImages.sigiriya,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return Container(
+                color: colors.primaryContainer,
+                child: Center(
+                  child: Icon(
+                    Icons.landscape_rounded,
+                    color: colors.onPrimaryContainer,
+                    size: 48,
                   ),
-                );
-              },
+                ),
+              );
+            },
+          ),
+          // Top + Bottom Gradient Scrim for crisp status bar & overlay legibility
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                stops: const [0.0, 0.28, 0.55, 1.0],
+                colors: [
+                  Colors.black.withValues(alpha: 0.34),
+                  Colors.transparent,
+                  colors.primary.withValues(alpha: 0.42),
+                  colors.primary.withValues(alpha: 0.94),
+                ],
+              ),
             ),
-            // Gradient Scrim
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: [
-                    colors.primary.withValues(alpha: 0.95),
-                    colors.primary.withValues(alpha: 0.45),
-                    Colors.transparent,
+          ),
+
+          // Centered overlay controls (matches form width on larger screens, full-bleed on mobile)
+          Positioned.fill(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 480),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    // Floating Circular Back Button (top-left)
+                    Positioned(
+                      top: topPadding + 10,
+                      left: 16,
+                      child: Material(
+                        color: Colors.white.withValues(alpha: 0.92),
+                        shape: const CircleBorder(),
+                        elevation: 2,
+                        shadowColor: Colors.black26,
+                        child: InkWell(
+                          customBorder: const CircleBorder(),
+                          onTap: () {
+                            if (Navigator.of(context).canPop()) {
+                              Navigator.of(context).pop();
+                            } else {
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                  builder: (_) => const OnboardingPage(),
+                                ),
+                              );
+                            }
+                          },
+                          child: SizedBox(
+                            width: 42,
+                            height: 42,
+                            child: Center(
+                              child: Icon(
+                                Icons.arrow_back_ios_new_rounded,
+                                size: 18,
+                                color: colors.primary,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // Floating Brand Logo (top-right)
+                    Positioned(
+                      top: topPadding + 10,
+                      right: 16,
+                      child: const HelaLogo(
+                        size: 42,
+                        framed: true,
+                        isCircle: true,
+                        padding: 4,
+                      ),
+                    ),
+
+                    // Title & Frosted Sign Up / Sign In Tab Bar over the image
+                    Positioned(
+                      left: 20,
+                      right: 20,
+                      bottom: 36,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 9,
+                                  vertical: 3.5,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: colors.tertiaryFixed,
+                                  borderRadius: BorderRadius.circular(9999),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.arrow_back_ios_new_rounded,
+                                      size: 10,
+                                      color: colors.onTertiaryFixed,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      'Ayubowan',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w700,
+                                        color: colors.onTertiaryFixed,
+                                        fontFamily: 'Inter',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Flexible(
+                                child: Text(
+                                  'Your Island Story Awaits',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white.withValues(alpha: 0.92),
+                                    fontFamily: 'Inter',
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            _mode == AuthMode.signUp
+                                ? 'Begin Your Journey'
+                                : 'Welcome Back',
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                              fontFamily: 'Inter',
+                              letterSpacing: -0.3,
+                              height: 1.15,
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+
+                          // Frosted Sign Up / Sign In Tabs on top of the image
+                          _buildModeTabBar(colors),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
-            // Floating Brand Logo (top-right inside image container)
-            const Positioned(
-              top: 14,
-              right: 14,
-              child: HelaLogo(
-                size: 42,
-                framed: true,
-                isCircle: true,
-                padding: 4,
-              ),
-            ),
-            // Floating Circular Back Button (top-left inside image container)
-            Positioned(
-              top: 14,
-              left: 14,
-              child: Material(
-                color: Colors.white.withValues(alpha: 0.92),
-                shape: const CircleBorder(),
-                elevation: 2,
-                shadowColor: Colors.black26,
-                child: InkWell(
-                  customBorder: const CircleBorder(),
-                  onTap: () {
-                    if (Navigator.of(context).canPop()) {
-                      Navigator.of(context).pop();
-                    } else {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (_) => const OnboardingPage()),
-                      );
-                    }
-                  },
-                  child: SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: Center(
-                      child: Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                        size: 18,
-                        color: colors.primary,
-                      ),
-                    ),
-                  ),
+          ),
+
+          // Curved Bottom Sheet Cap seamlessly blending into Scaffold background
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              height: 22,
+              decoration: BoxDecoration(
+                color: colors.background,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(24),
                 ),
               ),
             ),
-            // Text & Tag Content
-            Positioned(
-              left: 16,
-              right: 16,
-              bottom: 16,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: colors.tertiaryFixed,
-                          borderRadius: BorderRadius.circular(9999),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.arrow_back_ios_new_rounded,
-                              size: 10,
-                              color: colors.onTertiaryFixed,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              'Ayubowan',
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                color: colors.onTertiaryFixed,
-                                fontFamily: 'Inter',
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Your Island Story Awaits',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white.withValues(alpha: 0.9),
-                          fontFamily: 'Inter',
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    _mode == AuthMode.signUp ? 'Begin Your Journey' : 'Welcome Back',
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                      fontFamily: 'Inter',
-                      height: 1.15,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -637,100 +684,99 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Widget _buildModeTabBar(HelaColorPalette colors) {
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: colors.architecturalBorder.withValues(alpha: 0.5)),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        child: Container(
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: Colors.black.withValues(alpha: 0.28),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.28),
+              width: 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: _buildModeTabItem(
+                  label: 'Sign Up',
+                  isSelected: _mode == AuthMode.signUp,
+                  colors: colors,
+                  onTap: () {
+                    if (_mode != AuthMode.signUp) {
+                      setState(() {
+                        _mode = AuthMode.signUp;
+                        _formKey.currentState?.reset();
+                      });
+                    }
+                  },
+                ),
+              ),
+              Expanded(
+                child: _buildModeTabItem(
+                  label: 'Sign In',
+                  isSelected: _mode == AuthMode.signIn,
+                  colors: colors,
+                  onTap: () {
+                    if (_mode != AuthMode.signIn) {
+                      setState(() {
+                        _mode = AuthMode.signIn;
+                        _formKey.currentState?.reset();
+                      });
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: GestureDetector(
-              onTap: () {
-                if (_mode != AuthMode.signUp) {
-                  setState(() {
-                    _mode = AuthMode.signUp;
-                    _formKey.currentState?.reset();
-                  });
-                }
-              },
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                decoration: BoxDecoration(
-                  color: _mode == AuthMode.signUp
-                      ? colors.surfaceContainerLowest
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: _mode == AuthMode.signUp
-                      ? [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.06),
-                            blurRadius: 4,
-                            offset: const Offset(0, 1),
-                          ),
-                        ]
-                      : null,
-                ),
-                child: Center(
-                  child: Text(
-                    'Sign Up',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: _mode == AuthMode.signUp ? colors.primary : colors.outline,
-                      fontFamily: 'Inter',
-                    ),
+    );
+  }
+
+  Widget _buildModeTabItem({
+    required String label,
+    required bool isSelected,
+    required HelaColorPalette colors,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+        padding: const EdgeInsets.symmetric(vertical: 11),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.white : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.14),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
                   ),
-                ),
-              ),
+                ]
+              : null,
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: isSelected
+                  ? colors.primary
+                  : Colors.white.withValues(alpha: 0.92),
+              fontFamily: 'Inter',
+              letterSpacing: 0.1,
             ),
           ),
-          Expanded(
-            child: GestureDetector(
-              onTap: () {
-                if (_mode != AuthMode.signIn) {
-                  setState(() {
-                    _mode = AuthMode.signIn;
-                    _formKey.currentState?.reset();
-                  });
-                }
-              },
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                decoration: BoxDecoration(
-                  color: _mode == AuthMode.signIn
-                      ? colors.surfaceContainerLowest
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: _mode == AuthMode.signIn
-                      ? [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.06),
-                            blurRadius: 4,
-                            offset: const Offset(0, 1),
-                          ),
-                        ]
-                      : null,
-                ),
-                child: Center(
-                  child: Text(
-                    'Sign In',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: _mode == AuthMode.signIn ? colors.primary : colors.outline,
-                      fontFamily: 'Inter',
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

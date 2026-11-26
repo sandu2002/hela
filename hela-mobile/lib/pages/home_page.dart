@@ -378,7 +378,7 @@ class _HelaHomePageState extends State<HelaHomePage>
     final query = _searchQuery.trim().toLowerCase();
     final selectedFilter = _experienceFilters[_selectedExperienceChipIndex];
     final baseExperiences = selectedFilter == 'All'
-        ? _experiences
+        ? _experiences.take(10).toList()
         : _experiences
               .where((e) => e.filterCategory == selectedFilter)
               .toList();

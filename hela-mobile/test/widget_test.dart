@@ -90,7 +90,7 @@ void main() {
     );
     await tester.pump();
 
-    // Initially "Featured Destinations" and Sigiriya are visible, "All" is first and "Hill Country" is replaced by "Adventure"
+    // Initially "Featured Destinations" and Sigiriya are visible, "All" shows Top 10 most famous destinations
     expect(find.text('Featured Destinations'), findsOneWidget);
     expect(find.text('Sigiriya'), findsOneWidget);
     expect(find.text('All'), findsOneWidget);
@@ -98,7 +98,7 @@ void main() {
     expect(find.text('Hill Country'), findsNothing);
     expect(find.text('Sigiriya Lion Rock Fortress'), findsOneWidget);
     expect(find.text('Arugam Bay Surf Capital'), findsOneWidget);
-    expect(find.text('Knuckles Mountain Range Trek'), findsOneWidget);
+    expect(find.text('Adam\'s Peak (Sri Pada) Night Trek'), findsOneWidget);
 
     // Tap "Beaches" filter chip
     final beachesChip = find.text('Beaches');

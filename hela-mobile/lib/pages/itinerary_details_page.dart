@@ -707,7 +707,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
             }
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(_isSaved ? 'Itinerary bookmarked to your Saved Trips! ✨' : 'Itinerary removed from Saved Trips.'),
+                content: Text(_isSaved ? 'Itinerary bookmarked to your Saved Trips!' : 'Itinerary removed from Saved Trips.'),
                 duration: const Duration(seconds: 1),
               ),
             );

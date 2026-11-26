@@ -240,7 +240,7 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
     if (!alreadySaved) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${place.title} saved to your Saved Places! ✨'),
+          content: Text('${place.title} saved to your Saved Places!'),
           duration: const Duration(seconds: 3),
           action: SnackBarAction(
             label: 'View Saved',

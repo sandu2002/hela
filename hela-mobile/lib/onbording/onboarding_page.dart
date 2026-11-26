@@ -573,14 +573,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 ),
               )
             else
-              // Screen 3: Brand Logo balancing the back button
-              const HelaLogo(
-                size: 40,
-                framed: true,
-                isCircle: true,
-                padding: 4,
-                borderColor: OnboardingTokens.mintBorder,
-              ),
+              // Screen 3: Clean placeholder balancing the back button
+              const SizedBox(width: 42),
           ],
         ),
       ),
