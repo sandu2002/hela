@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hela/pages/home_page.dart';
-import 'package:hela/widgets/hela_bottom_nav_bar.dart';
+import 'package:hela/pages/home/home_page.dart';
+import 'package:hela/widgets/navigation/hela_bottom_nav_bar.dart';
 
 /// A generic article / cultural guide detail page.
 ///

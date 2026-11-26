@@ -3,8 +3,8 @@ import 'package:hela/models/tour_plan.dart';
 import 'package:hela/models/tour_preferences.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/state/tour_planner_state.dart';
-import 'package:hela/pages/saved_page.dart';
-import 'package:hela/pages/home_page.dart';
+import 'package:hela/pages/saved/saved_page.dart';
+import 'package:hela/pages/home/home_page.dart';
 import 'package:hela/pages/smart_tour/ai_chat_customization_page.dart';
 
 /// Detailed view of the AI-generated tour plan and day-by-day itinerary.

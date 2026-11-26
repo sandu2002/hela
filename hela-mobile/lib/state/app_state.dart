@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:hela/models/haven_item.dart';
 import 'package:hela/models/saved_list.dart';
 import 'package:hela/models/tour_plan.dart';
-import 'package:hela/pages/stays_page.dart' show StayHaven;
-import 'package:hela/services/localization_service.dart';
+import 'package:hela/pages/bookings/stays_page.dart' show StayHaven;
+import 'package:hela/l10n/localization_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Global shared state for the HELA app.

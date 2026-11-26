@@ -2,11 +2,11 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:hela/data/sri_lanka_images.dart';
-import 'package:hela/onbording/onboarding_page.dart';
-import 'package:hela/pages/home_page.dart';
+import 'package:hela/pages/onboarding/onboarding_page.dart';
+import 'package:hela/pages/home/home_page.dart';
 import 'package:hela/services/insforge_auth_service.dart';
 import 'package:hela/state/app_state.dart';
-import 'package:hela/widgets/hela_network_image.dart';
+import 'package:hela/widgets/common/hela_network_image.dart';
 
 /// Authentication mode — Sign Up or Sign In
 enum AuthMode { signUp, signIn }

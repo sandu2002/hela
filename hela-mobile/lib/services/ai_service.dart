@@ -164,12 +164,21 @@ Do not include markdown code fence or extra text. Output strictly raw JSON.
     final startLoc = preferences.startingLocationName.isNotEmpty
         ? preferences.startingLocationName
         : preferences.startingLocationType.label;
+    final endLoc = preferences.endLocationName.trim().isNotEmpty
+        ? preferences.endLocationName.trim()
+        : startLoc;
     final partyDetails = (adults != null || children != null)
         ? '${adults ?? preferences.numberOfTravelers} adult(s), ${children ?? 0} child(ren)'
         : '${preferences.numberOfTravelers} person(s)';
     final dateWindow = (startDate != null && endDate != null)
         ? '${startDate.toIso8601String().split('T').first} to ${endDate.toIso8601String().split('T').first}'
         : '$daysCount flexible days';
+    final dietaryStr = preferences.dietaryPreferences.isNotEmpty
+        ? preferences.dietaryPreferences.join(', ')
+        : 'No specific restrictions';
+    final mobilityStr = preferences.accessibilityNeeds.isNotEmpty
+        ? preferences.accessibilityNeeds.join(', ')
+        : 'Standard walking & climbing tolerance';
     final langInstruction = (preferredLanguage != null &&
             preferredLanguage.toUpperCase() != 'EN')
         ? 'Write titles, summaries, activity descriptions, and tips in language code "$preferredLanguage" where natural (keep JSON keys strictly in English).'
@@ -182,20 +191,24 @@ Traveler Profile:
 - Trip Duration: $daysCount day(s)
 - Travel Dates: $dateWindow
 - Starting Location: $startLoc
+- Ending / Drop-off Location: $endLoc
 - Must-Visit / Preferred Places: $destinationsStr
 - Selected Interests: $interestsStr
 - Budget Tier: ${preferences.budgetLevel.label} (${preferences.budgetLevel.description})${preferences.budgetAmount != null ? ' • Target Budget: \$${preferences.budgetAmount}' : ''}
 - Travelers: $partyDetails
 - Travel Pace: ${preferences.pace.label} (${preferences.pace.description})
+- Preferred Transport Mode: ${preferences.transportMode}
 - Accommodation Style: ${preferences.accommodationType.label}
-${preferences.additionalNotes.isNotEmpty ? '- Special Requests / Notes: ${preferences.additionalNotes}' : ''}
+- Dietary Requirements: $dietaryStr
+- Mobility & Comfort Constraints: $mobilityStr
+${preferences.additionalNotes.isNotEmpty ? '- Special Requests / Must-Dos & Avoids: ${preferences.additionalNotes}' : ''}
 ${langInstruction.isNotEmpty ? '- Language: $langInstruction' : ''}
 
 Requirements:
-1. Generate ALL $daysCount days (dayNumber 1 through $daysCount) progressing geographically logically across Sri Lanka starting from "$startLoc".
+1. Generate ALL $daysCount days (dayNumber 1 through $daysCount) progressing geographically logically across Sri Lanka starting from "$startLoc" and concluding smoothly at "$endLoc".
 2. Respect the traveler's "${preferences.pace.label}" pace: include 2-3 stops/activities for Relaxed, 3-4 for Moderate/Balanced, and 4-5 for Active per day.
-3. Tailor stays, dining, and transport to the "${preferences.budgetLevel.label}" budget tier and selected interests ($interestsStr). Keep descriptions crisp (1-2 vivid sentences) and include 1 practical insider tip on key stops.
-4. Include realistic Sri Lanka transit times & methods between consecutive activities.
+3. Tailor stays (${preferences.accommodationType.label}), dining (strictly respecting: $dietaryStr), and transport (${preferences.transportMode}) to the "${preferences.budgetLevel.label}" budget tier and selected interests ($interestsStr). Respect mobility constraints ($mobilityStr) when selecting climbs, stairs, or drive lengths. Keep descriptions crisp (1-2 vivid sentences) and include 1 practical insider tip on key stops.
+4. Include realistic Sri Lanka transit times & methods matching "${preferences.transportMode}" between consecutive activities.
 5. Provide estimated costs in USD per person, helpful Sri Lanka local tips, and seasonal/monsoon or safety warnings for the travel dates.
 
 Respond ONLY with a valid JSON object matching this exact schema (no markdown fences, no commentary):
@@ -540,6 +553,12 @@ HELA:''';
     final startLoc = prefs.startingLocationName.isNotEmpty
         ? prefs.startingLocationName
         : 'CMB';
+    final endLoc = prefs.endLocationName.trim().isNotEmpty
+        ? prefs.endLocationName.trim()
+        : startLoc;
+    final transportHint = prefs.transportMode.isNotEmpty
+        ? prefs.transportMode
+        : 'Private Chauffeur AC Car';
 
     final curatedTemplates = <ItineraryDay>[
       ItineraryDay(
@@ -669,14 +688,14 @@ HELA:''';
       id: 'tour_${DateTime.now().millisecondsSinceEpoch}',
       title: 'Cultural Wonders & Emerald Peaks',
       summary:
-          'A bespoke $daysCount-day Sri Lanka journey tailored to your interests in ${prefs.interests.map((i) => i.label).join(", ")}.',
+          'A bespoke $daysCount-day Sri Lanka journey from $startLoc to $endLoc via $transportHint, tailored to your interests in ${prefs.interests.map((i) => i.label).join(", ")}.',
       matchReason:
-          'Designed around your ${prefs.pace.label} pace and ${prefs.budgetLevel.label} comfort preferences starting from $startLoc.',
+          'Designed around your ${prefs.pace.label} pace, ${prefs.budgetLevel.label} budget, ${prefs.accommodationType.label} stays, and $transportHint${prefs.dietaryPreferences.isNotEmpty ? ' (${prefs.dietaryPreferences.join(", ")} dining)' : ''}.',
       durationDays: daysCount,
       days: days,
       estimatedTotalCostUsd: daysCount * 140.0,
       budgetBreakdown:
-          'Includes boutique stays, private chauffeur transit, activity tickets, and curated dining.',
+          'Includes ${prefs.accommodationType.label} stays, $transportHint transit, activity tickets, and curated dining.',
       budgetIncludes: const [
         'Private AC Chauffeur Transit',
         'Boutique Eco-Stays & Breakfast',

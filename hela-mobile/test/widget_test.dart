@@ -10,29 +10,29 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:hela/state/app_state.dart';
 import 'package:hela/models/tour_plan.dart';
-import 'package:hela/services/localization_service.dart';
-import 'package:hela/pages/home_page.dart';
-import 'package:hela/pages/trip_planner_page.dart';
-import 'package:hela/pages/fair_ride_page.dart';
-import 'package:hela/pages/stays_page.dart';
-import 'package:hela/pages/saved_page.dart';
-import 'package:hela/pages/profile_page.dart';
+import 'package:hela/l10n/localization_service.dart';
+import 'package:hela/pages/home/home_page.dart';
+import 'package:hela/pages/trip_planner/trip_planner_page.dart';
+import 'package:hela/pages/bookings/fair_ride_page.dart';
+import 'package:hela/pages/bookings/stays_page.dart';
+import 'package:hela/pages/saved/saved_page.dart';
+import 'package:hela/pages/profile/profile_page.dart';
 import 'package:hela/pages/profile/edit_profile_page.dart';
 import 'package:hela/pages/cultural_guide/cultural_guide_page.dart';
 import 'package:hela/pages/cultural_guide/article_detail_page.dart';
-import 'package:hela/onbording/onboarding_page.dart';
+import 'package:hela/pages/onboarding/onboarding_page.dart';
 import 'package:hela/pages/auth/signup_page.dart';
-import 'package:hela/pages/explore_page.dart';
-import 'package:hela/pages/itinerary_details_page.dart';
-import 'package:hela/pages/active_journey_page.dart';
-import 'package:hela/pages/ask_hela_page.dart';
-import 'package:hela/pages/itinerary_planning_loading_page.dart';
-import 'package:hela/widgets/haven_card.dart';
-import 'package:hela/widgets/stay_card.dart';
-import 'package:hela/widgets/itinerary_card.dart';
-import 'package:hela/widgets/real_time_calendar.dart';
-import 'package:hela/widgets/real_time_map.dart';
-import 'package:hela/widgets/hela_bottom_nav_bar.dart';
+import 'package:hela/pages/explore/explore_page.dart';
+import 'package:hela/pages/trip_planner/itinerary_details_page.dart';
+import 'package:hela/pages/trip_planner/active_journey_page.dart';
+import 'package:hela/pages/ask_hela/ask_hela_page.dart';
+import 'package:hela/pages/trip_planner/itinerary_planning_loading_page.dart';
+import 'package:hela/widgets/cards/haven_card.dart';
+import 'package:hela/widgets/cards/stay_card.dart';
+import 'package:hela/widgets/cards/itinerary_card.dart';
+import 'package:hela/widgets/cards/real_time_calendar_card.dart';
+import 'package:hela/widgets/maps/real_time_google_map.dart';
+import 'package:hela/widgets/navigation/hela_bottom_nav_bar.dart';
 
 /// Helper to wrap a widget with HelaAppStateProvider for testing.
 Widget _wrapWithState(Widget child) {
@@ -946,8 +946,9 @@ void main() {
     );
     await tester.pump();
 
-    // Verify top bar, status, and live weather indicator
+    // Verify top bar, status, and live weather indicator (without language dropdown pill)
     expect(find.text('Ask HELA'), findsOneWidget);
+    expect(find.byIcon(Icons.translate_rounded), findsNothing);
     expect(find.text('Online • Island Intelligence Active'), findsOneWidget);
     expect(find.byIcon(Icons.thermostat_rounded), findsOneWidget);
 

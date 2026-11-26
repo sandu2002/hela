@@ -2,10 +2,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:hela/data/sri_lanka_images.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:hela/pages/home_page.dart';
+import 'package:hela/pages/home/home_page.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/pages/cultural_guide/article_detail_page.dart';
-import 'package:hela/widgets/hela_bottom_nav_bar.dart';
+import 'package:hela/widgets/navigation/hela_bottom_nav_bar.dart';
 
 /// Unique ID for this cultural guide article (used by HelaAppState)
 const String _culturalGuideId = 'sacred-bo-tree-sigiriya';

@@ -86,12 +86,16 @@ class TourPreferences {
   final int customDays; // Used when duration == TravelDuration.custom
   final StartingLocationType startingLocationType;
   final String startingLocationName;
+  final String endLocationName;
   final Set<TravelInterest> interests;
   final BudgetLevel budgetLevel;
   final double? budgetAmount; // Optional specific budget in USD
   final int numberOfTravelers;
   final TravelPace pace;
   final AccommodationType accommodationType;
+  final String transportMode;
+  final Set<String> dietaryPreferences;
+  final Set<String> accessibilityNeeds;
   final String additionalNotes;
 
   const TourPreferences({
@@ -99,12 +103,16 @@ class TourPreferences {
     this.customDays = 3,
     this.startingLocationType = StartingLocationType.airport,
     this.startingLocationName = 'Bandaranaike International Airport',
+    this.endLocationName = '',
     this.interests = const {},
     this.budgetLevel = BudgetLevel.medium,
     this.budgetAmount,
     this.numberOfTravelers = 2,
     this.pace = TravelPace.moderate,
     this.accommodationType = AccommodationType.noPreference,
+    this.transportMode = 'Private AC Car + Chauffeur',
+    this.dietaryPreferences = const {},
+    this.accessibilityNeeds = const {},
     this.additionalNotes = '',
   });
 
@@ -118,12 +126,16 @@ class TourPreferences {
     int? customDays,
     StartingLocationType? startingLocationType,
     String? startingLocationName,
+    String? endLocationName,
     Set<TravelInterest>? interests,
     BudgetLevel? budgetLevel,
     double? budgetAmount,
     int? numberOfTravelers,
     TravelPace? pace,
     AccommodationType? accommodationType,
+    String? transportMode,
+    Set<String>? dietaryPreferences,
+    Set<String>? accessibilityNeeds,
     String? additionalNotes,
   }) {
     return TourPreferences(
@@ -131,12 +143,16 @@ class TourPreferences {
       customDays: customDays ?? this.customDays,
       startingLocationType: startingLocationType ?? this.startingLocationType,
       startingLocationName: startingLocationName ?? this.startingLocationName,
+      endLocationName: endLocationName ?? this.endLocationName,
       interests: interests ?? this.interests,
       budgetLevel: budgetLevel ?? this.budgetLevel,
       budgetAmount: budgetAmount ?? this.budgetAmount,
       numberOfTravelers: numberOfTravelers ?? this.numberOfTravelers,
       pace: pace ?? this.pace,
       accommodationType: accommodationType ?? this.accommodationType,
+      transportMode: transportMode ?? this.transportMode,
+      dietaryPreferences: dietaryPreferences ?? this.dietaryPreferences,
+      accessibilityNeeds: accessibilityNeeds ?? this.accessibilityNeeds,
       additionalNotes: additionalNotes ?? this.additionalNotes,
     );
   }
@@ -147,12 +163,18 @@ class TourPreferences {
       'duration': effectiveDays,
       'startingLocationType': startingLocationType.name,
       'startingLocationName': startingLocationName,
+      if (endLocationName.isNotEmpty) 'endLocationName': endLocationName,
       'interests': interests.map((i) => i.name).toList(),
       'budgetLevel': budgetLevel.name,
       if (budgetAmount != null) 'budgetAmount': budgetAmount,
       'numberOfTravelers': numberOfTravelers,
       'pace': pace.name,
       'accommodationType': accommodationType.name,
+      'transportMode': transportMode,
+      if (dietaryPreferences.isNotEmpty)
+        'dietaryPreferences': dietaryPreferences.toList(),
+      if (accessibilityNeeds.isNotEmpty)
+        'accessibilityNeeds': accessibilityNeeds.toList(),
       if (additionalNotes.isNotEmpty) 'additionalNotes': additionalNotes,
     };
   }

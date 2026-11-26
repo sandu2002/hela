@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hela/onbording/onboarding_page.dart';
+import 'package:hela/pages/onboarding/onboarding_page.dart';
 import 'package:hela/services/insforge_auth_service.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/state/tour_planner_state.dart';

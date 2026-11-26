@@ -3,7 +3,7 @@ import 'package:hela/theme/hela_colors.dart';
 import 'package:hela/models/tour_plan.dart';
 import 'package:hela/models/tour_preferences.dart';
 import 'package:hela/services/tour_api_service.dart';
-import 'package:hela/widgets/hela_logo.dart';
+import 'package:hela/widgets/common/hela_logo.dart';
 
 /// Interactive AI chat screen allowing users to customize their tour plan using Gemini.
 class AiChatCustomizationPage extends StatefulWidget {
