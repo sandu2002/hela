@@ -4,6 +4,7 @@ import 'package:hela/pages/itinerary_planning_loading_page.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/theme/hela_colors.dart';
 import 'package:hela/widgets/hela_bottom_nav_bar.dart';
+import 'package:hela/widgets/hela_network_image.dart';
 
 /// Trip Planner Page - 100% matched to Google Stitch Design
 /// (Screen 1b1afbb5b8884b4e8ceaf12ac9c68d70: Plan Your Sri Lankan Adventure
@@ -255,31 +256,132 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
     );
   }
 
-  Widget _buildNetworkImage(String url, {double? width, double? height, BoxFit fit = BoxFit.cover}) {
-    return Image.network(
-      url,
+  Widget _buildNetworkImage(
+    String url, {
+    double? width,
+    double? height,
+    BoxFit fit = BoxFit.cover,
+  }) {
+    return HelaNetworkImage(
+      imageUrl: url,
       width: width,
       height: height,
       fit: fit,
       errorBuilder: (context, error, stackTrace) => Container(
         width: width,
         height: height,
-        color: const Color(0xFF0B5D56).withValues(alpha: 0.12),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF004D40),
+              Color(0xFF00251A),
+            ],
+          ),
+        ),
         child: const Center(
-          child: Icon(Icons.landscape_rounded, color: Color(0xFF0B5D56), size: 28),
+          child: Icon(
+            Icons.landscape_rounded,
+            color: Color(0xFF6EE7B7),
+            size: 32,
+          ),
         ),
       ),
+    );
+  }
+
+  PreferredSizeWidget _buildTopAppBar(HelaColorPalette colors, bool isDark) {
+    final canPop = Navigator.canPop(context);
+    return AppBar(
+      backgroundColor: colors.surface.withValues(alpha: isDark ? 0.96 : 0.94),
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      toolbarHeight: 68,
+      titleSpacing: canPop ? 0 : 16,
+      automaticallyImplyLeading: false,
+      leading: canPop
+          ? Padding(
+              padding: const EdgeInsets.only(left: 12),
+              child: Center(
+                child: InkWell(
+                  onTap: () => Navigator.pop(context),
+                  borderRadius: BorderRadius.circular(999),
+                  child: Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: colors.surfaceContainer,
+                      border: Border.all(
+                        color: colors.architecturalBorder.withValues(alpha: 0.6),
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.arrow_back_rounded,
+                      color: colors.onSurface,
+                      size: 22,
+                    ),
+                  ),
+                ),
+              ),
+            )
+          : null,
+      title: Text(
+        HelaAppStateProvider.of(context).tr('trip_planner'),
+        style: TextStyle(
+          color: colors.onSurface,
+          fontSize: 34,
+          fontWeight: FontWeight.w900,
+          letterSpacing: -0.8,
+          fontFamily: 'Inter',
+        ),
+      ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 16),
+          child: InkWell(
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Gemini AI Planner • Ready to craft your journey'),
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            },
+            borderRadius: BorderRadius.circular(999),
+            child: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: colors.surfaceContainer,
+                border: Border.all(
+                  color: colors.architecturalBorder.withValues(alpha: 0.6),
+                ),
+              ),
+              child: Icon(
+                Icons.auto_awesome_rounded,
+                color: colors.primary,
+                size: 22,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = HelaColors.of(context);
+    final isDark = colors.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: colors.surface,
+      backgroundColor: colors.background,
+      appBar: _buildTopAppBar(colors, isDark),
       body: SafeArea(
-        top: true,
+        top: false,
         bottom: false,
         child: _buildPlannerFormView(colors),
       ),
@@ -293,7 +395,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
   Widget _buildPlannerFormView(HelaColorPalette colors) {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       child: Center(
         heightFactor: 1.0,
         child: ConstrainedBox(
@@ -301,31 +403,9 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Title & Subtitle
-              Text(
-                HelaAppStateProvider.of(context).tr('plan_your_adventure'),
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w800,
-                  color: colors.onSurface,
-                  fontFamily: 'Inter',
-                  letterSpacing: -0.4,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                HelaAppStateProvider.of(context).tr('planner_subtitle'),
-                style: TextStyle(
-                  fontSize: 12.5,
-                  color: colors.onSurfaceVariant,
-                  height: 1.4,
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Hero Visual Showcase Banner (Single large image like home screen hero)
-              _buildHeroShowcaseBanner(),
-              const SizedBox(height: 22),
+              // Hero Visual Showcase Banner (Single large image matching Home Screen Hero UI)
+              _buildHeroShowcaseBanner(colors),
+              const SizedBox(height: 24),
 
               // 1. Where does your journey begin?
               _buildSectionStartingLocation(colors),
@@ -365,17 +445,17 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
     );
   }
 
-  Widget _buildHeroShowcaseBanner() {
+  Widget _buildHeroShowcaseBanner(HelaColorPalette colors) {
     return Container(
-      height: 150,
+      height: 220,
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
+            color: colors.primary.withValues(alpha: 0.2),
+            blurRadius: 14,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -391,32 +471,35 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                   colors: [
-                    Colors.black.withValues(alpha: 0.65),
+                    colors.primary.withValues(alpha: 0.95),
+                    colors.primary.withValues(alpha: 0.45),
                     Colors.transparent,
                   ],
                 ),
               ),
             ),
+            // Floating Badges at Top of Banner
             Positioned(
-              bottom: 12,
+              top: 14,
               left: 14,
               right: 14,
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
                       color: Colors.black.withValues(alpha: 0.35),
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
                     ),
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.location_on_rounded, size: 12, color: Colors.white),
-                        SizedBox(width: 4),
+                        Icon(Icons.auto_awesome_rounded, size: 12, color: Color(0xFF6EE7B7)),
+                        SizedBox(width: 5),
                         Text(
-                          'Sigiriya Rock Fortress • Cultural Triangle',
+                          'Gemini AI Curated',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 11,
@@ -426,6 +509,138 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                         ),
                       ],
                     ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.35),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.location_on_rounded, size: 12, color: Colors.white),
+                        SizedBox(width: 4),
+                        Text(
+                          'Sigiriya Fortress',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.2,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Integrated Title, Subtitle and Badges at Bottom of Banner
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    HelaAppStateProvider.of(context).tr('plan_your_adventure'),
+                    style: const TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                      height: 1.2,
+                      letterSpacing: -0.3,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black38,
+                          offset: Offset(0, 1),
+                          blurRadius: 4,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    HelaAppStateProvider.of(context).tr('planner_subtitle'),
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      color: Colors.white.withValues(alpha: 0.92),
+                      fontWeight: FontWeight.w500,
+                      shadows: const [
+                        Shadow(
+                          color: Colors.black26,
+                          offset: Offset(0, 1),
+                          blurRadius: 3,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: colors.primaryFixed,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.15),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.bolt_rounded, size: 15, color: colors.primary),
+                            const SizedBox(width: 5),
+                            Text(
+                              'Instant AI Routes',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: colors.primary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.96),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.15),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Icon(Icons.tune_rounded, size: 15, color: Color(0xFF00382E)),
+                            SizedBox(width: 5),
+                            Text(
+                              '100% Tailored',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF00382E),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -476,16 +691,19 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
 
         // Input Box
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          height: 52,
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           decoration: BoxDecoration(
-            color: colors.cardBackground,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: colors.architecturalBorder),
+            color: colors.surfaceContainerLowest,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: colors.architecturalBorder.withValues(alpha: 0.8),
+            ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.03),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 12,
+                offset: const Offset(0, 3),
               ),
             ],
           ),
@@ -495,8 +713,8 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: colors.surfaceContainerLow,
-                  borderRadius: BorderRadius.circular(8),
+                  color: colors.surfaceContainer,
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(Icons.location_on_rounded, size: 20, color: colors.primary),
               ),

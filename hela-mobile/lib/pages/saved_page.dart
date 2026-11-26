@@ -123,52 +123,17 @@ class _SavedPageState extends State<SavedPage> {
         ),
       ),
       leadingWidth: 54,
-      titleSpacing: 4,
-      title: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(7),
-            decoration: BoxDecoration(
-              color: HelaColors.tertiaryFixed.withValues(alpha: 0.25),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.bookmark_rounded,
-              color: HelaColors.primary,
-              size: 18,
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  appState.tr('saved_collection'),
-                  style: const TextStyle(
-                    color: HelaColors.primary,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 18,
-                    letterSpacing: -0.4,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const Text(
-                  'Your Ceylon Wishlist & Bookmarks',
-                  style: TextStyle(
-                    color: HelaColors.onSurfaceVariant,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-        ],
+      titleSpacing: 8,
+      title: Text(
+        appState.tr('saved_collection'),
+        style: const TextStyle(
+          color: HelaColors.primary,
+          fontWeight: FontWeight.w800,
+          fontSize: 18,
+          letterSpacing: -0.4,
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
       actions: [
         if (totalCount > 0)
@@ -284,66 +249,39 @@ class _SavedPageState extends State<SavedPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                const Icon(Icons.bookmark_added_rounded, size: 18, color: HelaColors.primary),
-                const SizedBox(width: 6),
-                const Text(
-                  'My Collections',
-                  style: TextStyle(
-                    color: HelaColors.primary,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 16,
-                    letterSpacing: -0.3,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: HelaColors.tertiaryFixed.withValues(alpha: 0.35),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    '${collections.length}',
-                    style: const TextStyle(
-                      color: HelaColors.primary,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 11,
-                    ),
-                  ),
-                ),
-              ],
+            const Icon(Icons.bookmark_added_rounded, size: 19, color: HelaColors.primary),
+            const SizedBox(width: 8),
+            const Text(
+              'My Collections',
+              style: TextStyle(
+                color: HelaColors.primary,
+                fontWeight: FontWeight.w800,
+                fontSize: 16.5,
+                letterSpacing: -0.3,
+              ),
             ),
-            InkWell(
-              onTap: () => _openCreateListDialog(context, appState),
-              borderRadius: BorderRadius.circular(12),
-              child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.add_circle_outline_rounded, size: 16, color: HelaColors.primary),
-                    SizedBox(width: 4),
-                    Text(
-                      'New List',
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w700,
-                        color: HelaColors.primary,
-                      ),
-                    ),
-                  ],
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: HelaColors.tertiaryFixed.withValues(alpha: 0.35),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                '${collections.length}',
+                style: const TextStyle(
+                  color: HelaColors.primary,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 11,
                 ),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 12),
         SizedBox(
-          height: 106,
+          height: 122,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
@@ -356,34 +294,51 @@ class _SavedPageState extends State<SavedPage> {
                   borderRadius: BorderRadius.circular(18),
                   onTap: () => _openCreateListDialog(context, appState),
                   child: Container(
-                    width: 116,
+                    width: 122,
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: HelaColors.surfaceContainerLowest,
                       borderRadius: BorderRadius.circular(18),
                       border: Border.all(
                         color: HelaColors.primary.withValues(alpha: 0.28),
-                        style: BorderStyle.solid,
+                        width: 1.5,
                       ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.03),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(8),
+                          width: 38,
+                          height: 38,
                           decoration: BoxDecoration(
-                            color: HelaColors.tertiaryFixed.withValues(alpha: 0.35),
+                            color: HelaColors.primary.withValues(alpha: 0.08),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.add_rounded, size: 20, color: HelaColors.primary),
+                          child: const Icon(Icons.add_rounded, size: 22, color: HelaColors.primary),
                         ),
                         const SizedBox(height: 8),
                         const Text(
                           '+ New List',
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 12.5,
                             fontWeight: FontWeight.w700,
                             color: HelaColors.primary,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Create folder',
+                          style: TextStyle(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.w500,
+                            color: HelaColors.onSurfaceVariant.withValues(alpha: 0.7),
                           ),
                         ),
                       ],
@@ -404,26 +359,26 @@ class _SavedPageState extends State<SavedPage> {
                 },
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 180),
-                  width: 140,
-                  padding: const EdgeInsets.all(12),
+                  width: 148,
+                  padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
                   decoration: BoxDecoration(
                     color: isSelected
                         ? list.color.withValues(alpha: 0.12)
                         : HelaColors.surfaceContainerLowest,
                     borderRadius: BorderRadius.circular(18),
                     border: Border.all(
-                      color: isSelected ? list.color : HelaColors.outlineVariant.withValues(alpha: 0.5),
+                      color: isSelected ? list.color : HelaColors.architecturalBorder.withValues(alpha: 0.8),
                       width: isSelected ? 2 : 1,
                     ),
-                    boxShadow: isSelected
-                        ? [
-                            BoxShadow(
-                              color: list.color.withValues(alpha: 0.22),
-                              blurRadius: 8,
-                              offset: const Offset(0, 3),
-                            ),
-                          ]
-                        : null,
+                    boxShadow: [
+                      BoxShadow(
+                        color: isSelected
+                            ? list.color.withValues(alpha: 0.22)
+                            : Colors.black.withValues(alpha: 0.03),
+                        blurRadius: isSelected ? 10 : 8,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -433,70 +388,92 @@ class _SavedPageState extends State<SavedPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            padding: const EdgeInsets.all(6),
+                            width: 34,
+                            height: 34,
                             decoration: BoxDecoration(
                               color: list.color.withValues(alpha: 0.15),
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(list.icon, size: 16, color: list.color),
+                            child: Icon(list.icon, size: 17, color: list.color),
                           ),
-                          PopupMenuButton<String>(
-                            padding: EdgeInsets.zero,
-                            iconSize: 18,
-                            icon: const Icon(Icons.more_vert_rounded, color: HelaColors.onSurfaceVariant),
-                            onSelected: (val) {
-                              if (val == 'rename') {
-                                _openCreateListDialog(context, appState, editingList: list);
-                              } else if (val == 'delete') {
-                                _confirmDeleteList(context, list, appState);
-                              }
-                            },
-                            itemBuilder: (ctx) => [
-                              const PopupMenuItem(
-                                value: 'rename',
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.edit_outlined, size: 16),
-                                    SizedBox(width: 8),
-                                    Text('Rename'),
-                                  ],
-                                ),
+                          SizedBox(
+                            width: 26,
+                            height: 26,
+                            child: PopupMenuButton<String>(
+                              padding: EdgeInsets.zero,
+                              iconSize: 18,
+                              constraints: const BoxConstraints(),
+                              tooltip: 'List options',
+                              icon: Icon(
+                                Icons.more_vert_rounded,
+                                size: 18,
+                                color: HelaColors.onSurfaceVariant.withValues(alpha: 0.8),
                               ),
-                              const PopupMenuItem(
-                                value: 'delete',
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.delete_outline_rounded, size: 16, color: Colors.red),
-                                    SizedBox(width: 8),
-                                    Text('Delete', style: TextStyle(color: Colors.red)),
-                                  ],
+                              onSelected: (val) {
+                                if (val == 'rename') {
+                                  _openCreateListDialog(context, appState, editingList: list);
+                                } else if (val == 'delete') {
+                                  _confirmDeleteList(context, list, appState);
+                                }
+                              },
+                              itemBuilder: (ctx) => [
+                                const PopupMenuItem(
+                                  value: 'rename',
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.edit_outlined, size: 16),
+                                      SizedBox(width: 8),
+                                      Text('Rename'),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                                const PopupMenuItem(
+                                  value: 'delete',
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.delete_outline_rounded, size: 16, color: Colors.red),
+                                      SizedBox(width: 8),
+                                      Text('Delete', style: TextStyle(color: Colors.red)),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
                             list.name,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              fontSize: 13,
+                              fontSize: 13.5,
                               fontWeight: FontWeight.w800,
                               color: isSelected ? list.color : HelaColors.onSurface,
                             ),
                           ),
-                          const SizedBox(height: 2),
-                          Text(
-                            '${list.itemTitles.length} saved',
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w500,
-                              color: isSelected ? list.color : HelaColors.onSurfaceVariant,
-                            ),
+                          const SizedBox(height: 3),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.bookmark_rounded,
+                                size: 12,
+                                color: isSelected ? list.color : HelaColors.onSurfaceVariant.withValues(alpha: 0.8),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${list.itemTitles.length} saved',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: isSelected ? list.color : HelaColors.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
