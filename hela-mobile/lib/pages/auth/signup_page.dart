@@ -3,8 +3,8 @@ import 'package:hela/data/sri_lanka_images.dart';
 import 'package:hela/onbording/onboarding_page.dart';
 import 'package:hela/pages/home_page.dart';
 import 'package:hela/services/insforge_auth_service.dart';
-import 'package:hela/services/localization_service.dart';
 import 'package:hela/state/app_state.dart';
+import 'package:hela/widgets/hela_logo.dart';
 
 /// Authentication mode — Sign Up or Sign In
 enum AuthMode { signUp, signIn }
@@ -221,78 +221,6 @@ class _SignUpPageState extends State<SignUpPage> {
     });
   }
 
-  void _showLanguageSelector() {
-    final appState = HelaAppStateProvider.of(context);
-    final currentCode = appState.selectedLanguage;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: HelaColors.of(context).surfaceContainerLowest,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (ctx) {
-        final colors = HelaColors.of(ctx);
-        return SafeArea(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(ctx).size.height * 0.75,
-            ),
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 36,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: colors.outlineVariant,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    appState.tr('select_language'),
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: colors.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  ...LocalizationService.supportedLanguages.map((lang) {
-                    final isSelected = lang.code.toUpperCase() == currentCode.toUpperCase();
-                    return ListTile(
-                      leading: Text(lang.flag, style: const TextStyle(fontSize: 24)),
-                      title: Text(lang.name),
-                      subtitle: Text(
-                        lang.nativeName,
-                        style: TextStyle(fontSize: 12, color: colors.onSurfaceVariant),
-                      ),
-                      trailing: isSelected
-                          ? Icon(Icons.check_circle_rounded, color: colors.primary)
-                          : null,
-                      onTap: () {
-                        appState.setLanguage(lang.code);
-                        Navigator.pop(ctx);
-                      },
-                    );
-                  }),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   Future<void> _handlePrimarySubmit() async {
     if (!_formKey.currentState!.validate()) return;
     if (_mode == AuthMode.signUp && !_agreedToTerms) {
@@ -393,11 +321,7 @@ class _SignUpPageState extends State<SignUpPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // ── Top Navigation Bar ─────────────────────────────────
-                  _buildTopBar(colors),
-                  const SizedBox(height: 16),
-
-                  // ── Mini Cultural Banner ───────────────────────────────
+                  // ── Mini Cultural Banner with Floating Back Button ───
                   _buildCulturalBanner(colors),
                   const SizedBox(height: 16),
 
@@ -446,115 +370,17 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  Widget _buildTopBar(HelaColorPalette colors) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        // Back Button
-        Material(
-          color: colors.surfaceContainerLowest,
-          shape: const CircleBorder(),
-          elevation: 1,
-          shadowColor: Colors.black12,
-          child: InkWell(
-            customBorder: const CircleBorder(),
-            onTap: () {
-              if (Navigator.of(context).canPop()) {
-                Navigator.of(context).pop();
-              } else {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => const OnboardingPage()),
-                );
-              }
-            },
-            child: SizedBox(
-              width: 40,
-              height: 40,
-              child: Icon(Icons.arrow_back_rounded, size: 20, color: colors.primary),
-            ),
-          ),
-        ),
-
-        // Brand Pill
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: colors.surfaceContainerLow,
-            borderRadius: BorderRadius.circular(9999),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: colors.primary,
-                  shape: BoxShape.circle,
-                ),
-              ),
-              const SizedBox(width: 6),
-              Text(
-                'HELA • CEYLON',
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.2,
-                  color: colors.primary,
-                  fontFamily: 'Inter',
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        // Language Selector Pill
-        Material(
-          color: colors.surfaceContainerLowest,
-          borderRadius: BorderRadius.circular(9999),
-          elevation: 1,
-          shadowColor: Colors.black12,
-          child: InkWell(
-            borderRadius: BorderRadius.circular(9999),
-            onTap: _showLanguageSelector,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.translate_rounded, size: 16, color: colors.primary),
-                  const SizedBox(width: 4),
-                  Text(
-                    HelaAppStateProvider.of(context).selectedLanguage,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: colors.onSurfaceVariant,
-                      fontFamily: 'Inter',
-                    ),
-                  ),
-                  const SizedBox(width: 2),
-                  Icon(Icons.expand_more_rounded, size: 14, color: colors.outline),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildCulturalBanner(HelaColorPalette colors) {
     return Container(
       width: double.infinity,
-      height: 128,
+      height: 220,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: colors.primary.withValues(alpha: 0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: colors.primary.withValues(alpha: 0.16),
+            blurRadius: 14,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -582,10 +408,55 @@ class _SignUpPageState extends State<SignUpPage> {
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                   colors: [
-                    colors.primary.withValues(alpha: 0.88),
-                    colors.primary.withValues(alpha: 0.35),
+                    colors.primary.withValues(alpha: 0.95),
+                    colors.primary.withValues(alpha: 0.45),
                     Colors.transparent,
                   ],
+                ),
+              ),
+            ),
+            // Floating Brand Logo (top-right inside image container)
+            const Positioned(
+              top: 14,
+              right: 14,
+              child: HelaLogo(
+                size: 42,
+                framed: true,
+                isCircle: true,
+                padding: 4,
+              ),
+            ),
+            // Floating Circular Back Button (top-left inside image container)
+            Positioned(
+              top: 14,
+              left: 14,
+              child: Material(
+                color: Colors.white.withValues(alpha: 0.92),
+                shape: const CircleBorder(),
+                elevation: 2,
+                shadowColor: Colors.black26,
+                child: InkWell(
+                  customBorder: const CircleBorder(),
+                  onTap: () {
+                    if (Navigator.of(context).canPop()) {
+                      Navigator.of(context).pop();
+                    } else {
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (_) => const OnboardingPage()),
+                      );
+                    }
+                  },
+                  child: SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: Center(
+                      child: Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        size: 18,
+                        color: colors.primary,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -593,7 +464,7 @@ class _SignUpPageState extends State<SignUpPage> {
             Positioned(
               left: 16,
               right: 16,
-              bottom: 14,
+              bottom: 16,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,

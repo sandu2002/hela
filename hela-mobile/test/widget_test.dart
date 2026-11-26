@@ -380,7 +380,8 @@ void main() {
       _wrapWithState(const SignUpPage()),
     );
 
-    expect(find.text('HELA • CEYLON'), findsOneWidget);
+    expect(find.text('HELA • CEYLON'), findsNothing);
+    expect(find.byIcon(Icons.arrow_back_ios_new_rounded), findsWidgets);
     expect(find.text('Begin Your Journey'), findsOneWidget);
     expect(find.text('Continue with Google'), findsOneWidget);
     expect(find.text('Full Name'), findsOneWidget);
@@ -861,8 +862,8 @@ void main() {
 
     // Verify visual showcase card tags
     expect(find.text('Cultural Immersion • Kandy Heritage'), findsOneWidget);
-    expect(find.text('Live Folk Lore & Ola Leaf Tales'), findsOneWidget);
-    expect(find.text('4.98'), findsOneWidget);
+    expect(find.text('Live Folk Lore & Ola Leaf Tales'), findsNothing);
+    expect(find.text('4.98'), findsNothing);
 
     // Verify headline and 3 bento cards with badges
     expect(find.text('Your Personal Travel Companion'), findsOneWidget);

@@ -6,6 +6,7 @@ import 'package:hela/pages/saved_page.dart';
 import 'package:hela/pages/profile_page.dart';
 import 'package:hela/pages/ask_hela_page.dart';
 import 'package:hela/state/app_state.dart';
+import 'package:hela/widgets/hela_logo.dart';
 
 /// Unified, consistent Bottom Navigation Bar for HELA
 /// Conforms to the Stitch Lankan Tropical Modernism specification:
@@ -144,23 +145,13 @@ class HelaBottomNavBar extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Luminous round accent containing the official psychology icon
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withValues(alpha: 0.16),
-                  border: Border.all(
-                    color: const Color(0xFFFFD54F).withValues(alpha: 0.45),
-                    width: 1.0,
-                  ),
-                ),
-                child: const Icon(
-                  Icons.psychology_rounded,
-                  size: 18,
-                  color: Color(0xFFFFD54F), // Luminous warm amber
-                ),
+              // App brand logo emblem
+              const HelaLogo(
+                size: 32,
+                framed: true,
+                isCircle: true,
+                padding: 3,
+                backgroundColor: Colors.white,
               ),
               const SizedBox(width: 8),
               Text(
@@ -390,17 +381,12 @@ class _AskHelaBottomSheetState extends State<_AskHelaBottomSheet> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      colors: [colors.primaryContainer, colors.primary],
-                    ),
-                    border: Border.all(color: colors.goldenAmber, width: 1.5),
-                  ),
-                  child: const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 18),
+                HelaLogo(
+                  size: 38,
+                  framed: true,
+                  isCircle: true,
+                  padding: 4,
+                  borderColor: colors.goldenAmber,
                 ),
                 const SizedBox(width: 12),
                 Expanded(

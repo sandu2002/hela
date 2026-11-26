@@ -7,6 +7,7 @@ import 'package:hela/pages/itinerary_details_page.dart';
 import 'package:hela/services/ai_service.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/theme/hela_colors.dart';
+import 'package:hela/widgets/hela_logo.dart';
 
 /// Full-screen animated AI Itinerary Planning Loading Experience.
 ///
@@ -396,13 +397,9 @@ class _ItineraryPlanningLoadingPageState
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Lotus / Leaf Brand Icon
-            const Icon(
-              Icons.eco_rounded,
-              size: 19,
-              color: Color(0xFF0B5D56),
-            ),
-            const SizedBox(width: 6),
+            // Brand Logo
+            const HelaLogo(size: 26),
+            const SizedBox(width: 8),
             Text(
               'HELA',
               style: TextStyle(

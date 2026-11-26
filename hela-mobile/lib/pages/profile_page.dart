@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hela/data/sri_lanka_images.dart';
-import 'package:hela/pages/active_journey_page.dart';
 import 'package:hela/pages/ask_hela_page.dart';
 import 'package:hela/pages/auth/signup_page.dart';
 import 'package:hela/pages/bookings_page.dart';
@@ -11,6 +9,7 @@ import 'package:hela/services/localization_service.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/theme/hela_colors.dart';
 import 'package:hela/widgets/hela_bottom_nav_bar.dart';
+import 'package:hela/widgets/hela_logo.dart';
 import 'package:hela/widgets/language_picker_sheet.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -100,9 +99,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildHeroProfileCard(appState, colors, isDark),
-                  const SizedBox(height: 16),
-                  _buildOngoingJourneyCard(appState),
-                  const SizedBox(height: 22),
+                  const SizedBox(height: 20),
                   _buildSectionHeader(
                     appState.tr('my_travel_hub'),
                     appState.tr('active_passports_itineraries'),
@@ -555,127 +552,6 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  // ── 2. Ongoing Journey Banner Card ───────────────────────────────────────
-  Widget _buildOngoingJourneyCard(HelaAppState appState) {
-    final activeTourTitle = appState.savedTours.isNotEmpty
-        ? appState.savedTours.first.title
-        : appState.tr('central_highlands_surf');
-    final totalDays = appState.savedTours.isNotEmpty
-        ? appState.savedTours.first.durationDays
-        : 14;
-    final currentDay = totalDays >= 8 ? 8 : 1;
-
-    return InkWell(
-      onTap: () {
-        Navigator.of(
-          context,
-        ).push(MaterialPageRoute(builder: (_) => const ActiveJourneyPage()));
-      },
-      borderRadius: BorderRadius.circular(18),
-      child: Container(
-        height: 112,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF0B4D42).withValues(alpha: 0.16),
-              blurRadius: 14,
-              offset: const Offset(0, 5),
-            ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(18),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              _buildNetworkImage(
-                SriLankaImages.nineArchBridge,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [
-                      const Color(0xFF072C24).withValues(alpha: 0.88),
-                      const Color(0xFF0B4D42).withValues(alpha: 0.45),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text(
-                            appState.tr('ongoing_journey'),
-                            style: const TextStyle(
-                              fontSize: 11.5,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFFA7F3D0),
-                            ),
-                          ),
-                          const SizedBox(height: 3),
-                          Text(
-                            activeTourTitle,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              height: 1.2,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 7,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.42),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.2),
-                        ),
-                      ),
-                      child: Text(
-                        'Day $currentDay of\n$totalDays',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 11.5,
-                          height: 1.2,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );
@@ -1217,12 +1093,8 @@ class _ProfilePageState extends State<ProfilePage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.badge_outlined,
-                size: 14,
-                color: colors.isDark ? colors.onSurfaceVariant : _mutedTeal,
-              ),
-              const SizedBox(width: 5),
+              const HelaLogo(size: 18),
+              const SizedBox(width: 6),
               Text(
                 'HELA Sri Lanka v2.4.1',
                 style: TextStyle(

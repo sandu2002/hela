@@ -5,6 +5,7 @@ import 'package:hela/services/ai_service.dart';
 import 'package:hela/services/live_weather_service.dart';
 import 'package:hela/services/localization_service.dart';
 import 'package:hela/state/app_state.dart';
+import 'package:hela/widgets/hela_logo.dart';
 import 'package:hela/widgets/language_picker_sheet.dart';
 
 /// Bento item representing structured practical tips or cultural rules
@@ -799,20 +800,12 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
           Stack(
             clipBehavior: Clip.none,
             children: [
-              Container(
-                width: 38,
-                height: 38,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF0B3328),
-                  shape: BoxShape.circle,
-                ),
-                child: const Center(
-                  child: Icon(
-                    Icons.filter_vintage_rounded, // Gold lotus / seal icon
-                    color: Color(0xFFDFAC6C),
-                    size: 20,
-                  ),
-                ),
+              const HelaLogo(
+                size: 38,
+                framed: true,
+                isCircle: true,
+                padding: 4,
+                borderColor: Color(0xFFC6EAE0),
               ),
               Positioned(
                 right: 0,
@@ -1027,20 +1020,12 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF0B3328),
-                  shape: BoxShape.circle,
-                ),
-                child: const Center(
-                  child: Icon(
-                    Icons.eco_rounded,
-                    color: Color(0xFF22C55E),
-                    size: 20,
-                  ),
-                ),
+              const HelaLogo(
+                size: 36,
+                framed: true,
+                isCircle: true,
+                padding: 4,
+                borderColor: Color(0xFFC6EAE0),
               ),
               const SizedBox(width: 12),
               Expanded(

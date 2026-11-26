@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hela/services/localization_service.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/theme/hela_colors.dart';
+import 'package:hela/widgets/hela_logo.dart';
 import 'package:hela/widgets/language_picker_sheet.dart';
 import 'package:hela/pages/stays_page.dart';
 import 'package:hela/pages/fair_ride_page.dart';
@@ -43,20 +44,12 @@ class HelaNavigationDrawer extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: colors.primary,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: Icon(
-                            Icons.eco_rounded,
-                            color: colors.onPrimary,
-                            size: 24,
-                          ),
-                        ),
+                      HelaLogo(
+                        size: 46,
+                        framed: true,
+                        isCircle: true,
+                        padding: 5,
+                        borderColor: colors.outlineVariant.withValues(alpha: 0.6),
                       ),
                       const SizedBox(width: 12),
                       Expanded(

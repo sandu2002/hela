@@ -3,6 +3,7 @@ import 'package:hela/data/sri_lanka_images.dart';
 import 'package:hela/pages/auth/signup_page.dart';
 import 'package:hela/pages/home_page.dart';
 import 'package:hela/state/app_state.dart';
+import 'package:hela/widgets/hela_logo.dart';
 import 'package:hela/widgets/language_picker_sheet.dart';
 
 /// Design tokens specifically tailored for HELA's Onboarding Experience
@@ -373,168 +374,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
     );
   }
 
-  void _showAskHelaSheet() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (ctx) {
-        final prompts = [
-          'What is the best month to hike Ella Rock?',
-          'What is the appropriate dress code for the Temple of the Tooth?',
-          'What should I expect to pay for a tuk-tuk from Colombo to Mount Lavinia?',
-          'Where can I see wild elephants responsibly in Sri Lanka?',
-        ];
-
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 44,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: const BoxDecoration(
-                        color: OnboardingTokens.peachBadge,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.auto_awesome_rounded,
-                        color: OnboardingTokens.peachText,
-                        size: 20,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Ask HELA AI Guide',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
-                            color: OnboardingTokens.textDark,
-                          ),
-                        ),
-                        Text(
-                          'Your 24/7 Smart Sri Lanka Travel Companion',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: OnboardingTokens.textMuted,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Popular Traveler Inquiries:',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: OnboardingTokens.textDark,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                ...prompts.map((p) {
-                  return InkWell(
-                    onTap: () {
-                      Navigator.pop(ctx);
-                      _navigateToSignUp();
-                    },
-                    borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        color: OnboardingTokens.background,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: OnboardingTokens.mintBorder,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.chat_bubble_outline_rounded,
-                            size: 16,
-                            color: OnboardingTokens.primaryDark,
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              p,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                                color: OnboardingTokens.textDark,
-                              ),
-                            ),
-                          ),
-                          const Icon(
-                            Icons.arrow_forward_ios_rounded,
-                            size: 12,
-                            color: OnboardingTokens.textMuted,
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(ctx);
-                      _navigateToSignUp();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: OnboardingTokens.primaryDark,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                    child: const Text(
-                      'Sign Up to Unlock Full AI Chat',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -585,30 +424,18 @@ class _OnboardingPageState extends State<OnboardingPage> {
               Expanded(
                 child: Row(
                   children: [
-                    Container(
-                      width: 38,
-                      height: 38,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.04),
-                            blurRadius: 6,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      alignment: Alignment.center,
-                      child: const Text(
-                        'HELA',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: -0.5,
-                          color: OnboardingTokens.primaryDark,
+                    HelaLogo(
+                      size: 40,
+                      framed: true,
+                      padding: 4,
+                      borderRadius: 11,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
                         ),
-                      ),
+                      ],
                     ),
                     const SizedBox(width: 10),
                     Expanded(
@@ -746,8 +573,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 ),
               )
             else
-              // Screen 3: Clean placeholder balancing the back button
-              const SizedBox(width: 42),
+              // Screen 3: Brand Logo balancing the back button
+              const HelaLogo(
+                size: 40,
+                framed: true,
+                isCircle: true,
+                padding: 4,
+                borderColor: OnboardingTokens.mintBorder,
+              ),
           ],
         ),
       ),
@@ -1480,87 +1313,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           ),
                         ],
                       ),
-                    ),
-                  ),
-
-                  // Bottom Audio Snippet & Rating Lockup
-                  Positioned(
-                    bottom: 12,
-                    left: 12,
-                    right: 12,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Live Folk Lore & Ola Leaf Tales Button
-                        InkWell(
-                          onTap: _showAskHelaSheet,
-                          borderRadius: BorderRadius.circular(16),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                width: 28,
-                                height: 28,
-                                decoration: const BoxDecoration(
-                                  color: Color(0xFF6E4C00),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.record_voice_over_rounded,
-                                  color: Color(0xFFF5BD57),
-                                  size: 15,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                appState.tr('live_folklore_tag'),
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                  shadows: [
-                                    Shadow(
-                                      color: Colors.black54,
-                                      blurRadius: 4,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        // Star Rating Pill
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 3,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.4),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.star_rounded,
-                                color: Color(0xFFF5BD58),
-                                size: 14,
-                              ),
-                              SizedBox(width: 3),
-                              Text(
-                                '4.98',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
                     ),
                   ),
                 ],
