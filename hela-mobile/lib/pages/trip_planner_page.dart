@@ -337,38 +337,6 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
           fontFamily: 'Inter',
         ),
       ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 16),
-          child: InkWell(
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Gemini AI Planner • Ready to craft your journey'),
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            },
-            borderRadius: BorderRadius.circular(999),
-            child: Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: colors.surfaceContainer,
-                border: Border.all(
-                  color: colors.architecturalBorder.withValues(alpha: 0.6),
-                ),
-              ),
-              child: Icon(
-                Icons.auto_awesome_rounded,
-                color: colors.primary,
-                size: 22,
-              ),
-            ),
-          ),
-        ),
-      ],
     );
   }
 

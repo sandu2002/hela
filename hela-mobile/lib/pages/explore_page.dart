@@ -3,7 +3,6 @@ import 'package:hela/data/place_details_catalog.dart';
 import 'package:hela/data/sri_lanka_images.dart';
 import 'package:hela/pages/cultural_guide/cultural_guide_page.dart';
 import 'package:hela/pages/place_details_page.dart';
-import 'package:hela/pages/saved_page.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/theme/hela_colors.dart';
 import 'package:hela/widgets/hela_bottom_nav_bar.dart';
@@ -1557,59 +1556,15 @@ class _ExplorePageState extends State<ExplorePage> {
   }
 
   Widget _buildTitleAndViewSwitcher(HelaColorPalette colors) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Expanded(
-          child: Text(
-            'Explore',
-            style: TextStyle(
-              fontSize: 34,
-              fontWeight: FontWeight.w900,
-              color: colors.onSurface,
-              fontFamily: 'Inter',
-              letterSpacing: -0.8,
-            ),
-          ),
-        ),
-        const SizedBox(width: 8),
-
-        // Favorites Button
-        InkWell(
-          onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const SavedPage()));
-          },
-          borderRadius: BorderRadius.circular(999),
-          child: Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              color: colors.surfaceContainerLow,
-              shape: BoxShape.circle,
-              border: Border.all(color: colors.architecturalBorder),
-            ),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Icon(Icons.bookmark_rounded, size: 20, color: colors.secondary),
-                Positioned(
-                  top: 7,
-                  right: 7,
-                  child: Container(
-                    width: 7,
-                    height: 7,
-                    decoration: BoxDecoration(
-                      color: colors.goldenAmber,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
+    return Text(
+      'Explore',
+      style: TextStyle(
+        fontSize: 34,
+        fontWeight: FontWeight.w900,
+        color: colors.onSurface,
+        fontFamily: 'Inter',
+        letterSpacing: -0.8,
+      ),
     );
   }
 

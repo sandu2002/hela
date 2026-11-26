@@ -517,20 +517,6 @@ void main() {
     // Verify search bar presence
     expect(find.byType(TextField), findsOneWidget);
     expect(find.text('Places to go, things to do, hotels...'), findsOneWidget);
-
-    // Verify tapping top-right saved bookmark icon opens SavedPage
-    final bookmarkBtn = find.byIcon(Icons.bookmark_rounded);
-    expect(bookmarkBtn, findsOneWidget);
-    await tester.tap(bookmarkBtn);
-    await tester.pumpAndSettle();
-    expect(find.byType(SavedPage), findsOneWidget);
-    expect(find.byIcon(Icons.arrow_back_ios_new_rounded), findsOneWidget);
-    expect(find.byType(HelaBottomNavBar), findsNothing);
-
-    // Tap back button to return to ExplorePage
-    await tester.tap(find.byIcon(Icons.arrow_back_ios_new_rounded));
-    await tester.pumpAndSettle();
-    expect(find.byType(ExplorePage), findsOneWidget);
   });
 
   testWidgets('ItineraryDetailsPage smoke test and stop rendering', (WidgetTester tester) async {
