@@ -86,8 +86,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return Scaffold(
       backgroundColor: isDark ? colors.surface : _mintPageBg,
+      appBar: _buildTopAppBar(appState, colors, isDark),
       body: SafeArea(
-        top: true,
+        top: false,
         bottom: false,
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -140,6 +141,147 @@ class _ProfilePageState extends State<ProfilePage> {
         context,
       ),
       bottomNavigationBar: const HelaBottomNavBar(currentIndex: 4),
+    );
+  }
+
+  // ── Top App Bar ──────────────────────────────────────────────────────────
+  PreferredSizeWidget _buildTopAppBar(
+    HelaAppState appState,
+    HelaColorPalette colors,
+    bool isDark,
+  ) {
+    return AppBar(
+      backgroundColor: isDark ? colors.surface : _mintPageBg,
+      elevation: 0,
+      scrolledUnderElevation: 1,
+      toolbarHeight: 62,
+      automaticallyImplyLeading: false,
+      titleSpacing: 16,
+      title: Row(
+        children: [
+          Container(
+            width: 38,
+            height: 38,
+            decoration: const BoxDecoration(
+              color: _deepTeal,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.account_circle_outlined,
+              color: Colors.white,
+              size: 22,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  appState.tr('hela_travel'),
+                  style: TextStyle(
+                    fontSize: 9.5,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.1,
+                    color: isDark ? colors.onSurfaceVariant : _mutedTeal,
+                  ),
+                ),
+                Text(
+                  appState.tr('my_profile'),
+                  style: TextStyle(
+                    fontSize: 17.5,
+                    fontWeight: FontWeight.w800,
+                    color: isDark ? colors.onSurface : _darkInk,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // SOS Pill Button
+          InkWell(
+            onTap: _showEmergencySosSheet,
+            borderRadius: BorderRadius.circular(999),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFDE2E2),
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(color: const Color(0xFFF9B8B8)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 1,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFDC2626),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Text(
+                      'SOS',
+                      style: TextStyle(
+                        fontSize: 8.5,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 5),
+                  const Text(
+                    'SOS',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFFB91C1C),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: 6),
+          // Notifications Bell
+          InkWell(
+            onTap: () => _showNotificationsSheet(appState),
+            borderRadius: BorderRadius.circular(999),
+            child: Padding(
+              padding: const EdgeInsets.all(6),
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Icon(
+                    Icons.notifications_none_rounded,
+                    size: 24,
+                    color: isDark ? colors.onSurface : _darkInk,
+                  ),
+                  if (appState.unreadAlertsCount > 0)
+                    Positioned(
+                      right: 1,
+                      top: 1,
+                      child: Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFEF4444),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: isDark ? colors.surface : _mintPageBg,
+                            width: 1.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -1359,6 +1501,230 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   // ── Interactive Sheets & Dialogs ─────────────────────────────────────────
+  void _showEmergencySosSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(22),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
+        ),
+        child: SafeArea(
+          top: false,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFFEE2E2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.emergency_rounded,
+                        color: Color(0xFFDC2626),
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Tourist Emergency SOS',
+                            style: TextStyle(
+                              fontSize: 17.5,
+                              fontWeight: FontWeight.w800,
+                              color: _darkInk,
+                            ),
+                          ),
+                          Text(
+                            '24/7 Official Sri Lanka Emergency Dispatch',
+                            style: TextStyle(fontSize: 12, color: _mutedTeal),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close_rounded),
+                      onPressed: () => Navigator.pop(ctx),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                _buildSosTile(
+                  icon: Icons.local_police_rounded,
+                  title: 'Sri Lanka Tourist Police',
+                  subtitle: 'Toll-free 24/7 English & Sinhala support • 1912',
+                  badge: '1912',
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _dialNumber('1912');
+                  },
+                ),
+                const SizedBox(height: 8),
+                _buildSosTile(
+                  icon: Icons.medical_services_rounded,
+                  title: 'Suwa Seriya National Ambulance',
+                  subtitle:
+                      'Free island-wide emergency medical response • 1990',
+                  badge: '1990',
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _dialNumber('1990');
+                  },
+                ),
+                const SizedBox(height: 8),
+                _buildSosTile(
+                  icon: Icons.phone_in_talk_rounded,
+                  title: 'General Police Emergency',
+                  subtitle: 'Immediate dispatch • 119',
+                  badge: '119',
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _dialNumber('119');
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSosTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required String badge,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFF5F5),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFFFED7D7)),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: const Color(0xFFDC2626), size: 22),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w700,
+                      color: _darkInk,
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(fontSize: 11, color: _mutedTeal),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: const Color(0xFFDC2626),
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Text(
+                badge,
+                style: const TextStyle(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showNotificationsSheet(HelaAppState appState) {
+    appState.clearUnreadAlerts();
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Smart Travel Alerts',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                  color: _darkInk,
+                ),
+              ),
+              const SizedBox(height: 12),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const CircleAvatar(
+                  backgroundColor: _softMintTile,
+                  child: Icon(Icons.train_rounded, color: _deepTeal, size: 20),
+                ),
+                title: const Text(
+                  'Ella Odyssey Train On Schedule',
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5),
+                ),
+                subtitle: const Text(
+                  '08:47 AM departure from Kandy confirmed • Platform 2.',
+                  style: TextStyle(fontSize: 12),
+                ),
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const CircleAvatar(
+                  backgroundColor: Color(0xFFFEF3C7),
+                  child: Icon(
+                    Icons.wb_sunny_rounded,
+                    color: Color(0xFFD97706),
+                    size: 20,
+                  ),
+                ),
+                title: const Text(
+                  'Clear Morning Skies in Central Highlands',
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5),
+                ),
+                subtitle: const Text(
+                  'Ideal visibility for Nine Arch Bridge & Little Adam’s Peak.',
+                  style: TextStyle(fontSize: 12),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   void _showLanguagePicker() {
     final appState = HelaAppStateProvider.of(context);
