@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hela/pages/home_page.dart';
 import 'package:hela/pages/explore_page.dart';
 import 'package:hela/pages/trip_planner_page.dart';
-import 'package:hela/pages/bookings_page.dart';
+import 'package:hela/pages/saved_page.dart';
 import 'package:hela/pages/profile_page.dart';
 import 'package:hela/pages/ask_hela_page.dart';
 import 'package:hela/state/app_state.dart';
@@ -12,7 +12,7 @@ import 'package:hela/state/app_state.dart';
 /// - 64px docked height + safe area
 /// - Inactive icons/labels: #63736E (colors.outline)
 /// - Active tab: #0B5D56 (colors.primaryContainer) with a 4px active indicator dot below
-/// - 5 Global Tabs: Home, Explore, Trip Planner, Bookings, Profile
+/// - 5 Global Tabs: Home, Explore, Trip Planner, Saved, Profile
 class HelaBottomNavBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int>? onTabSelected;
@@ -45,10 +45,10 @@ class HelaBottomNavBar extends StatelessWidget {
       activeIcon: Icons.map_rounded,
     ),
     _NavItemData(
-      label: 'Bookings',
-      key: 'bookings',
-      icon: Icons.confirmation_number_outlined,
-      activeIcon: Icons.confirmation_number_rounded,
+      label: 'Saved',
+      key: 'saved',
+      icon: Icons.bookmark_border_rounded,
+      activeIcon: Icons.bookmark_rounded,
     ),
     _NavItemData(
       label: 'Profile',
@@ -78,7 +78,7 @@ class HelaBottomNavBar extends StatelessWidget {
         targetPage = const TripPlannerPage();
         break;
       case 3:
-        targetPage = const BookingsPage();
+        targetPage = const SavedPage(showBottomNav: true, showBackButton: false);
         break;
       case 4:
         targetPage = const ProfilePage();

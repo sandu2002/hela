@@ -155,7 +155,7 @@ void main() {
       expect(find.text('Mein Profil'), findsOneWidget);
       expect(find.text('EINSTELLUNGEN'), findsOneWidget);
       expect(find.text('Entdecken'), findsOneWidget);
-      expect(find.text('Buchungen'), findsOneWidget);
+      expect(find.text('Gespeichert'), findsOneWidget);
 
       // Switch to Arabic and verify RTL directionality updates
       final spracheFinder = find.text('Sprache');

@@ -9,13 +9,21 @@ import 'package:hela/pages/stays_page.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/widgets/haven_card.dart';
 import 'package:hela/widgets/stay_card.dart';
+import 'package:hela/widgets/hela_bottom_nav_bar.dart';
 
 /// Dedicated Saved / Wishlist Page for the HELA app.
 ///
 /// Displays all saved Haven cards, Eco-Stays, Tours, and Experiences,
 /// with support for custom user-created categorized collections/lists.
 class SavedPage extends StatefulWidget {
-  const SavedPage({super.key});
+  final bool showBottomNav;
+  final bool? showBackButton;
+
+  const SavedPage({
+    super.key,
+    this.showBottomNav = false,
+    this.showBackButton,
+  });
 
   @override
   State<SavedPage> createState() => _SavedPageState();
@@ -24,6 +32,9 @@ class SavedPage extends StatefulWidget {
 class _SavedPageState extends State<SavedPage> {
   int _selectedFilterIndex = 0; // 0: All, 1: Smart Tours, 2: Havens & Excursions, 3: Eco-Stays, 4: Experiences
   String? _selectedCustomListId;
+
+  bool get _shouldShowBack =>
+      widget.showBackButton ?? (Navigator.canPop(context) || !widget.showBottomNav);
 
   final List<String> _filters = const [
     'All',
@@ -54,7 +65,7 @@ class _SavedPageState extends State<SavedPage> {
         bottom: false,
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.only(bottom: 32),
+          padding: EdgeInsets.only(bottom: widget.showBottomNav ? 96 : 32),
           child: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 480),
@@ -85,6 +96,9 @@ class _SavedPageState extends State<SavedPage> {
           ),
         ),
       ),
+      bottomNavigationBar: widget.showBottomNav
+          ? const HelaBottomNavBar(currentIndex: 3)
+          : null,
     );
   }
 
@@ -96,40 +110,42 @@ class _SavedPageState extends State<SavedPage> {
       shadowColor: Colors.black12,
       toolbarHeight: 64,
       automaticallyImplyLeading: false,
-      leading: Padding(
-        padding: const EdgeInsets.only(left: 12),
-        child: Center(
-          child: Tooltip(
-            message: 'Back',
-            child: InkWell(
-              onTap: () => Navigator.maybePop(context),
-              borderRadius: BorderRadius.circular(999),
-              child: Container(
-                width: 38,
-                height: 38,
-                decoration: BoxDecoration(
-                  color: HelaColors.surfaceContainerLow,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: HelaColors.architecturalBorder),
-                ),
-                child: const Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  size: 16,
-                  color: HelaColors.primary,
+      leading: _shouldShowBack
+          ? Padding(
+              padding: const EdgeInsets.only(left: 12),
+              child: Center(
+                child: Tooltip(
+                  message: 'Back',
+                  child: InkWell(
+                    onTap: () => Navigator.maybePop(context),
+                    borderRadius: BorderRadius.circular(999),
+                    child: Container(
+                      width: 38,
+                      height: 38,
+                      decoration: BoxDecoration(
+                        color: HelaColors.surfaceContainerLow,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: HelaColors.architecturalBorder),
+                      ),
+                      child: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        size: 16,
+                        color: HelaColors.primary,
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-        ),
-      ),
-      leadingWidth: 54,
-      titleSpacing: 8,
+            )
+          : null,
+      leadingWidth: _shouldShowBack ? 54 : 16,
+      titleSpacing: _shouldShowBack ? 8 : 16,
       title: Text(
         appState.tr('saved_collection'),
-        style: const TextStyle(
+        style: TextStyle(
           color: HelaColors.primary,
           fontWeight: FontWeight.w800,
-          fontSize: 18,
+          fontSize: _shouldShowBack ? 18 : 22,
           letterSpacing: -0.4,
         ),
         maxLines: 1,
