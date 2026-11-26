@@ -90,22 +90,43 @@ void main() {
     );
     await tester.pump();
 
-    // Initially "Featured Destinations" and Sigiriya are visible
+    // Initially "Featured Destinations" and Sigiriya are visible, "All" is first and "Hill Country" is replaced by "Adventure"
     expect(find.text('Featured Destinations'), findsOneWidget);
     expect(find.text('Sigiriya'), findsOneWidget);
+    expect(find.text('All'), findsOneWidget);
+    expect(find.text('Adventure'), findsOneWidget);
+    expect(find.text('Hill Country'), findsNothing);
+    expect(find.text('Sigiriya Lion Rock Fortress'), findsOneWidget);
+    expect(find.text('Arugam Bay Surf Capital'), findsOneWidget);
+    expect(find.text('Knuckles Mountain Range Trek'), findsOneWidget);
 
     // Tap "Beaches" filter chip
-    await tester.tap(find.text('Beaches'));
+    final beachesChip = find.text('Beaches');
+    await tester.ensureVisible(beachesChip);
+    await tester.tap(beachesChip);
     await tester.pump(const Duration(milliseconds: 250));
 
     // Experience card now shows Beaches experience
     expect(find.text('Weligama Surfing & Tangalle Bays'), findsOneWidget);
+    expect(find.text('Mirissa Beach & Coconut Tree Hill'), findsOneWidget);
 
     // Tap "Nature & Wildlife" filter chip
-    await tester.tap(find.text('Nature & Wildlife'));
+    final wildlifeChip = find.text('Nature & Wildlife');
+    await tester.ensureVisible(wildlifeChip);
+    await tester.tap(wildlifeChip);
     await tester.pump(const Duration(milliseconds: 250));
 
     expect(find.text('Minneriya Elephant Gathering & Yala Safaris'), findsOneWidget);
+    expect(find.text('Udawalawe National Park'), findsOneWidget);
+
+    // Tap "Adventure" filter chip
+    final adventureChip = find.text('Adventure');
+    await tester.ensureVisible(adventureChip);
+    await tester.tap(adventureChip);
+    await tester.pump(const Duration(milliseconds: 250));
+
+    expect(find.text('Nine Arch Bridge & Flying Ravana Zipline'), findsOneWidget);
+    expect(find.text('Kitulgala White-Water Rafting'), findsOneWidget);
   });
 
   testWidgets('TripPlannerPage smoke test', (WidgetTester tester) async {

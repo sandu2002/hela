@@ -236,281 +236,415 @@ class _ProfilePageState extends State<ProfilePage> {
     final destinationsCount = 7 + appState.savedHavens.length;
 
     return Container(
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isDark ? colors.cardBackground : Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: isDark ? colors.architecturalBorder : _cardBorder,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0B4D42).withValues(alpha: 0.05),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
+            color: const Color(0xFF0B4D42).withValues(alpha: isDark ? 0.22 : 0.08),
+            blurRadius: 22,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Top Row: Avatar + Tier/ID Pills
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const EditProfilePage()),
-                  );
-                },
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Container(
-                      width: 68,
-                      height: 68,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: const Color(0xFFCDEBE2),
-                          width: 2,
-                        ),
-                      ),
-                      child: ClipOval(
-                        child: _buildNetworkImage(
-                          photoUrl,
-                          width: 64,
-                          height: 64,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      right: -2,
-                      bottom: -2,
-                      child: Container(
-                        width: 22,
-                        height: 22,
-                        decoration: BoxDecoration(
-                          color: _deepTeal,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 2),
-                        ),
-                        child: const Icon(
-                          Icons.verified_rounded,
-                          size: 12,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(23),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // ── Emerald Passport Header ───────────────────────────────────
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: isDark
+                      ? const [Color(0xFF0A3830), Color(0xFF105246)]
+                      : const [Color(0xFF0A473D), Color(0xFF13685A)],
                 ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
+              child: Stack(
+                children: [
+                  // Subtle decorative glow circles
+                  Positioned(
+                    top: -28,
+                    right: -22,
+                    child: Container(
+                      width: 112,
+                      height: 112,
                       decoration: BoxDecoration(
-                        color: isDark
-                            ? colors.surfaceContainerLow
-                            : const Color(0xFFF1F9F6),
-                        borderRadius: BorderRadius.circular(999),
-                        border: Border.all(
-                          color: isDark
-                              ? colors.architecturalBorder
-                              : _cardBorder,
-                        ),
+                        shape: BoxShape.circle,
+                        color: Colors.white.withValues(alpha: 0.06),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.circle,
-                            size: 6,
-                            color: Color(0xFF10B981),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: -36,
+                    left: -18,
+                    child: Container(
+                      width: 92,
+                      height: 92,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: const Color(0xFF34D399).withValues(alpha: 0.08),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Avatar + Name & SLTDA ID Pill
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const EditProfilePage(),
+                                  ),
+                                );
+                              },
+                              child: Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  Container(
+                                    width: 68,
+                                    height: 68,
+                                    padding: const EdgeInsets.all(2.5),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Colors.white.withValues(alpha: 0.85),
+                                        width: 2,
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(alpha: 0.2),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
+                                    ),
+                                    child: ClipOval(
+                                      child: _buildNetworkImage(
+                                        photoUrl,
+                                        width: 62,
+                                        height: 62,
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    right: -2,
+                                    bottom: -2,
+                                    child: Container(
+                                      width: 22,
+                                      height: 22,
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFF10B981),
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: const Color(0xFF0C5246),
+                                          width: 2,
+                                        ),
+                                      ),
+                                      child: const Icon(
+                                        Icons.verified_rounded,
+                                        size: 12,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withValues(alpha: 0.14),
+                                      borderRadius: BorderRadius.circular(999),
+                                      border: Border.all(
+                                        color: Colors.white.withValues(alpha: 0.2),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Icon(
+                                          Icons.circle,
+                                          size: 6.5,
+                                          color: Color(0xFF34D399),
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Flexible(
+                                          child: Text(
+                                            appState.tr('sltda_id'),
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontSize: 10.5,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.white,
+                                              letterSpacing: 0.2,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    displayName,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 21,
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.white,
+                                      letterSpacing: -0.4,
+                                      height: 1.15,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 14),
+
+                        // Frosted Contact Strip (Email + Phone)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 10,
                           ),
-                          const SizedBox(width: 5),
-                          Text(
-                            appState.tr('sltda_id'),
-                            style: TextStyle(
-                              fontSize: 10.5,
-                              fontWeight: FontWeight.w600,
-                              color: isDark
-                                  ? colors.onSurfaceVariant
-                                  : _mutedTeal,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.11),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.14),
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.mail_outline_rounded,
+                                    size: 15,
+                                    color: Colors.white.withValues(alpha: 0.85),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      displayEmail,
+                                      style: TextStyle(
+                                        fontSize: 12.5,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.white.withValues(alpha: 0.92),
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 1.5,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withValues(alpha: 0.2),
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    child: Text(
+                                      _countryCodeFromPhone(displayPhone),
+                                      style: const TextStyle(
+                                        fontSize: 9.5,
+                                        fontWeight: FontWeight.w800,
+                                        color: Colors.white,
+                                        letterSpacing: 0.4,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      displayPhone,
+                                      style: TextStyle(
+                                        fontSize: 12.5,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.white.withValues(alpha: 0.92),
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // ── Stats Strip & Edit Profile CTA ────────────────────────────
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? colors.surfaceContainer
+                          : const Color(0xFFF3FAF7),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: isDark
+                            ? colors.architecturalBorder
+                            : const Color(0xFFD7EDE5),
+                      ),
+                    ),
+                    child: IntrinsicHeight(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: _buildStatBox(
+                              icon: Icons.wb_sunny_rounded,
+                              iconColor: const Color(0xFFD97706),
+                              iconBg: const Color(0xFFFEF3C7),
+                              value: '14',
+                              label: appState.tr('days_in_lanka'),
+                              isDark: isDark,
+                              colors: colors,
+                            ),
+                          ),
+                          Container(
+                            width: 1,
+                            margin: const EdgeInsets.symmetric(vertical: 4),
+                            color: isDark
+                                ? colors.architecturalBorder
+                                : const Color(0xFFD2E8DF),
+                          ),
+                          Expanded(
+                            child: _buildStatBox(
+                              icon: Icons.explore_rounded,
+                              iconColor: _deepTeal,
+                              iconBg: const Color(0xFFDDF3EC),
+                              value: '$destinationsCount',
+                              label: appState.tr('destinations_stat'),
+                              isDark: isDark,
+                              colors: colors,
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const SavedPage(),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          Container(
+                            width: 1,
+                            margin: const EdgeInsets.symmetric(vertical: 4),
+                            color: isDark
+                                ? colors.architecturalBorder
+                                : const Color(0xFFD2E8DF),
+                          ),
+                          Expanded(
+                            child: _buildStatBox(
+                              icon: Icons.eco_rounded,
+                              iconColor: const Color(0xFF059669),
+                              iconBg: const Color(0xFFD1FAE5),
+                              value: '100%',
+                              label: appState.tr('carbon_offset'),
+                              isDark: isDark,
+                              colors: colors,
+                              onTap: _showEcoImpactDialog,
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-
-          // Name
-          Text(
-            displayName,
-            style: TextStyle(
-              fontSize: 21,
-              fontWeight: FontWeight.w800,
-              color: isDark ? colors.onSurface : _darkInk,
-              letterSpacing: -0.4,
-            ),
-          ),
-          const SizedBox(height: 6),
-
-          // Email
-          Row(
-            children: [
-              Icon(
-                Icons.mail_outline_rounded,
-                size: 15,
-                color: isDark ? colors.onSurfaceVariant : _mutedTeal,
-              ),
-              const SizedBox(width: 7),
-              Expanded(
-                child: Text(
-                  displayEmail,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: isDark
-                        ? colors.onSurfaceVariant
-                        : const Color(0xFF3E5E56),
                   ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 5),
+                  const SizedBox(height: 12),
 
-          // Phone with country badge
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 5,
-                  vertical: 1.5,
-                ),
-                decoration: BoxDecoration(
-                  color: isDark
-                      ? colors.surfaceContainer
-                      : const Color(0xFFEAF3F0),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  _countryCodeFromPhone(displayPhone),
-                  style: TextStyle(
-                    fontSize: 9.5,
-                    fontWeight: FontWeight.w800,
-                    color: isDark ? colors.onSurface : _darkInk,
+                  // Edit Personal Profile Button
+                  SizedBox(
+                    width: double.infinity,
+                    height: 44,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const EditProfilePage(),
+                          ),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.edit_note_rounded,
+                        size: 20,
+                        color: isDark ? colors.onSecondaryContainer : _deepTeal,
+                      ),
+                      label: Text(
+                        appState.tr('edit_personal_profile'),
+                        style: TextStyle(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w700,
+                          color: isDark ? colors.onSecondaryContainer : _deepTeal,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isDark
+                            ? colors.secondaryContainer
+                            : const Color(0xFFE7F5F0),
+                        elevation: 0,
+                        side: BorderSide(
+                          color: isDark
+                              ? colors.architecturalBorder
+                              : const Color(0xFFC7E6DC),
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(width: 7),
-              Text(
-                displayPhone,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: isDark
-                      ? colors.onSurfaceVariant
-                      : const Color(0xFF3E5E56),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-
-          // 3 Stat Tiles
-          Row(
-            children: [
-              Expanded(
-                child: _buildStatBox(
-                  value: '14',
-                  label: appState.tr('days_in_lanka'),
-                  isDark: isDark,
-                  colors: colors,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildStatBox(
-                  value: '$destinationsCount',
-                  label: appState.tr('destinations_stat'),
-                  isDark: isDark,
-                  colors: colors,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const SavedPage()),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildStatBox(
-                  value: '100%',
-                  label: appState.tr('carbon_offset'),
-                  isDark: isDark,
-                  colors: colors,
-                  onTap: _showEcoImpactDialog,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-
-          // Edit Personal Profile Button
-          SizedBox(
-            width: double.infinity,
-            height: 44,
-            child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const EditProfilePage()),
-                );
-              },
-              icon: Icon(
-                Icons.edit_note_rounded,
-                size: 19,
-                color: isDark ? colors.onSecondaryContainer : _darkInk,
-              ),
-              label: Text(
-                appState.tr('edit_personal_profile'),
-                style: TextStyle(
-                  fontSize: 13.5,
-                  fontWeight: FontWeight.w700,
-                  color: isDark ? colors.onSecondaryContainer : _darkInk,
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: isDark
-                    ? colors.secondaryContainer
-                    : _softMintTile,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildStatBox({
+    required IconData icon,
+    required Color iconColor,
+    required Color iconBg,
     required String value,
     required String label,
     required bool isDark,
@@ -520,22 +654,32 @@ class _ProfilePageState extends State<ProfilePage> {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
-      child: Container(
-        height: 72,
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-        decoration: BoxDecoration(
-          color: isDark ? colors.surfaceContainer : _softMintTile,
-          borderRadius: BorderRadius.circular(12),
-        ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                color: isDark ? iconColor.withValues(alpha: 0.18) : iconBg,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                size: 14,
+                color: isDark ? iconBg : iconColor,
+              ),
+            ),
+            const SizedBox(height: 6),
             Text(
               value,
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w800,
                 color: isDark ? colors.onSurface : _darkInk,
+                letterSpacing: -0.3,
               ),
             ),
             const SizedBox(height: 2),
@@ -543,11 +687,11 @@ class _ProfilePageState extends State<ProfilePage> {
               label,
               textAlign: TextAlign.center,
               maxLines: 2,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: 9,
+                fontSize: 9.5,
                 height: 1.15,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.3,
+                fontWeight: FontWeight.w600,
                 color: isDark ? colors.onSurfaceVariant : _mutedTeal,
               ),
             ),

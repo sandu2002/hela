@@ -58,14 +58,14 @@ class _HelaHomePageState extends State<HelaHomePage>
   bool _isLiveSearching = false;
   String _currentCity = 'Colombo';
   int _selectedExperienceChipIndex =
-      0; // 0: Nature & Wildlife, 1: Beaches, 2: Cultural Heritage, 3: Hill Country, 4: All
+      0; // 0: All, 1: Beaches, 2: Cultural Heritage, 3: Nature & Wildlife, 4: Adventure
 
   final List<String> _experienceFilters = const [
-    'Nature & Wildlife',
+    'All',
     'Beaches',
     'Cultural Heritage',
-    'Hill Country',
-    'All',
+    'Nature & Wildlife',
+    'Adventure',
   ];
 
   void _openPlaceDetailsFromDestination(FeaturedDestinationItem item) {
@@ -126,37 +126,135 @@ class _HelaHomePageState extends State<HelaHomePage>
   }
 
   final List<HomeExperienceItem> _experiences = const [
+    // Curated most famous places in Sri Lanka (Google-verified ratings & details)
+    // Shown in full under "All" (16 destinations) and filtered by category tab.
+    HomeExperienceItem(
+      title: 'Sigiriya Lion Rock Fortress',
+      subtitle: '5th-century UNESCO sky citadel, water gardens & ancient frescoes',
+      category: 'CULTURAL HERITAGE',
+      rating: '4.7',
+      filterCategory: 'Cultural Heritage',
+      imageUrl: SriLankaImages.sigiriya,
+    ),
+    HomeExperienceItem(
+      title: 'Mirissa Beach & Coconut Tree Hill',
+      subtitle: 'Blue whale watching hub, palm headland & golden tropical bay',
+      category: 'BEACHES',
+      rating: '4.6',
+      filterCategory: 'Beaches',
+      imageUrl: SriLankaImages.mirissa,
+    ),
     HomeExperienceItem(
       title: 'Minneriya Elephant Gathering & Yala Safaris',
-      subtitle: 'Witness majestic wild elephant herds & elusive leopards',
+      subtitle: 'Wild Asian elephant herds & world-famous leopard safaris',
       category: 'NATURE & WILDLIFE',
-      rating: '4.9',
+      rating: '4.7',
       filterCategory: 'Nature & Wildlife',
       imageUrl: SriLankaImages.elephant,
     ),
     HomeExperienceItem(
-      title: 'Ceylon Spice Trail & Hopper Feast',
-      subtitle: 'Authentic culinary secrets & aromatic street flavours',
-      category: 'FOOD EXPERIENCES',
+      title: 'Galle Dutch Fort',
+      subtitle: '17th-century UNESCO ocean ramparts, lighthouse & colonial streets',
+      category: 'CULTURAL HERITAGE',
       rating: '4.8',
       filterCategory: 'Cultural Heritage',
-      imageUrl: SriLankaImages.hopper,
+      imageUrl: SriLankaImages.galleFort,
+    ),
+    HomeExperienceItem(
+      title: 'Nine Arch Bridge & Flying Ravana Zipline',
+      subtitle: '80 km/h tea valley mega zipline, Ella Rock hikes & iconic rail bridge',
+      category: 'ADVENTURE',
+      rating: '4.8',
+      filterCategory: 'Adventure',
+      imageUrl: SriLankaImages.nineArchBridge,
+    ),
+    HomeExperienceItem(
+      title: 'Temple of the Sacred Tooth Relic, Kandy',
+      subtitle: 'Sacred golden-roofed royal Buddhist shrine beside Kandy Lake',
+      category: 'CULTURAL HERITAGE',
+      rating: '4.6',
+      filterCategory: 'Cultural Heritage',
+      imageUrl: SriLankaImages.templeOfTheTooth,
+    ),
+    HomeExperienceItem(
+      title: 'Arugam Bay Surf Capital',
+      subtitle: 'World-renowned east coast surf point breaks & bohemian cabanas',
+      category: 'BEACHES',
+      rating: '4.6',
+      filterCategory: 'Beaches',
+      imageUrl: SriLankaImages.arugamBay,
+    ),
+    HomeExperienceItem(
+      title: 'Udawalawe National Park',
+      subtitle: 'Open savannah plains famous for guaranteed wild elephant herds',
+      category: 'NATURE & WILDLIFE',
+      rating: '4.8',
+      filterCategory: 'Nature & Wildlife',
+      imageUrl: SriLankaImages.udawalawe,
+    ),
+    HomeExperienceItem(
+      title: 'Adam\'s Peak (Sri Pada) Night Trek',
+      subtitle: '2,243m sacred summit pilgrimage climb for breathtaking sunrise views',
+      category: 'ADVENTURE',
+      rating: '4.8',
+      filterCategory: 'Adventure',
+      imageUrl: SriLankaImages.adamsPeak,
     ),
     HomeExperienceItem(
       title: 'Weligama Surfing & Tangalle Bays',
-      subtitle: 'Pristine breaks, secluded lagoons & coastal bliss',
-      category: 'BEACHES & OCEAN',
-      rating: '4.9',
+      subtitle: 'Gentle beginner surf bay, stilt fishermen & secluded southern coves',
+      category: 'BEACHES',
+      rating: '4.6',
       filterCategory: 'Beaches',
       imageUrl: SriLankaImages.weligama,
     ),
     HomeExperienceItem(
-      title: 'Nine Arch Bridge & Demodara Tea Valley',
-      subtitle: 'Colonial railway arches shrouded in morning mountain mist',
-      category: 'HILL COUNTRY',
-      rating: '4.9',
-      filterCategory: 'Hill Country',
-      imageUrl: SriLankaImages.nineArchBridge,
+      title: 'Horton Plains & World\'s End',
+      subtitle: '2,100m UNESCO cloud forest plateau with dramatic 870m cliff drop',
+      category: 'NATURE & WILDLIFE',
+      rating: '4.7',
+      filterCategory: 'Nature & Wildlife',
+      imageUrl: SriLankaImages.hortonPlains,
+    ),
+    HomeExperienceItem(
+      title: 'Kitulgala White-Water Rafting',
+      subtitle: 'Kelani River Grade 2–3 rapids, canyoning & rainforest cliff jumps',
+      category: 'ADVENTURE',
+      rating: '4.7',
+      filterCategory: 'Adventure',
+      imageUrl: SriLankaImages.kitulgala,
+    ),
+    HomeExperienceItem(
+      title: 'Ancient City of Polonnaruwa',
+      subtitle: '12th-century UNESCO royal capital with Gal Vihara rock Buddhas',
+      category: 'CULTURAL HERITAGE',
+      rating: '4.6',
+      filterCategory: 'Cultural Heritage',
+      imageUrl: SriLankaImages.polonnaruwa,
+    ),
+    HomeExperienceItem(
+      title: 'Unawatuna Beach & Coral Reef',
+      subtitle: 'Calm turquoise horseshoe bay ideal for reef swimming & snorkeling',
+      category: 'BEACHES',
+      rating: '4.5',
+      filterCategory: 'Beaches',
+      imageUrl: SriLankaImages.unawatuna,
+    ),
+    HomeExperienceItem(
+      title: 'Sinharaja Rainforest Reserve',
+      subtitle: 'UNESCO virgin lowland tropical rainforest & endemic bird sanctuary',
+      category: 'NATURE & WILDLIFE',
+      rating: '4.8',
+      filterCategory: 'Nature & Wildlife',
+      imageUrl: SriLankaImages.sinharaja,
+    ),
+    HomeExperienceItem(
+      title: 'Knuckles Mountain Range Trek',
+      subtitle: 'Rugged cloud-forest peaks, hidden waterfalls & remote village trails',
+      category: 'ADVENTURE',
+      rating: '4.8',
+      filterCategory: 'Adventure',
+      imageUrl: SriLankaImages.knucklesRange,
     ),
   ];
 

@@ -1289,6 +1289,880 @@ class PlaceDetailCatalog {
     categoryLabel: 'UNESCO Heritage',
   );
 
+  static const PlaceDetailData arugamBay = PlaceDetailData(
+    id: 'arugam_bay',
+    title: 'Arugam Bay',
+    subtitle: 'East Coast Surf Capital •',
+    localScriptName: 'ආරුගම්බේ',
+    categoryBadge: 'BEACHES',
+    eraBadge: 'World Surf Mecca',
+    loreGuideLabel: 'East Coast Surf Guide (5m)',
+    loreScript:
+        'Renowned globally for long right-hand point breaks like Main Point and Whiskey Point, Arugam Bay blends laid-back beach cabanas with rugged east-coast wildlife lagoons.',
+    rating: '4.6',
+    ratingCaption: 'Google Rating • 8.4k',
+    locationLine: 'Ampara District, Eastern Province, Sri Lanka',
+    prestigeBadge: 'Sri Lanka\'s Premier International Surf Bay • May – Oct Peak',
+    description:
+        'A laid-back crescent bay on Sri Lanka\'s southeastern coast famed for world-class surf point breaks, sunset lagoon safaris, and bohemian beachfront cafés.',
+    photos: [
+      SriLankaImages.arugamBay,
+      SriLankaImages.tropicalPalmBeach,
+      SriLankaImages.weligamaSurfCoast,
+    ],
+    quickSpecs: [
+      PlaceSpecItem(
+        icon: Icons.surfing_rounded,
+        label: 'BEST ACTIVITY',
+        value: 'Point-Break Surfing',
+      ),
+      PlaceSpecItem(
+        icon: Icons.wb_sunny_outlined,
+        label: 'PEAK SEASON',
+        value: 'May – October',
+      ),
+      PlaceSpecItem(
+        icon: Icons.directions_car_rounded,
+        label: 'NEARBY PARK',
+        value: 'Kumana (45 mins)',
+      ),
+      PlaceSpecItem(
+        icon: Icons.waves_rounded,
+        label: 'SWELL',
+        value: 'Right-Hand Point',
+      ),
+    ],
+    highlightCards: [
+      PlaceHighlightCardData(
+        tag: 'SURF ICON',
+        title: 'Main Point & Peanut Farm',
+        description:
+            'Consistent right-hand swells drawing international surfers from May through October, plus gentle inside sections for learners at Baby Point.',
+        imageUrl: SriLankaImages.arugamBay,
+      ),
+    ],
+    featureCallouts: [
+      PlaceFeatureCallout(
+        icon: Icons.kayaking_rounded,
+        title: 'Pottuvil Lagoon Mangrove Safari',
+        description:
+            'Glide past wild elephants and vibrant kingfishers along tranquil east-coast waterways at dawn.',
+      ),
+    ],
+    historyEntries: [
+      PlaceHistoryEntry(
+        era: '1960s – Present',
+        title: 'From Fishing Bay to Global Surf Legend',
+        description:
+            'Discovered by travelling surfers in the late 1960s, Arugam Bay grew into Sri Lanka\'s premier international WSL surfing destination.',
+      ),
+    ],
+    visitTips: [
+      PlaceVisitTip(
+        icon: Icons.calendar_month_rounded,
+        title: 'East Coast Dry Window',
+        description:
+            'Visit between May and September for sunny skies, glassy morning winds, and peak surf conditions.',
+      ),
+    ],
+    latitude: 6.8589,
+    longitude: 81.8304,
+    mapMarkerLabel: 'Arugam Bay',
+    routeOrigin: 'Ella / Yala',
+    routeSummaryLine: '132 km from Ella • Scenic Eastern Descent',
+    nearbyRegionLabel: 'East Coast',
+    nearbyDiscoveries: [
+      NearbyDiscoveryItem(
+        id: 'minneriya_yala',
+        distanceLabel: '45 MIN DRIVE',
+        title: 'Kumana & Yala Safari',
+        subtitle: 'Leopards, elephants & bird lagoons',
+        metaLabel: 'Wildlife Reserve',
+        metaIcon: Icons.pets_rounded,
+        imageUrl: SriLankaImages.kumana,
+      ),
+    ],
+    priceEstimate: r'$15 / board rental',
+    categoryLabel: 'Beaches',
+  );
+
+  static const PlaceDetailData unawatuna = PlaceDetailData(
+    id: 'unawatuna',
+    title: 'Unawatuna Beach',
+    subtitle: 'Coral-Protected Golden Bay •',
+    localScriptName: 'උණවටුන වෙරළ',
+    categoryBadge: 'BEACHES',
+    eraBadge: 'Coral Reef Haven',
+    loreGuideLabel: 'Coastal Bay Guide (4m)',
+    loreScript:
+        'Sheltered by an offshore double coral reef, Unawatuna offers calm turquoise waters ideal for year-round swimming just minutes from historic Galle Fort.',
+    rating: '4.5',
+    ratingCaption: 'Google Rating • 11.2k',
+    locationLine: 'Galle District, Southern Province, Sri Lanka',
+    prestigeBadge: 'Reef-Sheltered Swimming Bay • Minutes from Galle Fort',
+    description:
+        'A vibrant semi-circular golden beach protected by an offshore reef, renowned for calm turquoise swimming, snorkeling near Jungle Beach, and seaside dining.',
+    photos: [
+      SriLankaImages.unawatuna,
+      SriLankaImages.seaTurtleCoast,
+      SriLankaImages.tropicalPalmBeach,
+    ],
+    quickSpecs: [
+      PlaceSpecItem(
+        icon: Icons.pool_rounded,
+        label: 'WATER SAFETY',
+        value: 'Reef-Calm Swims',
+      ),
+      PlaceSpecItem(
+        icon: Icons.scuba_diving_rounded,
+        label: 'MARINE LIFE',
+        value: 'Reefs & Turtles',
+      ),
+      PlaceSpecItem(
+        icon: Icons.wb_sunny_outlined,
+        label: 'BEST SEASON',
+        value: 'Nov – April',
+      ),
+      PlaceSpecItem(
+        icon: Icons.fort_rounded,
+        label: 'NEARBY UNESCO',
+        value: 'Galle Fort (6 km)',
+      ),
+    ],
+    highlightCards: [
+      PlaceHighlightCardData(
+        tag: 'TURQUOISE COVE',
+        title: 'Jungle Beach & Peace Pagoda Trail',
+        description:
+            'Walk through lush coastal forest past the Japanese Peace Pagoda to reach the secluded snorkeling cove of Jungle Beach.',
+        imageUrl: SriLankaImages.unawatuna,
+      ),
+    ],
+    featureCallouts: [
+      PlaceFeatureCallout(
+        icon: Icons.beach_access_rounded,
+        title: 'Safe Coral-Protected Lagoon',
+        description:
+            'Natural offshore coral formations break heavy ocean swells, making it one of Sri Lanka\'s safest swimming beaches.',
+      ),
+    ],
+    historyEntries: [
+      PlaceHistoryEntry(
+        era: 'Ancient Legend',
+        title: 'Rumassala & The Ramayana',
+        description:
+            'Local legend ties neighbouring Rumassala headland to the Ramayana epic, famous for rare medicinal plants and jungle trails.',
+      ),
+    ],
+    visitTips: [
+      PlaceVisitTip(
+        icon: Icons.wb_twilight_rounded,
+        title: 'Combine with Galle Fort Sunset',
+        description:
+            'Enjoy morning snorkeling at Unawatuna and head 15 minutes west to Galle Fort ramparts by 5:00 PM.',
+      ),
+    ],
+    latitude: 6.0183,
+    longitude: 80.2525,
+    mapMarkerLabel: 'Unawatuna Beach',
+    routeOrigin: 'Galle Fort',
+    routeSummaryLine: '6.2 km • ~15 min coastal tuk-tuk',
+    nearbyRegionLabel: 'Southern Coast',
+    nearbyDiscoveries: [
+      NearbyDiscoveryItem(
+        id: 'galle',
+        distanceLabel: '6 KM AWAY',
+        title: 'Galle Dutch Fort',
+        subtitle: '17th-century UNESCO fortress',
+        metaLabel: '15 min drive',
+        metaIcon: Icons.fort_rounded,
+        imageUrl: SriLankaImages.galleFort,
+      ),
+    ],
+    priceEstimate: 'Free Public Beach',
+    categoryLabel: 'Beaches',
+  );
+
+  static const PlaceDetailData polonnaruwa = PlaceDetailData(
+    id: 'polonnaruwa',
+    title: 'Ancient City of Polonnaruwa',
+    subtitle: 'Medieval Royal Capital •',
+    localScriptName: 'පොළොන්නරුව',
+    categoryBadge: 'CULTURAL HERITAGE',
+    eraBadge: '12th Century UNESCO',
+    loreGuideLabel: 'Royal Kingdom Lore (8m)',
+    loreScript:
+        'Capital of Sri Lanka\'s golden Chola and Parakramabahu era, Polonnaruwa preserves colossal granite Buddha statues at Gal Vihara alongside soaring brick palace ruins.',
+    rating: '4.6',
+    ratingCaption: 'Google Rating • 9.6k',
+    locationLine: 'North Central Province, Sri Lanka',
+    prestigeBadge: 'UNESCO World Heritage Archaeological Park • Cycling Ruins',
+    description:
+        'Sri Lanka\'s remarkably preserved 11th–13th century medieval royal capital featuring the Quadrangle, the circular Vatadage, Royal Palace, and the granite carvings of Gal Vihara.',
+    photos: [
+      SriLankaImages.polonnaruwa,
+      SriLankaImages.ancientBuddhaStatue,
+      SriLankaImages.sigiriyaRockAerial,
+    ],
+    quickSpecs: [
+      PlaceSpecItem(
+        icon: Icons.pedal_bike_rounded,
+        label: 'BEST EXPLORED',
+        value: 'By Bicycle (3–4h)',
+      ),
+      PlaceSpecItem(
+        icon: Icons.account_balance_rounded,
+        label: 'ENTRY FEE',
+        value: r'~$25 Foreign',
+      ),
+      PlaceSpecItem(
+        icon: Icons.schedule_rounded,
+        label: 'OPEN HOURS',
+        value: '7:30 AM – 6:00 PM',
+      ),
+      PlaceSpecItem(
+        icon: Icons.history_edu_rounded,
+        label: 'GOLDEN ERA',
+        value: '1153 – 1186 AD',
+      ),
+    ],
+    highlightCards: [
+      PlaceHighlightCardData(
+        tag: 'ROCK SCULPTURE',
+        title: 'Gal Vihara Granite Masterpieces',
+        description:
+            'Four monumental Buddha figures carved from a single living granite cliff face in the 12th century under King Parakramabahu I.',
+        imageUrl: SriLankaImages.polonnaruwa,
+      ),
+    ],
+    featureCallouts: [
+      PlaceFeatureCallout(
+        icon: Icons.pedal_bike_rounded,
+        title: 'Tree-Lined Heritage Cycling Loop',
+        description:
+            'Flat, shaded archaeological roads make renting a bicycle the most joyful way to explore between monuments.',
+      ),
+    ],
+    historyEntries: [
+      PlaceHistoryEntry(
+        era: '1153 – 1186 AD',
+        title: 'Reign of King Parakramabahu the Great',
+        description:
+            'Engineered the vast Parakrama Samudra reservoir ("Sea of Parakrama") and elevated Polonnaruwa into a hydraulic civilization.',
+      ),
+    ],
+    visitTips: [
+      PlaceVisitTip(
+        icon: Icons.checkroom_rounded,
+        title: 'Temple Dress & Footwear',
+        description:
+            'Carry socks for hot stone courtyards at the Quadrangle and keep shoulders and knees covered.',
+      ),
+    ],
+    latitude: 7.9403,
+    longitude: 81.0188,
+    mapMarkerLabel: 'Polonnaruwa Ancient City',
+    routeOrigin: 'Sigiriya',
+    routeSummaryLine: '56 km • ~1 hr 15 min drive',
+    nearbyRegionLabel: 'Cultural Triangle',
+    nearbyDiscoveries: [
+      NearbyDiscoveryItem(
+        id: 'minneriya_yala',
+        distanceLabel: '22 KM AWAY',
+        title: 'Minneriya National Park',
+        subtitle: 'Wild elephant gathering tank',
+        metaLabel: '30 min drive',
+        metaIcon: Icons.pets_rounded,
+        imageUrl: SriLankaImages.elephant,
+      ),
+    ],
+    priceEstimate: r'$25 / person',
+    categoryLabel: 'Cultural Heritage',
+  );
+
+  static const PlaceDetailData udawalawe = PlaceDetailData(
+    id: 'udawalawe',
+    title: 'Udawalawe National Park',
+    subtitle: 'Open Savannah Elephant Sanctuary •',
+    localScriptName: 'උඩවලව ජාතික උද්‍යානය',
+    categoryBadge: 'NATURE & WILDLIFE',
+    eraBadge: 'Guaranteed Elephants',
+    loreGuideLabel: 'Safari Tracker Briefing (5m)',
+    loreScript:
+        'Set around the shimmering Udawalawe Reservoir, wide savannah grasslands offer unobstructed views of over 600 resident Asian elephants roaming with their calves.',
+    rating: '4.8',
+    ratingCaption: 'Google Rating • 10.5k',
+    locationLine: 'Sabaragamuwa & Uva Border, Sri Lanka',
+    prestigeBadge: 'Best Park for Wild Elephant Sightings • Less Crowded Trails',
+    description:
+        'Renowned for open savannah landscapes and guaranteed wild elephant herds around the Udawalawe Reservoir, plus the nearby Elephant Transit Home orphanage.',
+    photos: [
+      SriLankaImages.udawalawe,
+      SriLankaImages.wildElephants,
+      SriLankaImages.elephant,
+    ],
+    quickSpecs: [
+      PlaceSpecItem(
+        icon: Icons.pets_rounded,
+        label: 'WILDLIFE STAR',
+        value: '600+ Elephants',
+      ),
+      PlaceSpecItem(
+        icon: Icons.schedule_rounded,
+        label: 'BEST SAFARI',
+        value: '6:00 AM / 3:00 PM',
+      ),
+      PlaceSpecItem(
+        icon: Icons.landscape_rounded,
+        label: 'TERRAIN',
+        value: 'Open Savannah',
+      ),
+      PlaceSpecItem(
+        icon: Icons.favorite_rounded,
+        label: 'TRANSIT HOME',
+        value: 'Daily Feeding Times',
+      ),
+    ],
+    highlightCards: [
+      PlaceHighlightCardData(
+        tag: 'ETHICAL CONSERVATION',
+        title: 'Udawalawe Elephant Transit Home',
+        description:
+            'Watch orphaned elephant calves receive milk feedings before eventual rewilding—strictly zero riding or direct tourist contact.',
+        imageUrl: SriLankaImages.udawalawe,
+      ),
+    ],
+    featureCallouts: [
+      PlaceFeatureCallout(
+        icon: Icons.visibility_rounded,
+        title: 'High Sighting Reliability Year-Round',
+        description:
+            'Because Udawalawe is open grassland rather than dense scrub, herds are easily spotted in every month.',
+      ),
+    ],
+    historyEntries: [
+      PlaceHistoryEntry(
+        era: '1972',
+        title: 'Created to Protect Displaced Wildlife',
+        description:
+            'Designated as a national park following construction of the Walawe Ganga reservoir to safeguard wild elephant habitats.',
+      ),
+    ],
+    visitTips: [
+      PlaceVisitTip(
+        icon: Icons.wb_sunny_outlined,
+        title: 'Pair Morning Safari with Transit Home',
+        description:
+            'Start your 3-hour jeep drive at 6:00 AM and visit the Elephant Transit Home viewing platform for the 10:30 AM feeding.',
+      ),
+    ],
+    latitude: 6.5122,
+    longitude: 80.8876,
+    mapMarkerLabel: 'Udawalawe National Park',
+    routeOrigin: 'Ella / Tangalle',
+    routeSummaryLine: '90 km from Ella • Smooth Highway Transfer',
+    nearbyRegionLabel: 'Southern Wilderness',
+    nearbyDiscoveries: [
+      NearbyDiscoveryItem(
+        id: 'weligama_tangalle',
+        distanceLabel: '75 KM SOUTH',
+        title: 'Tangalle Coastline',
+        subtitle: 'Secluded golden beach coves',
+        metaLabel: '1.5 hr drive',
+        metaIcon: Icons.beach_access_rounded,
+        imageUrl: SriLankaImages.tangalle,
+      ),
+    ],
+    priceEstimate: r'$35 / person + jeep',
+    categoryLabel: 'Nature & Wildlife',
+  );
+
+  static const PlaceDetailData hortonPlains = PlaceDetailData(
+    id: 'horton_plains',
+    title: 'Horton Plains & World\'s End',
+    subtitle: '2,100m Misty Cloud Plateau •',
+    localScriptName: 'හෝර්ටන් තැන්න',
+    categoryBadge: 'NATURE & WILDLIFE',
+    eraBadge: 'UNESCO Highland Reserve',
+    loreGuideLabel: 'Highland Trail Guide (6m)',
+    loreScript:
+        'At over 2,100 metres altitude, Horton Plains unfolds across windswept patana grasslands and stunted cloud forest before plunging 870 metres straight down at World\'s End.',
+    rating: '4.7',
+    ratingCaption: 'Google Rating • 8.9k',
+    locationLine: 'Nuwara Eliya District, Central Highlands, Sri Lanka',
+    prestigeBadge: 'UNESCO Central Highlands • Dramatic 870m Sheer Cliff Drop',
+    description:
+        'A highland UNESCO plateau of misty grasslands, sambar deer, Baker\'s Falls, and the famous World\'s End escarpment dropping 870 metres toward the southern plains.',
+    photos: [
+      SriLankaImages.hortonPlains,
+      SriLankaImages.cloudForestTrek,
+      SriLankaImages.cascadeWaterfall,
+    ],
+    quickSpecs: [
+      PlaceSpecItem(
+        icon: Icons.directions_walk_rounded,
+        label: 'LOOP TRAIL',
+        value: '9.5 km (3.5 Hours)',
+      ),
+      PlaceSpecItem(
+        icon: Icons.terrain_rounded,
+        label: 'ELEVATION',
+        value: '2,100 m ASL',
+      ),
+      PlaceSpecItem(
+        icon: Icons.wb_sunny_outlined,
+        label: 'CLEAR VIEW',
+        value: 'Before 9:30 AM',
+      ),
+      PlaceSpecItem(
+        icon: Icons.thermostat_rounded,
+        label: 'MORNING TEMP',
+        value: '8°C – 15°C',
+      ),
+    ],
+    highlightCards: [
+      PlaceHighlightCardData(
+        tag: 'SHEER PRECIPICE',
+        title: 'World\'s End & Baker\'s Falls',
+        description:
+            'Look down 870 metres over tea valleys all the way to the distant Indian Ocean on clear dawns, then loop past roaring Baker\'s Falls.',
+        imageUrl: SriLankaImages.hortonPlains,
+      ),
+    ],
+    featureCallouts: [
+      PlaceFeatureCallout(
+        icon: Icons.alarm_rounded,
+        isAmber: true,
+        title: 'Arrive at Gate Opening (6:00 AM)',
+        description:
+            'Dense highland mist rolls across World\'s End by mid-morning; entering at 6:00 AM gives the clearest panoramic vista.',
+      ),
+    ],
+    historyEntries: [
+      PlaceHistoryEntry(
+        era: '2010 UNESCO',
+        title: 'Protected Central Highlands Heritage',
+        description:
+            'Inscribed for extraordinary endemic cloud-forest flora and watershed headstreams feeding Sri Lanka\'s major rivers.',
+      ),
+    ],
+    visitTips: [
+      PlaceVisitTip(
+        icon: Icons.checkroom_rounded,
+        title: 'Pack a Warm Jacket & Zero Plastics',
+        description:
+            'Park rangers inspect bags at entry to ban single-use plastic wrappers; bring reusable flasks and morning fleece.',
+      ),
+    ],
+    latitude: 6.8031,
+    longitude: 80.7915,
+    mapMarkerLabel: 'Horton Plains National Park',
+    routeOrigin: 'Nuwara Eliya / Ohiya',
+    routeSummaryLine: '32 km from Nuwara Eliya • ~1 hr scenic ascent',
+    nearbyRegionLabel: 'Central Highlands',
+    nearbyDiscoveries: [
+      NearbyDiscoveryItem(
+        id: 'ella_nine_arch',
+        distanceLabel: 'SCENIC RAIL',
+        title: 'Ohiya to Ella Train',
+        subtitle: 'One of the world\'s finest rail rides',
+        metaLabel: '1.5 hr train',
+        metaIcon: Icons.train_rounded,
+        imageUrl: SriLankaImages.nineArchBridge,
+      ),
+    ],
+    priceEstimate: r'$30 / person',
+    categoryLabel: 'Nature & Wildlife',
+  );
+
+  static const PlaceDetailData sinharaja = PlaceDetailData(
+    id: 'sinharaja',
+    title: 'Sinharaja Rainforest Reserve',
+    subtitle: 'UNESCO Virgin Tropical Rainforest •',
+    localScriptName: 'සිංහරාජ වනාන්තරය',
+    categoryBadge: 'NATURE & WILDLIFE',
+    eraBadge: '1988 UNESCO Sanctuary',
+    loreGuideLabel: 'Rainforest Naturalist Lore (6m)',
+    loreScript:
+        'Sri Lanka\'s last viable primary lowland rainforest shelters over 60% of the island\'s endemic trees and mixed-species bird flocks beneath towering emerald canopies.',
+    rating: '4.8',
+    ratingCaption: 'Google Rating • 5.4k',
+    locationLine: 'Sabaragamuwa & Southern Borders, Sri Lanka',
+    prestigeBadge: 'Biodiversity Hotspot • Endemic Birds, Frogs & Jungle Waterfalls',
+    description:
+        'A living prehistoric tropical rainforest and UNESCO World Heritage Reserve teeming with endemic birds, purple-faced langurs, vibrant reptiles, and crystalline jungle waterfalls.',
+    photos: [
+      SriLankaImages.sinharaja,
+      SriLankaImages.cloudForestTrek,
+      SriLankaImages.cascadeWaterfall,
+    ],
+    quickSpecs: [
+      PlaceSpecItem(
+        icon: Icons.forest_rounded,
+        label: 'FOREST TYPE',
+        value: 'Primary Rainforest',
+      ),
+      PlaceSpecItem(
+        icon: Icons.directions_walk_rounded,
+        label: 'GUIDED TREK',
+        value: '3 – 5 Hours',
+      ),
+      PlaceSpecItem(
+        icon: Icons.water_drop_rounded,
+        label: 'HIGHLIGHT',
+        value: 'Jungle Waterfalls',
+      ),
+      PlaceSpecItem(
+        icon: Icons.verified_rounded,
+        label: 'GUIDE RULE',
+        value: 'Naturalist Required',
+      ),
+    ],
+    highlightCards: [
+      PlaceHighlightCardData(
+        tag: 'ENDEMIC WILDLIFE',
+        title: 'Mixed-Species Bird Flocks & Canopy',
+        description:
+            'Spot the striking Sri Lanka Blue Magpie, Green Pit Viper, and colourful tree frogs alongside expert local rainforest trackers.',
+        imageUrl: SriLankaImages.sinharaja,
+      ),
+    ],
+    featureCallouts: [
+      PlaceFeatureCallout(
+        icon: Icons.hiking_rounded,
+        title: 'Leech Socks Provided at Entrances',
+        description:
+            'Kudawa and Deniyaya gates supply canvas leech socks and certified naturalists to navigate damp jungle trails comfortably.',
+      ),
+    ],
+    historyEntries: [
+      PlaceHistoryEntry(
+        era: '1988 UNESCO',
+        title: 'Lion King Forest Preserved',
+        description:
+            'Protected from commercial logging in 1978 and inscribed by UNESCO a decade later for irreplaceable island endemism.',
+      ),
+    ],
+    visitTips: [
+      PlaceVisitTip(
+        icon: Icons.wb_sunny_outlined,
+        title: 'Start Trek by 7:00 AM',
+        description:
+            'Early morning forest walks bring peak bird activity before afternoon tropical rain showers.',
+      ),
+    ],
+    latitude: 6.4011,
+    longitude: 80.5026,
+    mapMarkerLabel: 'Sinharaja Forest Reserve',
+    routeOrigin: 'Galle / Ratnapura',
+    routeSummaryLine: '78 km from Galle via Deniyaya Gate',
+    nearbyRegionLabel: 'Wet Zone Rainforest',
+    nearbyDiscoveries: [
+      NearbyDiscoveryItem(
+        id: 'udawalawe',
+        distanceLabel: '85 KM EAST',
+        title: 'Udawalawe National Park',
+        subtitle: 'Open-grassland elephant safaris',
+        metaLabel: '2 hr drive',
+        metaIcon: Icons.pets_rounded,
+        imageUrl: SriLankaImages.udawalawe,
+      ),
+    ],
+    priceEstimate: r'$15 – $25 / person',
+    categoryLabel: 'Nature & Wildlife',
+  );
+
+  static const PlaceDetailData adamsPeak = PlaceDetailData(
+    id: 'adams_peak',
+    title: 'Adam\'s Peak (Sri Pada)',
+    subtitle: '2,243m Sacred Sunrise Mountain •',
+    localScriptName: 'ශ්‍රී පාදය',
+    categoryBadge: 'ADVENTURE',
+    eraBadge: 'Millennia Pilgrimage',
+    loreGuideLabel: 'Pilgrim Ascent Lore (7m)',
+    loreScript:
+        'Ascending over 5,500 stone steps by starlight from Nallathanniya, pilgrims of four faiths climb together to witness sunrise cast a perfect triangular mountain shadow across the clouds.',
+    rating: '4.8',
+    ratingCaption: 'Google Rating • 13.1k',
+    locationLine: 'Ratnapura / Nuwara Eliya Border, Sri Lanka',
+    prestigeBadge: 'Iconic Night Ascent • Triangular Sunrise Shadow Phenomenon',
+    description:
+        'Sri Lanka\'s towering 2,243-metre conical summit sacred to Buddhists, Hindus, Christians, and Muslims, famous for its magical candle-lit night climb and dramatic dawn views.',
+    photos: [
+      SriLankaImages.adamsPeak,
+      SriLankaImages.adamsPeakSunrisePeak,
+      SriLankaImages.cloudForestTrek,
+    ],
+    quickSpecs: [
+      PlaceSpecItem(
+        icon: Icons.stairs_rounded,
+        label: 'ASCENT',
+        value: '~5,500 Steps',
+      ),
+      PlaceSpecItem(
+        icon: Icons.schedule_rounded,
+        label: 'START TIME',
+        value: '2:00 AM Climb',
+      ),
+      PlaceSpecItem(
+        icon: Icons.wb_sunny_outlined,
+        label: 'PEAK SEASON',
+        value: 'Dec – May (Poya)',
+      ),
+      PlaceSpecItem(
+        icon: Icons.terrain_rounded,
+        label: 'SUMMIT',
+        value: '2,243 m ASL',
+      ),
+    ],
+    highlightCards: [
+      PlaceHighlightCardData(
+        tag: 'DAWN PHENOMENON',
+        title: 'The Floating Triangular Shadow',
+        description:
+            'As the sun rises behind Sri Pada, the conical peak projects a crisp geometric pyramid shadow across the mist-blanketed valley.',
+        imageUrl: SriLankaImages.adamsPeak,
+      ),
+    ],
+    featureCallouts: [
+      PlaceFeatureCallout(
+        icon: Icons.nights_stay_rounded,
+        title: 'Illuminated Trail & Tea Stalls',
+        description:
+            'During December–May pilgrimage season, thousands of lights guide the entire path alongside welcoming warm roti & tea stalls.',
+      ),
+    ],
+    historyEntries: [
+      PlaceHistoryEntry(
+        era: 'Ancient – Present',
+        title: 'Four-Faith Sacred Mountain',
+        description:
+            'Chronicled by Marco Polo and Ibn Battuta, Sri Pada has drawn pilgrims for over a thousand years.',
+      ),
+    ],
+    visitTips: [
+      PlaceVisitTip(
+        icon: Icons.checkroom_rounded,
+        title: 'Warm Layers for Summit Dawn',
+        description:
+            'While climbing keeps you warm, summit temperatures drop sharply before sunrise—carry windproof layers and gloves.',
+      ),
+    ],
+    latitude: 6.8094,
+    longitude: 80.4994,
+    mapMarkerLabel: 'Adam\'s Peak (Sri Pada)',
+    routeOrigin: 'Hatton / Nallathanniya',
+    routeSummaryLine: '32 km from Hatton Station • ~1 hr drive',
+    nearbyRegionLabel: 'Peak Wilderness',
+    nearbyDiscoveries: [
+      NearbyDiscoveryItem(
+        id: 'kitulgala',
+        distanceLabel: '45 KM WEST',
+        title: 'Kitulgala Rafting',
+        subtitle: 'Kelani River white-water rapids',
+        metaLabel: '1.5 hr drive',
+        metaIcon: Icons.kayaking_rounded,
+        imageUrl: SriLankaImages.kitulgala,
+      ),
+    ],
+    priceEstimate: 'Free Public Trail',
+    categoryLabel: 'Adventure',
+  );
+
+  static const PlaceDetailData kitulgala = PlaceDetailData(
+    id: 'kitulgala',
+    title: 'Kitulgala White-Water Rafting',
+    subtitle: 'Kelani River Adventure Capital •',
+    localScriptName: 'කිතුල්ගල',
+    categoryBadge: 'ADVENTURE',
+    eraBadge: 'Grade 2–3 Rapids',
+    loreGuideLabel: 'River Adventure Briefing (4m)',
+    loreScript:
+        'Carving through lush wet-zone jungle along the Kelani River—famous filming site of The Bridge on the River Kwai—Kitulgala delivers Sri Lanka\'s top white-water rafting and canyoning.',
+    rating: '4.7',
+    ratingCaption: 'Google Rating • 4.6k',
+    locationLine: 'Kegalle District, Sabaragamuwa, Sri Lanka',
+    prestigeBadge: 'Sri Lanka\'s Adrenaline Hub • Rafting, Canyoning & Cliff Jumps',
+    description:
+        'A vibrant rainforest river gorge along the Kelani Ganga offering 5 km Grade 2–3 white-water rafting runs, natural waterfall rock-sliding, canyoning, and confidence jumps.',
+    photos: [
+      SriLankaImages.kitulgala,
+      SriLankaImages.cascadeWaterfall,
+      SriLankaImages.cloudForestTrek,
+    ],
+    quickSpecs: [
+      PlaceSpecItem(
+        icon: Icons.kayaking_rounded,
+        label: 'RAPIDS',
+        value: 'Grade 2 – 3 (5 km)',
+      ),
+      PlaceSpecItem(
+        icon: Icons.schedule_rounded,
+        label: 'DURATION',
+        value: '2.5 – 4 Hours',
+      ),
+      PlaceSpecItem(
+        icon: Icons.wb_sunny_outlined,
+        label: 'BEST MONTHS',
+        value: 'Jan–Apr, Jul–Sep',
+      ),
+      PlaceSpecItem(
+        icon: Icons.security_rounded,
+        label: 'GEAR',
+        value: 'Certified Guides',
+      ),
+    ],
+    highlightCards: [
+      PlaceHighlightCardData(
+        tag: 'KELANI GANGA',
+        title: '7 Named Rapids & Canyon Waterfall Slide',
+        description:
+            'Paddle past Virgin\'s Breast and Butter Crunch rapids before hiking into hidden rainforest streams for waterfall abseiling.',
+        imageUrl: SriLankaImages.kitulgala,
+      ),
+    ],
+    featureCallouts: [
+      PlaceFeatureCallout(
+        icon: Icons.movie_rounded,
+        title: 'Cinema History on the Riverbank',
+        description:
+            'David Lean built and exploded the iconic wooden railway bridge right along these Kelani waters in 1956.',
+      ),
+    ],
+    historyEntries: [
+      PlaceHistoryEntry(
+        era: '1957 & Prehistory',
+        title: 'Belilena Cave & Film Legacy',
+        description:
+            'Beyond adventure sports, Kitulgala\'s Belilena Cave yielded prehistoric human fossils dating back over 12,000 years.',
+      ),
+    ],
+    visitTips: [
+      PlaceVisitTip(
+        icon: Icons.checkroom_rounded,
+        title: 'Quick-Dry Swimwear & Water Shoes',
+        description:
+            'Wear secure strap sandals or river shoes and leave phones in waterproof drybags with your raft captain.',
+      ),
+    ],
+    latitude: 6.9898,
+    longitude: 80.4271,
+    mapMarkerLabel: 'Kitulgala Rafting Base',
+    routeOrigin: 'Colombo / Kandy',
+    routeSummaryLine: '88 km from Colombo • 2 hr drive toward Highlands',
+    nearbyRegionLabel: 'Kelani Valley',
+    nearbyDiscoveries: [
+      NearbyDiscoveryItem(
+        id: 'adams_peak',
+        distanceLabel: '45 KM EAST',
+        title: 'Adam\'s Peak (Sri Pada)',
+        subtitle: 'Sacred highland sunrise climb',
+        metaLabel: '1.5 hr drive',
+        metaIcon: Icons.terrain_rounded,
+        imageUrl: SriLankaImages.adamsPeak,
+      ),
+    ],
+    priceEstimate: r'$25 – $40 / person',
+    categoryLabel: 'Adventure',
+  );
+
+  static const PlaceDetailData knucklesRange = PlaceDetailData(
+    id: 'knuckles_range',
+    title: 'Knuckles Mountain Range',
+    subtitle: 'Remote UNESCO Cloud-Forest Peaks •',
+    localScriptName: 'දුම්බර කඳු වැටිය',
+    categoryBadge: 'ADVENTURE',
+    eraBadge: '2010 UNESCO Wilderness',
+    loreGuideLabel: 'Mountain Trek Briefing (5m)',
+    loreScript:
+        'Named for peaks resembling a clenched fist, the Dumbara/Knuckles range guards untouched cloud forests, tiered waterfalls, and timeless highland villages like Meemure.',
+    rating: '4.8',
+    ratingCaption: 'Google Rating • 3.9k',
+    locationLine: 'Matale & Kandy Districts, Central Province, Sri Lanka',
+    prestigeBadge: 'Off-the-Beaten-Path Wilderness • Multi-Peak Trails & Waterfalls',
+    description:
+        'A rugged, mist-draped UNESCO conservation massif famed for full-day summit treks, remote village homestays in Meemure, hidden cascades, and rich endemic biodiversity.',
+    photos: [
+      SriLankaImages.knucklesRange,
+      SriLankaImages.meemure,
+      SriLankaImages.cloudForestTrek,
+    ],
+    quickSpecs: [
+      PlaceSpecItem(
+        icon: Icons.hiking_rounded,
+        label: 'TRAIL GRADE',
+        value: 'Moderate – Challenging',
+      ),
+      PlaceSpecItem(
+        icon: Icons.schedule_rounded,
+        label: 'TREK LENGTH',
+        value: '4 – 8 Hours',
+      ),
+      PlaceSpecItem(
+        icon: Icons.wb_sunny_outlined,
+        label: 'DRY WINDOW',
+        value: 'Jan–Feb, May–Sep',
+      ),
+      PlaceSpecItem(
+        icon: Icons.landscape_rounded,
+        label: 'PEAK HEIGHT',
+        value: 'Up to 1,906 m',
+      ),
+    ],
+    highlightCards: [
+      PlaceHighlightCardData(
+        tag: 'WILDERNESS TREK',
+        title: 'Mini World\'s End & Sera Ella Falls',
+        description:
+            'Trek across windy patana ridges overlooking terraced rice fields before cooling off beneath cascading mountain streams.',
+        imageUrl: SriLankaImages.knucklesRange,
+      ),
+    ],
+    featureCallouts: [
+      PlaceFeatureCallout(
+        icon: Icons.explore_rounded,
+        title: 'Certified Local Trekking Guides',
+        description:
+            'Because remote mist trails are unmarked, local conservation guides share safe navigation and highland spice lore.',
+      ),
+    ],
+    historyEntries: [
+      PlaceHistoryEntry(
+        era: 'Ancient Dumbara',
+        title: 'Kingdom\'s Mountain Fortress',
+        description:
+            'Historically known as Dumbara ("Misty Mountains"), these ridges sheltered Kandyan kings and ancient terraced agriculture.',
+      ),
+    ],
+    visitTips: [
+      PlaceVisitTip(
+        icon: Icons.hiking_rounded,
+        title: 'Grippy Trail Shoes & Light Rain Shell',
+        description:
+            'Mountain weather shifts quickly between sunshine and mist—pack grip footwear, 2L water, and leech socks.',
+      ),
+    ],
+    latitude: 7.4500,
+    longitude: 80.8000,
+    mapMarkerLabel: 'Knuckles Mountain Range',
+    routeOrigin: 'Kandy City',
+    routeSummaryLine: '42 km northeast of Kandy • ~1.5 hr drive',
+    nearbyRegionLabel: 'Dumbara Highlands',
+    nearbyDiscoveries: [
+      NearbyDiscoveryItem(
+        id: 'kandy',
+        distanceLabel: '42 KM SOUTHWEST',
+        title: 'Kandy Sacred City',
+        subtitle: 'Temple of the Tooth & lake walk',
+        metaLabel: '1.5 hr drive',
+        metaIcon: Icons.temple_buddhist_rounded,
+        imageUrl: SriLankaImages.templeOfTheTooth,
+      ),
+    ],
+    priceEstimate: r'$30 / guided trek',
+    categoryLabel: 'Adventure',
+  );
+
   static const Map<String, PlaceDetailData> _byId = {
     'sigiriya': sigiriya,
     'minneriya_yala': minneriyaYala,
@@ -1302,6 +2176,15 @@ class PlaceDetailCatalog {
     'mirissa': mirissa,
     'pidurangala': pidurangala,
     'dambulla': dambulla,
+    'arugam_bay': arugamBay,
+    'unawatuna': unawatuna,
+    'polonnaruwa': polonnaruwa,
+    'udawalawe': udawalawe,
+    'horton_plains': hortonPlains,
+    'sinharaja': sinharaja,
+    'adams_peak': adamsPeak,
+    'kitulgala': kitulgala,
+    'knuckles_range': knucklesRange,
   };
 
   static List<String> _getCategoryPhotos(
@@ -1402,6 +2285,33 @@ class PlaceDetailCatalog {
     }
     if (lower.contains('weligama') || lower.contains('tangalle')) {
       return weligamaTangalle;
+    }
+    if (lower.contains('arugam')) {
+      return arugamBay;
+    }
+    if (lower.contains('unawatuna')) {
+      return unawatuna;
+    }
+    if (lower.contains('polonnaruwa')) {
+      return polonnaruwa;
+    }
+    if (lower.contains('udawalawe')) {
+      return udawalawe;
+    }
+    if (lower.contains('horton') || lower.contains('world\'s end')) {
+      return hortonPlains;
+    }
+    if (lower.contains('sinharaja')) {
+      return sinharaja;
+    }
+    if (lower.contains('adam\'s peak') || lower.contains('sri pada')) {
+      return adamsPeak;
+    }
+    if (lower.contains('kitulgala')) {
+      return kitulgala;
+    }
+    if (lower.contains('knuckles')) {
+      return knucklesRange;
     }
     if (lower.contains('nine arch') ||
         lower.contains('demodara') ||
