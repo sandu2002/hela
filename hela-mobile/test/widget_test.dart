@@ -558,6 +558,11 @@ void main() {
     expect(find.text('Cultural Wonders & Emerald Peaks'), findsOneWidget);
     expect(find.text('10 Days / 9 Nights'), findsOneWidget);
     expect(find.text('2 Travellers'), findsOneWidget);
+    expect(find.text('AI Adjust'), findsOneWidget);
+    expect(find.text('Schedule by Day'), findsOneWidget);
+    expect(find.text('Sigiriya'), findsOneWidget);
+    expect(find.text(r'~$140'), findsOneWidget);
+    expect(find.text('Balanced'), findsOneWidget);
     expect(find.text('Day 1 Route Overview'), findsOneWidget);
     expect(find.text('Day 1 Itinerary'), findsOneWidget);
     expect(find.text('Arrival & Tropical Welcome at CMB'), findsOneWidget);
