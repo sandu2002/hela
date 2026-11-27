@@ -7,6 +7,7 @@ import 'package:hela/data/place_details_catalog.dart';
 import 'package:hela/models/haven_item.dart';
 import 'package:hela/pages/ask_hela/ask_hela_page.dart';
 import 'package:hela/pages/saved/saved_page.dart';
+import 'package:hela/services/google_place_rating_service.dart';
 import 'package:hela/services/route_map_service.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/theme/hela_colors.dart';
@@ -27,11 +28,9 @@ import 'package:share_plus/share_plus.dart';
 /// - Sticky bottom bar with Get Directions & Add to My Trip actions
 class PlaceDetailsPage extends StatefulWidget {
   final PlaceDetailData place;
+  final GooglePlaceRatingService? ratingService;
 
-  const PlaceDetailsPage({
-    super.key,
-    required this.place,
-  });
+  const PlaceDetailsPage({super.key, required this.place, this.ratingService});
 
   @override
   State<PlaceDetailsPage> createState() => _PlaceDetailsPageState();
@@ -44,11 +43,42 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
   int _currentPhotoIndex = 0;
   int _selectedTabIndex = 0; // 0: Highlights, 1: History, 2: Visit Tips
   LatLng? _liveUserLocation;
+  String? _liveRating;
+  String? _liveRatingCaption;
 
   @override
   void initState() {
     super.initState();
     _resolveLiveGpsDistance();
+    _syncLiveGoogleRating();
+  }
+
+  Future<void> _syncLiveGoogleRating() async {
+    final service = widget.ratingService ?? GooglePlaceRatingService();
+    final cached =
+        service.getCachedSync(widget.place.id) ??
+        service.getCachedSync(widget.place.title);
+    if (cached != null) {
+      setState(() {
+        _liveRating = cached.formattedRating;
+        _liveRatingCaption = cached.detailRatingCaption;
+      });
+      return;
+    }
+
+    final live = await service.fetchPlaceRating(
+      cacheKey: widget.place.id,
+      queryName: widget.place.title,
+      regionHint: widget.place.locationLine,
+      latitude: widget.place.latitude,
+      longitude: widget.place.longitude,
+    );
+    if (live != null && mounted) {
+      setState(() {
+        _liveRating = live.formattedRating;
+        _liveRatingCaption = live.detailRatingCaption;
+      });
+    }
   }
 
   @override
@@ -78,10 +108,12 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
 
   Future<void> _sharePlace() async {
     final place = widget.place;
-    final shareText = '🌟 Discover ${place.title} in Sri Lanka!\n\n'
+    final effectiveRating = _liveRating ?? place.rating;
+    final shareText =
+        '🌟 Discover ${place.title} in Sri Lanka!\n\n'
         '${place.subtitle}\n'
         '📍 Location: ${place.locationLine}\n'
-        '⭐ Rating: ${place.rating}\n\n'
+        '⭐ Rating: $effectiveRating\n\n'
         'Explore with HELA — Your Personal Sri Lanka AI Guide.';
     try {
       await Share.share(
@@ -173,7 +205,8 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
   }
 
   List<RouteMapStop> _buildStopsToPlace() {
-    final originCoords = _liveUserLocation ??
+    final originCoords =
+        _liveUserLocation ??
         RouteMapService.resolveKnownCoordinates(widget.place.routeOrigin) ??
         const LatLng(7.8567, 80.6492);
     final originName = _liveUserLocation != null
@@ -230,7 +263,7 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
         location: place.locationLine,
         category: place.categoryLabel,
         price: place.priceEstimate,
-        rating: double.tryParse(place.rating) ?? 4.9,
+        rating: double.tryParse(_liveRating ?? place.rating) ?? 4.9,
         badgeText: place.categoryBadge,
         imageUrl: place.photos.first,
         filterCategory: place.categoryLabel,
@@ -267,13 +300,12 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
   }
 
   void _openAskHela([String? topicPrompt]) {
-    final prompt = topicPrompt ??
+    final prompt =
+        topicPrompt ??
         'Tell me insider tips, best time to visit, and guide advice for ${widget.place.title} in Sri Lanka.';
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => AskHelaPage(initialPrompt: prompt),
-      ),
+      MaterialPageRoute(builder: (_) => AskHelaPage(initialPrompt: prompt)),
     );
   }
 
@@ -339,7 +371,9 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                               vertical: 7,
                             ),
                             decoration: BoxDecoration(
-                              color: colors.secondaryContainer.withValues(alpha: 0.75),
+                              color: colors.secondaryContainer.withValues(
+                                alpha: 0.75,
+                              ),
                               borderRadius: BorderRadius.circular(999),
                             ),
                             child: Row(
@@ -452,7 +486,9 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                 : Colors.white.withValues(alpha: 0.72),
             borderRadius: BorderRadius.circular(999),
             border: Border.all(
-              color: Colors.white.withValues(alpha: colors.isDark ? 0.25 : 0.65),
+              color: Colors.white.withValues(
+                alpha: colors.isDark ? 0.25 : 0.65,
+              ),
             ),
             boxShadow: [
               BoxShadow(
@@ -482,7 +518,9 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
               ),
               IconButton(
                 icon: Icon(
-                  isFav ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                  isFav
+                      ? Icons.favorite_rounded
+                      : Icons.favorite_border_rounded,
                   size: 21,
                   color: isFav ? const Color(0xFFE11D48) : colors.onSurface,
                 ),
@@ -564,7 +602,10 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
             child: GestureDetector(
               onTap: _openPhotoGallery,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.black.withValues(alpha: 0.62),
                   borderRadius: BorderRadius.circular(999),
@@ -654,7 +695,7 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    place.rating,
+                    _liveRating ?? place.rating,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w800,
@@ -666,7 +707,7 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
             ),
             const SizedBox(height: 4),
             Text(
-              place.ratingCaption,
+              _liveRatingCaption ?? place.ratingCaption,
               style: TextStyle(
                 fontSize: 10.5,
                 color: colors.onSurfaceVariant,
@@ -968,7 +1009,10 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 9,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: colors.secondaryContainer,
                     borderRadius: BorderRadius.circular(999),
@@ -1291,7 +1335,10 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                             decoration: BoxDecoration(
                               color: colors.primary,
                               shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 2.5),
+                              border: Border.all(
+                                color: Colors.white,
+                                width: 2.5,
+                              ),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withValues(alpha: 0.25),
@@ -1728,7 +1775,9 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
           ),
         ),
         style: ElevatedButton.styleFrom(
-          backgroundColor: isFav ? colors.primary.withValues(alpha: 0.88) : colors.primary,
+          backgroundColor: isFav
+              ? colors.primary.withValues(alpha: 0.88)
+              : colors.primary,
           elevation: 2,
           shadowColor: colors.primary.withValues(alpha: 0.35),
           shape: RoundedRectangleBorder(
@@ -1772,7 +1821,9 @@ class _CircleActionButton extends StatelessWidget {
                     : Colors.white.withValues(alpha: 0.72),
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: colors.isDark ? 0.25 : 0.65),
+                  color: Colors.white.withValues(
+                    alpha: colors.isDark ? 0.25 : 0.65,
+                  ),
                 ),
                 boxShadow: [
                   BoxShadow(
@@ -1783,11 +1834,7 @@ class _CircleActionButton extends StatelessWidget {
                 ],
               ),
               child: Center(
-                child: Icon(
-                  icon,
-                  size: 18,
-                  color: colors.onSurface,
-                ),
+                child: Icon(icon, size: 18, color: colors.onSurface),
               ),
             ),
           ),

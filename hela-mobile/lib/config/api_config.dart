@@ -83,6 +83,30 @@ class ApiConfig {
   /// otherwise it uses Google Gemini with Google Search grounding (`geminiApiKey`) and live fallback.
   static const String googleWeatherApiKey = '';
 
+  /// Optional Google Places API key (`GOOGLE_PLACES_API_KEY` via `--dart-define`).
+  /// Falls back to [googleWeatherApiKey] when the same Google Cloud API key is used.
+  static const String googlePlacesApiKey = String.fromEnvironment(
+    'GOOGLE_PLACES_API_KEY',
+  );
+
+  /// Effective Google Places API key if configured.
+  static String get effectiveGooglePlacesApiKey =>
+      googlePlacesApiKey.trim().isNotEmpty
+      ? googlePlacesApiKey.trim()
+      : googleWeatherApiKey.trim();
+
+  /// Google Places API (New) Text Search endpoint for live destination ratings & reviews.
+  static const String googlePlacesSearchTextUrl =
+      'https://places.googleapis.com/v1/places:searchText';
+
+  /// Google Places Legacy Text Search fallback endpoint.
+  static const String googlePlacesLegacyTextSearchUrl =
+      'https://maps.googleapis.com/maps/api/place/textsearch/json';
+
+  /// HELA backend endpoint for cached live Google destination ratings.
+  static const String destinationLiveRatingUrl =
+      '$helaBackendUrl/api/destinations/live-rating';
+
   /// Google Maps Platform Weather API current conditions endpoint.
   static const String googleWeatherApiUrl =
       'https://weather.googleapis.com/v1/currentConditions:lookup';

@@ -23,7 +23,10 @@ class TripPlannerPage extends StatefulWidget {
 }
 
 class _TripPlannerPageState extends State<TripPlannerPage> {
+  static const String _fontFamily = 'Plus Jakarta Sans';
+
   // Form State
+  String? _activeQuickPresetId;
   final TextEditingController _startLocationController = TextEditingController(
     text: 'Bandaranaike Intl Airport (CMB)',
   );
@@ -33,6 +36,29 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
   final TextEditingController _customStopController = TextEditingController();
   final TextEditingController _extraNotesController = TextEditingController();
   bool _returnToStart = true;
+
+  void _applyQuickPreset({
+    required String id,
+    required int days,
+    required Set<String> interests,
+    required String pace,
+    required String budgetTier,
+  }) {
+    final start = _startDate.isBefore(_today)
+        ? _today.add(const Duration(days: 7))
+        : _startDate;
+    setState(() {
+      _activeQuickPresetId = id;
+      _startDate = start;
+      _endDate = start.add(Duration(days: days));
+      _selectedInterests
+        ..clear()
+        ..addAll(interests);
+      _selectedPace = pace;
+      _selectedBudgetTier = budgetTier;
+      _returnToStart = true;
+    });
+  }
 
   late DateTime _startDate;
   late DateTime _endDate;
@@ -220,16 +246,6 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
     'December',
   ];
 
-  static const List<String> _weekdays = [
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-    'Sunday',
-  ];
-
   DateTime get _today {
     final now = DateTime.now();
     return DateTime(now.year, now.month, now.day);
@@ -237,8 +253,6 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
 
   String _formatShortDate(DateTime date) =>
       '${_shortMonths[date.month - 1]} ${date.day}, ${date.year}';
-
-  String _weekdayName(DateTime date) => _weekdays[date.weekday - 1];
 
   String _seasonalTip(int month) {
     final monthName = _fullMonths[month - 1];
@@ -473,10 +487,10 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
   PreferredSizeWidget _buildTopAppBar(HelaColorPalette colors, bool isDark) {
     final canPop = Navigator.canPop(context);
     return AppBar(
-      backgroundColor: colors.surface.withValues(alpha: isDark ? 0.96 : 0.94),
+      backgroundColor: isDark ? colors.background : const Color(0xFFF3FAF7),
       elevation: 0,
       scrolledUnderElevation: 0,
-      toolbarHeight: 68,
+      toolbarHeight: 58,
       titleSpacing: canPop ? 0 : 16,
       automaticallyImplyLeading: false,
       leading: canPop
@@ -487,21 +501,21 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                   onTap: () => Navigator.pop(context),
                   borderRadius: BorderRadius.circular(999),
                   child: Container(
-                    width: 44,
-                    height: 44,
+                    width: 38,
+                    height: 38,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: colors.surfaceContainer,
+                      color: colors.cardBackground,
                       border: Border.all(
                         color: colors.architecturalBorder.withValues(
-                          alpha: 0.6,
+                          alpha: 0.7,
                         ),
                       ),
                     ),
                     child: Icon(
                       Icons.arrow_back_rounded,
                       color: colors.onSurface,
-                      size: 22,
+                      size: 19,
                     ),
                   ),
                 ),
@@ -512,10 +526,10 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
         HelaAppStateProvider.of(context).tr('trip_planner'),
         style: TextStyle(
           color: colors.onSurface,
-          fontSize: 34,
-          fontWeight: FontWeight.w900,
-          letterSpacing: -0.8,
-          fontFamily: 'Plus Jakarta Sans',
+          fontSize: 28,
+          fontWeight: FontWeight.w800,
+          letterSpacing: -0.7,
+          fontFamily: _fontFamily,
         ),
       ),
     );
@@ -527,24 +541,32 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
     final isDark = colors.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: colors.background,
+      backgroundColor: isDark ? colors.background : const Color(0xFFF3FAF7),
       appBar: _buildTopAppBar(colors, isDark),
       body: SafeArea(
         top: false,
         bottom: false,
-        child: _buildPlannerFormView(colors),
+        child: DefaultTextStyle.merge(
+          style: const TextStyle(fontFamily: _fontFamily),
+          child: Column(
+            children: [
+              Expanded(child: _buildPlannerFormView(colors)),
+              _buildStickyGenerateBar(colors),
+            ],
+          ),
+        ),
       ),
       bottomNavigationBar: const HelaBottomNavBar(currentIndex: 2),
     );
   }
 
   // ==========================================
-  // PREFERENCES FORM VIEW
+  // CLEAN MINIMAL PLANNER FORM VIEW
   // ==========================================
   Widget _buildPlannerFormView(HelaColorPalette colors) {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+      padding: const EdgeInsets.fromLTRB(16, 6, 16, 22),
       child: Center(
         heightFactor: 1.0,
         child: ConstrainedBox(
@@ -552,57 +574,44 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Hero Visual Showcase Banner (Single large image matching Home Screen Hero UI)
+              // Compact Clean Hero Banner
               _buildHeroShowcaseBanner(colors),
-              const SizedBox(height: 24),
+              const SizedBox(height: 12),
 
-              // 1. Where does your journey begin? (and End / Return Location)
-              _buildSectionStartingLocation(colors),
-              const SizedBox(height: 20),
-
-              // 2. Travel Dates
-              _buildSectionTravelDates(colors),
-              const SizedBox(height: 20),
-
-              // 3. Travel Party
-              _buildSectionTravelParty(colors),
-              const SizedBox(height: 20),
-
-              // 4. Travel Budget
-              _buildSectionTravelBudget(colors),
-              const SizedBox(height: 20),
-
-              // 5. Travel Interests
-              _buildSectionTravelInterests(colors),
-              const SizedBox(height: 20),
-
-              // 6. Pace & Travel Style
-              _buildSectionPaceAndStyle(colors),
-              const SizedBox(height: 20),
-
-              // 7. Preferred Transport Mode
-              _buildSectionTransportMode(colors),
-              const SizedBox(height: 20),
-
-              // 8. Accommodation Style
-              _buildSectionAccommodationStyle(colors),
-              const SizedBox(height: 20),
-
-              // 9. Must-Visit Stops (Optional)
-              _buildSectionMustVisitPlaces(colors),
-              const SizedBox(height: 20),
-
-              // 10. Dietary, Accessibility & Special Requests
-              _buildSectionConstraintsAndNotes(colors),
-              const SizedBox(height: 20),
-
-              // 11. AI Engine Preview Card (Island Route Optimizer ACTIVE)
-              _buildRouteOptimizerCard(colors),
-              const SizedBox(height: 22),
-
-              // 12. Generate CTA Button
-              _buildGenerateButton(colors),
+              // One-Tap Quick Tour Presets (Simple 1-click planning)
+              _buildQuickTripPresets(colors),
               const SizedBox(height: 16),
+
+              // Card 1: Where & When (Origin, Drop-off & Travel Dates)
+              _buildRouteAndDatesCard(colors),
+              const SizedBox(height: 14),
+
+              // Card 2: Travelers & Budget (Compact Stepper + 4-Segment Budget Bar)
+              _buildPartyAndBudgetCard(colors),
+              const SizedBox(height: 14),
+
+              // Card 3: Pace & Travel Interests
+              _buildPaceAndInterestsCard(colors),
+              const SizedBox(height: 18),
+
+              // Calm Eyebrow Label for Optional Details
+              Padding(
+                padding: const EdgeInsets.only(left: 4, bottom: 8),
+                child: Text(
+                  'OPTIONAL FINE-TUNING',
+                  style: TextStyle(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.9,
+                    color: colors.onSurfaceVariant,
+                    fontFamily: _fontFamily,
+                  ),
+                ),
+              ),
+
+              // Card 4: Clean Grouped Optional Details
+              _buildOptionalCustomizationCard(colors),
+              const SizedBox(height: 10),
             ],
           ),
         ),
@@ -610,22 +619,44 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
     );
   }
 
+  BoxDecoration _minimalCardDecoration(HelaColorPalette colors) {
+    final isDark = colors.brightness == Brightness.dark;
+    return BoxDecoration(
+      color: colors.cardBackground,
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(
+        color: isDark
+            ? colors.outlineVariant.withValues(alpha: 0.5)
+            : const Color(0xFFD7EBE5),
+      ),
+      boxShadow: [
+        BoxShadow(
+          color: (isDark ? Colors.black : const Color(0xFF0A4D46)).withValues(
+            alpha: isDark ? 0.22 : 0.04,
+          ),
+          blurRadius: 16,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    );
+  }
+
   Widget _buildHeroShowcaseBanner(HelaColorPalette colors) {
     return Container(
-      height: 220,
+      height: 144,
       width: double.infinity,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: colors.primary.withValues(alpha: 0.2),
+            color: colors.primary.withValues(alpha: 0.14),
             blurRadius: 14,
-            offset: const Offset(0, 6),
+            offset: const Offset(0, 5),
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         child: Stack(
           fit: StackFit.expand,
           children: [
@@ -635,19 +666,17 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                 gradient: LinearGradient(
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
-                  stops: const [0.0, 0.45, 0.8, 1.0],
+                  stops: const [0.0, 0.55, 1.0],
                   colors: [
-                    colors.primary.withValues(alpha: 0.95),
-                    colors.primary.withValues(alpha: 0.65),
-                    colors.primary.withValues(alpha: 0.2),
+                    const Color(0xFF003B34).withValues(alpha: 0.92),
+                    const Color(0xFF003B34).withValues(alpha: 0.52),
                     Colors.transparent,
                   ],
                 ),
               ),
             ),
-            // Integrated Title, Subtitle and Badges at Bottom of Banner
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+              padding: const EdgeInsets.fromLTRB(18, 14, 18, 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -655,115 +684,25 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                   Text(
                     HelaAppStateProvider.of(context).tr('plan_your_adventure'),
                     style: const TextStyle(
-                      fontFamily: 'Plus Jakarta Sans',
-                      fontSize: 22,
+                      fontFamily: _fontFamily,
+                      fontSize: 20,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
-                      height: 1.2,
-                      letterSpacing: -0.3,
-                      shadows: [
-                        Shadow(
-                          color: Colors.black38,
-                          offset: Offset(0, 1),
-                          blurRadius: 4,
-                        ),
-                      ],
+                      height: 1.18,
+                      letterSpacing: -0.4,
                     ),
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 4),
                   Text(
                     HelaAppStateProvider.of(context).tr('planner_subtitle'),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 12.5,
-                      color: Colors.white.withValues(alpha: 0.92),
+                      fontSize: 12,
+                      color: Colors.white.withValues(alpha: 0.9),
                       fontWeight: FontWeight.w500,
-                      shadows: const [
-                        Shadow(
-                          color: Colors.black26,
-                          offset: Offset(0, 1),
-                          blurRadius: 3,
-                        ),
-                      ],
+                      fontFamily: _fontFamily,
                     ),
-                  ),
-                  const SizedBox(height: 14),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: colors.primaryFixed,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.15),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.bolt_rounded,
-                              size: 15,
-                              color: colors.primary,
-                            ),
-                            const SizedBox(width: 5),
-                            Text(
-                              'Instant AI Routes',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                color: colors.primary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.96),
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.15),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.tune_rounded,
-                              size: 15,
-                              color: Color(0xFF00382E),
-                            ),
-                            SizedBox(width: 5),
-                            Text(
-                              '100% Tailored',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFF00382E),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
                   ),
                 ],
               ),
@@ -774,296 +713,508 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
     );
   }
 
-  // 1. Starting Location
-  Widget _buildSectionStartingLocation(HelaColorPalette colors) {
+  Widget _buildQuickTripPresets(HelaColorPalette colors) {
+    final presets = [
+      (
+        id: 'south_5d',
+        emoji: '🏖️',
+        title: '5D Coast & Culture',
+        days: 5,
+        interests: {'Beaches', 'Culture', 'Authentic Food'},
+        pace: 'relaxed',
+        budget: 'comfort',
+      ),
+      (
+        id: 'tea_7d',
+        emoji: '⛰️',
+        title: '7D Tea & Heritage',
+        days: 7,
+        interests: {
+          'Nature',
+          'Culture',
+          'Ceylon Tea Trails',
+          'Hikes & Adventure',
+        },
+        pace: 'balanced',
+        budget: 'comfort',
+      ),
+      (
+        id: 'grand_10d',
+        emoji: '🏝️',
+        title: '10D Classic Island',
+        days: 10,
+        interests: {
+          'Beaches',
+          'Nature',
+          'Wildlife Safaris',
+          'Culture',
+          'Authentic Food',
+        },
+        pace: 'balanced',
+        budget: 'comfort',
+      ),
+    ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Row(
-                children: [
-                  Flexible(
-                    child: Text(
-                      HelaAppStateProvider.of(context).tr('starting_location'),
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: colors.onSurface,
-                      ),
-                    ),
-                  ),
-                  const Text(
-                    ' *',
-                    style: TextStyle(
-                      color: Color(0xFFDC2626),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              'Required',
-              style: TextStyle(
-                fontSize: 10.5,
-                fontWeight: FontWeight.w600,
-                color: colors.secondary,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-
-        // Input Box
-        Container(
-          height: 52,
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          decoration: BoxDecoration(
-            color: colors.surfaceContainerLowest,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: colors.architecturalBorder.withValues(alpha: 0.8),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 12,
-                offset: const Offset(0, 3),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: colors.surfaceContainer,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  Icons.location_on_rounded,
-                  size: 20,
-                  color: colors.primary,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Theme(
-                  data: Theme.of(context).copyWith(
-                    inputDecorationTheme: const InputDecorationTheme(
-                      border: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      focusedErrorBorder: InputBorder.none,
-                      filled: false,
-                      fillColor: Colors.transparent,
-                    ),
-                  ),
-                  child: TextField(
-                    controller: _startLocationController,
-                    style: TextStyle(
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w600,
-                      color: colors.onSurface,
-                    ),
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      focusedErrorBorder: InputBorder.none,
-                      filled: false,
-                      isCollapsed: true,
-                      contentPadding: EdgeInsets.symmetric(vertical: 8),
-                    ),
-                  ),
-                ),
-              ),
-              IconButton(
-                icon: Icon(
-                  Icons.my_location_rounded,
-                  size: 19,
-                  color: colors.secondary,
-                ),
-                onPressed: () {
-                  setState(
-                    () => _startLocationController.text =
-                        'Bandaranaike Intl Airport (CMB)',
-                  );
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Set to current location: Bandaranaike Airport (CMB)',
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ],
+        Text(
+          'Quick Templates',
+          style: TextStyle(
+            fontSize: 11.5,
+            fontWeight: FontWeight.w700,
+            color: colors.onSurfaceVariant,
+            fontFamily: _fontFamily,
           ),
         ),
-        const SizedBox(height: 8),
-
-        // Quick Suggestion Pills
+        const SizedBox(height: 6),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           physics: const BouncingScrollPhysics(),
           child: Row(
-            children: [
-              _buildLocationQuickPill(
-                'CMB Airport',
-                Icons.flight_land_rounded,
-                'Bandaranaike Airport (CMB)',
-                colors,
-              ),
-              const SizedBox(width: 6),
-              _buildLocationQuickPill(
-                'Colombo Fort',
-                Icons.train_rounded,
-                'Colombo Fort Railway Station',
-                colors,
-              ),
-              const SizedBox(width: 6),
-              _buildLocationQuickPill(
-                'Kandy',
-                Icons.temple_buddhist_rounded,
-                'Kandy City Center',
-                colors,
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 12),
-
-        // End / Drop-off Location Toggle & Input
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          decoration: BoxDecoration(
-            color: colors.cardBackground,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: colors.architecturalBorder),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(Icons.flag_rounded, size: 15, color: colors.primary),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      'Trip Ending / Drop-off',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: colors.onSurface,
-                      ),
-                    ),
+            children: presets.map((p) {
+              final isSelected = _activeQuickPresetId == p.id;
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: InkWell(
+                  onTap: () => _applyQuickPreset(
+                    id: p.id,
+                    days: p.days,
+                    interests: p.interests,
+                    pace: p.pace,
+                    budgetTier: p.budget,
                   ),
-                  ChoiceChip(
-                    label: Text(
-                      _returnToStart ? 'Round-Trip Loop' : 'Custom End',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: _returnToStart ? Colors.white : colors.primary,
-                      ),
-                    ),
-                    selected: _returnToStart,
-                    selectedColor: colors.primary,
-                    backgroundColor: colors.surfaceContainer,
-                    showCheckmark: false,
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    visualDensity: VisualDensity.compact,
-                    onSelected: (selected) {
-                      setState(() => _returnToStart = selected);
-                    },
-                  ),
-                ],
-              ),
-              if (!_returnToStart) ...[
-                const SizedBox(height: 8),
-                TextField(
-                  controller: _endLocationController,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: colors.onSurface,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: 'e.g. Galle Fort, Trincomalee, CMB Airport',
-                    hintStyle: TextStyle(
-                      fontSize: 12.5,
-                      color: colors.onSurfaceVariant,
-                    ),
-                    isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(
+                  borderRadius: BorderRadius.circular(999),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 160),
+                    padding: const EdgeInsets.symmetric(
                       horizontal: 12,
-                      vertical: 10,
+                      vertical: 7,
                     ),
-                    filled: true,
-                    fillColor: colors.surfaceContainerLowest,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: colors.architecturalBorder),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? colors.primary
+                          : colors.cardBackground,
+                      borderRadius: BorderRadius.circular(999),
+                      border: Border.all(
+                        color: isSelected
+                            ? colors.primary
+                            : colors.architecturalBorder,
+                      ),
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: colors.architecturalBorder),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(p.emoji, style: const TextStyle(fontSize: 13)),
+                        const SizedBox(width: 6),
+                        Text(
+                          p.title,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: isSelected
+                                ? colors.onPrimary
+                                : colors.onSurface,
+                            fontFamily: _fontFamily,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 6),
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: [
-                    _buildLocationQuickPill(
-                      'CMB Airport',
-                      Icons.flight_takeoff_rounded,
-                      'Bandaranaike Airport (CMB)',
-                      colors,
-                      targetController: _endLocationController,
-                    ),
-                    _buildLocationQuickPill(
-                      'Galle Fort',
-                      Icons.fort_rounded,
-                      'Galle Dutch Fort',
-                      colors,
-                      targetController: _endLocationController,
-                    ),
-                    _buildLocationQuickPill(
-                      'Trincomalee',
-                      Icons.beach_access_rounded,
-                      'Trincomalee',
-                      colors,
-                      targetController: _endLocationController,
-                    ),
-                  ],
-                ),
-              ] else ...[
-                const SizedBox(height: 4),
-                Text(
-                  'AI will route your final day smoothly back to ${_startLocationController.text.isEmpty ? "your origin" : _startLocationController.text}.',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: colors.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ],
+              );
+            }).toList(),
           ),
         ),
       ],
+    );
+  }
+
+  // ==========================================
+  // CARD 1: ROUTE & DATES (UNIFIED CLEAN CARD)
+  // ==========================================
+  Widget _buildRouteAndDatesCard(HelaColorPalette colors) {
+    final isDark = colors.brightness == Brightness.dark;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: _minimalCardDecoration(colors),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Starting Location Header
+          Text(
+            HelaAppStateProvider.of(context).tr('starting_location'),
+            style: TextStyle(
+              fontSize: 14.5,
+              fontWeight: FontWeight.w800,
+              color: colors.onSurface,
+              fontFamily: _fontFamily,
+            ),
+          ),
+          const SizedBox(height: 8),
+
+          // Minimal Input Surface
+          Container(
+            height: 46,
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? colors.surfaceContainerLow
+                  : const Color(0xFFF3FAF7),
+              borderRadius: BorderRadius.circular(13),
+              border: Border.all(
+                color: isDark
+                    ? colors.outlineVariant.withValues(alpha: 0.4)
+                    : const Color(0xFFD5EBE4),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.place_rounded, size: 18, color: colors.primary),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Theme(
+                    data: Theme.of(context).copyWith(
+                      inputDecorationTheme: const InputDecorationTheme(
+                        border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        filled: false,
+                      ),
+                    ),
+                    child: TextField(
+                      controller: _startLocationController,
+                      style: TextStyle(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w600,
+                        color: colors.onSurface,
+                      ),
+                      decoration: const InputDecoration(
+                        isCollapsed: true,
+                        contentPadding: EdgeInsets.symmetric(vertical: 8),
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                ),
+                InkWell(
+                  borderRadius: BorderRadius.circular(999),
+                  onTap: () {
+                    setState(
+                      () => _startLocationController.text =
+                          'Bandaranaike Intl Airport (CMB)',
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Set to current location: Bandaranaike Airport (CMB)',
+                        ),
+                      ),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: Icon(
+                      Icons.my_location_rounded,
+                      size: 18,
+                      color: colors.secondary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+
+          // Clean Location Quick Pills
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            child: Row(
+              children: [
+                _buildLocationQuickPill(
+                  'CMB Airport',
+                  Icons.flight_land_rounded,
+                  'Bandaranaike Airport (CMB)',
+                  colors,
+                ),
+                const SizedBox(width: 6),
+                _buildLocationQuickPill(
+                  'Colombo Fort',
+                  Icons.train_rounded,
+                  'Colombo Fort Railway Station',
+                  colors,
+                ),
+                const SizedBox(width: 6),
+                _buildLocationQuickPill(
+                  'Kandy',
+                  Icons.temple_buddhist_rounded,
+                  'Kandy City Center',
+                  colors,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+
+          // Compact Trip Ending / Drop-off Row
+          Row(
+            children: [
+              Icon(
+                Icons.flag_outlined,
+                size: 15,
+                color: colors.onSurfaceVariant,
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  'Trip Ending / Drop-off',
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                    color: colors.onSurfaceVariant,
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () => setState(() => _returnToStart = !_returnToStart),
+                borderRadius: BorderRadius.circular(999),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: _returnToStart
+                        ? colors.primary.withValues(alpha: isDark ? 0.2 : 0.1)
+                        : colors.surfaceContainer,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    _returnToStart ? 'Round-Trip Loop' : 'Custom End',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: colors.primary,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (!_returnToStart) ...[
+            const SizedBox(height: 8),
+            TextField(
+              controller: _endLocationController,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: colors.onSurface,
+              ),
+              decoration: InputDecoration(
+                hintText: 'e.g. Galle Fort, Trincomalee, CMB Airport',
+                hintStyle: TextStyle(
+                  fontSize: 12,
+                  color: colors.onSurfaceVariant,
+                ),
+                isDense: true,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
+                filled: true,
+                fillColor: isDark
+                    ? colors.surfaceContainerLow
+                    : const Color(0xFFF3FAF7),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(11),
+                  borderSide: BorderSide(color: colors.architecturalBorder),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(11),
+                  borderSide: BorderSide(color: colors.architecturalBorder),
+                ),
+              ),
+            ),
+          ],
+
+          const SizedBox(height: 14),
+          Divider(
+            height: 1,
+            color: colors.architecturalBorder.withValues(alpha: 0.55),
+          ),
+          const SizedBox(height: 14),
+
+          // Travel Dates Row
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  HelaAppStateProvider.of(context).tr('travel_dates'),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.w800,
+                    color: colors.onSurface,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              InkWell(
+                onTap: _pickDateRange,
+                borderRadius: BorderRadius.circular(999),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colors.primary.withValues(
+                      alpha: isDark ? 0.18 : 0.1,
+                    ),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '$_tripDays Days',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: colors.primary,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(
+                        Icons.edit_calendar_rounded,
+                        size: 12,
+                        color: colors.primary,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+
+          // Minimal Unified 2-Column Date Picker Tray
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? colors.surfaceContainerLow
+                  : const Color(0xFFF3FAF7),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: isDark
+                    ? colors.outlineVariant.withValues(alpha: 0.4)
+                    : const Color(0xFFD5EBE4),
+              ),
+            ),
+            child: IntrinsicHeight(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      onTap: _pickArrivalDate,
+                      borderRadius: BorderRadius.circular(10),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 2),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'ARRIVAL',
+                              style: TextStyle(
+                                fontSize: 9.5,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.6,
+                                color: colors.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(height: 3),
+                            Text(
+                              _formatShortDate(_startDate),
+                              style: TextStyle(
+                                fontSize: 14.5,
+                                fontWeight: FontWeight.w800,
+                                color: colors.onSurface,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  VerticalDivider(
+                    width: 18,
+                    thickness: 1,
+                    color: colors.architecturalBorder.withValues(alpha: 0.65),
+                  ),
+                  Expanded(
+                    child: InkWell(
+                      onTap: _pickDepartureDate,
+                      borderRadius: BorderRadius.circular(10),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 2),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'DEPARTURE',
+                              style: TextStyle(
+                                fontSize: 9.5,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.6,
+                                color: colors.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(height: 3),
+                            Text(
+                              _formatShortDate(_endDate),
+                              style: TextStyle(
+                                fontSize: 14.5,
+                                fontWeight: FontWeight.w800,
+                                color: colors.onSurface,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Icon(
+                Icons.wb_sunny_outlined,
+                size: 13,
+                color: colors.goldenAmber,
+              ),
+              const SizedBox(width: 5),
+              Expanded(
+                child: Text(
+                  _seasonalTip(_startDate.month),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: colors.onSurfaceVariant,
+                    height: 1.3,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -1075,28 +1226,29 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
     TextEditingController? targetController,
   }) {
     final ctrl = targetController ?? _startLocationController;
+    final isDark = colors.brightness == Brightness.dark;
     return InkWell(
-      onTap: () {
-        setState(() => ctrl.text = targetValue);
-      },
+      onTap: () => setState(() => ctrl.text = targetValue),
       borderRadius: BorderRadius.circular(999),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-          color: colors.surfaceContainerHigh,
+          color: isDark
+              ? colors.surfaceContainerHighest
+              : const Color(0xFFE7F5F0),
           borderRadius: BorderRadius.circular(999),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 12.5, color: colors.onSurfaceVariant),
+            Icon(icon, size: 12, color: colors.primary),
             const SizedBox(width: 4),
             Text(
               label,
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
-                color: colors.onSurfaceVariant,
+                color: colors.onSurface,
               ),
             ),
           ],
@@ -1105,407 +1257,254 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
     );
   }
 
-  // 2. Travel Dates
-  Widget _buildSectionTravelDates(HelaColorPalette colors) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                Text(
-                  HelaAppStateProvider.of(context).tr('travel_dates'),
+  // ==========================================
+  // CARD 2: PARTY & BUDGET (COMPACT SEGMENTED)
+  // ==========================================
+  Widget _buildPartyAndBudgetCard(HelaColorPalette colors) {
+    final isDark = colors.brightness == Brightness.dark;
+    final budgetTiers = [
+      (id: 'value', label: 'Value', price: r'~$55/d'),
+      (id: 'comfort', label: 'Comfort', price: r'~$140/d'),
+      (id: 'luxury', label: 'Luxury', price: r'~$260/d'),
+      (id: 'custom', label: 'Custom', price: '\$$_customDailyBudget/d'),
+    ];
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: _minimalCardDecoration(colors),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Travel Party Row
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  HelaAppStateProvider.of(context).tr('travel_party'),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.w800,
                     color: colors.onSurface,
                   ),
                 ),
-                const Text(
-                  ' *',
-                  style: TextStyle(
-                    color: Color(0xFFDC2626),
-                    fontWeight: FontWeight.bold,
+              ),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 9,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colors.primary.withValues(
+                      alpha: isDark ? 0.18 : 0.1,
+                    ),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    '${_adults + _children} • $_partyDescription',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: colors.primary,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+
+          // Minimal Compact Steppers
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? colors.surfaceContainerLow
+                  : const Color(0xFFF3FAF7),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _buildCompactCounter(
+                    label: 'Adults',
+                    value: _adults,
+                    onDec: () {
+                      if (_adults > 1) setState(() => _adults--);
+                    },
+                    onInc: () => setState(() => _adults++),
+                    colors: colors,
+                  ),
+                ),
+                Container(
+                  width: 1,
+                  height: 26,
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                  color: colors.architecturalBorder.withValues(alpha: 0.65),
+                ),
+                Expanded(
+                  child: _buildCompactCounter(
+                    label: 'Children',
+                    value: _children,
+                    onDec: () {
+                      if (_children > 0) setState(() => _children--);
+                    },
+                    onInc: () => setState(() => _children++),
+                    colors: colors,
                   ),
                 ),
               ],
             ),
-            InkWell(
-              onTap: _pickDateRange,
-              borderRadius: BorderRadius.circular(999),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
-                decoration: BoxDecoration(
-                  color: colors.secondaryContainer,
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.timelapse_rounded,
-                      size: 12,
-                      color: colors.onSecondaryContainer,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '$_tripDays Days Island Loop',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: colors.onSecondaryContainer,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Icon(
-                      Icons.edit_calendar_rounded,
-                      size: 11,
-                      color: colors.onSecondaryContainer,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
+          ),
 
-        // Two Date Cards
-        Row(
-          children: [
-            Expanded(
-              child: InkWell(
-                onTap: _pickArrivalDate,
-                borderRadius: BorderRadius.circular(14),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: colors.cardBackground,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: colors.architecturalBorder),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.03),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
+          const SizedBox(height: 14),
+          Divider(
+            height: 1,
+            color: colors.architecturalBorder.withValues(alpha: 0.55),
+          ),
+          const SizedBox(height: 14),
+
+          // Travel Budget Header
+          Text(
+            HelaAppStateProvider.of(context).tr('travel_budget'),
+            style: TextStyle(
+              fontSize: 14.5,
+              fontWeight: FontWeight.w800,
+              color: colors.onSurface,
+            ),
+          ),
+          const SizedBox(height: 10),
+
+          // Clean 4-Segment Budget Bar
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? colors.surfaceContainerLow
+                  : const Color(0xFFF1F8F5),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: isDark
+                    ? colors.outlineVariant.withValues(alpha: 0.35)
+                    : const Color(0xFFDCEEE8),
+              ),
+            ),
+            child: Row(
+              children: budgetTiers.map((tier) {
+                final selected = _selectedBudgetTier == tier.id;
+                return Expanded(
+                  child: InkWell(
+                    onTap: () => setState(() => _selectedBudgetTier = tier.id),
+                    borderRadius: BorderRadius.circular(10),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 160),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8,
+                        horizontal: 4,
                       ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
+                      decoration: BoxDecoration(
+                        color: selected ? colors.primary : Colors.transparent,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
-                            Icons.calendar_today_rounded,
-                            size: 13,
-                            color: colors.primary,
-                          ),
-                          const SizedBox(width: 4),
                           Text(
-                            'ARRIVAL',
+                            tier.label,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              fontSize: 9.5,
+                              fontSize: 11.5,
                               fontWeight: FontWeight.w700,
-                              color: colors.onSurfaceVariant,
-                              letterSpacing: 0.6,
+                              color: selected
+                                  ? colors.onPrimary
+                                  : colors.onSurface,
                             ),
                           ),
-                          const Spacer(),
-                          Icon(
-                            Icons.edit_rounded,
-                            size: 12,
-                            color: colors.onSurfaceVariant,
+                          const SizedBox(height: 1),
+                          Text(
+                            tier.price,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 9.5,
+                              fontWeight: FontWeight.w600,
+                              color: selected
+                                  ? colors.onPrimary.withValues(alpha: 0.85)
+                                  : colors.onSurfaceVariant,
+                            ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        _formatShortDate(_startDate),
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                          color: colors.onSurface,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        '${_weekdayName(_startDate)} • Morning',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: colors.secondary,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
+                );
+              }).toList(),
             ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: InkWell(
-                onTap: _pickDepartureDate,
-                borderRadius: BorderRadius.circular(14),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: colors.cardBackground,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: colors.architecturalBorder),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.03),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.event_available_rounded,
-                            size: 13,
-                            color: colors.primary,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'DEPARTURE',
-                            style: TextStyle(
-                              fontSize: 9.5,
-                              fontWeight: FontWeight.w700,
-                              color: colors.onSurfaceVariant,
-                              letterSpacing: 0.6,
-                            ),
-                          ),
-                          const Spacer(),
-                          Icon(
-                            Icons.edit_rounded,
-                            size: 12,
-                            color: colors.onSurfaceVariant,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        _formatShortDate(_endDate),
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                          color: colors.onSurface,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        '${_weekdayName(_endDate)} • Evening',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: colors.secondary,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 6),
-        Row(
-          children: [
-            Icon(Icons.sunny, size: 13, color: colors.goldenAmber),
-            const SizedBox(width: 4),
-            Expanded(
-              child: Text(
-                _seasonalTip(_startDate.month),
-                style: TextStyle(fontSize: 11, color: colors.onSurfaceVariant),
-              ),
-            ),
-          ],
-        ),
-      ],
+          ),
+
+          if (_selectedBudgetTier == 'custom')
+            _buildCustomBudgetControls(colors),
+        ],
+      ),
     );
   }
 
-  // 3. Travel Party
-  Widget _buildSectionTravelParty(HelaColorPalette colors) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildCompactCounter({
+    required String label,
+    required int value,
+    required VoidCallback onDec,
+    required VoidCallback onInc,
+    required HelaColorPalette colors,
+  }) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+        Flexible(
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w700,
+              color: colors.onSurface,
+            ),
+          ),
+        ),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Expanded(
+            _buildStepperBtn(
+              icon: Icons.remove_rounded,
+              onTap: onDec,
+              colors: colors,
+              isPrimary: false,
+            ),
+            SizedBox(
+              width: 22,
               child: Text(
-                HelaAppStateProvider.of(context).tr('travel_party'),
-                overflow: TextOverflow.ellipsis,
+                '$value',
+                textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
                   color: colors.onSurface,
                 ),
               ),
             ),
-            const SizedBox(width: 8),
-            Flexible(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
-                decoration: BoxDecoration(
-                  color: colors.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Text(
-                  '${_adults + _children} Travellers • $_partyDescription',
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: colors.primary,
-                  ),
-                ),
-              ),
+            _buildStepperBtn(
+              icon: Icons.add_rounded,
+              onTap: onInc,
+              colors: colors,
+              isPrimary: true,
             ),
           ],
-        ),
-        const SizedBox(height: 8),
-
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          decoration: BoxDecoration(
-            color: colors.cardBackground,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: colors.architecturalBorder),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.03),
-                blurRadius: 6,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              // Adults
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Adults',
-                        style: TextStyle(
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w700,
-                          color: colors.onSurface,
-                        ),
-                      ),
-                      Text(
-                        'Age 12 and above',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: colors.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      _buildStepperBtn(
-                        icon: Icons.remove_rounded,
-                        onTap: () {
-                          if (_adults > 1) setState(() => _adults--);
-                        },
-                        colors: colors,
-                        isPrimary: false,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 14),
-                        child: Text(
-                          '$_adults',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                            color: colors.onSurface,
-                          ),
-                        ),
-                      ),
-                      _buildStepperBtn(
-                        icon: Icons.add_rounded,
-                        onTap: () => setState(() => _adults++),
-                        colors: colors,
-                        isPrimary: true,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Divider(color: colors.architecturalBorder, height: 1),
-              ),
-              // Children
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Children',
-                        style: TextStyle(
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w700,
-                          color: colors.onSurface,
-                        ),
-                      ),
-                      Text(
-                        'Age 0 to 11 years',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: colors.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      _buildStepperBtn(
-                        icon: Icons.remove_rounded,
-                        onTap: () {
-                          if (_children > 0) setState(() => _children--);
-                        },
-                        colors: colors,
-                        isPrimary: false,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 14),
-                        child: Text(
-                          '$_children',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                            color: colors.onSurface,
-                          ),
-                        ),
-                      ),
-                      _buildStepperBtn(
-                        icon: Icons.add_rounded,
-                        onTap: () => setState(() => _children++),
-                        colors: colors,
-                        isPrimary: true,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
         ),
       ],
     );
@@ -1521,104 +1520,540 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
       onTap: onTap,
       borderRadius: BorderRadius.circular(999),
       child: Container(
-        width: 32,
-        height: 32,
+        width: 24,
+        height: 24,
         decoration: BoxDecoration(
-          color: isPrimary ? colors.primary : colors.surfaceContainer,
+          color: isPrimary ? colors.primary : colors.cardBackground,
           shape: BoxShape.circle,
+          border: isPrimary
+              ? null
+              : Border.all(color: colors.architecturalBorder),
         ),
         child: Icon(
           icon,
-          size: 16,
-          color: isPrimary ? Colors.white : colors.primary,
+          size: 14,
+          color: isPrimary ? colors.onPrimary : colors.primary,
         ),
       ),
     );
   }
 
-  // 4. Travel Budget
-  Widget _buildSectionTravelBudget(HelaColorPalette colors) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text(
-              HelaAppStateProvider.of(context).tr('travel_budget'),
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                color: colors.onSurface,
+  // ==========================================
+  // CARD 3: PACE & TRAVEL INTERESTS
+  // ==========================================
+  Widget _buildPaceAndInterestsCard(HelaColorPalette colors) {
+    final isDark = colors.brightness == Brightness.dark;
+    final paces = [
+      (id: 'relaxed', label: 'Relaxed', icon: Icons.spa_outlined),
+      (id: 'balanced', label: 'Balanced', icon: Icons.tune_rounded),
+      (id: 'active', label: 'Active', icon: Icons.directions_run_rounded),
+    ];
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: _minimalCardDecoration(colors),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            HelaAppStateProvider.of(context).tr('pace_travel_style'),
+            style: TextStyle(
+              fontSize: 14.5,
+              fontWeight: FontWeight.w800,
+              color: colors.onSurface,
+            ),
+          ),
+          const SizedBox(height: 10),
+
+          // Slim 3-Segment Pace Pill Strip
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? colors.surfaceContainerLow
+                  : const Color(0xFFF1F8F5),
+              borderRadius: BorderRadius.circular(13),
+            ),
+            child: Row(
+              children: paces.map((p) {
+                final isSelected = _selectedPace == p.id;
+                return Expanded(
+                  child: InkWell(
+                    onTap: () => setState(() => _selectedPace = p.id),
+                    borderRadius: BorderRadius.circular(9),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 160),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      decoration: BoxDecoration(
+                        color: isSelected ? colors.primary : Colors.transparent,
+                        borderRadius: BorderRadius.circular(9),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            p.icon,
+                            size: 14,
+                            color: isSelected
+                                ? colors.onPrimary
+                                : colors.onSurfaceVariant,
+                          ),
+                          const SizedBox(width: 5),
+                          Flexible(
+                            child: Text(
+                              p.label,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: isSelected
+                                    ? colors.onPrimary
+                                    : colors.onSurface,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+
+          const SizedBox(height: 14),
+          Divider(
+            height: 1,
+            color: colors.architecturalBorder.withValues(alpha: 0.55),
+          ),
+          const SizedBox(height: 14),
+
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  HelaAppStateProvider.of(context).tr('travel_interests'),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.w800,
+                    color: colors.onSurface,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                '${_selectedInterests.length} Selected',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: colors.primary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+
+          Wrap(
+            spacing: 7,
+            runSpacing: 7,
+            children: _allInterests.map((interest) {
+              final label = interest['label']!;
+              final emoji = interest['emoji']!;
+              final isSelected = _selectedInterests.contains(label);
+
+              return InkWell(
+                onTap: () {
+                  setState(() {
+                    if (isSelected) {
+                      _selectedInterests.remove(label);
+                    } else {
+                      _selectedInterests.add(label);
+                    }
+                  });
+                },
+                borderRadius: BorderRadius.circular(999),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 160),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 11,
+                    vertical: 6.5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? colors.primary
+                        : (isDark
+                              ? colors.surfaceContainerLow
+                              : const Color(0xFFF5FAF8)),
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(
+                      color: isSelected
+                          ? colors.primary
+                          : colors.architecturalBorder.withValues(alpha: 0.75),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(emoji, style: const TextStyle(fontSize: 12.5)),
+                      const SizedBox(width: 5),
+                      Text(
+                        label,
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w600,
+                          color: isSelected
+                              ? colors.onPrimary
+                              : colors.onSurface,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ==========================================
+  // CARD 4: OPTIONAL FINE-TUNING (CLEAN GROUPED)
+  // ==========================================
+  Widget _buildOptionalCustomizationCard(HelaColorPalette colors) {
+    final isDark = colors.brightness == Brightness.dark;
+    final totalPinned =
+        _selectedDestinationIds.length + _customMustVisitStops.length;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: _minimalCardDecoration(colors),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Transport Mode
+          Text(
+            'Preferred Transport Mode',
+            style: TextStyle(
+              fontSize: 13.5,
+              fontWeight: FontWeight.w700,
+              color: colors.onSurface,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 7,
+            runSpacing: 7,
+            children: _transportOptions.map((option) {
+              final id = option['id'] as String;
+              final title = option['title'] as String;
+              final icon = option['icon'] as IconData;
+              final isSelected = _selectedTransportMode == id;
+
+              return _buildSelectableChip(
+                label: title,
+                selected: isSelected,
+                colors: colors,
+                icon: icon,
+                onTap: () => setState(() => _selectedTransportMode = id),
+              );
+            }).toList(),
+          ),
+
+          const SizedBox(height: 14),
+          Divider(
+            height: 1,
+            color: colors.architecturalBorder.withValues(alpha: 0.55),
+          ),
+          const SizedBox(height: 14),
+
+          // Accommodation Style
+          Text(
+            'Accommodation Style',
+            style: TextStyle(
+              fontSize: 13.5,
+              fontWeight: FontWeight.w700,
+              color: colors.onSurface,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 7,
+            runSpacing: 7,
+            children: AccommodationType.values.map((type) {
+              return _buildSelectableChip(
+                label: type.label,
+                selected: _selectedAccommodationType == type,
+                colors: colors,
+                onTap: () => setState(() => _selectedAccommodationType = type),
+              );
+            }).toList(),
+          ),
+
+          const SizedBox(height: 14),
+          Divider(
+            height: 1,
+            color: colors.architecturalBorder.withValues(alpha: 0.55),
+          ),
+          const SizedBox(height: 14),
+
+          // Must-Visit Places
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Must-Visit Places (Optional)',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w700,
+                    color: colors.onSurface,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                totalPinned == 0 ? 'AI Chooses' : '$totalPinned Pinned',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: colors.primary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 7,
+            runSpacing: 7,
+            children: [
+              ...PlaceService.curatedSriLankaPlaces.take(6).map((place) {
+                final isSelected = _selectedDestinationIds.contains(
+                  place.sourceId,
+                );
+                return _buildSelectableChip(
+                  label: place.name,
+                  selected: isSelected,
+                  colors: colors,
+                  icon: Icons.place_outlined,
+                  onTap: () {
+                    setState(() {
+                      if (isSelected) {
+                        _selectedDestinationIds.remove(place.sourceId);
+                      } else {
+                        _selectedDestinationIds.add(place.sourceId);
+                      }
+                    });
+                  },
+                );
+              }),
+              ..._customMustVisitStops.map((stop) {
+                return InputChip(
+                  label: Text(
+                    stop,
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w600,
+                      color: colors.onPrimary,
+                    ),
+                  ),
+                  selected: true,
+                  selectedColor: colors.primary,
+                  deleteIconColor: colors.onPrimary,
+                  onDeleted: () {
+                    setState(() => _customMustVisitStops.remove(stop));
+                  },
+                );
+              }),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _customStopController,
+                  textInputAction: TextInputAction.done,
+                  onSubmitted: (_) => _addCustomMustVisitStop(),
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                    color: colors.onSurface,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'Add custom stop (e.g. Jaffna, Arugam Bay)',
+                    hintStyle: TextStyle(
+                      fontSize: 11.5,
+                      color: colors.onSurfaceVariant,
+                    ),
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 11,
+                      vertical: 10,
+                    ),
+                    filled: true,
+                    fillColor: isDark
+                        ? colors.surfaceContainerLow
+                        : const Color(0xFFF3FAF7),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(11),
+                      borderSide: BorderSide(color: colors.architecturalBorder),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(11),
+                      borderSide: BorderSide(color: colors.architecturalBorder),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              SizedBox(
+                height: 38,
+                child: FilledButton.tonalIcon(
+                  onPressed: _addCustomMustVisitStop,
+                  icon: const Icon(Icons.add_rounded, size: 16),
+                  label: const Text('Add'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: colors.primary.withValues(
+                      alpha: isDark ? 0.2 : 0.12,
+                    ),
+                    foregroundColor: colors.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(11),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 14),
+          Divider(
+            height: 1,
+            color: colors.architecturalBorder.withValues(alpha: 0.55),
+          ),
+          const SizedBox(height: 14),
+
+          // Dietary, Accessibility & Notes
+          Text(
+            'Dietary, Accessibility & AI Notes',
+            style: TextStyle(
+              fontSize: 13.5,
+              fontWeight: FontWeight.w700,
+              color: colors.onSurface,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 7,
+            runSpacing: 7,
+            children: [
+              ..._dietaryOptions.map((item) {
+                final selected = _selectedDietary.contains(item);
+                return _buildSelectableChip(
+                  label: item,
+                  selected: selected,
+                  colors: colors,
+                  onTap: () {
+                    setState(() {
+                      if (selected) {
+                        _selectedDietary.remove(item);
+                      } else {
+                        _selectedDietary.add(item);
+                      }
+                    });
+                  },
+                );
+              }),
+              ..._accessibilityOptions.map((item) {
+                final selected = _selectedAccessibility.contains(item);
+                return _buildSelectableChip(
+                  label: item,
+                  selected: selected,
+                  colors: colors,
+                  onTap: () {
+                    setState(() {
+                      if (selected) {
+                        _selectedAccessibility.remove(item);
+                      } else {
+                        _selectedAccessibility.add(item);
+                      }
+                    });
+                  },
+                );
+              }),
+            ],
+          ),
+          const SizedBox(height: 10),
+          TextField(
+            controller: _extraNotesController,
+            maxLines: 2,
+            onChanged: (_) => setState(() {}),
+            style: TextStyle(fontSize: 12.5, color: colors.onSurface),
+            decoration: InputDecoration(
+              hintText: 'Optional notes (anniversary, avoid early starts...)',
+              hintStyle: TextStyle(
+                fontSize: 11.5,
+                color: colors.onSurfaceVariant,
+              ),
+              filled: true,
+              fillColor: isDark
+                  ? colors.surfaceContainerLow
+                  : const Color(0xFFF3FAF7),
+              contentPadding: const EdgeInsets.all(11),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(11),
+                borderSide: BorderSide(color: colors.architecturalBorder),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(11),
+                borderSide: BorderSide(color: colors.architecturalBorder),
               ),
             ),
-            const Text(
-              ' *',
-              style: TextStyle(
-                color: Color(0xFFDC2626),
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 2),
-        Text(
-          'Choose your lodging & transit tier',
-          style: TextStyle(fontSize: 11.5, color: colors.onSurfaceVariant),
-        ),
-        const SizedBox(height: 12),
-
-        // Tier 1: Value Explorer
-        _buildBudgetCard(
-          id: 'value',
-          title: 'Value Explorer',
-          priceAmount: r'~$40 – $70',
-          priceUnit: '/ day',
-          description: 'Cozy guesthouses · Scenic trains · Local dining',
-          icon: Icons.backpack_rounded,
-          colors: colors,
-        ),
-        const SizedBox(height: 10),
-
-        // Tier 2: Comfort & Boutique (Popular)
-        _buildBudgetCard(
-          id: 'comfort',
-          title: 'Comfort & Boutique',
-          priceAmount: r'~$100 – $180',
-          priceUnit: '/ day',
-          description:
-              'Heritage boutique villas · Private AC car · Guided tours',
-          icon: Icons.hotel_rounded,
-          isPopular: true,
-          colors: colors,
-        ),
-        const SizedBox(height: 10),
-
-        // Tier 3: Luxury Ceylon
-        _buildBudgetCard(
-          id: 'luxury',
-          title: 'Luxury Ceylon',
-          priceAmount: r'~$250+',
-          priceUnit: '/ day',
-          description: '5-star tea bungalows · Chauffeur-guide · Seaplane hops',
-          icon: Icons.villa_rounded,
-          colors: colors,
-        ),
-        const SizedBox(height: 10),
-
-        // Tier 4: Custom Budget
-        _buildBudgetCard(
-          id: 'custom',
-          title: 'Custom Budget',
-          priceAmount: '\$$_customDailyBudget',
-          priceUnit: '/ day',
-          description: _selectedBudgetTier == 'custom'
-              ? _customBudgetStyleHint
-              : 'Set your own daily USD budget for stays & transit',
-          icon: Icons.tune_rounded,
-          colors: colors,
-          expandedChild: _buildCustomBudgetControls(colors),
-        ),
-      ],
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: _quickPromptChips.map((chip) {
+              final alreadyAdded = _extraNotesController.text.contains(chip);
+              return ActionChip(
+                label: Text(
+                  alreadyAdded ? '✓ $chip' : '+ $chip',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: alreadyAdded
+                        ? colors.primary
+                        : colors.onSurfaceVariant,
+                  ),
+                ),
+                backgroundColor: alreadyAdded
+                    ? colors.primary.withValues(alpha: isDark ? 0.18 : 0.1)
+                    : (isDark
+                          ? colors.surfaceContainerLow
+                          : const Color(0xFFF5FAF8)),
+                side: BorderSide(color: colors.architecturalBorder),
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                visualDensity: VisualDensity.compact,
+                onPressed: () {
+                  setState(() {
+                    if (alreadyAdded) return;
+                    final trimmed = _extraNotesController.text.trim();
+                    _extraNotesController.text = trimmed.isEmpty
+                        ? chip
+                        : '$trimmed, $chip';
+                  });
+                },
+              );
+            }).toList(),
+          ),
+        ],
+      ),
     );
   }
 
@@ -1631,23 +2066,18 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 12),
-        Divider(
-          height: 1,
-          color: isDark ? colors.architecturalBorder : const Color(0xFFD6ECE5),
-        ),
-        const SizedBox(height: 12),
         Row(
           children: [
-            // Editable Daily Amount Pill
             Container(
-              width: 112,
+              width: 108,
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
-                color: isDark ? colors.surfaceContainerLowest : Colors.white,
-                borderRadius: BorderRadius.circular(11),
+                color: isDark
+                    ? colors.surfaceContainerLow
+                    : const Color(0xFFF3FAF7),
+                borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                   color: colors.primary.withValues(alpha: 0.45),
-                  width: 1.2,
                 ),
               ),
               child: Row(
@@ -1655,7 +2085,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                   Text(
                     r'$',
                     style: TextStyle(
-                      fontSize: 15,
+                      fontSize: 14,
                       fontWeight: FontWeight.w800,
                       color: colors.primary,
                     ),
@@ -1670,7 +2100,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                         LengthLimitingTextInputFormatter(5),
                       ],
                       style: TextStyle(
-                        fontSize: 15,
+                        fontSize: 14,
                         fontWeight: FontWeight.w800,
                         color: colors.onSurface,
                       ),
@@ -1700,41 +2130,27 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    'Est. ~\$$estimatedTotal total',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w800,
-                      color: colors.onSurface,
-                    ),
-                  ),
-                  Text(
-                    'for $_tripDays ${_tripDays == 1 ? 'day' : 'days'}',
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
-                      color: colors.onSurfaceVariant,
-                    ),
-                  ),
-                ],
+              child: Text(
+                'Est. ~\$$estimatedTotal ($_tripDays days) · $_customBudgetStyleHint',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.end,
+                style: TextStyle(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w600,
+                  color: colors.onSurfaceVariant,
+                ),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 6),
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
             activeTrackColor: colors.primary,
             inactiveTrackColor: colors.primary.withValues(alpha: 0.16),
             thumbColor: colors.primary,
-            overlayColor: colors.primary.withValues(alpha: 0.14),
-            trackHeight: 4,
-            thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
+            trackHeight: 3.5,
+            thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 7),
           ),
           child: Slider(
             value: sliderValue,
@@ -1753,929 +2169,6 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
             },
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                r'$30 / day',
-                style: TextStyle(
-                  fontSize: 10.5,
-                  fontWeight: FontWeight.w600,
-                  color: colors.onSurfaceVariant,
-                ),
-              ),
-              Text(
-                r'$500+ / day',
-                style: TextStyle(
-                  fontSize: 10.5,
-                  fontWeight: FontWeight.w600,
-                  color: colors.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBudgetCard({
-    required String id,
-    required String title,
-    required String priceAmount,
-    required String priceUnit,
-    required String description,
-    required IconData icon,
-    bool isPopular = false,
-    Widget? expandedChild,
-    required HelaColorPalette colors,
-  }) {
-    final isSelected = _selectedBudgetTier == id;
-    final isDark = colors.brightness == Brightness.dark;
-
-    final cardBg = isSelected
-        ? (isDark
-              ? colors.primaryContainer.withValues(alpha: 0.28)
-              : const Color(0xFFF2FBF8))
-        : colors.cardBackground;
-
-    final borderColor = isSelected
-        ? colors.primary
-        : colors.architecturalBorder;
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () => setState(() => _selectedBudgetTier = id),
-        borderRadius: BorderRadius.circular(16),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: cardBg,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: borderColor,
-              width: isSelected ? 1.8 : 1.0,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: isSelected
-                    ? colors.primary.withValues(alpha: isDark ? 0.2 : 0.1)
-                    : Colors.black.withValues(alpha: 0.03),
-                blurRadius: isSelected ? 14 : 6,
-                offset: Offset(0, isSelected ? 4 : 2),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    width: 42,
-                    height: 42,
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? colors.primary
-                          : colors.surfaceContainer,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      icon,
-                      size: 20,
-                      color: isSelected ? Colors.white : colors.primary,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Wrap(
-                                spacing: 8,
-                                runSpacing: 4,
-                                crossAxisAlignment: WrapCrossAlignment.center,
-                                children: [
-                                  Text(
-                                    title,
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w800,
-                                      letterSpacing: -0.3,
-                                      color: colors.onSurface,
-                                    ),
-                                  ),
-                                  if (isPopular)
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 7,
-                                        vertical: 2,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFFFEF3C7),
-                                        borderRadius: BorderRadius.circular(
-                                          999,
-                                        ),
-                                        border: Border.all(
-                                          color: const Color(0xFFFDE68A),
-                                        ),
-                                      ),
-                                      child: const Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(
-                                            Icons.star_rounded,
-                                            size: 11,
-                                            color: Color(0xFFB45309),
-                                          ),
-                                          SizedBox(width: 3),
-                                          Text(
-                                            'Popular',
-                                            style: TextStyle(
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.w800,
-                                              color: Color(0xFF92400E),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            AnimatedContainer(
-                              duration: const Duration(milliseconds: 200),
-                              width: 22,
-                              height: 22,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: isSelected
-                                    ? colors.primary
-                                    : Colors.transparent,
-                                border: Border.all(
-                                  color: isSelected
-                                      ? colors.primary
-                                      : colors.outlineVariant,
-                                  width: 1.6,
-                                ),
-                              ),
-                              child: isSelected
-                                  ? const Icon(
-                                      Icons.check_rounded,
-                                      size: 14,
-                                      color: Colors.white,
-                                    )
-                                  : null,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 5),
-                        Text.rich(
-                          TextSpan(
-                            children: [
-                              TextSpan(
-                                text: priceAmount,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: -0.2,
-                                  color: isSelected
-                                      ? colors.primary
-                                      : colors.onSurface,
-                                ),
-                              ),
-                              TextSpan(
-                                text: ' $priceUnit',
-                                style: TextStyle(
-                                  fontSize: 11.5,
-                                  fontWeight: FontWeight.w500,
-                                  color: colors.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          description,
-                          style: TextStyle(
-                            fontSize: 11.5,
-                            color: colors.onSurfaceVariant,
-                            height: 1.35,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              if (expandedChild != null && isSelected) expandedChild,
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // 5. Travel Interests
-  Widget _buildSectionTravelInterests(HelaColorPalette colors) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          HelaAppStateProvider.of(
-                            context,
-                          ).tr('travel_interests'),
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            color: colors.onSurface,
-                          ),
-                        ),
-                      ),
-                      const Text(
-                        ' *',
-                        style: TextStyle(
-                          color: Color(0xFFDC2626),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    'Tap to pick your island passions',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: colors.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(
-                color: colors.secondaryContainer.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(999),
-              ),
-              child: Text(
-                '${_selectedInterests.length} Selected',
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  color: colors.primary,
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: _allInterests.map((interest) {
-            final label = interest['label']!;
-            final emoji = interest['emoji']!;
-            final isSelected = _selectedInterests.contains(label);
-
-            return InkWell(
-              onTap: () {
-                setState(() {
-                  if (isSelected) {
-                    _selectedInterests.remove(label);
-                  } else {
-                    _selectedInterests.add(label);
-                  }
-                });
-              },
-              borderRadius: BorderRadius.circular(999),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 7,
-                ),
-                decoration: BoxDecoration(
-                  color: isSelected ? colors.primary : colors.cardBackground,
-                  borderRadius: BorderRadius.circular(999),
-                  border: Border.all(
-                    color: isSelected
-                        ? colors.primary
-                        : colors.architecturalBorder,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: isSelected
-                          ? colors.primary.withValues(alpha: 0.2)
-                          : Colors.black.withValues(alpha: 0.02),
-                      blurRadius: 4,
-                      offset: const Offset(0, 1),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(emoji, style: const TextStyle(fontSize: 13)),
-                    const SizedBox(width: 5),
-                    Text(
-                      label,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: isSelected ? Colors.white : colors.onSurface,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Icon(
-                      isSelected ? Icons.check_rounded : Icons.add_rounded,
-                      size: 14,
-                      color: isSelected ? Colors.white : colors.outlineVariant,
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
-
-  // 6. Pace & Travel Style
-  Widget _buildSectionPaceAndStyle(HelaColorPalette colors) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          HelaAppStateProvider.of(context).tr('pace_travel_style'),
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
-            color: colors.onSurface,
-          ),
-        ),
-        const SizedBox(height: 8),
-
-        Row(
-          children: [
-            Expanded(
-              child: _buildPaceOption(
-                id: 'relaxed',
-                label: 'Relaxed',
-                sublabel: '2-3 nights per town',
-                icon: Icons.self_improvement_rounded,
-                colors: colors,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _buildPaceOption(
-                id: 'balanced',
-                label: 'Balanced',
-                sublabel: 'Ideal mix of sights & rest',
-                icon: Icons.tune_rounded,
-                colors: colors,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _buildPaceOption(
-                id: 'active',
-                label: 'Active',
-                sublabel: 'Sunrise hikes & surf',
-                icon: Icons.directions_run_rounded,
-                colors: colors,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPaceOption({
-    required String id,
-    required String label,
-    required String sublabel,
-    required IconData icon,
-    required HelaColorPalette colors,
-  }) {
-    final isSelected = _selectedPace == id;
-
-    return InkWell(
-      onTap: () => setState(() => _selectedPace = id),
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
-        decoration: BoxDecoration(
-          color: isSelected ? colors.primary : colors.cardBackground,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected ? colors.primary : colors.architecturalBorder,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: isSelected
-                  ? colors.primary.withValues(alpha: 0.22)
-                  : Colors.black.withValues(alpha: 0.03),
-              blurRadius: 6,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Icon(
-              icon,
-              size: 20,
-              color: isSelected ? colors.secondaryContainer : colors.secondary,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12.5,
-                fontWeight: FontWeight.w700,
-                color: isSelected ? Colors.white : colors.onSurface,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              sublabel,
-              style: TextStyle(
-                fontSize: 9.5,
-                color: isSelected
-                    ? colors.secondaryContainer
-                    : colors.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // 7. Preferred Transport Mode
-  Widget _buildSectionTransportMode(HelaColorPalette colors) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Preferred Transport Mode',
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
-            color: colors.onSurface,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          'Helps AI estimate realistic Sri Lanka transit times & transfers',
-          style: TextStyle(fontSize: 11.5, color: colors.onSurfaceVariant),
-        ),
-        const SizedBox(height: 10),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: _transportOptions.map((option) {
-            final id = option['id'] as String;
-            final title = option['title'] as String;
-            final subtitle = option['subtitle'] as String;
-            final icon = option['icon'] as IconData;
-            final isSelected = _selectedTransportMode == id;
-
-            return InkWell(
-              onTap: () => setState(() => _selectedTransportMode = id),
-              borderRadius: BorderRadius.circular(14),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 10,
-                ),
-                decoration: BoxDecoration(
-                  color: isSelected ? colors.primary : colors.cardBackground,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: isSelected
-                        ? colors.primary
-                        : colors.architecturalBorder,
-                    width: isSelected ? 1.5 : 1.0,
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      icon,
-                      size: 18,
-                      color: isSelected
-                          ? colors.secondaryContainer
-                          : colors.primary,
-                    ),
-                    const SizedBox(width: 8),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          title,
-                          style: TextStyle(
-                            fontSize: 12.5,
-                            fontWeight: FontWeight.w700,
-                            color: isSelected ? Colors.white : colors.onSurface,
-                          ),
-                        ),
-                        Text(
-                          subtitle,
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: isSelected
-                                ? colors.secondaryContainer
-                                : colors.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
-
-  // 8. Accommodation Style
-  Widget _buildSectionAccommodationStyle(HelaColorPalette colors) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Accommodation Style',
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
-            color: colors.onSurface,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          'Select your preferred stay atmosphere',
-          style: TextStyle(fontSize: 11.5, color: colors.onSurfaceVariant),
-        ),
-        const SizedBox(height: 10),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: AccommodationType.values.map((type) {
-            final isSelected = _selectedAccommodationType == type;
-            return _buildSelectableChip(
-              label: type.label,
-              selected: isSelected,
-              colors: colors,
-              onTap: () => setState(() => _selectedAccommodationType = type),
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
-
-  // 9. Must-Visit Stops (Optional)
-  Widget _buildSectionMustVisitPlaces(HelaColorPalette colors) {
-    final totalSelected =
-        _selectedDestinationIds.length + _customMustVisitStops.length;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Must-Visit Places (Optional)',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: colors.onSurface,
-                    ),
-                  ),
-                  Text(
-                    'Pin places you definitely want AI to include in your route',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: colors.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(
-                color: colors.secondaryContainer.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(999),
-              ),
-              child: Text(
-                totalSelected == 0 ? 'AI Chooses' : '$totalSelected Pinned',
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  color: colors.primary,
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            ...PlaceService.curatedSriLankaPlaces.map((place) {
-              final isSelected = _selectedDestinationIds.contains(
-                place.sourceId,
-              );
-              return _buildSelectableChip(
-                label: place.name,
-                selected: isSelected,
-                colors: colors,
-                icon: Icons.place_rounded,
-                onTap: () {
-                  setState(() {
-                    if (isSelected) {
-                      _selectedDestinationIds.remove(place.sourceId);
-                    } else {
-                      _selectedDestinationIds.add(place.sourceId);
-                    }
-                  });
-                },
-              );
-            }),
-            ..._customMustVisitStops.map((stop) {
-              return InputChip(
-                label: Text(
-                  stop,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-                selected: true,
-                selectedColor: colors.primary,
-                deleteIconColor: Colors.white,
-                onDeleted: () {
-                  setState(() => _customMustVisitStops.remove(stop));
-                },
-              );
-            }),
-          ],
-        ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _customStopController,
-                textInputAction: TextInputAction.done,
-                onSubmitted: (_) => _addCustomMustVisitStop(),
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: colors.onSurface,
-                ),
-                decoration: InputDecoration(
-                  hintText: 'Add custom stop (e.g. Jaffna, Arugam Bay)',
-                  hintStyle: TextStyle(
-                    fontSize: 12,
-                    color: colors.onSurfaceVariant,
-                  ),
-                  isDense: true,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 11,
-                  ),
-                  filled: true,
-                  fillColor: colors.cardBackground,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: colors.architecturalBorder),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: colors.architecturalBorder),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            SizedBox(
-              height: 40,
-              child: FilledButton.tonalIcon(
-                onPressed: _addCustomMustVisitStop,
-                icon: const Icon(Icons.add_location_alt_rounded, size: 17),
-                label: const Text('Add'),
-                style: FilledButton.styleFrom(
-                  backgroundColor: colors.secondaryContainer,
-                  foregroundColor: colors.primary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  // 10. Dietary, Accessibility & Special Requests
-  Widget _buildSectionConstraintsAndNotes(HelaColorPalette colors) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Dietary, Accessibility & AI Notes',
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
-            color: colors.onSurface,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          'Optional guardrails so DeepSeek AI avoids unsuitable stops or meals',
-          style: TextStyle(fontSize: 11.5, color: colors.onSurfaceVariant),
-        ),
-        const SizedBox(height: 10),
-        Text(
-          'DIETARY NEEDS',
-          style: TextStyle(
-            fontSize: 10.5,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 0.6,
-            color: colors.onSurfaceVariant,
-          ),
-        ),
-        const SizedBox(height: 6),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: _dietaryOptions.map((item) {
-            final selected = _selectedDietary.contains(item);
-            return _buildSelectableChip(
-              label: item,
-              selected: selected,
-              colors: colors,
-              onTap: () {
-                setState(() {
-                  if (selected) {
-                    _selectedDietary.remove(item);
-                  } else {
-                    _selectedDietary.add(item);
-                  }
-                });
-              },
-            );
-          }).toList(),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          'MOBILITY & COMFORT',
-          style: TextStyle(
-            fontSize: 10.5,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 0.6,
-            color: colors.onSurfaceVariant,
-          ),
-        ),
-        const SizedBox(height: 6),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: _accessibilityOptions.map((item) {
-            final selected = _selectedAccessibility.contains(item);
-            return _buildSelectableChip(
-              label: item,
-              selected: selected,
-              colors: colors,
-              onTap: () {
-                setState(() {
-                  if (selected) {
-                    _selectedAccessibility.remove(item);
-                  } else {
-                    _selectedAccessibility.add(item);
-                  }
-                });
-              },
-            );
-          }).toList(),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          'SPECIAL REQUESTS / MUST-DOS & AVOIDS',
-          style: TextStyle(
-            fontSize: 10.5,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 0.6,
-            color: colors.onSurfaceVariant,
-          ),
-        ),
-        const SizedBox(height: 6),
-        TextField(
-          controller: _extraNotesController,
-          maxLines: 3,
-          onChanged: (_) => setState(() {}),
-          style: TextStyle(fontSize: 13, color: colors.onSurface),
-          decoration: InputDecoration(
-            hintText:
-                'e.g., Sunrise climb at Pidurangala, celebrating an anniversary, avoid crowded tourist traps...',
-            hintStyle: TextStyle(fontSize: 12, color: colors.onSurfaceVariant),
-            filled: true,
-            fillColor: colors.cardBackground,
-            contentPadding: const EdgeInsets.all(12),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(color: colors.architecturalBorder),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(color: colors.architecturalBorder),
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 6,
-          runSpacing: 6,
-          children: _quickPromptChips.map((chip) {
-            final current = _extraNotesController.text;
-            final alreadyAdded = current.contains(chip);
-            return ActionChip(
-              label: Text(
-                alreadyAdded ? '✓ $chip' : '+ $chip',
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: alreadyAdded
-                      ? colors.primary
-                      : colors.onSurfaceVariant,
-                ),
-              ),
-              backgroundColor: alreadyAdded
-                  ? colors.secondaryContainer.withValues(alpha: 0.6)
-                  : colors.surfaceContainer,
-              side: BorderSide(color: colors.architecturalBorder),
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              visualDensity: VisualDensity.compact,
-              onPressed: () {
-                setState(() {
-                  if (alreadyAdded) return;
-                  final trimmed = _extraNotesController.text.trim();
-                  _extraNotesController.text = trimmed.isEmpty
-                      ? chip
-                      : '$trimmed, $chip';
-                });
-              },
-            );
-          }).toList(),
-        ),
       ],
     );
   }
@@ -2687,16 +2180,22 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
     required VoidCallback onTap,
     IconData? icon,
   }) {
+    final isDark = colors.brightness == Brightness.dark;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(999),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 160),
+        padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6.5),
         decoration: BoxDecoration(
-          color: selected ? colors.primary : colors.cardBackground,
+          color: selected
+              ? colors.primary
+              : (isDark ? colors.surfaceContainerLow : const Color(0xFFF5FAF8)),
           borderRadius: BorderRadius.circular(999),
           border: Border.all(
-            color: selected ? colors.primary : colors.architecturalBorder,
+            color: selected
+                ? colors.primary
+                : colors.architecturalBorder.withValues(alpha: 0.75),
           ),
         ),
         child: Row(
@@ -2705,8 +2204,8 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
             if (icon != null) ...[
               Icon(
                 icon,
-                size: 13.5,
-                color: selected ? Colors.white : colors.primary,
+                size: 13,
+                color: selected ? colors.onPrimary : colors.primary,
               ),
               const SizedBox(width: 5),
             ],
@@ -2715,17 +2214,11 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                 label,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 11.5,
                   fontWeight: FontWeight.w600,
-                  color: selected ? Colors.white : colors.onSurface,
+                  color: selected ? colors.onPrimary : colors.onSurface,
                 ),
               ),
-            ),
-            const SizedBox(width: 4),
-            Icon(
-              selected ? Icons.check_rounded : Icons.add_rounded,
-              size: 13.5,
-              color: selected ? Colors.white : colors.outlineVariant,
             ),
           ],
         ),
@@ -2733,164 +2226,110 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
     );
   }
 
-  // 11. Island Route Optimizer Card (Live AI Prompt Summary)
-  Widget _buildRouteOptimizerCard(HelaColorPalette colors) {
-    final pinnedCount =
-        _selectedDestinationIds.length + _customMustVisitStops.length;
-    final constraintsCount =
-        _selectedDietary.length + _selectedAccessibility.length;
-    final startShort = _startLocationController.text.trim().isEmpty
-        ? 'Origin'
-        : _startLocationController.text.trim();
-    final endShort = _returnToStart ? 'Round-Trip' : _effectiveEndLocation;
+  // ==========================================
+  // DOCKED MINIMAL GENERATE BAR (ALWAYS READY)
+  // ==========================================
+  Widget _buildStickyGenerateBar(HelaColorPalette colors) {
+    final isDark = colors.brightness == Brightness.dark;
+    final budgetTag = _selectedBudgetTier == 'custom'
+        ? '\$$_customDailyBudget/day'
+        : (_selectedBudgetTier[0].toUpperCase() +
+              _selectedBudgetTier.substring(1));
 
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            colors.surfaceContainerHigh,
-            colors.secondaryContainer.withValues(alpha: 0.4),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.architecturalBorder),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              color: colors.primary,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(Icons.hub_rounded, size: 20, color: Colors.white),
+        color: colors.cardBackground,
+        border: Border(
+          top: BorderSide(
+            color: isDark
+                ? colors.outlineVariant.withValues(alpha: 0.45)
+                : const Color(0xFFDCEEE8),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      HelaAppStateProvider.of(
-                        context,
-                      ).tr('island_route_optimizer'),
-                      style: TextStyle(
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w700,
-                        color: colors.primary,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 5,
-                        vertical: 1.5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: colors.tertiaryFixed,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        'ACTIVE',
-                        style: TextStyle(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w800,
-                          color: colors.onTertiaryFixed,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '$startShort → $endShort • $_tripDays days • ${_adults + _children} travellers • $_selectedTransportMode • ${_selectedAccommodationType.label}${pinnedCount > 0 ? ' • $pinnedCount pinned stops' : ''}${constraintsCount > 0 ? ' • $constraintsCount guardrails' : ''}',
-                  style: TextStyle(
-                    fontSize: 11.5,
-                    fontWeight: FontWeight.w600,
-                    color: colors.onSurface,
-                    height: 1.4,
-                  ),
-                ),
-              ],
-            ),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, -3),
           ),
         ],
       ),
-    );
-  }
-
-  // 9. Generate Button
-  Widget _buildGenerateButton(HelaColorPalette colors) {
-    return Column(
-      children: [
-        SizedBox(
-          width: double.infinity,
-          height: 52,
-          child: ElevatedButton(
-            onPressed: _triggerGenerate,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: colors.primary,
-              foregroundColor: Colors.white,
-              elevation: 4,
-              shadowColor: colors.primary.withValues(alpha: 0.35),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.auto_awesome_rounded,
-                  size: 19,
-                  color: colors.goldenAmber,
-                ),
-                const SizedBox(width: 8),
-                Flexible(
-                  child: Text(
-                    HelaAppStateProvider.of(
-                      context,
-                    ).tr('generate_my_itinerary'),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 14.5,
-                      fontWeight: FontWeight.w700,
+      child: Center(
+        heightFactor: 1.0,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 480),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.auto_awesome_rounded,
+                    size: 12,
+                    color: colors.primary,
+                  ),
+                  const SizedBox(width: 5),
+                  Flexible(
+                    child: Text(
+                      '$_tripDays Days · ${_adults + _children} Guests · $budgetTag · ${_selectedPace[0].toUpperCase()}${_selectedPace.substring(1)}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: colors.onSurfaceVariant,
+                      ),
                     ),
                   ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              SizedBox(
+                width: double.infinity,
+                height: 46,
+                child: ElevatedButton(
+                  onPressed: _triggerGenerate,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colors.primary,
+                    foregroundColor: colors.onPrimary,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.auto_awesome_rounded,
+                        size: 18,
+                        color: isDark ? colors.onPrimary : colors.goldenAmber,
+                      ),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          HelaAppStateProvider.of(
+                            context,
+                          ).tr('generate_my_itinerary'),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                            fontFamily: _fontFamily,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.verified_user_rounded,
-              size: 13,
-              color: colors.secondary,
-            ),
-            const SizedBox(width: 4),
-            Flexible(
-              child: Text(
-                HelaAppStateProvider.of(context).tr('free_instant_generation'),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 11, color: colors.onSurfaceVariant),
-              ),
-            ),
-          ],
-        ),
-      ],
+      ),
     );
   }
 }

@@ -5,8 +5,14 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:hela/services/google_place_rating_service.dart';
 
 import 'package:hela/state/app_state.dart';
 import 'package:hela/models/tour_plan.dart';
@@ -143,6 +149,55 @@ void main() {
     expect(find.text('Travel Interests'), findsOneWidget);
     expect(find.text('Pace & Travel Style'), findsOneWidget);
     expect(find.text('Generate My Itinerary ✨'), findsOneWidget);
+  });
+
+  testWidgets('TripPlannerPage quick templates and compact layout verification', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(720, 1480);
+    tester.view.devicePixelRatio = 2.0; // 360x740 logical pixels
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    final appState = HelaAppState();
+    await tester.pumpWidget(
+      HelaAppStateProvider(
+        state: appState,
+        child: MaterialApp(
+          theme: ThemeData.light(),
+          darkTheme: ThemeData.dark(),
+          themeMode: ThemeMode.dark,
+          home: const TripPlannerPage(),
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+
+    expect(find.text('Quick Templates'), findsOneWidget);
+    expect(find.text('5D Coast & Culture'), findsOneWidget);
+    expect(find.text('7D Tea & Heritage'), findsOneWidget);
+    expect(find.text('10D Classic Island'), findsOneWidget);
+    expect(
+      find.text('10 Days · 2 Guests · Comfort · Balanced'),
+      findsOneWidget,
+    );
+
+    final teaPreset = find.text('7D Tea & Heritage');
+    await tester.ensureVisible(teaPreset);
+    await tester.pump();
+    await tester.tap(teaPreset);
+    await tester.pump();
+    expect(find.text('7 Days · 2 Guests · Comfort · Balanced'), findsOneWidget);
+
+    // Scroll through optional section on compact viewport to confirm zero overflow
+    final optionalHeader = find.text('OPTIONAL FINE-TUNING');
+    await tester.ensureVisible(optionalHeader);
+    await tester.pump();
+    expect(optionalHeader, findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('FairRidePage smoke test', (WidgetTester tester) async {
@@ -537,6 +592,62 @@ void main() {
     expect(find.byType(TextField), findsOneWidget);
     expect(find.text('Places to go, things to do, hotels...'), findsOneWidget);
   });
+
+  testWidgets(
+    'ExplorePage destination card displays real-time Google live rating top-left',
+    (WidgetTester tester) async {
+      _ignoreOverflow();
+      GooglePlaceRatingService.clearMemoryCache();
+      SharedPreferences.setMockInitialValues({});
+
+      final mockClient = MockClient((request) async {
+        final bodyStr = request.body;
+        if (bodyStr.contains('Unawatuna Beach')) {
+          return http.Response(
+            jsonEncode({
+              'places': [
+                {
+                  'displayName': {'text': 'Unawatuna Beach'},
+                  'rating': 4.5,
+                  'userRatingCount': 11840,
+                },
+              ],
+            }),
+            200,
+          );
+        }
+        if (bodyStr.contains('Mirissa Beach')) {
+          return http.Response(
+            jsonEncode({
+              'places': [
+                {
+                  'displayName': {'text': 'Mirissa Beach'},
+                  'rating': 4.6,
+                  'userRatingCount': 2530,
+                },
+              ],
+            }),
+            200,
+          );
+        }
+        return http.Response(jsonEncode({'places': []}), 200);
+      });
+
+      final ratingService = GooglePlaceRatingService(
+        client: mockClient,
+        googlePlacesApiKey: 'AIzaMockLiveKey',
+      );
+
+      await tester.pumpWidget(
+        _wrapWithState(ExplorePage(ratingService: ratingService)),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Unawatuna Beach'), findsOneWidget);
+      expect(find.text('4.5 • 11.8k'), findsOneWidget);
+      expect(find.text('4.6 • 2.5k'), findsOneWidget);
+    },
+  );
 
   testWidgets('ItineraryDetailsPage smoke test and stop rendering', (
     WidgetTester tester,
