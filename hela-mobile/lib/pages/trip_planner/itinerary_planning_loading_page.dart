@@ -47,7 +47,13 @@ class ItineraryPlanningLoadingPage extends StatefulWidget {
     this.adults = 2,
     this.children = 0,
     this.budgetTier = 'comfort',
-    this.interests = const {'Beaches', 'Nature', 'Culture', 'Hikes & Adventure', 'Authentic Food'},
+    this.interests = const {
+      'Beaches',
+      'Nature',
+      'Culture',
+      'Hikes & Adventure',
+      'Authentic Food',
+    },
     this.pace = 'balanced',
     this.accommodationType = AccommodationType.noPreference,
     this.transportMode = 'Private AC Car + Chauffeur',
@@ -64,7 +70,8 @@ class ItineraryPlanningLoadingPage extends StatefulWidget {
 }
 
 class _ItineraryPlanningLoadingPageState
-    extends State<ItineraryPlanningLoadingPage> with TickerProviderStateMixin {
+    extends State<ItineraryPlanningLoadingPage>
+    with TickerProviderStateMixin {
   // Flight arc animation (dot moving from Coast to Highlands)
   late final AnimationController _flightController;
 
@@ -83,7 +90,7 @@ class _ItineraryPlanningLoadingPageState
   Timer? _delayTimer;
 
   static const List<String> _planningSteps = [
-    'CONNECTING TO GOOGLE GEMINI AI PLANNER...',
+    'CONNECTING TO DEEPSEEK AI PLANNER...',
     'ANALYZING MONSOON WEATHER & OCEAN TIDES...',
     'CURATING SCENIC ROUTES & HIDDEN GEMS...',
     'MATCHING STAYS TO YOUR BUDGET & PACE...',
@@ -173,7 +180,9 @@ class _ItineraryPlanningLoadingPageState
         mapped.add(TravelInterest.beaches);
       } else if (lower.contains('wildlife') || lower.contains('safari')) {
         mapped.add(TravelInterest.wildlife);
-      } else if (lower.contains('culture') || lower.contains('heritage') || lower.contains('ruin')) {
+      } else if (lower.contains('culture') ||
+          lower.contains('heritage') ||
+          lower.contains('ruin')) {
         mapped.add(TravelInterest.culture);
       } else if (lower.contains('hike') || lower.contains('adventure')) {
         mapped.add(TravelInterest.hiking);
@@ -188,7 +197,9 @@ class _ItineraryPlanningLoadingPageState
         mapped.add(TravelInterest.nature);
       }
     }
-    return mapped.isNotEmpty ? mapped : {TravelInterest.nature, TravelInterest.culture};
+    return mapped.isNotEmpty
+        ? mapped
+        : {TravelInterest.nature, TravelInterest.culture};
   }
 
   void _startGenerationPipeline() async {
@@ -205,7 +216,9 @@ class _ItineraryPlanningLoadingPageState
         }
       }
       if (widget.interests.isNotEmpty) {
-        notesBuffer.add('Preferred experiences: ${widget.interests.join(", ")}');
+        notesBuffer.add(
+          'Preferred experiences: ${widget.interests.join(", ")}',
+        );
       }
       if (widget.extraNotes.trim().isNotEmpty) {
         notesBuffer.add(widget.extraNotes.trim());
@@ -237,9 +250,9 @@ class _ItineraryPlanningLoadingPageState
             children: widget.children,
             preferredLanguage: preferredLang,
           )
-          .timeout(const Duration(seconds: 80));
+          .timeout(const Duration(seconds: 95));
     } catch (e) {
-      debugPrint('[TripPlannerLoading] Gemini generation error: $e');
+      debugPrint('[TripPlannerLoading] AI generation error: $e');
     }
 
     _generatedPlan = aiTourPlan;
@@ -263,20 +276,23 @@ class _ItineraryPlanningLoadingPageState
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
             ItineraryDetailsPage(
-          startLocation: widget.startLocation,
-          startDate: widget.startDate,
-          endDate: widget.endDate,
-          adults: widget.adults,
-          children: widget.children,
-          budgetTier: widget.budgetTier,
-          interests: widget.interests,
-          pace: widget.pace,
-          extraNotes: widget.extraNotes,
-          aiTourPlan: _generatedPlan,
-        ),
+              startLocation: widget.startLocation,
+              startDate: widget.startDate,
+              endDate: widget.endDate,
+              adults: widget.adults,
+              children: widget.children,
+              budgetTier: widget.budgetTier,
+              interests: widget.interests,
+              pace: widget.pace,
+              extraNotes: widget.extraNotes,
+              aiTourPlan: _generatedPlan,
+            ),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(
-            opacity: CurvedAnimation(parent: animation, curve: Curves.easeInOut),
+            opacity: CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeInOut,
+            ),
             child: child,
           );
         },
@@ -309,11 +325,7 @@ class _ItineraryPlanningLoadingPageState
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFEAF5F3),
-              Color(0xFFDEF0EC),
-              Color(0xFFD6EAE5),
-            ],
+            colors: [Color(0xFFEAF5F3), Color(0xFFDEF0EC), Color(0xFFD6EAE5)],
           ),
         ),
         child: SafeArea(
@@ -444,10 +456,7 @@ class _ItineraryPlanningLoadingPageState
       decoration: BoxDecoration(
         color: const Color(0xFFC7E5DF).withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(26),
-        border: Border.all(
-          color: const Color(0xFFB0DBD3),
-          width: 1.2,
-        ),
+        border: Border.all(color: const Color(0xFFB0DBD3), width: 1.2),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFF0B5D56).withValues(alpha: 0.06),
@@ -477,9 +486,7 @@ class _ItineraryPlanningLoadingPageState
             ),
 
             // Landscape Custom Painter (Hills, Sigiriya Silhouette, Palm trees)
-            CustomPaint(
-              painter: _IslandLandscapePainter(),
-            ),
+            CustomPaint(painter: _IslandLandscapePainter()),
 
             // Animated Route Trajectory Arc
             AnimatedBuilder(
@@ -511,7 +518,10 @@ class _ItineraryPlanningLoadingPageState
                   ),
                   const SizedBox(height: 4),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 7,
+                      vertical: 2.5,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.85),
                       borderRadius: BorderRadius.circular(6),
@@ -556,7 +566,9 @@ class _ItineraryPlanningLoadingPageState
                             height: 24 * scale,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: const Color(0xFFF59E0B).withValues(alpha: 0.22),
+                              color: const Color(
+                                0xFFF59E0B,
+                              ).withValues(alpha: 0.22),
                             ),
                           ),
                           Container(
@@ -581,7 +593,10 @@ class _ItineraryPlanningLoadingPageState
                   ),
                   const SizedBox(height: 6),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 7,
+                      vertical: 2.5,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.85),
                       borderRadius: BorderRadius.circular(6),
@@ -657,8 +672,10 @@ class _ItineraryPlanningLoadingPageState
           children: List.generate(3, (index) {
             final offset = index * 0.28;
             final progress = (val - offset) % 1.0;
-            final opacity = 0.3 + (math.sin(progress * math.pi) * 0.7).clamp(0.0, 0.7);
-            final scale = 0.8 + (math.sin(progress * math.pi) * 0.4).clamp(0.0, 0.4);
+            final opacity =
+                0.3 + (math.sin(progress * math.pi) * 0.7).clamp(0.0, 0.7);
+            final scale =
+                0.8 + (math.sin(progress * math.pi) * 0.4).clamp(0.0, 0.4);
 
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -869,7 +886,10 @@ class _FlightTrajectoryPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final p0 = Offset(size.width * 0.17, size.height * 0.72); // Coast
     final p2 = Offset(size.width * 0.82, size.height * 0.28); // Highlands
-    final p1 = Offset(size.width * 0.45, size.height * 0.05); // High apex above rock
+    final p1 = Offset(
+      size.width * 0.45,
+      size.height * 0.05,
+    ); // High apex above rock
 
     // Construct Quadratic Bézier Arc
     final path = Path()
@@ -886,8 +906,10 @@ class _FlightTrajectoryPainter extends CustomPainter {
 
     // Calculate Point along the Bézier curve for the traveling beacon
     final t = progress;
-    final bx = (1 - t) * (1 - t) * p0.dx + 2 * (1 - t) * t * p1.dx + t * t * p2.dx;
-    final by = (1 - t) * (1 - t) * p0.dy + 2 * (1 - t) * t * p1.dy + t * t * p2.dy;
+    final bx =
+        (1 - t) * (1 - t) * p0.dx + 2 * (1 - t) * t * p1.dx + t * t * p2.dx;
+    final by =
+        (1 - t) * (1 - t) * p0.dy + 2 * (1 - t) * t * p1.dy + t * t * p2.dy;
     final beaconPoint = Offset(bx, by);
 
     // Draw Traveling Glowing Beacon

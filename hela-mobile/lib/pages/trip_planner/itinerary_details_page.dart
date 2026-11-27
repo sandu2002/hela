@@ -35,7 +35,13 @@ class ItineraryDetailsPage extends StatefulWidget {
     this.adults = 2,
     this.children = 0,
     this.budgetTier = 'comfort',
-    this.interests = const {'Beaches', 'Nature', 'Culture', 'Hikes & Adventure', 'Authentic Food'},
+    this.interests = const {
+      'Beaches',
+      'Nature',
+      'Culture',
+      'Hikes & Adventure',
+      'Authentic Food',
+    },
     this.pace = 'balanced',
     this.extraNotes = '',
     this.aiTourPlan,
@@ -53,8 +59,18 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
   final List<ChatTurn> _geminiCustomizationHistory = [];
 
   static const List<String> _monthNames = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
   ];
 
   @override
@@ -78,15 +94,18 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
       final raw = prefs.getString(_chatStorageKey);
       if (raw == null || raw.isEmpty || !mounted) return;
       final list = jsonDecode(raw) as List<dynamic>;
-      final restored = list.map((item) {
-        final m = item as Map<String, dynamic>;
-        return ChatMessage(
-          id: m['id']?.toString() ?? '',
-          content: m['content']?.toString() ?? '',
-          isUser: m['isUser'] == true,
-          timestamp: m['timestamp']?.toString() ?? '',
-        );
-      }).where((m) => m.content.isNotEmpty).toList();
+      final restored = list
+          .map((item) {
+            final m = item as Map<String, dynamic>;
+            return ChatMessage(
+              id: m['id']?.toString() ?? '',
+              content: m['content']?.toString() ?? '',
+              isUser: m['isUser'] == true,
+              timestamp: m['timestamp']?.toString() ?? '',
+            );
+          })
+          .where((m) => m.content.isNotEmpty)
+          .toList();
 
       if (restored.isNotEmpty && mounted) {
         setState(() {
@@ -108,12 +127,14 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
       final prefs = await SharedPreferences.getInstance();
       final encoded = jsonEncode(
         _customizationMessages
-            .map((m) => {
-                  'id': m.id,
-                  'content': m.content,
-                  'isUser': m.isUser,
-                  'timestamp': m.timestamp,
-                })
+            .map(
+              (m) => {
+                'id': m.id,
+                'content': m.content,
+                'isUser': m.isUser,
+                'timestamp': m.timestamp,
+              },
+            )
             .toList(),
       );
       await prefs.setString(_chatStorageKey, encoded);
@@ -138,12 +159,17 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
     final days = List.generate(_tripDays, (idx) {
       return ItineraryDay(
         dayNumber: idx + 1,
-        title: idx == 0 ? '${widget.startLocation} → Sri Lanka Highlights' : 'Day ${idx + 1} Exploration',
-        summary: 'Curated Sri Lanka journey tailored to ${widget.interests.join(", ")}',
+        title: idx == 0
+            ? '${widget.startLocation} → Sri Lanka Highlights'
+            : 'Day ${idx + 1} Exploration',
+        summary:
+            'Curated Sri Lanka journey tailored to ${widget.interests.join(", ")}',
         overnightStay: idx == 0 ? 'Kandy' : 'Ella',
         activities: [
           ItineraryActivity(
-            title: idx == 0 ? 'Departure from ${widget.startLocation}' : 'Morning Scenic Excursion',
+            title: idx == 0
+                ? 'Departure from ${widget.startLocation}'
+                : 'Morning Scenic Excursion',
             description: 'Explore highlights at a ${widget.pace} pace.',
             startTime: '08:30 AM',
             estimatedDuration: '2.5 hours',
@@ -156,7 +182,8 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
     return TourPlan(
       id: 'tour_${widget.startDate.millisecondsSinceEpoch}',
       title: 'Sri Lanka Bespoke Expedition',
-      summary: 'A $_tripDays-day journey starting from ${widget.startLocation}.',
+      summary:
+          'A $_tripDays-day journey starting from ${widget.startLocation}.',
       durationDays: _tripDays,
       days: days,
     );
@@ -178,11 +205,23 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
     return _days[safeIdx];
   }
 
+  bool get _isDeepSeekGenerated =>
+      _currentPlan?.dataSources.any(
+        (s) => s.toLowerCase().contains('deepseek'),
+      ) ??
+      false;
+
   bool get _isGeminiGenerated =>
       _currentPlan?.dataSources.any(
         (s) => s.toLowerCase().contains('gemini'),
       ) ??
       false;
+
+  String get _aiBadgeLabel {
+    if (_isDeepSeekGenerated) return 'DEEPSEEK AI PLAN';
+    if (_isGeminiGenerated) return 'GEMINI AI PLAN';
+    return 'AI CURATED PLAN';
+  }
 
   String _formatShortDate(int dayOffset) {
     final dt = widget.startDate.add(Duration(days: dayOffset));
@@ -361,7 +400,12 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
     );
   }
 
-  Widget _buildNetworkImage(String url, {double? width, double? height, BoxFit fit = BoxFit.cover}) {
+  Widget _buildNetworkImage(
+    String url, {
+    double? width,
+    double? height,
+    BoxFit fit = BoxFit.cover,
+  }) {
     return HelaNetworkImage(
       imageUrl: url,
       width: width,
@@ -372,7 +416,11 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
         height: height,
         color: const Color(0xFF0B5D56).withValues(alpha: 0.12),
         child: const Center(
-          child: Icon(Icons.landscape_rounded, color: Color(0xFF0B5D56), size: 28),
+          child: Icon(
+            Icons.landscape_rounded,
+            color: Color(0xFF0B5D56),
+            size: 28,
+          ),
         ),
       ),
     );
@@ -467,10 +515,18 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                 shape: BoxShape.circle,
                 border: Border.all(color: colors.architecturalBorder),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6, offset: const Offset(0, 2)),
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
                 ],
               ),
-              child: Icon(Icons.arrow_back_rounded, size: 20, color: colors.onSurface),
+              child: Icon(
+                Icons.arrow_back_rounded,
+                size: 20,
+                color: colors.onSurface,
+              ),
             ),
           ),
         ),
@@ -486,24 +542,43 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
       ),
       actions: [
         IconButton(
-          icon: Icon(Icons.share_rounded, size: 20, color: colors.onSurfaceVariant),
+          icon: Icon(
+            Icons.share_rounded,
+            size: 20,
+            color: colors.onSurfaceVariant,
+          ),
           onPressed: () {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Itinerary link copied to clipboard!')),
+              const SnackBar(
+                content: Text('Itinerary link copied to clipboard!'),
+              ),
             );
           },
         ),
         PopupMenuButton<String>(
-          icon: Icon(Icons.more_vert_rounded, size: 20, color: colors.onSurfaceVariant),
+          icon: Icon(
+            Icons.more_vert_rounded,
+            size: 20,
+            color: colors.onSurfaceVariant,
+          ),
           onSelected: (value) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Option selected: $value')),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('Option selected: $value')));
           },
           itemBuilder: (context) => [
-            const PopupMenuItem(value: 'pdf', child: Text('Export Itinerary as PDF')),
-            const PopupMenuItem(value: 'offline', child: Text('Download for Offline Use')),
-            const PopupMenuItem(value: 'guide', child: Text('Connect with Local Chauffeur')),
+            const PopupMenuItem(
+              value: 'pdf',
+              child: Text('Export Itinerary as PDF'),
+            ),
+            const PopupMenuItem(
+              value: 'offline',
+              child: Text('Download for Offline Use'),
+            ),
+            const PopupMenuItem(
+              value: 'guide',
+              child: Text('Connect with Local Chauffeur'),
+            ),
           ],
         ),
       ],
@@ -530,7 +605,11 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: colors.architecturalBorder),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 10, offset: const Offset(0, 3)),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
         ],
       ),
       child: Column(
@@ -542,7 +621,10 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
             children: [
               Flexible(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3.5),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 3.5,
+                  ),
                   decoration: BoxDecoration(
                     color: colors.secondaryContainer,
                     borderRadius: BorderRadius.circular(999),
@@ -550,11 +632,15 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.auto_awesome_rounded, size: 12.5, color: colors.primary),
+                      Icon(
+                        Icons.auto_awesome_rounded,
+                        size: 12.5,
+                        color: colors.primary,
+                      ),
                       const SizedBox(width: 4),
                       Flexible(
                         child: Text(
-                          _isGeminiGenerated ? 'GEMINI AI PLAN' : 'AI CURATED PLAN',
+                          _aiBadgeLabel,
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w800,
@@ -573,7 +659,10 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                 onTap: () => Navigator.pop(context),
                 borderRadius: BorderRadius.circular(8),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -609,7 +698,11 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
           const SizedBox(height: 4),
           Text(
             summary,
-            style: TextStyle(fontSize: 12.5, color: colors.onSurfaceVariant, height: 1.35),
+            style: TextStyle(
+              fontSize: 12.5,
+              color: colors.onSurfaceVariant,
+              height: 1.35,
+            ),
           ),
           const SizedBox(height: 12),
 
@@ -618,8 +711,16 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
             spacing: 6,
             runSpacing: 6,
             children: [
-              _buildBadgePill(Icons.calendar_month_rounded, '$_tripDays Days / $nights Nights', colors),
-              _buildBadgePill(Icons.group_rounded, '${widget.adults + widget.children} Travellers', colors),
+              _buildBadgePill(
+                Icons.calendar_month_rounded,
+                '$_tripDays Days / $nights Nights',
+                colors,
+              ),
+              _buildBadgePill(
+                Icons.group_rounded,
+                '${widget.adults + widget.children} Travellers',
+                colors,
+              ),
               _buildBadgePill(Icons.hotel_rounded, _budgetPriceBadge, colors),
             ],
           ),
@@ -629,7 +730,11 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.lightbulb_rounded, size: 16, color: colors.goldenAmber),
+              Icon(
+                Icons.lightbulb_rounded,
+                size: 16,
+                color: colors.goldenAmber,
+              ),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
@@ -664,7 +769,11 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
           const SizedBox(width: 4),
           Text(
             label,
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: colors.onSurface),
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: colors.onSurface,
+            ),
           ),
         ],
       ),
@@ -678,7 +787,9 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
     return Row(
       children: [
         _buildActionToolItem(
-          icon: _isSaved ? Icons.bookmark_rounded : Icons.bookmark_outline_rounded,
+          icon: _isSaved
+              ? Icons.bookmark_rounded
+              : Icons.bookmark_outline_rounded,
           label: 'Save',
           iconColor: _isSaved ? const Color(0xFFE11D48) : colors.primary,
           colors: colors,
@@ -692,7 +803,11 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
             }
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(_isSaved ? 'Itinerary bookmarked to your Saved Trips!' : 'Itinerary removed from Saved Trips.'),
+                content: Text(
+                  _isSaved
+                      ? 'Itinerary bookmarked to your Saved Trips!'
+                      : 'Itinerary removed from Saved Trips.',
+                ),
                 duration: const Duration(seconds: 1),
               ),
             );
@@ -706,7 +821,9 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
           colors: colors,
           onTap: () {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Itinerary share link copied to clipboard!')),
+              const SnackBar(
+                content: Text('Itinerary share link copied to clipboard!'),
+              ),
             );
           },
         ),
@@ -736,7 +853,10 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
           iconColor: colors.primary,
           colors: colors,
           onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const FairRidePage()));
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const FairRidePage()),
+            );
           },
         ),
       ],
@@ -761,7 +881,11 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: colors.architecturalBorder),
             boxShadow: [
-              BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 4, offset: const Offset(0, 1)),
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.02),
+                blurRadius: 4,
+                offset: const Offset(0, 1),
+              ),
             ],
           ),
           child: Column(
@@ -793,7 +917,9 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
             return {
               'day': 'Day ${d.dayNumber}',
               'date': _formatShortDate(idx),
-              'route': d.title.isNotEmpty ? d.title : (d.overnightStay ?? 'Sri Lanka Route'),
+              'route': d.title.isNotEmpty
+                  ? d.title
+                  : (d.overnightStay ?? 'Sri Lanka Route'),
             };
           })
         : List.generate(_tripDays, (idx) {
@@ -825,12 +951,17 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
               onTap: () => setState(() => _selectedDayIndex = idx),
               borderRadius: BorderRadius.circular(999),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: isSelected ? colors.primary : colors.cardBackground,
                   borderRadius: BorderRadius.circular(999),
                   border: Border.all(
-                    color: isSelected ? colors.primary : colors.architecturalBorder,
+                    color: isSelected
+                        ? colors.primary
+                        : colors.architecturalBorder,
                   ),
                   boxShadow: [
                     if (isSelected)
@@ -856,7 +987,9 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                       d['date']!,
                       style: TextStyle(
                         fontSize: 11,
-                        color: isSelected ? colors.secondaryContainer : colors.onSurfaceVariant,
+                        color: isSelected
+                            ? colors.secondaryContainer
+                            : colors.onSurfaceVariant,
                       ),
                     ),
                     const SizedBox(width: 5),
@@ -864,7 +997,9 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                       d['route']!,
                       style: TextStyle(
                         fontSize: 10.5,
-                        color: isSelected ? Colors.white.withValues(alpha: 0.9) : colors.onSurfaceVariant,
+                        color: isSelected
+                            ? Colors.white.withValues(alpha: 0.9)
+                            : colors.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -891,7 +1026,8 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
     final dayCostText = day?.estimatedDayCostUsd != null
         ? '~\$${day!.estimatedDayCostUsd!.round()}'
         : _budgetPriceBadge.split(' ').first;
-    final overnightText = (day?.overnightStay != null && day!.overnightStay!.isNotEmpty)
+    final overnightText =
+        (day?.overnightStay != null && day!.overnightStay!.isNotEmpty)
         ? day.overnightStay!
         : destination;
     final stopsCount = day?.activities.length ?? 4;
@@ -924,7 +1060,11 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: colors.architecturalBorder),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 2)),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Column(
@@ -936,7 +1076,11 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
               Expanded(
                 child: Row(
                   children: [
-                    Icon(Icons.alt_route_rounded, size: 19, color: colors.primary),
+                    Icon(
+                      Icons.alt_route_rounded,
+                      size: 19,
+                      color: colors.primary,
+                    ),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
@@ -960,10 +1104,18 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                   children: [
                     Text(
                       'Expand',
-                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: colors.primary),
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: colors.primary,
+                      ),
                     ),
                     const SizedBox(width: 2),
-                    Icon(Icons.open_in_full_rounded, size: 13, color: colors.primary),
+                    Icon(
+                      Icons.open_in_full_rounded,
+                      size: 13,
+                      color: colors.primary,
+                    ),
                   ],
                 ),
               ),
@@ -992,9 +1144,19 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Expanded(child: _buildRouteSpec('Overnight', overnightText, colors)),
-                Expanded(child: _buildRouteSpec('Est. Day Cost', dayCostText, colors)),
-                Expanded(child: _buildRouteSpec('Pace', widget.pace.toUpperCase(), colors)),
+                Expanded(
+                  child: _buildRouteSpec('Overnight', overnightText, colors),
+                ),
+                Expanded(
+                  child: _buildRouteSpec('Est. Day Cost', dayCostText, colors),
+                ),
+                Expanded(
+                  child: _buildRouteSpec(
+                    'Pace',
+                    widget.pace.toUpperCase(),
+                    colors,
+                  ),
+                ),
               ],
             ),
           ),
@@ -1008,12 +1170,20 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
       children: [
         Text(
           label.toUpperCase(),
-          style: TextStyle(fontSize: 9, fontWeight: FontWeight.w600, color: colors.onSurfaceVariant),
+          style: TextStyle(
+            fontSize: 9,
+            fontWeight: FontWeight.w600,
+            color: colors.onSurfaceVariant,
+          ),
         ),
         const SizedBox(height: 2),
         Text(
           value,
-          style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: colors.onSurface),
+          style: TextStyle(
+            fontSize: 11.5,
+            fontWeight: FontWeight.w700,
+            color: colors.onSurface,
+          ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           textAlign: TextAlign.center,
@@ -1036,7 +1206,9 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
         lower.contains('culinary')) {
       return 'Meal Estimate';
     }
-    if (lower.contains('unesco') || lower.contains('sigiriya') || lower.contains('ticket')) {
+    if (lower.contains('unesco') ||
+        lower.contains('sigiriya') ||
+        lower.contains('ticket')) {
       return 'UNESCO Official Ticket';
     }
     if (lower.contains('villa') ||
@@ -1060,7 +1232,9 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
       if (lower.contains('unesco') || lower.contains('sigiriya')) {
         return '~\$${cost.toStringAsFixed(0)} / adult (Official Rate)';
       }
-      if (lower.contains('meal') || lower.contains('lunch') || lower.contains('dinner')) {
+      if (lower.contains('meal') ||
+          lower.contains('lunch') ||
+          lower.contains('dinner')) {
         final low = (cost * 0.8).round();
         final high = (cost * 1.2).round();
         return 'Approx. \$$low - \$$high / person';
@@ -1073,7 +1247,9 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
   IconData _transitIconForMethod(String? method) {
     final lower = (method ?? '').toLowerCase();
     if (lower.contains('tuk')) return Icons.electric_rickshaw_rounded;
-    if (lower.contains('train') || lower.contains('rail')) return Icons.train_rounded;
+    if (lower.contains('train') || lower.contains('rail')) {
+      return Icons.train_rounded;
+    }
     if (lower.contains('walk')) return Icons.directions_walk_rounded;
     return Icons.directions_car_rounded;
   }
@@ -1085,7 +1261,9 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
     if (day != null && day.activities.isNotEmpty) {
       stops = List.generate(day.activities.length, (i) {
         final act = day.activities[i];
-        final nextAct = (i + 1 < day.activities.length) ? day.activities[i + 1] : null;
+        final nextAct = (i + 1 < day.activities.length)
+            ? day.activities[i + 1]
+            : null;
         String? transitMethod;
         String? transitDetail;
         if (nextAct != null) {
@@ -1099,7 +1277,8 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
               : 'Transfer to ${nextAct.title}';
         }
 
-        final isFeatured = act.tips.isNotEmpty ||
+        final isFeatured =
+            act.tips.isNotEmpty ||
             act.title.toLowerCase().contains('sigiriya') ||
             act.category.toLowerCase().contains('unesco') ||
             act.estimatedDuration.toLowerCase().contains('must-see');
@@ -1180,7 +1359,9 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
       ];
     }
 
-    final dayTitle = day?.title.isNotEmpty == true ? day!.title : 'Arrival to the Ancient Citadel';
+    final dayTitle = day?.title.isNotEmpty == true
+        ? day!.title
+        : 'Arrival to the Ancient Citadel';
     final daySubtitle = day?.summary.isNotEmpty == true
         ? '${day!.summary} • ${stops.length} Curated Stops'
         : '$dayTitle • ${stops.length} Curated Stops';
@@ -1197,12 +1378,19 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                 children: [
                   Text(
                     'Day ${day?.dayNumber ?? (_selectedDayIndex + 1)} Itinerary',
-                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: colors.onSurface),
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w800,
+                      color: colors.onSurface,
+                    ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     daySubtitle,
-                    style: TextStyle(fontSize: 11.5, color: colors.onSurfaceVariant),
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      color: colors.onSurfaceVariant,
+                    ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -1212,10 +1400,17 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
             const SizedBox(width: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(color: colors.surfaceContainer, borderRadius: BorderRadius.circular(999)),
+              decoration: BoxDecoration(
+                color: colors.surfaceContainer,
+                borderRadius: BorderRadius.circular(999),
+              ),
               child: Text(
                 _formatShortDate(_selectedDayIndex),
-                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: colors.primary),
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: colors.primary,
+                ),
               ),
             ),
           ],
@@ -1243,13 +1438,19 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                         width: 24,
                         height: 24,
                         decoration: BoxDecoration(
-                          color: isHighlight ? const Color(0xFF705900) : colors.primary,
+                          color: isHighlight
+                              ? const Color(0xFF705900)
+                              : colors.primary,
                           shape: BoxShape.circle,
                         ),
                         child: Center(
                           child: Text(
                             stop.number,
-                            style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
@@ -1277,7 +1478,9 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                           decoration: BoxDecoration(
                             color: colors.cardBackground,
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: colors.architecturalBorder),
+                            border: Border.all(
+                              color: colors.architecturalBorder,
+                            ),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withValues(alpha: 0.03),
@@ -1291,14 +1494,17 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                             children: [
                               // Time + Duration/Highlight Pill
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Row(
                                     children: [
                                       Icon(
                                         Icons.schedule_rounded,
                                         size: 14,
-                                        color: isHighlight ? const Color(0xFF705900) : colors.primary,
+                                        color: isHighlight
+                                            ? const Color(0xFF705900)
+                                            : colors.primary,
                                       ),
                                       const SizedBox(width: 4),
                                       Text(
@@ -1306,19 +1512,26 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                                         style: TextStyle(
                                           fontSize: 11.5,
                                           fontWeight: FontWeight.w700,
-                                          color: isHighlight ? const Color(0xFF705900) : colors.primary,
+                                          color: isHighlight
+                                              ? const Color(0xFF705900)
+                                              : colors.primary,
                                         ),
                                       ),
                                     ],
                                   ),
                                   Flexible(
                                     child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 9,
+                                        vertical: 3,
+                                      ),
                                       decoration: BoxDecoration(
                                         color: isHighlight
                                             ? const Color(0xFFFCE8C3)
                                             : colors.surfaceContainer,
-                                        borderRadius: BorderRadius.circular(999),
+                                        borderRadius: BorderRadius.circular(
+                                          999,
+                                        ),
                                       ),
                                       child: Text(
                                         stop.duration,
@@ -1383,7 +1596,8 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Icon(
                                         Icons.tips_and_updates_rounded,
@@ -1407,7 +1621,8 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                                                 text: stop.insiderTip!,
                                                 style: TextStyle(
                                                   fontSize: 11,
-                                                  color: colors.onSurfaceVariant,
+                                                  color:
+                                                      colors.onSurfaceVariant,
                                                   height: 1.35,
                                                 ),
                                               ),
@@ -1424,7 +1639,8 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
 
                               // Cost Row (Label left, Tinted Pill Badge right)
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Flexible(
                                     child: Text(
@@ -1438,11 +1654,16 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                                   const SizedBox(width: 8),
                                   Flexible(
                                     child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 5,
+                                      ),
                                       decoration: BoxDecoration(
                                         color: stop.isMealHighlight
                                             ? const Color(0xFFF5F1D8)
-                                            : (isDark ? colors.surfaceContainerLow : const Color(0xFFE2F3EE)),
+                                            : (isDark
+                                                  ? colors.surfaceContainerLow
+                                                  : const Color(0xFFE2F3EE)),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Text(
@@ -1468,22 +1689,33 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                         if (stop.transitMethod != null) ...[
                           const SizedBox(height: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 9,
+                            ),
                             decoration: BoxDecoration(
-                              color: isDark ? colors.surfaceContainerLow : const Color(0xFFF2FAF7),
+                              color: isDark
+                                  ? colors.surfaceContainerLow
+                                  : const Color(0xFFF2FAF7),
                               borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: colors.architecturalBorder),
+                              border: Border.all(
+                                color: colors.architecturalBorder,
+                              ),
                             ),
                             child: Row(
                               children: [
                                 Icon(
                                   _transitIconForMethod(stop.transitMethod),
                                   size: 16,
-                                  color: isHighlight ? const Color(0xFF705900) : colors.primary,
+                                  color: isHighlight
+                                      ? const Color(0xFF705900)
+                                      : colors.primary,
                                 ),
                                 const SizedBox(width: 8),
                                 ConstrainedBox(
-                                  constraints: const BoxConstraints(maxWidth: 135),
+                                  constraints: const BoxConstraints(
+                                    maxWidth: 135,
+                                  ),
                                   child: Text(
                                     '${stop.transitMethod}:',
                                     style: TextStyle(
@@ -1543,45 +1775,73 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
         children: [
           Row(
             children: [
-              Icon(Icons.tips_and_updates_rounded, size: 18, color: colors.primary),
+              Icon(
+                Icons.tips_and_updates_rounded,
+                size: 18,
+                color: colors.primary,
+              ),
               const SizedBox(width: 6),
               Text(
                 'AI Local Tips & Advisories',
-                style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: colors.onSurface),
+                style: TextStyle(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w700,
+                  color: colors.onSurface,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          ...tips.take(3).map(
+          ...tips
+              .take(3)
+              .map(
                 (tip) => Padding(
                   padding: const EdgeInsets.only(bottom: 5),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.check_circle_outline_rounded, size: 14, color: colors.primary),
+                      Icon(
+                        Icons.check_circle_outline_rounded,
+                        size: 14,
+                        color: colors.primary,
+                      ),
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
                           tip,
-                          style: TextStyle(fontSize: 11, color: colors.onSurfaceVariant, height: 1.35),
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: colors.onSurfaceVariant,
+                            height: 1.35,
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-          ...warnings.take(2).map(
+          ...warnings
+              .take(2)
+              .map(
                 (warn) => Padding(
                   padding: const EdgeInsets.only(top: 2),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.warning_amber_rounded, size: 14, color: colors.goldenAmber),
+                      Icon(
+                        Icons.warning_amber_rounded,
+                        size: 14,
+                        color: colors.goldenAmber,
+                      ),
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
                           warn,
-                          style: TextStyle(fontSize: 11, color: colors.onSurfaceVariant, height: 1.35),
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: colors.onSurfaceVariant,
+                            height: 1.35,
+                          ),
                         ),
                       ),
                     ],
@@ -1605,7 +1865,11 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
         ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(color: colors.primary.withValues(alpha: 0.25), blurRadius: 10, offset: const Offset(0, 3)),
+          BoxShadow(
+            color: colors.primary.withValues(alpha: 0.25),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
         ],
       ),
       child: Row(
@@ -1618,7 +1882,11 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
               color: colors.secondaryContainer,
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.smart_toy_rounded, size: 20, color: colors.onSecondaryContainer),
+            child: Icon(
+              Icons.smart_toy_rounded,
+              size: 20,
+              color: colors.onSecondaryContainer,
+            ),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -1627,18 +1895,29 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
               children: [
                 Text(
                   'Need custom changes to Day ${_selectedDayIndex + 1}?',
-                  style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: Colors.white),
+                  style: const TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Swap stops, adjust timings, or fine-tune stays live using Gemini AI.',
-                  style: TextStyle(fontSize: 11, color: colors.onPrimaryContainer, height: 1.3),
+                  'Swap stops, adjust timings, or fine-tune stays live using DeepSeek & Gemini AI.',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: colors.onPrimaryContainer,
+                    height: 1.3,
+                  ),
                 ),
                 const SizedBox(height: 10),
                 InkWell(
                   onTap: _openAiCustomizeSheet,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: colors.cardBackground,
                       borderRadius: BorderRadius.circular(8),
@@ -1646,13 +1925,21 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.auto_fix_high_rounded, size: 14, color: colors.primary),
+                        Icon(
+                          Icons.auto_fix_high_rounded,
+                          size: 14,
+                          color: colors.primary,
+                        ),
                         const SizedBox(width: 5),
                         Text(
                           _customizationMessages.isNotEmpty
                               ? 'Ask HELA to Adjust Day ${_selectedDayIndex + 1} (${_customizationMessages.length ~/ 2})'
                               : 'Ask HELA to Adjust Day ${_selectedDayIndex + 1}',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: colors.primary),
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: colors.primary,
+                          ),
                         ),
                       ],
                     ),
@@ -1686,30 +1973,52 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
               const SizedBox(width: 6),
               Text(
                 'HELA Fair-Price Assurance',
-                style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: colors.onSurface),
+                style: TextStyle(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w700,
+                  color: colors.onSurface,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 4),
           Text(
             'All transfers in this itinerary utilize government-vetted tourist chauffeurs and official meter pricing. No hidden fuel surcharges or surprise tourist markups.',
-            style: TextStyle(fontSize: 11, color: colors.onSurfaceVariant, height: 1.35),
+            style: TextStyle(
+              fontSize: 11,
+              color: colors.onSurfaceVariant,
+              height: 1.35,
+            ),
           ),
           const SizedBox(height: 10),
           Row(
             children: [
               Expanded(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                  decoration: BoxDecoration(color: colors.surfaceContainerLow, borderRadius: BorderRadius.circular(8)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colors.surfaceContainerLow,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                   child: Row(
                     children: [
-                      Icon(Icons.shield_rounded, size: 16, color: colors.primary),
+                      Icon(
+                        Icons.shield_rounded,
+                        size: 16,
+                        color: colors.primary,
+                      ),
                       const SizedBox(width: 5),
                       Expanded(
                         child: Text(
                           'SLTDA Tourist Board Registered',
-                          style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w600, color: colors.onSurface),
+                          style: TextStyle(
+                            fontSize: 9.5,
+                            fontWeight: FontWeight.w600,
+                            color: colors.onSurface,
+                          ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -1721,16 +2030,30 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
               const SizedBox(width: 8),
               Expanded(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                  decoration: BoxDecoration(color: colors.surfaceContainerLow, borderRadius: BorderRadius.circular(8)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colors.surfaceContainerLow,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                   child: Row(
                     children: [
-                      Icon(Icons.cancel_rounded, size: 16, color: colors.primary),
+                      Icon(
+                        Icons.cancel_rounded,
+                        size: 16,
+                        color: colors.primary,
+                      ),
                       const SizedBox(width: 5),
                       Expanded(
                         child: Text(
                           'Free cancellation up to 24h',
-                          style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w600, color: colors.onSurface),
+                          style: TextStyle(
+                            fontSize: 9.5,
+                            fontWeight: FontWeight.w600,
+                            color: colors.onSurface,
+                          ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -1779,14 +2102,19 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                   child: ElevatedButton(
                     onPressed: () {
                       final day = _activeDay;
-                      final routeTitle = day != null && day.activities.isNotEmpty
-                          ? day.activities.map((a) => a.title).take(3).join(' → ')
+                      final routeTitle =
+                          day != null && day.activities.isNotEmpty
+                          ? day.activities
+                                .map((a) => a.title)
+                                .take(3)
+                                .join(' → ')
                           : '${_getDayOrigin(_selectedDayIndex)} → ${_getDayDestination(_selectedDayIndex)}';
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => ActiveJourneyPage(
-                            dayNumber: day?.dayNumber ?? (_selectedDayIndex + 1),
+                            dayNumber:
+                                day?.dayNumber ?? (_selectedDayIndex + 1),
                             dateText: _formatFullDate(_selectedDayIndex),
                             routeTitle: routeTitle,
                             origin: _getDayOrigin(_selectedDayIndex),
@@ -1799,12 +2127,20 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                       backgroundColor: colors.primary,
                       foregroundColor: Colors.white,
                       elevation: 3,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(appState.tr('start_my_journey'), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                        Text(
+                          appState.tr('start_my_journey'),
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                         const SizedBox(width: 8),
                         const Icon(Icons.arrow_forward_rounded, size: 19),
                       ],
@@ -1815,12 +2151,19 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.download_for_offline_rounded, size: 13, color: colors.primary),
+                    Icon(
+                      Icons.download_for_offline_rounded,
+                      size: 13,
+                      color: colors.primary,
+                    ),
                     const SizedBox(width: 4),
                     Flexible(
                       child: Text(
                         'Turn-by-turn live navigation & offline mode included',
-                        style: TextStyle(fontSize: 10.5, color: colors.onSurfaceVariant),
+                        style: TextStyle(
+                          fontSize: 10.5,
+                          color: colors.onSurfaceVariant,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -2029,7 +2372,11 @@ class _AiCustomizeChatSheetState extends State<_AiCustomizeChatSheet> {
                         color: colors.secondaryContainer,
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(Icons.auto_awesome_rounded, color: colors.primary, size: 18),
+                      child: Icon(
+                        Icons.auto_awesome_rounded,
+                        color: colors.primary,
+                        size: 18,
+                      ),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
@@ -2046,9 +2393,12 @@ class _AiCustomizeChatSheetState extends State<_AiCustomizeChatSheet> {
                           ),
                           Text(
                             widget.geminiHistory.isEmpty
-                                ? 'Gemini AI remembers our chat history as we refine'
+                                ? 'DeepSeek AI remembers our chat history as we refine'
                                 : 'Memory active • ${widget.messages.length} messages saved',
-                            style: TextStyle(fontSize: 11, color: colors.onSurfaceVariant),
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: colors.onSurfaceVariant,
+                            ),
                           ),
                         ],
                       ),
@@ -2056,7 +2406,11 @@ class _AiCustomizeChatSheetState extends State<_AiCustomizeChatSheet> {
                     if (widget.messages.isNotEmpty)
                       IconButton(
                         tooltip: 'Clear Chat Memory',
-                        icon: Icon(Icons.delete_sweep_outlined, size: 20, color: colors.onSurfaceVariant),
+                        icon: Icon(
+                          Icons.delete_sweep_outlined,
+                          size: 20,
+                          color: colors.onSurfaceVariant,
+                        ),
                         onPressed: _isSending
                             ? null
                             : () async {
@@ -2068,7 +2422,10 @@ class _AiCustomizeChatSheetState extends State<_AiCustomizeChatSheet> {
                       onPressed: () => Navigator.pop(context),
                       child: Text(
                         'Done',
-                        style: TextStyle(fontWeight: FontWeight.w700, color: colors.primary),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: colors.primary,
+                        ),
                       ),
                     ),
                   ],
@@ -2092,7 +2449,11 @@ class _AiCustomizeChatSheetState extends State<_AiCustomizeChatSheet> {
                       ),
                       child: Text(
                         'Ayubowan! Tell me how to customize Day ${widget.focusedDayNumber} or any part of "${_activePlan.title}". I remember every previous change we make so you can follow up naturally.',
-                        style: TextStyle(fontSize: 12.5, height: 1.4, color: colors.onSurface),
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          height: 1.4,
+                          color: colors.onSurface,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -2114,7 +2475,10 @@ class _AiCustomizeChatSheetState extends State<_AiCustomizeChatSheet> {
                           alignment: Alignment.centerRight,
                           child: Container(
                             margin: const EdgeInsets.only(bottom: 10, left: 48),
-                            padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 13,
+                              vertical: 10,
+                            ),
                             decoration: BoxDecoration(
                               color: colors.primary,
                               borderRadius: const BorderRadius.only(
@@ -2129,7 +2493,10 @@ class _AiCustomizeChatSheetState extends State<_AiCustomizeChatSheet> {
                               children: [
                                 Text(
                                   msg.content,
-                                  style: const TextStyle(color: Colors.white, fontSize: 13),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 13,
+                                  ),
                                 ),
                                 const SizedBox(height: 3),
                                 Text(
@@ -2158,7 +2525,9 @@ class _AiCustomizeChatSheetState extends State<_AiCustomizeChatSheet> {
                               bottomRight: Radius.circular(16),
                               bottomLeft: Radius.circular(4),
                             ),
-                            border: Border.all(color: colors.architecturalBorder),
+                            border: Border.all(
+                              color: colors.architecturalBorder,
+                            ),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -2166,7 +2535,11 @@ class _AiCustomizeChatSheetState extends State<_AiCustomizeChatSheet> {
                               Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(Icons.check_circle_rounded, size: 13, color: colors.primary),
+                                  Icon(
+                                    Icons.check_circle_rounded,
+                                    size: 13,
+                                    color: colors.primary,
+                                  ),
                                   const SizedBox(width: 4),
                                   Text(
                                     msg.updatedPlan != null
@@ -2183,12 +2556,19 @@ class _AiCustomizeChatSheetState extends State<_AiCustomizeChatSheet> {
                               const SizedBox(height: 5),
                               Text(
                                 msg.content,
-                                style: TextStyle(fontSize: 12.5, height: 1.35, color: colors.onSurface),
+                                style: TextStyle(
+                                  fontSize: 12.5,
+                                  height: 1.35,
+                                  color: colors.onSurface,
+                                ),
                               ),
                               const SizedBox(height: 3),
                               Text(
                                 msg.timestamp,
-                                style: TextStyle(fontSize: 9.5, color: colors.onSurfaceVariant),
+                                style: TextStyle(
+                                  fontSize: 9.5,
+                                  color: colors.onSurfaceVariant,
+                                ),
                               ),
                             ],
                           ),
@@ -2204,12 +2584,18 @@ class _AiCustomizeChatSheetState extends State<_AiCustomizeChatSheet> {
                             SizedBox(
                               width: 14,
                               height: 14,
-                              child: CircularProgressIndicator(strokeWidth: 2, color: colors.primary),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: colors.primary,
+                              ),
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'Gemini AI is updating your itinerary...',
-                              style: TextStyle(fontSize: 12, color: colors.onSurfaceVariant),
+                              'DeepSeek AI is updating your itinerary...',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: colors.onSurfaceVariant,
+                              ),
                             ),
                           ],
                         ),
@@ -2223,7 +2609,9 @@ class _AiCustomizeChatSheetState extends State<_AiCustomizeChatSheet> {
                 padding: const EdgeInsets.fromLTRB(14, 8, 10, 12),
                 decoration: BoxDecoration(
                   color: colors.surface,
-                  border: Border(top: BorderSide(color: colors.architecturalBorder)),
+                  border: Border(
+                    top: BorderSide(color: colors.architecturalBorder),
+                  ),
                 ),
                 child: Row(
                   children: [
@@ -2233,18 +2621,26 @@ class _AiCustomizeChatSheetState extends State<_AiCustomizeChatSheet> {
                         textInputAction: TextInputAction.send,
                         onSubmitted: _sendRequest,
                         decoration: InputDecoration(
-                          hintText: 'Ask to swap stops, change pace, or follow up...',
+                          hintText:
+                              'Ask to swap stops, change pace, or follow up...',
                           isDense: true,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 11,
+                          ),
                           filled: true,
                           fillColor: colors.cardBackground,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(24),
-                            borderSide: BorderSide(color: colors.architecturalBorder),
+                            borderSide: BorderSide(
+                              color: colors.architecturalBorder,
+                            ),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(24),
-                            borderSide: BorderSide(color: colors.architecturalBorder),
+                            borderSide: BorderSide(
+                              color: colors.architecturalBorder,
+                            ),
                           ),
                         ),
                       ),
@@ -2255,10 +2651,16 @@ class _AiCustomizeChatSheetState extends State<_AiCustomizeChatSheet> {
                       shape: const CircleBorder(),
                       child: InkWell(
                         customBorder: const CircleBorder(),
-                        onTap: _isSending ? null : () => _sendRequest(_inputController.text),
+                        onTap: _isSending
+                            ? null
+                            : () => _sendRequest(_inputController.text),
                         child: const Padding(
                           padding: EdgeInsets.all(11),
-                          child: Icon(Icons.send_rounded, size: 18, color: Colors.white),
+                          child: Icon(
+                            Icons.send_rounded,
+                            size: 18,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),

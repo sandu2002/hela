@@ -17,6 +17,45 @@ class ApiConfig {
   /// Endpoint that proxies Gemini on the backend.
   static const String tourGenerateUrl = '$helaBackendUrl/api/tours/generate';
 
+  /// Ask HELA chat endpoint on the backend (DeepSeek primary + Gemini fallback).
+  static const String askHelaChatUrl = '$helaBackendUrl/api/tours/chat';
+
+  // ── DeepSeek / OpenAI-Compatible Free Provider (Ask HELA primary) ───────
+  /// Optional DeepSeek / OpenRouter (`sk-or-...`) / NVIDIA NIM (`nvapi-...`) key
+  /// loaded via `--dart-define-from-file=dart_defines.json` for direct fallback
+  /// when [helaBackendUrl] is unreachable. Keep keys on the backend in production.
+  static const String deepseekApiKey = String.fromEnvironment(
+    'DEEPSEEK_API_KEY',
+  );
+
+  /// Optional OpenRouter API key alias (`OPENROUTER_API_KEY`).
+  static const String openRouterApiKey = String.fromEnvironment(
+    'OPENROUTER_API_KEY',
+  );
+
+  /// Optional custom OpenAI-compatible base URL (e.g. `https://openrouter.ai/api/v1`,
+  /// `https://integrate.api.nvidia.com/v1`, `https://api.deepseek.com/v1`,
+  /// or local Ollama `http://10.0.2.2:11434/v1`).
+  static const String deepseekBaseUrl = String.fromEnvironment(
+    'DEEPSEEK_BASE_URL',
+  );
+
+  /// Optional override model slug (e.g. `deepseek/deepseek-v4.1-flash`,
+  /// `openrouter/free`, `deepseek-ai/deepseek-r1`, `deepseek-chat`).
+  static const String deepseekModel = String.fromEnvironment('DEEPSEEK_MODEL');
+
+  /// OpenRouter free fallback slug used when DeepSeek paid slugs require credits.
+  static const String deepseekFallbackModel = String.fromEnvironment(
+    'DEEPSEEK_FALLBACK_MODEL',
+    defaultValue: 'openrouter/free',
+  );
+
+  /// Active API key for DeepSeek-compatible direct fallback, preferring
+  /// `DEEPSEEK_API_KEY` and falling back to `OPENROUTER_API_KEY`.
+  static String get effectiveDeepseekApiKey => deepseekApiKey.trim().isNotEmpty
+      ? deepseekApiKey.trim()
+      : openRouterApiKey.trim();
+
   // ── Verified Gemini model identifiers (server-side use only) ───────────
   /// Primary Gemini model — verified as of 2026-11.
   static const String geminiModel = 'gemini-3.5-flash-lite';

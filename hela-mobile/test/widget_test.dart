@@ -60,17 +60,15 @@ void _ignoreOverflow() {
 void main() {
   testWidgets('HelaHomePage smoke test', (WidgetTester tester) async {
     _ignoreOverflow();
-    await tester.pumpWidget(
-      const MaterialApp(
-        home: HelaHomePage(),
-      ),
-    );
+    await tester.pumpWidget(const MaterialApp(home: HelaHomePage()));
 
     expect(find.textContaining('Discover Sri Lanka'), findsOneWidget);
     expect(find.text('Featured Destinations'), findsOneWidget);
   });
 
-  testWidgets('HelaHomePage category filter updates tour cards when tapped', (WidgetTester tester) async {
+  testWidgets('HelaHomePage category filter updates tour cards when tapped', (
+    WidgetTester tester,
+  ) async {
     _ignoreOverflow();
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 2.0;
@@ -83,9 +81,7 @@ void main() {
     await tester.pumpWidget(
       HelaAppStateProvider(
         state: appState,
-        child: const MaterialApp(
-          home: HelaHomePage(),
-        ),
+        child: const MaterialApp(home: HelaHomePage()),
       ),
     );
     await tester.pump();
@@ -116,7 +112,10 @@ void main() {
     await tester.tap(wildlifeChip);
     await tester.pump(const Duration(milliseconds: 250));
 
-    expect(find.text('Minneriya Elephant Gathering & Yala Safaris'), findsOneWidget);
+    expect(
+      find.text('Minneriya Elephant Gathering & Yala Safaris'),
+      findsOneWidget,
+    );
     expect(find.text('Udawalawe National Park'), findsOneWidget);
 
     // Tap "Adventure" filter chip
@@ -125,15 +124,16 @@ void main() {
     await tester.tap(adventureChip);
     await tester.pump(const Duration(milliseconds: 250));
 
-    expect(find.text('Nine Arch Bridge & Flying Ravana Zipline'), findsOneWidget);
+    expect(
+      find.text('Nine Arch Bridge & Flying Ravana Zipline'),
+      findsOneWidget,
+    );
     expect(find.text('Kitulgala White-Water Rafting'), findsOneWidget);
   });
 
   testWidgets('TripPlannerPage smoke test', (WidgetTester tester) async {
     _ignoreOverflow();
-    await tester.pumpWidget(
-      _wrapWithState(const TripPlannerPage()),
-    );
+    await tester.pumpWidget(_wrapWithState(const TripPlannerPage()));
     await tester.pump();
 
     expect(find.text('Plan Your Sri Lankan Adventure'), findsOneWidget);
@@ -154,11 +154,7 @@ void main() {
       tester.view.resetDevicePixelRatio();
     });
 
-    await tester.pumpWidget(
-      const MaterialApp(
-        home: FairRidePage(),
-      ),
-    );
+    await tester.pumpWidget(const MaterialApp(home: FairRidePage()));
 
     expect(find.text('SOS EMERGENCY'), findsOneWidget);
     expect(find.text('Select Ceylon Vehicle'), findsOneWidget);
@@ -186,11 +182,7 @@ void main() {
 
   testWidgets('StaysPage smoke test', (WidgetTester tester) async {
     _ignoreOverflow();
-    await tester.pumpWidget(
-      const MaterialApp(
-        home: StaysPage(),
-      ),
-    );
+    await tester.pumpWidget(const MaterialApp(home: StaysPage()));
 
     expect(find.text('Sanctuaries & Stays'), findsOneWidget);
     expect(find.text('28 Eco-Havens'), findsOneWidget);
@@ -199,9 +191,7 @@ void main() {
 
   testWidgets('ProfilePage smoke test', (WidgetTester tester) async {
     _ignoreOverflow();
-    await tester.pumpWidget(
-      _wrapWithState(const ProfilePage()),
-    );
+    await tester.pumpWidget(_wrapWithState(const ProfilePage()));
     await tester.pumpAndSettle();
 
     expect(find.text('Profile'), findsAtLeastNWidgets(1));
@@ -211,9 +201,7 @@ void main() {
 
   testWidgets('CulturalGuidePage smoke test', (WidgetTester tester) async {
     _ignoreOverflow();
-    await tester.pumpWidget(
-      _wrapWithState(const CulturalGuidePage()),
-    );
+    await tester.pumpWidget(_wrapWithState(const CulturalGuidePage()));
 
     expect(find.text('CULTURAL HERITAGE'), findsOneWidget);
     expect(find.text('Voice of Ceylon'), findsOneWidget);
@@ -240,11 +228,7 @@ void main() {
 
   testWidgets('OnboardingPage smoke test', (WidgetTester tester) async {
     _ignoreOverflow();
-    await tester.pumpWidget(
-      _wrapWithState(
-        const OnboardingPage(),
-      ),
-    );
+    await tester.pumpWidget(_wrapWithState(const OnboardingPage()));
 
     expect(find.text('HELA'), findsWidgets);
     expect(find.text('Sri Lanka Travel Companion'), findsOneWidget);
@@ -319,7 +303,8 @@ void main() {
         home: Scaffold(
           body: ItineraryCard(
             title: 'Ancient Kingdoms & Sigiriya',
-            subtitle: 'UNESCO rock fortresses, cave monasteries and spice trails',
+            subtitle:
+                'UNESCO rock fortresses, cave monasteries and spice trails',
             durationTag: '4 Days · Cultural',
             routeName: 'Sacred Cultural Triangle',
             rating: 4.9,
@@ -341,12 +326,17 @@ void main() {
     expect(find.text('Sacred Cultural Triangle'), findsOneWidget);
     expect(find.text('4.9'), findsOneWidget);
     expect(find.text('(94)'), findsOneWidget);
-    expect(find.text('Sunset climb up Lion Rock to ancient sky palace ruins'), findsOneWidget);
+    expect(
+      find.text('Sunset climb up Lion Rock to ancient sky palace ruins'),
+      findsOneWidget,
+    );
     expect(find.textContaining(r'$295', findRichText: true), findsOneWidget);
     expect(find.text('View Route'), findsOneWidget);
   });
 
-  testWidgets('RealTimeCalendarCard component test', (WidgetTester tester) async {
+  testWidgets('RealTimeCalendarCard component test', (
+    WidgetTester tester,
+  ) async {
     _ignoreOverflow();
     final start = DateTime(2026, 10, 14);
     final end = DateTime(2026, 10, 21);
@@ -397,9 +387,7 @@ void main() {
 
   testWidgets('SignUpPage smoke test', (WidgetTester tester) async {
     _ignoreOverflow();
-    await tester.pumpWidget(
-      _wrapWithState(const SignUpPage()),
-    );
+    await tester.pumpWidget(_wrapWithState(const SignUpPage()));
 
     expect(find.text('HELA • CEYLON'), findsNothing);
     expect(find.byIcon(Icons.arrow_back_ios_new_rounded), findsWidgets);
@@ -424,9 +412,7 @@ void main() {
 
   testWidgets('EditProfilePage smoke test', (WidgetTester tester) async {
     _ignoreOverflow();
-    await tester.pumpWidget(
-      _wrapWithState(const EditProfilePage()),
-    );
+    await tester.pumpWidget(_wrapWithState(const EditProfilePage()));
 
     expect(find.text('Edit Profile'), findsOneWidget);
     expect(find.text('Explorer Identity'), findsOneWidget);
@@ -437,11 +423,11 @@ void main() {
     expect(find.text('Change Portrait'), findsOneWidget);
   });
 
-  testWidgets('ProfilePage tap Edit Profile navigates to EditProfilePage', (WidgetTester tester) async {
+  testWidgets('ProfilePage tap Edit Profile navigates to EditProfilePage', (
+    WidgetTester tester,
+  ) async {
     _ignoreOverflow();
-    await tester.pumpWidget(
-      _wrapWithState(const ProfilePage()),
-    );
+    await tester.pumpWidget(_wrapWithState(const ProfilePage()));
     await tester.pumpAndSettle();
 
     final editBtn = find.text('Edit Personal Profile');
@@ -466,26 +452,36 @@ void main() {
       imageUrl: 'https://example.com/bridge.jpg',
     );
 
-    expect(appState.isHavenSaved('Nine Arch Bridge & Demodara Tea Valley'), isFalse);
+    expect(
+      appState.isHavenSaved('Nine Arch Bridge & Demodara Tea Valley'),
+      isFalse,
+    );
     expect(appState.savedHavens.length, 0);
 
     // Save haven
     appState.toggleSaveHaven(testHaven);
-    expect(appState.isHavenSaved('Nine Arch Bridge & Demodara Tea Valley'), isTrue);
+    expect(
+      appState.isHavenSaved('Nine Arch Bridge & Demodara Tea Valley'),
+      isTrue,
+    );
     expect(appState.savedHavens.length, 1);
-    expect(appState.savedHavens.first.title, 'Nine Arch Bridge & Demodara Tea Valley');
+    expect(
+      appState.savedHavens.first.title,
+      'Nine Arch Bridge & Demodara Tea Valley',
+    );
 
     // Remove haven
     appState.toggleSaveHaven(testHaven);
-    expect(appState.isHavenSaved('Nine Arch Bridge & Demodara Tea Valley'), isFalse);
+    expect(
+      appState.isHavenSaved('Nine Arch Bridge & Demodara Tea Valley'),
+      isFalse,
+    );
     expect(appState.savedHavens.length, 0);
   });
 
   testWidgets('SavedPage empty state test', (WidgetTester tester) async {
     _ignoreOverflow();
-    await tester.pumpWidget(
-      _wrapWithState(const SavedPage()),
-    );
+    await tester.pumpWidget(_wrapWithState(const SavedPage()));
 
     expect(find.text('Saved Collection'), findsOneWidget);
     expect(find.text('Your Saved Sanctuary is Empty'), findsOneWidget);
@@ -494,7 +490,9 @@ void main() {
     expect(find.byType(HelaBottomNavBar), findsNothing);
   });
 
-  testWidgets('SavedPage with saved HavenCard renders card with details', (WidgetTester tester) async {
+  testWidgets('SavedPage with saved HavenCard renders card with details', (
+    WidgetTester tester,
+  ) async {
     _ignoreOverflow();
     final appState = HelaAppState();
     const testHaven = HavenItem(
@@ -523,11 +521,11 @@ void main() {
     expect(find.text('Explore'), findsAtLeastNWidgets(1));
   });
 
-  testWidgets('ExplorePage smoke test and search verification', (WidgetTester tester) async {
+  testWidgets('ExplorePage smoke test and search verification', (
+    WidgetTester tester,
+  ) async {
     _ignoreOverflow();
-    await tester.pumpWidget(
-      _wrapWithState(const ExplorePage()),
-    );
+    await tester.pumpWidget(_wrapWithState(const ExplorePage()));
     await tester.pump();
 
     expect(find.text('Explore'), findsAtLeastNWidgets(1));
@@ -540,7 +538,9 @@ void main() {
     expect(find.text('Places to go, things to do, hotels...'), findsOneWidget);
   });
 
-  testWidgets('ItineraryDetailsPage smoke test and stop rendering', (WidgetTester tester) async {
+  testWidgets('ItineraryDetailsPage smoke test and stop rendering', (
+    WidgetTester tester,
+  ) async {
     _ignoreOverflow();
     await tester.pumpWidget(
       _wrapWithState(
@@ -561,9 +561,15 @@ void main() {
     expect(find.text('Day 1 Route Overview'), findsOneWidget);
     expect(find.text('Day 1 Itinerary'), findsOneWidget);
     expect(find.text('Arrival & Tropical Welcome at CMB'), findsOneWidget);
-    expect(find.text('Traditional Rice & Curry Feast at Kurunegala'), findsOneWidget);
+    expect(
+      find.text('Traditional Rice & Curry Feast at Kurunegala'),
+      findsOneWidget,
+    );
     expect(find.text('Ascent of Sigiriya Lion Rock Citadel'), findsOneWidget);
-    expect(find.text('Boutique Heritage Villa Check-In & Dinner'), findsOneWidget);
+    expect(
+      find.text('Boutique Heritage Villa Check-In & Dinner'),
+      findsOneWidget,
+    );
     expect(find.text('HELA Fair-Price Assurance'), findsOneWidget);
     expect(find.text('Start My Journey'), findsOneWidget);
 
@@ -581,17 +587,20 @@ void main() {
     expect(find.text('GPS LIVE'), findsOneWidget);
   });
 
-  testWidgets('ActiveJourneyPage smoke test and stop checklist', (WidgetTester tester) async {
+  testWidgets('ActiveJourneyPage smoke test and stop checklist', (
+    WidgetTester tester,
+  ) async {
     _ignoreOverflow();
-    await tester.pumpWidget(
-      _wrapWithState(const ActiveJourneyPage()),
-    );
+    await tester.pumpWidget(_wrapWithState(const ActiveJourneyPage()));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 200));
 
     expect(find.text('Day 1 Live Journey'), findsOneWidget);
     expect(find.text('GPS LIVE'), findsOneWidget);
-    expect(find.text('In 1.4 km • Turn Right onto Central Link'), findsOneWidget);
+    expect(
+      find.text('In 1.4 km • Turn Right onto Central Link'),
+      findsOneWidget,
+    );
     expect(find.text('Chaminda Perera'), findsOneWidget);
     expect(find.text('CURRENT LEG 2 OF 4'), findsOneWidget);
     expect(find.text('Day 1 Timeline & Stops'), findsOneWidget);
@@ -611,9 +620,18 @@ void main() {
     expect(appState.tr('get_started'), 'Get Started');
 
     // Verify all 20 supported languages including Sinhala, Tamil, and RTL Arabic
-    expect(LocalizationService.supportedLanguages.any((l) => l.code == 'SI'), isTrue);
-    expect(LocalizationService.supportedLanguages.any((l) => l.code == 'TA'), isTrue);
-    expect(LocalizationService.supportedLanguages.any((l) => l.code == 'AR'), isTrue);
+    expect(
+      LocalizationService.supportedLanguages.any((l) => l.code == 'SI'),
+      isTrue,
+    );
+    expect(
+      LocalizationService.supportedLanguages.any((l) => l.code == 'TA'),
+      isTrue,
+    );
+    expect(
+      LocalizationService.supportedLanguages.any((l) => l.code == 'AR'),
+      isTrue,
+    );
     expect(LocalizationService.supportedLanguages.length, 20);
     expect(appState.isRtl, isFalse);
 
@@ -641,309 +659,320 @@ void main() {
     expect(appState.languageDisplayName, 'Russian');
   });
 
-  testWidgets('OnboardingPage language selector changes app language and updates UI', (WidgetTester tester) async {
-    _ignoreOverflow();
-    tester.view.physicalSize = const Size(1080, 2400);
-    tester.view.devicePixelRatio = 2.0;
-    addTearDown(() {
-      tester.view.resetPhysicalSize();
-      tester.view.resetDevicePixelRatio();
-    });
+  testWidgets(
+    'OnboardingPage language selector changes app language and updates UI',
+    (WidgetTester tester) async {
+      _ignoreOverflow();
+      tester.view.physicalSize = const Size(1080, 2400);
+      tester.view.devicePixelRatio = 2.0;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
 
-    final appState = HelaAppState();
-    await tester.pumpWidget(
-      HelaAppStateProvider(
-        state: appState,
-        child: const MaterialApp(
-          home: OnboardingPage(),
+      final appState = HelaAppState();
+      await tester.pumpWidget(
+        HelaAppStateProvider(
+          state: appState,
+          child: const MaterialApp(home: OnboardingPage()),
         ),
-      ),
-    );
-    await tester.pump();
+      );
+      await tester.pump();
 
-    // Verify initial language pill shows EN
-    expect(find.text('EN'), findsWidgets);
+      // Verify initial language pill shows EN
+      expect(find.text('EN'), findsWidgets);
 
-    // Tap the language selector pill
-    await tester.tap(find.text('EN').first);
-    await tester.pumpAndSettle();
+      // Tap the language selector pill
+      await tester.tap(find.text('EN').first);
+      await tester.pumpAndSettle();
 
-    // Modal bottom sheet appears with 'Select Language' and 20-language catalog
-    expect(find.text('Select Language'), findsOneWidget);
-    expect(find.text('Sinhala'), findsOneWidget);
-    expect(find.text('Tamil'), findsOneWidget);
+      // Modal bottom sheet appears with 'Select Language' and 20-language catalog
+      expect(find.text('Select Language'), findsOneWidget);
+      expect(find.text('Sinhala'), findsOneWidget);
+      expect(find.text('Tamil'), findsOneWidget);
 
-    // Filter to French using search and tap it
-    await tester.enterText(find.byType(TextField), 'French');
-    await tester.pumpAndSettle();
-    expect(find.text('Français'), findsOneWidget);
-    await tester.tap(find.text('Français'));
-    await tester.pumpAndSettle();
+      // Filter to French using search and tap it
+      await tester.enterText(find.byType(TextField), 'French');
+      await tester.pumpAndSettle();
+      expect(find.text('Français'), findsOneWidget);
+      await tester.tap(find.text('Français'));
+      await tester.pumpAndSettle();
 
-    // Verify app state language updated to FR
-    expect(appState.selectedLanguage, 'FR');
-    expect(find.text('FR'), findsWidgets);
-    expect(find.text('Commencer'), findsOneWidget);
-    expect(find.text('Continuer en invité'), findsOneWidget);
-  });
+      // Verify app state language updated to FR
+      expect(appState.selectedLanguage, 'FR');
+      expect(find.text('FR'), findsWidgets);
+      expect(find.text('Commencer'), findsOneWidget);
+      expect(find.text('Continuer en invité'), findsOneWidget);
+    },
+  );
 
-  testWidgets('OnboardingPage texts dynamically translate when language changes to German (DE)', (WidgetTester tester) async {
-    _ignoreOverflow();
-    tester.view.physicalSize = const Size(1080, 2400);
-    tester.view.devicePixelRatio = 2.0;
-    addTearDown(() {
-      tester.view.resetPhysicalSize();
-      tester.view.resetDevicePixelRatio();
-    });
+  testWidgets(
+    'OnboardingPage texts dynamically translate when language changes to German (DE)',
+    (WidgetTester tester) async {
+      _ignoreOverflow();
+      tester.view.physicalSize = const Size(1080, 2400);
+      tester.view.devicePixelRatio = 2.0;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
 
-    final appState = HelaAppState();
-    await tester.pumpWidget(
-      HelaAppStateProvider(
-        state: appState,
-        child: const MaterialApp(
-          home: OnboardingPage(),
+      final appState = HelaAppState();
+      await tester.pumpWidget(
+        HelaAppStateProvider(
+          state: appState,
+          child: const MaterialApp(home: OnboardingPage()),
         ),
-      ),
-    );
-    await tester.pump();
+      );
+      await tester.pump();
 
-    // English initially
-    expect(find.text('Get Started'), findsOneWidget);
-    expect(find.text('Continue as Guest'), findsOneWidget);
+      // English initially
+      expect(find.text('Get Started'), findsOneWidget);
+      expect(find.text('Continue as Guest'), findsOneWidget);
 
-    // Open language selector
-    await tester.tap(find.text('EN').first);
-    await tester.pumpAndSettle();
+      // Open language selector
+      await tester.tap(find.text('EN').first);
+      await tester.pumpAndSettle();
 
-    // Search for German and select it
-    await tester.enterText(find.byType(TextField), 'German');
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Deutsch'));
-    await tester.pumpAndSettle();
+      // Search for German and select it
+      await tester.enterText(find.byType(TextField), 'German');
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Deutsch'));
+      await tester.pumpAndSettle();
 
-    // Verify UI translated to German
-    expect(appState.selectedLanguage, 'DE');
-    expect(find.text('DE'), findsWidgets);
-    expect(find.text('Loslegen'), findsOneWidget);
-    expect(find.text('Als Gast fortfahren'), findsOneWidget);
-    expect(find.text('Sigiriya, Kulturelles Dreieck'), findsOneWidget);
-  });
+      // Verify UI translated to German
+      expect(appState.selectedLanguage, 'DE');
+      expect(find.text('DE'), findsWidgets);
+      expect(find.text('Loslegen'), findsOneWidget);
+      expect(find.text('Als Gast fortfahren'), findsOneWidget);
+      expect(find.text('Sigiriya, Kulturelles Dreieck'), findsOneWidget);
+    },
+  );
 
-  testWidgets('ProfilePage language setting displays current language and syncs updates with HelaAppState', (WidgetTester tester) async {
-    _ignoreOverflow();
-    tester.view.physicalSize = const Size(1080, 2400);
-    tester.view.devicePixelRatio = 2.0;
-    addTearDown(() {
-      tester.view.resetPhysicalSize();
-      tester.view.resetDevicePixelRatio();
-    });
+  testWidgets(
+    'ProfilePage language setting displays current language and syncs updates with HelaAppState',
+    (WidgetTester tester) async {
+      _ignoreOverflow();
+      tester.view.physicalSize = const Size(1080, 2400);
+      tester.view.devicePixelRatio = 2.0;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
 
-    final appState = HelaAppState();
-    appState.setLanguage('EN');
+      final appState = HelaAppState();
+      appState.setLanguage('EN');
 
-    await tester.pumpWidget(
-      HelaAppStateProvider(
-        state: appState,
-        child: const MaterialApp(
-          home: ProfilePage(),
+      await tester.pumpWidget(
+        HelaAppStateProvider(
+          state: appState,
+          child: const MaterialApp(home: ProfilePage()),
         ),
-      ),
-    );
-    await tester.pump();
+      );
+      await tester.pump();
 
-    // Initial language value should show English
-    expect(find.text('English'), findsOneWidget);
+      // Initial language value should show English
+      expect(find.text('English'), findsOneWidget);
 
-    // Scroll into view and tap Language tile to open language picker
-    await tester.ensureVisible(find.text('Language'));
-    await tester.tap(find.text('Language'));
-    await tester.pumpAndSettle();
+      // Scroll into view and tap Language tile to open language picker
+      await tester.ensureVisible(find.text('Language'));
+      await tester.tap(find.text('Language'));
+      await tester.pumpAndSettle();
 
-    // Check languages in bottom sheet: Sinhala and Tamil included
-    expect(find.text('Sinhala'), findsOneWidget);
-    expect(find.text('Tamil'), findsOneWidget);
+      // Check languages in bottom sheet: Sinhala and Tamil included
+      expect(find.text('Sinhala'), findsOneWidget);
+      expect(find.text('Tamil'), findsOneWidget);
 
-    // Search for German and tap it
-    await tester.enterText(find.byType(TextField), 'German');
-    await tester.pumpAndSettle();
-    expect(find.text('Deutsch'), findsOneWidget);
-    await tester.tap(find.text('Deutsch'));
-    await tester.pumpAndSettle();
+      // Search for German and tap it
+      await tester.enterText(find.byType(TextField), 'German');
+      await tester.pumpAndSettle();
+      expect(find.text('Deutsch'), findsOneWidget);
+      await tester.tap(find.text('Deutsch'));
+      await tester.pumpAndSettle();
 
-    // Verify appState is now DE and ProfilePage reflects it
-    expect(appState.selectedLanguage, 'DE');
-    expect(find.text('Deutsch'), findsOneWidget);
-  });
+      // Verify appState is now DE and ProfilePage reflects it
+      expect(appState.selectedLanguage, 'DE');
+      expect(find.text('Deutsch'), findsOneWidget);
+    },
+  );
 
-  testWidgets('OnboardingPage renders Continue as Guest with explore icon and sign-in option', (WidgetTester tester) async {
-    _ignoreOverflow();
-    tester.view.physicalSize = const Size(1080, 2400);
-    tester.view.devicePixelRatio = 2.0;
-    addTearDown(() {
-      tester.view.resetPhysicalSize();
-      tester.view.resetDevicePixelRatio();
-    });
+  testWidgets(
+    'OnboardingPage renders Continue as Guest with explore icon and sign-in option',
+    (WidgetTester tester) async {
+      _ignoreOverflow();
+      tester.view.physicalSize = const Size(1080, 2400);
+      tester.view.devicePixelRatio = 2.0;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
 
-    final appState = HelaAppState();
-    await tester.pumpWidget(
-      HelaAppStateProvider(
-        state: appState,
-        child: const MaterialApp(
-          home: OnboardingPage(),
+      final appState = HelaAppState();
+      await tester.pumpWidget(
+        HelaAppStateProvider(
+          state: appState,
+          child: const MaterialApp(home: OnboardingPage()),
         ),
-      ),
-    );
-    await tester.pump();
+      );
+      await tester.pump();
 
-    // Verify Continue as Guest button with explore icon
-    expect(find.text('Continue as Guest'), findsOneWidget);
-    expect(find.byIcon(Icons.explore_outlined), findsOneWidget);
+      // Verify Continue as Guest button with explore icon
+      expect(find.text('Continue as Guest'), findsOneWidget);
+      expect(find.byIcon(Icons.explore_outlined), findsOneWidget);
 
-    // Verify Ayubowan hospitality card at the bottom was removed
-    expect(find.text('Ayubowan! "May you live long."'), findsNothing);
-    expect(find.byIcon(Icons.wb_twilight_rounded), findsNothing);
-  });
+      // Verify Ayubowan hospitality card at the bottom was removed
+      expect(find.text('Ayubowan! "May you live long."'), findsNothing);
+      expect(find.byIcon(Icons.wb_twilight_rounded), findsNothing);
+    },
+  );
 
-  testWidgets('OnboardingPage Screen 2 renders highlight pills without tip card', (WidgetTester tester) async {
-    _ignoreOverflow();
-    tester.view.physicalSize = const Size(1080, 2400);
-    tester.view.devicePixelRatio = 2.0;
-    addTearDown(() {
-      tester.view.resetPhysicalSize();
-      tester.view.resetDevicePixelRatio();
-    });
+  testWidgets(
+    'OnboardingPage Screen 2 renders highlight pills without tip card',
+    (WidgetTester tester) async {
+      _ignoreOverflow();
+      tester.view.physicalSize = const Size(1080, 2400);
+      tester.view.devicePixelRatio = 2.0;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
 
-    final appState = HelaAppState();
-    await tester.pumpWidget(
-      HelaAppStateProvider(
-        state: appState,
-        child: const MaterialApp(
-          home: OnboardingPage(),
+      final appState = HelaAppState();
+      await tester.pumpWidget(
+        HelaAppStateProvider(
+          state: appState,
+          child: const MaterialApp(home: OnboardingPage()),
         ),
-      ),
-    );
-    await tester.pump();
+      );
+      await tester.pump();
 
-    // Navigate to slide 1 (Screen 2)
-    await tester.tap(find.text('Get Started'));
-    await tester.pumpAndSettle();
+      // Navigate to slide 1 (Screen 2)
+      await tester.tap(find.text('Get Started'));
+      await tester.pumpAndSettle();
 
-    // Verify Screen 2 headline
-    expect(find.text('Explore Every Corner'), findsOneWidget);
+      // Verify Screen 2 headline
+      expect(find.text('Explore Every Corner'), findsOneWidget);
 
-    // Verify Tip Card is removed
-    expect(find.text('Scenic Rail Tip'), findsNothing);
-    expect(
-      find.text('Reserve 1st or 2nd class observation carriage seats at least 30 days ahead during peak season for panoramic misty views.'),
-      findsNothing,
-    );
-
-    // Verify the 4 highlight pills are rendered
-    expect(find.text('Golden Coastlines'), findsOneWidget);
-    expect(find.text('Tea Country Peaks'), findsOneWidget);
-    expect(find.text('Yala Wildlife'), findsOneWidget);
-    expect(find.text('Ancient Temples'), findsOneWidget);
-    expect(find.byIcon(Icons.waves_rounded), findsOneWidget);
-    expect(find.byIcon(Icons.terrain_rounded), findsOneWidget);
-    expect(find.byIcon(Icons.pets_rounded), findsOneWidget);
-    expect(find.byIcon(Icons.temple_buddhist_rounded), findsOneWidget);
-  });
-
-  testWidgets('OnboardingPage Screen 3 renders stitch bento layout with 3/3 progress, showcase card and 3 bento cards', (WidgetTester tester) async {
-    _ignoreOverflow();
-    tester.view.physicalSize = const Size(1080, 2400);
-    tester.view.devicePixelRatio = 2.0;
-    addTearDown(() {
-      tester.view.resetPhysicalSize();
-      tester.view.resetDevicePixelRatio();
-    });
-
-    final appState = HelaAppState();
-    await tester.pumpWidget(
-      HelaAppStateProvider(
-        state: appState,
-        child: const MaterialApp(
-          home: OnboardingPage(),
+      // Verify Tip Card is removed
+      expect(find.text('Scenic Rail Tip'), findsNothing);
+      expect(
+        find.text(
+          'Reserve 1st or 2nd class observation carriage seats at least 30 days ahead during peak season for panoramic misty views.',
         ),
-      ),
-    );
-    await tester.pump();
+        findsNothing,
+      );
 
-    // Navigate to slide 2 (Screen 3)
-    await tester.tap(find.text('Get Started'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Continue'));
-    await tester.pumpAndSettle();
+      // Verify the 4 highlight pills are rendered
+      expect(find.text('Golden Coastlines'), findsOneWidget);
+      expect(find.text('Tea Country Peaks'), findsOneWidget);
+      expect(find.text('Yala Wildlife'), findsOneWidget);
+      expect(find.text('Ancient Temples'), findsOneWidget);
+      expect(find.byIcon(Icons.waves_rounded), findsOneWidget);
+      expect(find.byIcon(Icons.terrain_rounded), findsOneWidget);
+      expect(find.byIcon(Icons.pets_rounded), findsOneWidget);
+      expect(find.byIcon(Icons.temple_buddhist_rounded), findsOneWidget);
+    },
+  );
 
-    // Verify top progress indicator shows 3/3
-    expect(find.text('3/3'), findsOneWidget);
+  testWidgets(
+    'OnboardingPage Screen 3 renders stitch bento layout with 3/3 progress, showcase card and 3 bento cards',
+    (WidgetTester tester) async {
+      _ignoreOverflow();
+      tester.view.physicalSize = const Size(1080, 2400);
+      tester.view.devicePixelRatio = 2.0;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
 
-    // Verify top bar language selector is removed on Screen 3
-    expect(find.text('EN / සිංහල'), findsNothing);
-
-    // Verify visual showcase card tags
-    expect(find.text('Cultural Immersion • Kandy Heritage'), findsOneWidget);
-    expect(find.text('Live Folk Lore & Ola Leaf Tales'), findsNothing);
-    expect(find.text('4.98'), findsNothing);
-
-    // Verify headline and 3 bento cards with badges
-    expect(find.text('Your Personal Travel Companion'), findsOneWidget);
-    expect(find.text('AI Tour Guide'), findsOneWidget);
-    expect(find.text('Bilingual'), findsOneWidget);
-    expect(find.text('Dynamic Trip Planner'), findsOneWidget);
-    expect(find.text('Auto-Sync'), findsOneWidget);
-    expect(find.text('Fair Taxi Pricing'), findsOneWidget);
-    expect(find.text('Meter Verified'), findsOneWidget);
-
-    // Verify CTAs
-    expect(find.text('Start Exploring'), findsOneWidget);
-    expect(
-      find.text('Continue as Guest • No credit card or upfront registration required'),
-      findsOneWidget,
-    );
-  });
-
-  testWidgets('Language selector bottom sheet does not overflow on compact screens', (WidgetTester tester) async {
-    _ignoreOverflow();
-    tester.view.physicalSize = const Size(360, 640);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(() {
-      tester.view.resetPhysicalSize();
-      tester.view.resetDevicePixelRatio();
-    });
-
-    final appState = HelaAppState();
-    await tester.pumpWidget(
-      HelaAppStateProvider(
-        state: appState,
-        child: const MaterialApp(
-          home: OnboardingPage(),
+      final appState = HelaAppState();
+      await tester.pumpWidget(
+        HelaAppStateProvider(
+          state: appState,
+          child: const MaterialApp(home: OnboardingPage()),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
+      await tester.pump();
 
-    // Tap language pill
-    await tester.tap(find.text('EN').first);
-    await tester.pumpAndSettle();
+      // Navigate to slide 2 (Screen 3)
+      await tester.tap(find.text('Get Started'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Continue'));
+      await tester.pumpAndSettle();
 
-    // Modal sheet appears with no overflows
-    expect(find.text('Select Language'), findsOneWidget);
-    expect(find.text('English (US)'), findsOneWidget);
-    expect(find.text('Sinhala'), findsOneWidget);
-    expect(find.text('Tamil'), findsOneWidget);
-    expect(find.text('Chinese (Mandarin)'), findsOneWidget);
+      // Verify top progress indicator shows 3/3
+      expect(find.text('3/3'), findsOneWidget);
 
-    await tester.enterText(find.byType(TextField), 'Russian');
-    await tester.pumpAndSettle();
-    expect(find.text('Русский'), findsOneWidget);
-  });
+      // Verify top bar language selector is removed on Screen 3
+      expect(find.text('EN / සිංහල'), findsNothing);
 
-  testWidgets('AskHelaPage smoke test and UI verification', (WidgetTester tester) async {
+      // Verify visual showcase card tags
+      expect(find.text('Cultural Immersion • Kandy Heritage'), findsOneWidget);
+      expect(find.text('Live Folk Lore & Ola Leaf Tales'), findsNothing);
+      expect(find.text('4.98'), findsNothing);
+
+      // Verify headline and 3 bento cards with badges
+      expect(find.text('Your Personal Travel Companion'), findsOneWidget);
+      expect(find.text('AI Tour Guide'), findsOneWidget);
+      expect(find.text('Bilingual'), findsOneWidget);
+      expect(find.text('Dynamic Trip Planner'), findsOneWidget);
+      expect(find.text('Auto-Sync'), findsOneWidget);
+      expect(find.text('Fair Taxi Pricing'), findsOneWidget);
+      expect(find.text('Meter Verified'), findsOneWidget);
+
+      // Verify CTAs
+      expect(find.text('Start Exploring'), findsOneWidget);
+      expect(
+        find.text(
+          'Continue as Guest • No credit card or upfront registration required',
+        ),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets(
+    'Language selector bottom sheet does not overflow on compact screens',
+    (WidgetTester tester) async {
+      _ignoreOverflow();
+      tester.view.physicalSize = const Size(360, 640);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+
+      final appState = HelaAppState();
+      await tester.pumpWidget(
+        HelaAppStateProvider(
+          state: appState,
+          child: const MaterialApp(home: OnboardingPage()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Tap language pill
+      await tester.tap(find.text('EN').first);
+      await tester.pumpAndSettle();
+
+      // Modal sheet appears with no overflows
+      expect(find.text('Select Language'), findsOneWidget);
+      expect(find.text('English (US)'), findsOneWidget);
+      expect(find.text('Sinhala'), findsOneWidget);
+      expect(find.text('Tamil'), findsOneWidget);
+      expect(find.text('Chinese (Mandarin)'), findsOneWidget);
+
+      await tester.enterText(find.byType(TextField), 'Russian');
+      await tester.pumpAndSettle();
+      expect(find.text('Русский'), findsOneWidget);
+    },
+  );
+
+  testWidgets('AskHelaPage smoke test and UI verification', (
+    WidgetTester tester,
+  ) async {
     _ignoreOverflow();
-    await tester.pumpWidget(
-      _wrapWithState(const AskHelaPage()),
-    );
+    await tester.pumpWidget(_wrapWithState(const AskHelaPage()));
     await tester.pump();
 
     // Verify top bar without status and weather bar
@@ -959,7 +988,9 @@ void main() {
 
     // Verify initial chat message and rich response
     expect(
-      find.text("What should I know before visiting a Buddhist temple like Kandy's Temple of the Tooth?"),
+      find.text(
+        "What should I know before visiting a Buddhist temple like Kandy's Temple of the Tooth?",
+      ),
       findsOneWidget,
     );
     expect(find.text('Ayubowan! 🙏'), findsOneWidget);
@@ -970,7 +1001,9 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
-  testWidgets('HelaHomePage tap Ask HELA redirects to AskHelaPage', (WidgetTester tester) async {
+  testWidgets('HelaHomePage tap Ask HELA redirects to AskHelaPage', (
+    WidgetTester tester,
+  ) async {
     _ignoreOverflow();
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 2.0;
@@ -979,9 +1012,7 @@ void main() {
       tester.view.resetDevicePixelRatio();
     });
 
-    await tester.pumpWidget(
-      _wrapWithState(const HelaHomePage()),
-    );
+    await tester.pumpWidget(_wrapWithState(const HelaHomePage()));
     await tester.pump();
 
     final askHelaButton = find.text('Ask HELA');
@@ -998,7 +1029,9 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
-  testWidgets('ItineraryPlanningLoadingPage smoke test and UI verification', (WidgetTester tester) async {
+  testWidgets('ItineraryPlanningLoadingPage smoke test and UI verification', (
+    WidgetTester tester,
+  ) async {
     _ignoreOverflow();
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 2.0;
@@ -1035,96 +1068,100 @@ void main() {
     );
 
     // Verify progress indicator and first ticker step
-    expect(find.text('CONNECTING TO GOOGLE GEMINI AI PLANNER...'), findsOneWidget);
+    expect(find.text('CONNECTING TO DEEPSEEK AI PLANNER...'), findsOneWidget);
 
     // Dispose cleanly
     await tester.pumpWidget(const SizedBox());
   });
 
-  testWidgets('ItineraryDetailsPage renders dynamic AI TourPlan with Stitch timeline UI', (WidgetTester tester) async {
-    _ignoreOverflow();
-    final aiPlan = TourPlan(
-      id: 'tour_ai_test',
-      title: 'Bespoke Misty Highlands & Coast',
-      summary: 'AI-tailored 2-day expedition across Sri Lanka.',
-      matchReason: 'Custom matched for Culture and Beaches.',
-      durationDays: 2,
-      estimatedTotalCostUsd: 280.0,
-      dataSources: const ['Google Gemini AI (gemini-3.6-flash)'],
-      days: const [
-        ItineraryDay(
-          dayNumber: 1,
-          title: 'CMB → Cultural Triangle',
-          summary: 'Heritage gateway',
-          estimatedDayCostUsd: 140.0,
-          overnightStay: 'Sigiriya',
-          activities: [
-            ItineraryActivity(
-              title: 'Arrival & King Coconut Welcome',
-              description: 'Chauffeur pickup at CMB airport.',
-              startTime: '08:30 AM',
-              estimatedDuration: '~1 hr',
-              category: 'Arrival',
-              estimatedCostUsd: 0.0,
-            ),
-            ItineraryActivity(
-              title: 'Sigiriya Lion Rock Sunrise Climb',
-              description: 'Explore ancient frescoes and summit views.',
-              startTime: '03:30 PM',
-              estimatedDuration: 'Must-See Wonder',
-              category: 'UNESCO Ticket',
-              estimatedCostUsd: 36.0,
-              travelMethod: 'Private Chauffeur AC Car',
-              travelTimeFromPrevious: '140 km (~3h 20m)',
-              tips: ['Arrive before 4 PM for golden hour light.'],
-            ),
-          ],
-        ),
-        ItineraryDay(
-          dayNumber: 2,
-          title: 'Kandy Royal Sanctuary',
-          summary: 'Sacred temple visit',
-          estimatedDayCostUsd: 140.0,
-          overnightStay: 'Kandy',
-          activities: [
-            ItineraryActivity(
-              title: 'Temple of the Tooth Relic',
-              description: 'Morning ceremony by Kandy Lake.',
-              startTime: '09:00 AM',
-              estimatedDuration: '~2 hrs',
-              category: 'Culture',
-              estimatedCostUsd: 12.0,
-            ),
-          ],
-        ),
-      ],
-    );
+  testWidgets(
+    'ItineraryDetailsPage renders dynamic AI TourPlan with Stitch timeline UI',
+    (WidgetTester tester) async {
+      _ignoreOverflow();
+      final aiPlan = TourPlan(
+        id: 'tour_ai_test',
+        title: 'Bespoke Misty Highlands & Coast',
+        summary: 'AI-tailored 2-day expedition across Sri Lanka.',
+        matchReason: 'Custom matched for Culture and Beaches.',
+        durationDays: 2,
+        estimatedTotalCostUsd: 280.0,
+        dataSources: const ['Google Gemini AI (gemini-3.6-flash)'],
+        days: const [
+          ItineraryDay(
+            dayNumber: 1,
+            title: 'CMB → Cultural Triangle',
+            summary: 'Heritage gateway',
+            estimatedDayCostUsd: 140.0,
+            overnightStay: 'Sigiriya',
+            activities: [
+              ItineraryActivity(
+                title: 'Arrival & King Coconut Welcome',
+                description: 'Chauffeur pickup at CMB airport.',
+                startTime: '08:30 AM',
+                estimatedDuration: '~1 hr',
+                category: 'Arrival',
+                estimatedCostUsd: 0.0,
+              ),
+              ItineraryActivity(
+                title: 'Sigiriya Lion Rock Sunrise Climb',
+                description: 'Explore ancient frescoes and summit views.',
+                startTime: '03:30 PM',
+                estimatedDuration: 'Must-See Wonder',
+                category: 'UNESCO Ticket',
+                estimatedCostUsd: 36.0,
+                travelMethod: 'Private Chauffeur AC Car',
+                travelTimeFromPrevious: '140 km (~3h 20m)',
+                tips: ['Arrive before 4 PM for golden hour light.'],
+              ),
+            ],
+          ),
+          ItineraryDay(
+            dayNumber: 2,
+            title: 'Kandy Royal Sanctuary',
+            summary: 'Sacred temple visit',
+            estimatedDayCostUsd: 140.0,
+            overnightStay: 'Kandy',
+            activities: [
+              ItineraryActivity(
+                title: 'Temple of the Tooth Relic',
+                description: 'Morning ceremony by Kandy Lake.',
+                startTime: '09:00 AM',
+                estimatedDuration: '~2 hrs',
+                category: 'Culture',
+                estimatedCostUsd: 12.0,
+              ),
+            ],
+          ),
+        ],
+      );
 
-    await tester.pumpWidget(
-      _wrapWithState(
-        ItineraryDetailsPage(
-          startDate: DateTime(2025, 10, 14),
-          endDate: DateTime(2025, 10, 16),
-          aiTourPlan: aiPlan,
+      await tester.pumpWidget(
+        _wrapWithState(
+          ItineraryDetailsPage(
+            startDate: DateTime(2025, 10, 14),
+            endDate: DateTime(2025, 10, 16),
+            aiTourPlan: aiPlan,
+          ),
         ),
-      ),
-    );
-    await tester.pump();
+      );
+      await tester.pump();
 
-    expect(find.text('GEMINI AI PLAN'), findsOneWidget);
-    expect(find.text('Bespoke Misty Highlands & Coast'), findsOneWidget);
-    expect(find.text('Arrival & King Coconut Welcome'), findsOneWidget);
-    expect(find.text('Sigiriya Lion Rock Sunrise Climb'), findsOneWidget);
-    expect(find.text('Private Chauffeur AC Car:'), findsOneWidget);
-    expect(find.textContaining('Arrive before 4 PM for golden hour light.'), findsOneWidget);
+      expect(find.text('GEMINI AI PLAN'), findsOneWidget);
+      expect(find.text('Bespoke Misty Highlands & Coast'), findsOneWidget);
+      expect(find.text('Arrival & King Coconut Welcome'), findsOneWidget);
+      expect(find.text('Sigiriya Lion Rock Sunrise Climb'), findsOneWidget);
+      expect(find.text('Private Chauffeur AC Car:'), findsOneWidget);
+      expect(
+        find.textContaining('Arrive before 4 PM for golden hour light.'),
+        findsOneWidget,
+      );
 
-    // Switch to Day 2
-    await tester.tap(find.text('Day 2'));
-    await tester.pump();
-    expect(find.text('Temple of the Tooth Relic'), findsWidgets);
-    expect(find.text('Morning ceremony by Kandy Lake.'), findsOneWidget);
-    expect(find.text('Day 2 Route Overview'), findsOneWidget);
-  });
+      // Switch to Day 2
+      await tester.tap(find.text('Day 2'));
+      await tester.pump();
+      expect(find.text('Temple of the Tooth Relic'), findsWidgets);
+      expect(find.text('Morning ceremony by Kandy Lake.'), findsOneWidget);
+      expect(find.text('Day 2 Route Overview'), findsOneWidget);
+    },
+  );
 }
-
-

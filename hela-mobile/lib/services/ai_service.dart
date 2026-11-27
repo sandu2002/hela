@@ -19,11 +19,22 @@ class ChatTurn {
   const ChatTurn({required this.isUser, required this.text});
 }
 
+/// Response metadata returned by Ask HELA AI chat requests.
+class AskHelaReply {
+  final String text;
+  final String provider;
+  final String modelName;
+
+  const AskHelaReply({
+    required this.text,
+    required this.provider,
+    required this.modelName,
+  });
+}
+
 /// Service for generating AI-powered tour recommendations, full day-by-day
-/// itineraries, and conversational customizations via the HELA backend proxy.
-///
-/// The Gemini API key lives **only on the server**; the mobile app never
-/// embeds or ships it (fixes C-1 from the engineering audit).
+/// itineraries, and conversational customizations via the HELA backend proxy
+/// (plus direct DeepSeek / Gemini client fallbacks when offline from backend).
 class AIService {
   /// HTTP client — injectable for tests.
   final http.Client _client;
@@ -31,9 +42,32 @@ class AIService {
   /// Backend AI proxy endpoint.
   final String _backendUrl;
 
-  AIService({http.Client? client, String? backendUrl})
-      : _client = client ?? http.Client(),
-        _backendUrl = backendUrl ?? ApiConfig.tourGenerateUrl;
+  /// Backend Ask HELA chat endpoint (DeepSeek primary + Gemini fallback).
+  final String _chatUrl;
+
+  /// Optional DeepSeek / OpenRouter / NVIDIA NIM / OpenAI-compatible overrides
+  /// (primarily for tests or local overrides).
+  final String _deepseekApiKey;
+  final String _deepseekBaseUrl;
+  final String _deepseekModel;
+  final String _geminiApiKey;
+
+  AIService({
+    http.Client? client,
+    String? backendUrl,
+    String? chatUrl,
+    String? deepseekApiKey,
+    String? deepseekBaseUrl,
+    String? deepseekModel,
+    String? geminiApiKey,
+  }) : _client = client ?? http.Client(),
+       _backendUrl = backendUrl ?? ApiConfig.tourGenerateUrl,
+       _chatUrl = chatUrl ?? ApiConfig.askHelaChatUrl,
+       _deepseekApiKey = (deepseekApiKey ?? ApiConfig.effectiveDeepseekApiKey)
+           .trim(),
+       _deepseekBaseUrl = (deepseekBaseUrl ?? ApiConfig.deepseekBaseUrl).trim(),
+       _deepseekModel = (deepseekModel ?? ApiConfig.deepseekModel).trim(),
+       _geminiApiKey = (geminiApiKey ?? ApiConfig.geminiApiKey).trim();
 
   // ── Public API ────────────────────────────────────────────────────────────
 
@@ -50,11 +84,15 @@ class AIService {
         ? '${preferences.customDays} days'
         : preferences.duration.label;
 
-    final candidatesSummary = candidateDestinations.take(10).map((d) {
-      return '- ${d.name} (${d.region}): ${d.description}';
-    }).join('\n');
+    final candidatesSummary = candidateDestinations
+        .take(10)
+        .map((d) {
+          return '- ${d.name} (${d.region}): ${d.description}';
+        })
+        .join('\n');
 
-    final prompt = '''
+    final prompt =
+        '''
 You are a Sri Lanka travel expert AI for the HELA app.
 A traveler has the following preferences:
 - Duration: $duration
@@ -87,16 +125,18 @@ Do not include markdown code fence or extra text. Output strictly raw JSON.
 ''';
 
     try {
-      final responseText = await _callBackend(prompt);
-      final cleaned = _cleanJsonResponse(responseText);
-      final list = jsonDecode(cleaned) as List<dynamic>;
+      final result = await _callAiWithFallbackMeta(
+        prompt,
+        expectJsonArray: true,
+      );
+      final list = _decodeJsonListResponse(result.text);
 
       final results = list.map((item) {
         final map = item as Map<String, dynamic>;
         final matchedCandidate = candidateDestinations.firstWhere(
-          (c) => c.name
-              .toLowerCase()
-              .contains((map['name'] as String? ?? '').toLowerCase()),
+          (c) => c.name.toLowerCase().contains(
+            (map['name'] as String? ?? '').toLowerCase(),
+          ),
           orElse: () => const Destination(
             sourceId: 'ai_dest',
             name: '',
@@ -106,18 +146,21 @@ Do not include markdown code fence or extra text. Output strictly raw JSON.
         );
 
         return Destination(
-          sourceId: map['sourceId']?.toString() ??
+          sourceId:
+              map['sourceId']?.toString() ??
               'ai_${DateTime.now().millisecondsSinceEpoch}',
           name: map['name']?.toString() ?? 'Sri Lanka Destination',
           description: map['description']?.toString() ?? '',
           isDescriptionAIGenerated: true,
-          latitude: (map['latitude'] as num?)?.toDouble() ??
+          latitude:
+              (map['latitude'] as num?)?.toDouble() ??
               matchedCandidate.latitude,
-          longitude: (map['longitude'] as num?)?.toDouble() ??
+          longitude:
+              (map['longitude'] as num?)?.toDouble() ??
               matchedCandidate.longitude,
-          region:
-              map['region']?.toString() ?? matchedCandidate.region,
-          categories: (map['categories'] as List<dynamic>?)
+          region: map['region']?.toString() ?? matchedCandidate.region,
+          categories:
+              (map['categories'] as List<dynamic>?)
                   ?.map((e) => e.toString())
                   .toList() ??
               matchedCandidate.categories,
@@ -126,9 +169,10 @@ Do not include markdown code fence or extra text. Output strictly raw JSON.
               : SriLankaImages.sigiriya,
           sourceUrl: matchedCandidate.sourceUrl,
           retrievedAt: DateTime.now().toIso8601String(),
-          attribution: 'Curated by Gemini AI & OpenStreetMap',
-          relevanceScore:
-              (map['relevanceScore'] as num?)?.toDouble() ?? 0.90,
+          attribution: _formatProviderLabel(result.provider) == 'DeepSeek AI'
+              ? 'Curated by DeepSeek AI & OpenStreetMap'
+              : 'Curated by Gemini AI & OpenStreetMap',
+          relevanceScore: (map['relevanceScore'] as num?)?.toDouble() ?? 0.90,
         );
       }).toList();
 
@@ -157,9 +201,7 @@ Do not include markdown code fence or extra text. Output strictly raw JSON.
         ? preferences.interests.map((i) => i.label).join(', ')
         : 'Cultural Heritage, Beaches, Nature';
     final destinationsStr = selectedDestinations.isNotEmpty
-        ? selectedDestinations
-            .map((d) => '${d.name} (${d.region})')
-            .join(', ')
+        ? selectedDestinations.map((d) => '${d.name} (${d.region})').join(', ')
         : 'AI-selected optimal Sri Lanka highlights matching traveler profile';
     final startLoc = preferences.startingLocationName.isNotEmpty
         ? preferences.startingLocationName
@@ -179,13 +221,14 @@ Do not include markdown code fence or extra text. Output strictly raw JSON.
     final mobilityStr = preferences.accessibilityNeeds.isNotEmpty
         ? preferences.accessibilityNeeds.join(', ')
         : 'Standard walking & climbing tolerance';
-    final langInstruction = (preferredLanguage != null &&
-            preferredLanguage.toUpperCase() != 'EN')
+    final langInstruction =
+        (preferredLanguage != null && preferredLanguage.toUpperCase() != 'EN')
         ? 'Write titles, summaries, activity descriptions, and tips in language code "$preferredLanguage" where natural (keep JSON keys strictly in English).'
         : '';
 
-    final prompt = '''
-You are HELA, an expert Sri Lanka Travel Planner powered by Google Gemini AI. Create a realistic, personalized $daysCount-day Sri Lanka itinerary tailored specifically to every preference below.
+    final prompt =
+        '''
+You are HELA, an expert Sri Lanka Travel Planner AI. Create a realistic, personalized $daysCount-day Sri Lanka itinerary tailored specifically to every preference below.
 
 Traveler Profile:
 - Trip Duration: $daysCount day(s)
@@ -251,11 +294,12 @@ Respond ONLY with a valid JSON object matching this exact schema (no markdown fe
 ''';
 
     try {
-      final result = await _callBackendMeta(prompt);
+      final result = await _callAiWithFallbackMeta(prompt);
       final parsed = parseTourPlanJson(result.text);
+      final providerLabel = _formatProviderLabel(result.provider);
       return parsed.copyWith(
         dataSources: [
-          'Google Gemini AI (${result.modelName})',
+          '$providerLabel (${result.modelName})',
           'HELA Route Optimizer',
         ],
         generatedAt: DateTime.now().toIso8601String(),
@@ -291,15 +335,15 @@ Respond ONLY with a valid JSON object matching this exact schema (no markdown fe
     final planSummary = _buildPlanSummary(currentPlan, focusedDayNumber);
 
     // Append a brief conversation history (last 6 turns max to bound tokens)
-    final historyStr = (chatHistory ?? [])
-        .reversed
+    final historyStr = (chatHistory ?? []).reversed
         .take(6)
         .toList()
         .reversed
         .map((t) => '${t.isUser ? "Traveler" : "HELA"}: ${t.text}')
         .join('\n');
 
-    final prompt = '''
+    final prompt =
+        '''
 You are the HELA AI Smart Tour Planner assistant.
 The traveler wants to customize their existing Sri Lanka tour plan.
 $dayFocusNote
@@ -331,28 +375,36 @@ No markdown or extra text.
 ''';
 
     try {
-      final result = await _callBackendMeta(prompt);
+      final result = await _callAiWithFallbackMeta(prompt);
       final newPlan = parseTourPlanJson(result.text);
+      final providerLabel = _formatProviderLabel(result.provider);
       final updatedPlan = newPlan.copyWith(
         id: newPlan.id.isNotEmpty ? newPlan.id : currentPlan.id,
         version: currentPlan.version + 1,
         generatedAt: DateTime.now().toIso8601String(),
         dataSources: [
-          'Google Gemini AI (${result.modelName})',
-          ...currentPlan.dataSources
-              .where((s) => !s.startsWith('Google Gemini AI')),
+          '$providerLabel (${result.modelName})',
+          ...currentPlan.dataSources.where(
+            (s) =>
+                !s.startsWith('Google Gemini AI') &&
+                !s.startsWith('DeepSeek AI'),
+          ),
         ],
         isSaved: currentPlan.isSaved,
       );
 
       // Record compact turn so the next call has context
       chatHistory?.add(ChatTurn(isUser: true, text: userRequest));
-      final summary = updatedPlan.customizationSummary?.trim().isNotEmpty == true
+      final summary =
+          updatedPlan.customizationSummary?.trim().isNotEmpty == true
           ? updatedPlan.customizationSummary!.trim()
           : 'Updated itinerary to v${updatedPlan.version}.';
-      chatHistory?.add(ChatTurn(
+      chatHistory?.add(
+        ChatTurn(
           isUser: false,
-          text: 'Applied v${updatedPlan.version}: $summary'));
+          text: 'Applied v${updatedPlan.version}: $summary',
+        ),
+      );
 
       return updatedPlan;
     } catch (_) {
@@ -364,69 +416,254 @@ No markdown or extra text.
   }
 
   /// Builds a [ChatTurn] history list from saved [ChatMessage] items.
-  static List<ChatTurn> buildChatHistoryFromMessages(List<ChatMessage> messages) {
+  static List<ChatTurn> buildChatHistoryFromMessages(
+    List<ChatMessage> messages,
+  ) {
     return messages
         .where((m) => m.content.trim().isNotEmpty)
-        .map(
-          (m) => ChatTurn(
-            isUser: m.isUser,
-            text: m.content,
-          ),
-        )
+        .map((m) => ChatTurn(isUser: m.isUser, text: m.content))
         .toList();
   }
 
-  /// Sends a conversational Ask HELA query through the backend AI proxy.
+  /// Sends a conversational Ask HELA query using DeepSeek as primary AI
+  /// with automatic fallback to Gemini.
   Future<String?> chatWithHela({
     required String systemInstruction,
     required List<ChatTurn> history,
     required String prompt,
   }) async {
-    final historyStr = history
-        .reversed
-        .take(10)
-        .toList()
-        .reversed
+    final reply = await chatWithHelaWithMeta(
+      systemInstruction: systemInstruction,
+      history: history,
+      prompt: prompt,
+    );
+    return reply?.text;
+  }
+
+  /// Sends a conversational Ask HELA query and returns reply text along with
+  /// the resolved AI provider (`deepseek` or `gemini`) and model identifier.
+  ///
+  /// Order of execution:
+  /// 1. HELA backend `/api/tours/chat` (tries DeepSeek first, falls back to Gemini).
+  /// 2. Direct OpenAI-compatible DeepSeek / OpenRouter / NVIDIA NIM / Ollama client fallback.
+  /// 3. Direct Google Gemini REST fallback.
+  Future<AskHelaReply?> chatWithHelaWithMeta({
+    required String systemInstruction,
+    required List<ChatTurn> history,
+    required String prompt,
+  }) async {
+    final recentHistory = history.reversed.take(10).toList().reversed.toList();
+    final historyStr = recentHistory
         .map((t) => '${t.isUser ? "Traveler" : "HELA"}: ${t.text}')
         .join('\n');
 
-    final fullPrompt = '''
+    final fullPrompt =
+        '''
 $systemInstruction
 
 ${historyStr.isNotEmpty ? 'Conversation history:\n$historyStr\n\n' : ''}Traveler: $prompt
 HELA:''';
 
+    // 1. Primary path: HELA backend proxy (DeepSeek primary -> Gemini fallback)
     try {
-      final result = await _callBackendMeta(
-        fullPrompt,
-        responseMimeType: 'text/plain',
-      );
-      history.add(ChatTurn(isUser: true, text: prompt));
-      history.add(ChatTurn(isUser: false, text: result.text));
-      return result.text;
+      final response = await _client
+          .post(
+            Uri.parse(_chatUrl),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({
+              'preferredProvider': 'deepseek',
+              'systemInstruction': systemInstruction,
+              'history': recentHistory
+                  .map((t) => {'isUser': t.isUser, 'text': t.text})
+                  .toList(),
+              'prompt': prompt,
+            }),
+          )
+          .timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body) as Map<String, dynamic>;
+        final text = stripReasoningTags(body['text']?.toString() ?? '');
+        if (text.isNotEmpty) {
+          history.add(ChatTurn(isUser: true, text: prompt));
+          history.add(ChatTurn(isUser: false, text: text));
+          return AskHelaReply(
+            text: text,
+            provider: body['provider']?.toString() ?? 'deepseek',
+            modelName: body['modelName']?.toString() ?? 'deepseek',
+          );
+        }
+      } else {
+        debugPrint(
+          '[AIService] chatWithHela backend proxy HTTP ${response.statusCode}: ${response.body}',
+        );
+      }
     } catch (e) {
       debugPrint('[AIService] chatWithHela backend proxy error: $e');
-
-      // Resilient fallback: call Gemini directly if API key is provided
-      if (ApiConfig.geminiApiKey.isNotEmpty) {
-        try {
-          final directResult = await _callGeminiDirectText(fullPrompt);
-          if (directResult != null && directResult.isNotEmpty) {
-            history.add(ChatTurn(isUser: true, text: prompt));
-            history.add(ChatTurn(isUser: false, text: directResult));
-            return directResult;
-          }
-        } catch (directErr) {
-          debugPrint('[AIService] chatWithHela direct fallback error: $directErr');
-        }
-      }
-
-      return null;
     }
+
+    // 2. Direct fallback #1: DeepSeek (OpenRouter / NVIDIA NIM / DeepSeek API / Ollama)
+    final deepSeekResult = await _callDeepSeekDirect(
+      messages: [
+        if (systemInstruction.trim().isNotEmpty)
+          {'role': 'system', 'content': systemInstruction.trim()},
+        ...recentHistory.map(
+          (t) => {'role': t.isUser ? 'user' : 'assistant', 'content': t.text},
+        ),
+        {'role': 'user', 'content': prompt},
+      ],
+      timeout: const Duration(seconds: 15),
+    );
+    if (deepSeekResult != null) {
+      history.add(ChatTurn(isUser: true, text: prompt));
+      history.add(ChatTurn(isUser: false, text: deepSeekResult.text));
+      return deepSeekResult;
+    }
+
+    // 3. Direct fallback #2: Google Gemini
+    if (_geminiApiKey.isNotEmpty) {
+      final geminiResult = await _callGeminiDirect(
+        fullPrompt,
+        responseMimeType: 'text/plain',
+        timeout: const Duration(seconds: 15),
+      );
+      if (geminiResult != null) {
+        history.add(ChatTurn(isUser: true, text: prompt));
+        history.add(ChatTurn(isUser: false, text: geminiResult.text));
+        return geminiResult;
+      }
+    }
+
+    return null;
   }
 
-  /// Direct client fallback for Ask HELA chat when backend proxy is unreachable.
-  Future<String?> _callGeminiDirectText(String prompt) async {
+  /// Strips `<think>...</think>` reasoning traces from DeepSeek-R1 style responses.
+  static String stripReasoningTags(String text) {
+    return text
+        .replaceAll(
+          RegExp(r'<think>[\s\S]*?</think>', caseSensitive: false),
+          '',
+        )
+        .trim();
+  }
+
+  ({String baseUrl, List<String> models})? _resolveDeepSeekProviderConfig() {
+    final normalizedBase = _deepseekBaseUrl.replaceAll(RegExp(r'/+$'), '');
+    final isLocalEndpoint = RegExp(
+      r'^https?://(localhost|127\.0\.0\.1|10\.0\.2\.2)(:\d+)?',
+      caseSensitive: false,
+    ).hasMatch(normalizedBase);
+
+    if (_deepseekApiKey.isEmpty && !isLocalEndpoint) {
+      return null;
+    }
+
+    String resolvedBase = normalizedBase;
+    List<String> defaultModels;
+
+    if (_deepseekApiKey.startsWith('sk-or-')) {
+      if (resolvedBase.isEmpty) resolvedBase = 'https://openrouter.ai/api/v1';
+      defaultModels = [
+        'deepseek/deepseek-v4.1-flash',
+        'deepseek/deepseek-chat',
+        ApiConfig.deepseekFallbackModel,
+      ];
+    } else if (_deepseekApiKey.startsWith('nvapi-')) {
+      if (resolvedBase.isEmpty) {
+        resolvedBase = 'https://integrate.api.nvidia.com/v1';
+      }
+      defaultModels = ['deepseek-ai/deepseek-v3.2', 'deepseek-ai/deepseek-r1'];
+    } else if (isLocalEndpoint) {
+      defaultModels = ['deepseek-r1', 'deepseek-chat'];
+    } else {
+      if (resolvedBase.isEmpty) resolvedBase = 'https://api.deepseek.com/v1';
+      defaultModels = ['deepseek-chat', 'deepseek-reasoner'];
+    }
+
+    final models = <String>{
+      if (_deepseekModel.isNotEmpty) _deepseekModel,
+      ...defaultModels.where((m) => m.trim().isNotEmpty),
+    }.toList();
+
+    return (baseUrl: resolvedBase, models: models);
+  }
+
+  /// Direct OpenAI-compatible DeepSeek request (used for Ask HELA & Trip Planner fallbacks).
+  Future<AskHelaReply?> _callDeepSeekDirect({
+    required List<Map<String, String>> messages,
+    bool expectJson = false,
+    bool expectJsonArray = false,
+    Duration timeout = const Duration(seconds: 35),
+  }) async {
+    final config = _resolveDeepSeekProviderConfig();
+    if (config == null) return null;
+
+    final uri = Uri.parse('${config.baseUrl}/chat/completions');
+    final headers = <String, String>{
+      'Content-Type': 'application/json',
+      if (_deepseekApiKey.isNotEmpty)
+        'Authorization': 'Bearer $_deepseekApiKey',
+      if (config.baseUrl.contains('openrouter.ai')) ...{
+        'HTTP-Referer': 'https://hela.travel',
+        'X-Title': 'HELA Sri Lanka Travel Companion',
+      },
+    };
+
+    for (final model in config.models) {
+      try {
+        final payload = <String, dynamic>{
+          'model': model,
+          'messages': messages,
+          'temperature': expectJson ? 0.5 : 0.7,
+        };
+        final supportsJsonObject =
+            expectJson &&
+            !expectJsonArray &&
+            !config.baseUrl.contains('integrate.api.nvidia.com') &&
+            !model.contains('v4') &&
+            !model.contains('free');
+        if (supportsJsonObject) {
+          payload['response_format'] = {'type': 'json_object'};
+        }
+
+        final res = await _client
+            .post(uri, headers: headers, body: jsonEncode(payload))
+            .timeout(timeout);
+
+        if (res.statusCode == 200) {
+          final data = jsonDecode(res.body) as Map<String, dynamic>;
+          final choices = data['choices'] as List?;
+          final firstChoice = choices != null && choices.isNotEmpty
+              ? choices.first as Map<String, dynamic>?
+              : null;
+          final message = firstChoice?['message'] as Map<String, dynamic>?;
+          final rawContent = message?['content']?.toString() ?? '';
+          final cleaned = stripReasoningTags(rawContent);
+          if (cleaned.isNotEmpty) {
+            return AskHelaReply(
+              text: cleaned,
+              provider: 'deepseek',
+              modelName: model,
+            );
+          }
+        } else {
+          debugPrint(
+            '[AIService] DeepSeek ($model) HTTP ${res.statusCode}: ${res.body}',
+          );
+        }
+      } catch (e) {
+        debugPrint('[AIService] DeepSeek ($model) error: $e');
+      }
+    }
+    return null;
+  }
+
+  /// Direct Gemini client fallback for both text and JSON generation.
+  Future<AskHelaReply?> _callGeminiDirect(
+    String prompt, {
+    String responseMimeType = 'text/plain',
+    Duration timeout = const Duration(seconds: 30),
+  }) async {
     final models = [
       ApiConfig.geminiModel,
       ApiConfig.geminiFallbackModel,
@@ -435,42 +672,114 @@ HELA:''';
     for (final model in models) {
       try {
         final uri = Uri.parse(
-          'https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=${ApiConfig.geminiApiKey}',
+          'https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=$_geminiApiKey',
         );
-        final res = await _client.post(
-          uri,
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({
-            'contents': [
-              {
-                'parts': [{'text': prompt}]
-              }
-            ],
-            'generationConfig': {'responseMimeType': 'text/plain'},
-          }),
-        ).timeout(const Duration(seconds: 15));
+        final res = await _client
+            .post(
+              uri,
+              headers: {'Content-Type': 'application/json'},
+              body: jsonEncode({
+                'contents': [
+                  {
+                    'parts': [
+                      {'text': prompt},
+                    ],
+                  },
+                ],
+                'generationConfig': {'responseMimeType': responseMimeType},
+              }),
+            )
+            .timeout(timeout);
         if (res.statusCode == 200) {
           final data = jsonDecode(res.body) as Map<String, dynamic>;
           final candidates = data['candidates'] as List?;
-          final text = candidates?.firstOrNull?['content']?['parts']?.firstOrNull?['text']?.toString().trim();
-          if (text != null && text.isNotEmpty) return text;
+          final firstCandidate = candidates != null && candidates.isNotEmpty
+              ? candidates.first as Map<String, dynamic>?
+              : null;
+          final content = firstCandidate?['content'] as Map<String, dynamic>?;
+          final parts = content?['parts'] as List?;
+          final firstPart = parts != null && parts.isNotEmpty
+              ? parts.first as Map<String, dynamic>?
+              : null;
+          final text = firstPart?['text']?.toString().trim();
+          if (text != null && text.isNotEmpty) {
+            return AskHelaReply(
+              text: text,
+              provider: 'gemini',
+              modelName: model,
+            );
+          }
+        } else {
+          debugPrint(
+            '[AIService] Gemini ($model) HTTP ${res.statusCode}: ${res.body}',
+          );
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[AIService] Gemini ($model) error: $e');
+      }
     }
     return null;
   }
 
   // ── Private helpers ───────────────────────────────────────────────────────
 
-  /// Calls the HELA backend AI proxy and returns the raw text.
-  Future<String> _callBackend(String prompt) async {
-    final result = await _callBackendMeta(prompt);
-    return result.text;
-  }
-
-  Future<({String text, String modelName})> _callBackendMeta(
+  /// Calls HELA backend first (preferring DeepSeek), then falls back to direct
+  /// DeepSeek and direct Gemini endpoints when backend is unreachable.
+  Future<AskHelaReply> _callAiWithFallbackMeta(
     String prompt, {
     String responseMimeType = 'application/json',
+    bool preferDeepseek = true,
+    bool expectJsonArray = false,
+  }) async {
+    Object? backendError;
+    try {
+      return await _callBackendMeta(
+        prompt,
+        responseMimeType: responseMimeType,
+        preferredProvider: preferDeepseek ? 'deepseek' : 'gemini',
+        expectArray: expectJsonArray,
+      );
+    } catch (e) {
+      backendError = e;
+      debugPrint(
+        '[AIService] Structured AI backend unavailable, trying direct fallback: $e',
+      );
+    }
+
+    if (preferDeepseek) {
+      final deepSeekResult = await _callDeepSeekDirect(
+        messages: [
+          {'role': 'user', 'content': prompt},
+        ],
+        expectJson: responseMimeType == 'application/json',
+        expectJsonArray: expectJsonArray,
+        timeout: const Duration(seconds: 40),
+      );
+      if (deepSeekResult != null) {
+        return deepSeekResult;
+      }
+    }
+
+    if (_geminiApiKey.isNotEmpty) {
+      final geminiResult = await _callGeminiDirect(
+        prompt,
+        responseMimeType: responseMimeType,
+        timeout: const Duration(seconds: 30),
+      );
+      if (geminiResult != null) {
+        return geminiResult;
+      }
+    }
+
+    if (backendError is Error) throw backendError;
+    throw StateError('All AI providers failed: $backendError');
+  }
+
+  Future<AskHelaReply> _callBackendMeta(
+    String prompt, {
+    String responseMimeType = 'application/json',
+    String preferredProvider = 'deepseek',
+    bool expectArray = false,
   }) async {
     final response = await _client
         .post(
@@ -479,21 +788,60 @@ HELA:''';
           body: jsonEncode({
             'prompt': prompt,
             'responseMimeType': responseMimeType,
+            'preferredProvider': preferredProvider,
+            'expectArray': expectArray,
           }),
         )
-        .timeout(const Duration(seconds: 90));
+        .timeout(const Duration(seconds: 40));
 
     if (response.statusCode != 200) {
       throw StateError(
-          'Backend AI proxy returned ${response.statusCode}: ${response.body}');
+        'Backend AI proxy returned ${response.statusCode}: ${response.body}',
+      );
     }
 
     final body = jsonDecode(response.body) as Map<String, dynamic>;
-    final text = body['text']?.toString().trim();
-    if (text == null || text.isEmpty) {
+    final text = stripReasoningTags(body['text']?.toString() ?? '');
+    if (text.isEmpty) {
       throw StateError('Backend returned empty AI response');
     }
-    return (text: text, modelName: body['modelName']?.toString() ?? 'gemini');
+    return AskHelaReply(
+      text: text,
+      provider: body['provider']?.toString() ?? 'gemini',
+      modelName:
+          body['modelName']?.toString() ??
+          body['model']?.toString() ??
+          'gemini',
+    );
+  }
+
+  static String _formatProviderLabel(String provider) {
+    return provider.toLowerCase().contains('deepseek')
+        ? 'DeepSeek AI'
+        : 'Google Gemini AI';
+  }
+
+  static List<dynamic> _decodeJsonListResponse(String responseText) {
+    final cleaned = _cleanJsonResponse(responseText, expectArray: true);
+    try {
+      final decoded = jsonDecode(cleaned);
+      if (decoded is List<dynamic>) return decoded;
+      if (decoded is Map<String, dynamic>) {
+        for (final val in decoded.values) {
+          if (val is List<dynamic>) return val;
+        }
+      }
+    } catch (_) {
+      final fallbackObj = jsonDecode(
+        _cleanJsonResponse(responseText, expectArray: false),
+      );
+      if (fallbackObj is Map<String, dynamic>) {
+        for (final val in fallbackObj.values) {
+          if (val is List<dynamic>) return val;
+        }
+      }
+    }
+    throw const FormatException('Expected JSON array response from AI');
   }
 
   /// Builds a compact plan summary to reduce token usage in customization.
@@ -508,12 +856,15 @@ HELA:''';
         orElse: () => plan.days.first,
       );
       buf.writeln('\nFocused Day $focusedDay: ${day.title}');
-      buf.writeln('Activities: ${day.activities.map((a) => a.title).join(', ')}');
+      buf.writeln(
+        'Activities: ${day.activities.map((a) => a.title).join(', ')}',
+      );
     } else {
       buf.writeln('\nDays overview:');
       for (final d in plan.days) {
         buf.writeln(
-            '  Day ${d.dayNumber}: ${d.title} (${d.activities.length} activities)');
+          '  Day ${d.dayNumber}: ${d.title} (${d.activities.length} activities)',
+        );
       }
     }
     return buf.toString();

@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "HELA Mobile (with dart_defines.json)",
+      "request": "launch",
+      "type": "dart",
+      "args": [
+        "--dart-define-from-file=dart_defines.json"
+      ]
+    }
+  ]
+}

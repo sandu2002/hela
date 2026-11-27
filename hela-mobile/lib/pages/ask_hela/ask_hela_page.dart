@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hela/data/sri_lanka_images.dart';
 import 'package:hela/services/ai_service.dart';
 import 'package:hela/services/live_weather_service.dart';
 import 'package:hela/state/app_state.dart';
+import 'package:hela/theme/hela_colors.dart';
+import 'package:hela/widgets/chat/structured_ai_reply_view.dart';
 import 'package:hela/widgets/common/hela_logo.dart';
 
 /// Bento item representing structured practical tips or cultural rules
@@ -44,7 +47,8 @@ class AskHelaMessage {
   });
 }
 
-/// Dedicated page for Ask HELA 24/7 AI Travel Companion with Google Gemini integration
+/// Dedicated page for Ask HELA 24/7 AI Travel Companion
+/// (DeepSeek primary AI with Gemini fallback)
 class AskHelaPage extends StatefulWidget {
   final String? initialPrompt;
 
@@ -69,8 +73,9 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
       'You are HELA, the 24/7 personal Sri Lanka Travel Companion & AI Cultural Guide. '
       'You provide verified practical tips, cultural etiquette, train schedules, pricing in LKR, '
       'historical lore, weather-smart routes, and authentic local recommendations for Sri Lanka. '
-      'Keep the tone warm, welcoming, knowledgeable, and concise like a trusted local friend. '
-      'Structure your answers clearly with practical advice and local insights. '
+      'Keep the tone warm, knowledgeable, and clear like a trusted local friend. '
+      'Format your answers cleanly so travelers can scan them quickly: start with a brief 1-2 sentence overview, '
+      'then organize key details under clear "### Section Title" headers with concise "* **Key Point:** concise detail" bullets. '
       'Do not start your response with "Ayubowan!" because the chat card header already greets the user.';
 
   final List<AskHelaMessage> _messages = [];
@@ -241,7 +246,7 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
       return;
     }
 
-    // Query Gemini AI with multi-model fallback
+    // Query DeepSeek AI primary with Gemini fallback
     final appState = HelaAppStateProvider.of(context);
     final currentLang = appState.selectedLanguage;
 
@@ -255,7 +260,7 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
         : '';
     final prompt = '$trimmed$langNote$weatherNote';
 
-    final replyText = await _sendToGeminiWithFallback(prompt);
+    final replyText = await _sendWithAiFallback(prompt);
     final aiResponse = (replyText != null && replyText.isNotEmpty)
         ? _buildRichAiMessageFromText(trimmed, replyText)
         : _getSmartFallbackResponse(trimmed);
@@ -270,8 +275,9 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
     _scrollToBottom();
   }
 
-  /// Sends [prompt] using multi-turn [_chatHistory] via the HELA backend AI proxy.
-  Future<String?> _sendToGeminiWithFallback(String prompt) async {
+  /// Sends [prompt] using multi-turn [_chatHistory] via DeepSeek (primary)
+  /// with automatic fallback to Gemini.
+  Future<String?> _sendWithAiFallback(String prompt) async {
     return AIService().chatWithHela(
       systemInstruction: _systemInstruction,
       history: _chatHistory,
@@ -279,10 +285,7 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
     );
   }
 
-  AskHelaMessage _buildRichAiMessageFromText(
-    String userQuery,
-    String geminiText,
-  ) {
+  AskHelaMessage _buildRichAiMessageFromText(String userQuery, String aiText) {
     if (_isWeatherQuery(userQuery)) {
       return _buildWeatherForecastResponse(userQuery);
     }
@@ -374,7 +377,7 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
       isUser: false,
       title: 'Ayubowan! 🙏',
       badgeText: 'Verified Lore',
-      text: geminiText,
+      text: aiText,
       timeString: _formatCurrentTime(),
       imageUrl: imageUrl,
       imageCaption: imageCaption,
@@ -420,7 +423,9 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
       image = SriLankaImages.templeOfTheTooth;
       temp = 24.0;
       condition = 'Pleasant & Light Breeze';
-    } else if (lower.contains('sigiriya') || lower.contains('dambulla') || lower.contains('matale')) {
+    } else if (lower.contains('sigiriya') ||
+        lower.contains('dambulla') ||
+        lower.contains('matale')) {
       locationName = 'Sigiriya & Cultural Triangle';
       image = SriLankaImages.sigiriya;
       temp = 29.0;
@@ -705,51 +710,53 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    final colors = HelaColors.of(context);
     return Scaffold(
-      backgroundColor: const Color(
-        0xFFEAF8F4,
-      ), // Mint page background matching reference
-      body: SafeArea(
-        bottom: true,
-        child: Column(
-          children: [
-            // Top App Bar
-            _buildTopBar(),
+      backgroundColor: colors.background,
+      body: DefaultTextStyle.merge(
+        style: const TextStyle(fontFamily: kHelaFontFamily),
+        child: SafeArea(
+          bottom: true,
+          child: Column(
+            children: [
+              // Top App Bar
+              _buildTopBar(colors),
 
-            // Chat Scrollable View
-            Expanded(
-              child: ListView(
-                controller: _scrollController,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
+              // Chat Scrollable View
+              Expanded(
+                child: ListView(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  children: [
+                    // Welcome Introduction Card
+                    _buildWelcomeIntroCard(colors),
+
+                    const SizedBox(height: 18),
+
+                    // Messages list
+                    ..._messages.map((msg) {
+                      if (msg.isUser) {
+                        return _buildUserMessageBubble(msg, colors);
+                      } else {
+                        return _buildAiMessageCard(msg, colors);
+                      }
+                    }),
+
+                    // Typing indicator
+                    if (_isAITyping) _buildTypingIndicator(colors),
+
+                    const SizedBox(height: 12),
+                  ],
                 ),
-                children: [
-                  // Welcome Introduction Card
-                  _buildWelcomeIntroCard(),
-
-                  const SizedBox(height: 18),
-
-                  // Messages list
-                  ..._messages.map((msg) {
-                    if (msg.isUser) {
-                      return _buildUserMessageBubble(msg);
-                    } else {
-                      return _buildAiMessageCard(msg);
-                    }
-                  }),
-
-                  // Typing indicator
-                  if (_isAITyping) _buildTypingIndicator(),
-
-                  const SizedBox(height: 12),
-                ],
               ),
-            ),
 
-            // Bottom Input Bar
-            _buildBottomInputBar(),
-          ],
+              // Bottom Input Bar
+              _buildBottomInputBar(colors),
+            ],
+          ),
         ),
       ),
     );
@@ -758,18 +765,25 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
   // ──────────────────────────────────────────────────────────────────────────
   // TOP APP BAR
   // ──────────────────────────────────────────────────────────────────────────
-  Widget _buildTopBar() {
+  Widget _buildTopBar(HelaColorPalette colors) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      color: Colors.transparent,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      decoration: BoxDecoration(
+        color: colors.surface.withValues(alpha: colors.isDark ? 0.96 : 0.94),
+        border: Border(
+          bottom: BorderSide(
+            color: colors.architecturalBorder.withValues(alpha: 0.55),
+          ),
+        ),
+      ),
       child: Row(
         children: [
           // Back button
           IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.arrow_back_rounded,
-              color: Color(0xFF0B2D25),
-              size: 24,
+              color: colors.onSurface,
+              size: 23,
             ),
             onPressed: () => Navigator.of(context).pop(),
           ),
@@ -778,12 +792,12 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
           Stack(
             clipBehavior: Clip.none,
             children: [
-              const HelaLogo(
-                size: 38,
+              HelaLogo(
+                size: 40,
                 framed: true,
                 isCircle: true,
                 padding: 4,
-                borderColor: Color(0xFFC6EAE0),
+                borderColor: colors.architecturalBorder,
               ),
               Positioned(
                 right: 0,
@@ -794,14 +808,14 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
                   decoration: BoxDecoration(
                     color: const Color(0xFF10B981),
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 2),
+                    border: Border.all(color: colors.surface, width: 2),
                   ),
                 ),
               ),
             ],
           ),
 
-          const SizedBox(width: 10),
+          const SizedBox(width: 11),
 
           // Title & Subtitle
           Expanded(
@@ -814,28 +828,30 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
                   children: [
                     Text(
                       HelaAppStateProvider.of(context).tr('ask_hela'),
-                      style: const TextStyle(
-                        fontSize: 16.5,
+                      style: TextStyle(
+                        fontSize: 18,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF0B2D25),
-                        fontFamily: 'Plus Jakarta Sans',
+                        letterSpacing: -0.3,
+                        color: colors.onSurface,
+                        fontFamily: kHelaFontFamily,
                       ),
                     ),
-                    const SizedBox(width: 4),
-                    const Icon(
-                      Icons.check_circle_rounded,
-                      size: 15,
-                      color: Color(0xFF296759),
+                    const SizedBox(width: 5),
+                    Icon(
+                      Icons.verified_rounded,
+                      size: 16,
+                      color: colors.primary,
                     ),
                   ],
                 ),
                 const SizedBox(height: 1),
                 Text(
                   HelaAppStateProvider.of(context).tr('ask_hela_subtitle'),
-                  style: const TextStyle(
-                    fontSize: 11.5,
+                  style: TextStyle(
+                    fontFamily: kHelaFontFamily,
+                    fontSize: 12,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xFF4C756A),
+                    color: colors.onSurfaceVariant,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -850,16 +866,19 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
   // ──────────────────────────────────────────────────────────────────────────
   // WELCOME INTRO CARD
   // ──────────────────────────────────────────────────────────────────────────
-  Widget _buildWelcomeIntroCard() {
+  Widget _buildWelcomeIntroCard(HelaColorPalette colors) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.cardBackground,
         borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: colors.architecturalBorder.withValues(alpha: 0.75),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
+            color: Colors.black.withValues(alpha: colors.isDark ? 0.2 : 0.04),
+            blurRadius: 12,
             offset: const Offset(0, 3),
           ),
         ],
@@ -867,16 +886,16 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Row with leaf icon and headers
+          // Row with logo and headers
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const HelaLogo(
-                size: 36,
+              HelaLogo(
+                size: 38,
                 framed: true,
                 isCircle: true,
                 padding: 4,
-                borderColor: Color(0xFFC6EAE0),
+                borderColor: colors.architecturalBorder,
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -884,20 +903,27 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      HelaAppStateProvider.of(context).tr('ask_hela_welcome_title'),
-                      style: const TextStyle(
-                        fontSize: 15.5,
+                      HelaAppStateProvider.of(
+                        context,
+                      ).tr('ask_hela_welcome_title'),
+                      style: TextStyle(
+                        fontFamily: kHelaFontFamily,
+                        fontSize: 16,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF0C2B23),
+                        letterSpacing: -0.2,
+                        color: colors.onSurface,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      HelaAppStateProvider.of(context).tr('ask_hela_welcome_sub'),
-                      style: const TextStyle(
+                      HelaAppStateProvider.of(
+                        context,
+                      ).tr('ask_hela_welcome_sub'),
+                      style: TextStyle(
+                        fontFamily: kHelaFontFamily,
                         fontSize: 12.5,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF426C60),
+                        fontWeight: FontWeight.w600,
+                        color: colors.primary,
                       ),
                     ),
                   ],
@@ -909,25 +935,27 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
           const SizedBox(height: 12),
 
           // Description Paragraph
-          const Text(
+          Text(
             'I provide real-time travel tips, cultural etiquette, verified historical lore, train schedules, and weather-smart routes tailored to your journey.',
             style: TextStyle(
-              fontSize: 13,
-              height: 1.42,
-              color: Color(0xFF2C564B),
+              fontFamily: kHelaFontFamily,
+              fontSize: 13.5,
+              height: 1.48,
+              color: colors.onSurfaceVariant,
             ),
           ),
 
           const SizedBox(height: 16),
 
           // Suggested Inquiries Section
-          const Text(
+          Text(
             'SUGGESTED INQUIRIES',
             style: TextStyle(
+              fontFamily: kHelaFontFamily,
               fontSize: 11,
               fontWeight: FontWeight.w800,
               letterSpacing: 0.8,
-              color: Color(0xFF487366),
+              color: colors.onSurfaceVariant,
             ),
           ),
 
@@ -939,24 +967,28 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
             runSpacing: 8,
             children: [
               _buildSuggestionChip(
+                colors: colors,
                 icon: Icons.temple_buddhist_rounded,
                 label: 'Temple etiquette',
                 query:
                     'What should I know before visiting a Buddhist temple like Kandy\'s Temple of the Tooth?',
               ),
               _buildSuggestionChip(
+                colors: colors,
                 icon: Icons.landscape_rounded,
                 label: 'History of Sigiriya',
                 query:
                     'Tell me about the history, ancient frescoes, and climbing tips for Sigiriya Rock.',
               ),
               _buildSuggestionChip(
+                colors: colors,
                 icon: Icons.train_rounded,
                 label: 'Scenic train tips',
                 query:
                     'What are the departure times and tips for the Kandy to Ella scenic train?',
               ),
               _buildSuggestionChip(
+                colors: colors,
                 icon: Icons.electric_rickshaw_rounded,
                 label: 'Tuk-tuk fair rates',
                 query:
@@ -970,31 +1002,40 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
   }
 
   Widget _buildSuggestionChip({
+    required HelaColorPalette colors,
     required IconData icon,
     required String label,
     required String query,
   }) {
+    final chipBg = colors.isDark
+        ? colors.surfaceContainer
+        : const Color(0xFFE6F8F1);
+    final chipBorder = colors.isDark
+        ? colors.architecturalBorder
+        : const Color(0xFFBDEADA);
+
     return InkWell(
       onTap: () => _handleSendMessage(query),
       borderRadius: BorderRadius.circular(20),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
         decoration: BoxDecoration(
-          color: const Color(0xFFE2F6EE),
+          color: chipBg,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFFBDEADA)),
+          border: Border.all(color: chipBorder),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 14, color: const Color(0xFF105B4B)),
+            Icon(icon, size: 14, color: colors.primary),
             const SizedBox(width: 6),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
+                fontFamily: kHelaFontFamily,
                 fontSize: 12.5,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF0F4D3F),
+                color: colors.onSurface,
               ),
             ),
           ],
@@ -1006,7 +1047,11 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
   // ──────────────────────────────────────────────────────────────────────────
   // USER MESSAGE BUBBLE
   // ──────────────────────────────────────────────────────────────────────────
-  Widget _buildUserMessageBubble(AskHelaMessage msg) {
+  Widget _buildUserMessageBubble(AskHelaMessage msg, HelaColorPalette colors) {
+    final bubbleColor = colors.isDark
+        ? colors.primaryContainer.withValues(alpha: 0.35)
+        : const Color(0xFFD2F4EB);
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Align(
@@ -1016,25 +1061,29 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
             maxWidth: MediaQuery.of(context).size.width * 0.82,
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: const BoxDecoration(
-            color: Color(0xFFD2F4EB), // User mint bubble color
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(16),
-              topRight: Radius.circular(16),
-              bottomLeft: Radius.circular(16),
+          decoration: BoxDecoration(
+            color: bubbleColor,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(18),
+              topRight: Radius.circular(18),
+              bottomLeft: Radius.circular(18),
               bottomRight: Radius.circular(4),
             ),
+            border: colors.isDark
+                ? Border.all(color: colors.architecturalBorder)
+                : null,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
                 msg.text,
-                style: const TextStyle(
+                style: TextStyle(
+                  fontFamily: kHelaFontFamily,
                   fontSize: 13.5,
-                  height: 1.35,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFF0D3128),
+                  height: 1.4,
+                  fontWeight: FontWeight.w600,
+                  color: colors.onSurface,
                 ),
               ),
               const SizedBox(height: 6),
@@ -1043,18 +1092,15 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
                 children: [
                   Text(
                     msg.timeString,
-                    style: const TextStyle(
+                    style: TextStyle(
+                      fontFamily: kHelaFontFamily,
                       fontSize: 10.5,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF4B796D),
+                      color: colors.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(width: 4),
-                  const Icon(
-                    Icons.done_all_rounded,
-                    size: 14,
-                    color: Color(0xFF4B796D),
-                  ),
+                  Icon(Icons.done_all_rounded, size: 14, color: colors.primary),
                 ],
               ),
             ],
@@ -1067,174 +1113,245 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
   // ──────────────────────────────────────────────────────────────────────────
   // AI RICH MESSAGE CARD
   // ──────────────────────────────────────────────────────────────────────────
-  Widget _buildAiMessageCard(AskHelaMessage msg) {
+  Widget _buildAiMessageCard(AskHelaMessage msg, HelaColorPalette colors) {
+    final badgeBg = colors.isDark
+        ? colors.primary.withValues(alpha: 0.18)
+        : const Color(0xFFE6F7F2);
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 18),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // HELA avatar
-          Container(
-            width: 32,
-            height: 32,
-            margin: const EdgeInsets.only(top: 2, right: 10),
-            decoration: const BoxDecoration(
-              color: Color(0xFF0B3328),
-              shape: BoxShape.circle,
-            ),
-            child: const Center(
-              child: Icon(
-                Icons.filter_vintage_rounded,
-                color: Color(0xFFDFAC6C),
-                size: 17,
-              ),
-            ),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: colors.cardBackground,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(6),
+            topRight: Radius.circular(18),
+            bottomLeft: Radius.circular(18),
+            bottomRight: Radius.circular(18),
           ),
-
-          // Message Card Content
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(4),
-                  topRight: Radius.circular(18),
-                  bottomLeft: Radius.circular(18),
-                  bottomRight: Radius.circular(18),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
+          border: Border.all(
+            color: colors.architecturalBorder.withValues(alpha: 0.75),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(
+                alpha: colors.isDark ? 0.22 : 0.05,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Header Row: Ayubowan! 🙏 and Verified Lore
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        msg.title ?? 'Ayubowan! 🙏',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                          color: Color(0xFF0B2C24),
+              blurRadius: 12,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header Row: Avatar + Ayubowan! 🙏 + Badge Pill + Copy
+            Row(
+              children: [
+                Container(
+                  width: 30,
+                  height: 30,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF0B3328),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.filter_vintage_rounded,
+                      color: Color(0xFFDFAC6C),
+                      size: 16,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 9),
+                Expanded(
+                  child: Text(
+                    msg.title ?? 'Ayubowan! 🙏',
+                    style: TextStyle(
+                      fontFamily: kHelaFontFamily,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.25,
+                      color: colors.onSurface,
+                    ),
+                  ),
+                ),
+                if (msg.badgeText != null)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 9,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: badgeBg,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.auto_awesome_rounded,
+                          size: 11,
+                          color: colors.primary,
                         ),
-                      ),
-                      if (msg.badgeText != null)
+                        const SizedBox(width: 4),
                         Text(
                           msg.badgeText!,
-                          style: const TextStyle(
+                          style: TextStyle(
+                            fontFamily: kHelaFontFamily,
                             fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF467468),
+                            fontWeight: FontWeight.w700,
+                            color: colors.primary,
                           ),
                         ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  // Main Text Content
-                  Text(
-                    msg.text,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      height: 1.42,
-                      color: Color(0xFF29554A),
+                      ],
                     ),
                   ),
-
-                  // Embedded Landmark Image
-                  if (msg.imageUrl != null) ...[
-                    const SizedBox(height: 14),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Stack(
-                        children: [
-                          Image.network(
-                            msg.imageUrl!,
-                            height: 155,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Container(
-                                  height: 155,
-                                  color: const Color(0xFF0B3328),
-                                  child: const Center(
-                                    child: Icon(
-                                      Icons.temple_buddhist_rounded,
-                                      color: Colors.white54,
-                                      size: 40,
-                                    ),
-                                  ),
-                                ),
-                          ),
-                          if (msg.imageCaption != null)
-                            Positioned(
-                              left: 10,
-                              bottom: 10,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.black.withValues(alpha: 0.6),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const Icon(
-                                      Icons.location_on_rounded,
-                                      size: 12,
-                                      color: Color(0xFF9AE5D3),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      msg.imageCaption!,
-                                      style: const TextStyle(
-                                        fontSize: 11.5,
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                        ],
+                const SizedBox(width: 4),
+                InkWell(
+                  borderRadius: BorderRadius.circular(999),
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: msg.text));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Reply copied to clipboard'),
+                        duration: Duration(seconds: 2),
                       ),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(5),
+                    child: Icon(
+                      Icons.copy_rounded,
+                      size: 15,
+                      color: colors.onSurfaceVariant,
                     ),
-                  ],
+                  ),
+                ),
+              ],
+            ),
 
-                  // Bento Items
-                  if (msg.bentoItems != null && msg.bentoItems!.isNotEmpty) ...[
-                    const SizedBox(height: 12),
-                    ...msg.bentoItems!.map(_buildBentoItem),
-                  ],
-                ],
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 11),
+              child: Divider(
+                height: 1,
+                thickness: 1,
+                color: colors.architecturalBorder.withValues(alpha: 0.45),
               ),
             ),
-          ),
-        ],
+
+            // Structured Key-Points & Sections Content
+            StructuredAiReplyView(text: msg.text),
+
+            // Embedded Landmark Image
+            if (msg.imageUrl != null) ...[
+              const SizedBox(height: 14),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(14),
+                child: Stack(
+                  children: [
+                    Image.network(
+                      msg.imageUrl!,
+                      height: 155,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        height: 155,
+                        color: const Color(0xFF0B3328),
+                        child: const Center(
+                          child: Icon(
+                            Icons.temple_buddhist_rounded,
+                            color: Colors.white54,
+                            size: 40,
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (msg.imageCaption != null)
+                      Positioned(
+                        left: 10,
+                        bottom: 10,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.62),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.location_on_rounded,
+                                size: 12,
+                                color: Color(0xFF9AE5D3),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                msg.imageCaption!,
+                                style: const TextStyle(
+                                  fontFamily: kHelaFontFamily,
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+
+            // Bento Items (Key Takeaways)
+            if (msg.bentoItems != null && msg.bentoItems!.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              ...msg.bentoItems!.map((item) => _buildBentoItem(item, colors)),
+            ],
+
+            // Subtle timestamp footer
+            const SizedBox(height: 10),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                msg.timeString,
+                style: TextStyle(
+                  fontFamily: kHelaFontFamily,
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w600,
+                  color: colors.onSurfaceVariant.withValues(alpha: 0.8),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildBentoItem(AskHelaBentoItem item) {
+  Widget _buildBentoItem(AskHelaBentoItem item, HelaColorPalette colors) {
+    final boxColor = colors.isDark
+        ? colors.surfaceContainer
+        : const Color(0xFFE8F7F2);
+    final circleColor = colors.isDark
+        ? colors.primary.withValues(alpha: 0.2)
+        : const Color(0xFFC2EBE0);
+
     return Container(
       margin: const EdgeInsets.only(top: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFE8F7F2),
+        color: boxColor,
         borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: colors.architecturalBorder.withValues(alpha: 0.55),
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1242,11 +1359,11 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
           Container(
             width: 32,
             height: 32,
-            decoration: const BoxDecoration(
-              color: Color(0xFFC2EBE0),
+            decoration: BoxDecoration(
+              color: circleColor,
               shape: BoxShape.circle,
             ),
-            child: Icon(item.icon, size: 16, color: const Color(0xFF0F5B4B)),
+            child: Icon(item.icon, size: 16, color: colors.primary),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -1255,19 +1372,21 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
               children: [
                 Text(
                   item.title,
-                  style: const TextStyle(
+                  style: TextStyle(
+                    fontFamily: kHelaFontFamily,
                     fontSize: 13,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF0B2D25),
+                    color: colors.onSurface,
                   ),
                 ),
                 const SizedBox(height: 3),
                 Text(
                   item.description,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    height: 1.35,
-                    color: Color(0xFF356256),
+                  style: TextStyle(
+                    fontFamily: kHelaFontFamily,
+                    fontSize: 12.5,
+                    height: 1.4,
+                    color: colors.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -1278,7 +1397,7 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
     );
   }
 
-  Widget _buildTypingIndicator() {
+  Widget _buildTypingIndicator(HelaColorPalette colors) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -1302,29 +1421,31 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: colors.cardBackground,
               borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: colors.architecturalBorder.withValues(alpha: 0.6),
+              ),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              children: const [
+              children: [
                 SizedBox(
                   width: 14,
                   height: 14,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      Color(0xFF105B4B),
-                    ),
+                    valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
                   ),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Text(
                   'Island Intelligence thinking...',
                   style: TextStyle(
+                    fontFamily: kHelaFontFamily,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF356256),
+                    color: colors.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -1338,31 +1459,33 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
   // ──────────────────────────────────────────────────────────────────────────
   // BOTTOM INPUT BAR
   // ──────────────────────────────────────────────────────────────────────────
-  Widget _buildBottomInputBar() {
+  Widget _buildBottomInputBar(HelaColorPalette colors) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFFEAF8F4),
+        color: colors.background,
         border: Border(
           top: BorderSide(
-            color: const Color(0xFFCCE8DF).withValues(alpha: 0.6),
+            color: colors.architecturalBorder.withValues(alpha: 0.55),
           ),
         ),
       ),
       child: Row(
         children: [
-          // Text Input Field
+          // Text Input Field matching Home screen capsule search bar
           Expanded(
             child: Container(
               height: 48,
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: const Color(0xFFC6EAE0)),
+                color: colors.surfaceContainerLowest,
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(
+                  color: colors.architecturalBorder.withValues(alpha: 0.8),
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.03),
-                    blurRadius: 6,
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
                 ],
@@ -1370,10 +1493,10 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
               child: Row(
                 children: [
                   const SizedBox(width: 14),
-                  const Icon(
+                  Icon(
                     Icons.auto_awesome_rounded,
                     size: 18,
-                    color: Color(0xFF105B4B),
+                    color: colors.primary,
                   ),
                   const SizedBox(width: 10),
                   Expanded(
@@ -1382,16 +1505,20 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
                       focusNode: _focusNode,
                       textInputAction: TextInputAction.send,
                       onSubmitted: _handleSendMessage,
-                      style: const TextStyle(
+                      style: TextStyle(
+                        fontFamily: kHelaFontFamily,
                         fontSize: 13.5,
-                        color: Color(0xFF0B2D25),
+                        color: colors.onSurface,
                         fontWeight: FontWeight.w500,
                       ),
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: 'Ask about temples, trains, food...',
                         hintStyle: TextStyle(
-                          fontSize: 13,
-                          color: Color(0xFF7FA89C),
+                          fontFamily: kHelaFontFamily,
+                          fontSize: 13.5,
+                          color: colors.onSurfaceVariant.withValues(
+                            alpha: 0.75,
+                          ),
                           fontWeight: FontWeight.w400,
                         ),
                         filled: false,
@@ -1403,7 +1530,9 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
                         errorBorder: InputBorder.none,
                         focusedErrorBorder: InputBorder.none,
                         isDense: true,
-                        contentPadding: EdgeInsets.symmetric(vertical: 12),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 12,
+                        ),
                       ),
                     ),
                   ),

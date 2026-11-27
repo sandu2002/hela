@@ -1,3 +1,6 @@
 {
-  "GEMINI_API_KEY": "your_gemini_api_key_here"
+  "GEMINI_API_KEY": "your_gemini_api_key_here",
+  "DEEPSEEK_API_KEY": "your_openrouter_nvidia_or_deepseek_key_here",
+  "DEEPSEEK_BASE_URL": "https://openrouter.ai/api/v1",
+  "DEEPSEEK_MODEL": "deepseek/deepseek-v4.1-flash"
 }

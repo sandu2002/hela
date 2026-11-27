@@ -24,10 +24,12 @@ class TripPlannerPage extends StatefulWidget {
 
 class _TripPlannerPageState extends State<TripPlannerPage> {
   // Form State
-  final TextEditingController _startLocationController =
-      TextEditingController(text: 'Bandaranaike Intl Airport (CMB)');
-  final TextEditingController _endLocationController =
-      TextEditingController(text: 'Bandaranaike Intl Airport (CMB)');
+  final TextEditingController _startLocationController = TextEditingController(
+    text: 'Bandaranaike Intl Airport (CMB)',
+  );
+  final TextEditingController _endLocationController = TextEditingController(
+    text: 'Bandaranaike Intl Airport (CMB)',
+  );
   final TextEditingController _customStopController = TextEditingController();
   final TextEditingController _extraNotesController = TextEditingController();
   bool _returnToStart = true;
@@ -54,8 +56,9 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
   // Budget Tier: 'value', 'comfort', 'luxury', 'custom'
   String _selectedBudgetTier = 'comfort';
   int _customDailyBudget = 120;
-  final TextEditingController _customBudgetController =
-      TextEditingController(text: '120');
+  final TextEditingController _customBudgetController = TextEditingController(
+    text: '120',
+  );
 
   String get _effectiveBudgetTier => _selectedBudgetTier == 'custom'
       ? 'custom:$_customDailyBudget'
@@ -188,18 +191,43 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
   }
 
   static const List<String> _shortMonths = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
   ];
 
   static const List<String> _fullMonths = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
 
   static const List<String> _weekdays = [
-    'Monday', 'Tuesday', 'Wednesday', 'Thursday',
-    'Friday', 'Saturday', 'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
   ];
 
   DateTime get _today {
@@ -240,7 +268,9 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
           onSurface: colors.onSurface,
         ),
         dialogTheme: DialogThemeData(
-          backgroundColor: isDark ? colors.surfaceContainer : colors.cardBackground,
+          backgroundColor: isDark
+              ? colors.surfaceContainer
+              : colors.cardBackground,
         ),
       ),
       child: child!,
@@ -250,8 +280,9 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
   Future<void> _pickDateRange() async {
     final firstDate = _today;
     final lastDate = firstDate.add(const Duration(days: 730));
-    final initialStart =
-        _startDate.isBefore(firstDate) ? firstDate : _startDate;
+    final initialStart = _startDate.isBefore(firstDate)
+        ? firstDate
+        : _startDate;
     final rawEnd = _endDate.isAfter(initialStart)
         ? _endDate
         : initialStart.add(const Duration(days: 1));
@@ -279,8 +310,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
   Future<void> _pickArrivalDate() async {
     final firstDate = _today;
     final lastDate = firstDate.add(const Duration(days: 730));
-    final initialDate =
-        _startDate.isBefore(firstDate) ? firstDate : _startDate;
+    final initialDate = _startDate.isBefore(firstDate) ? firstDate : _startDate;
 
     final picked = await showDatePicker(
       context: context,
@@ -329,7 +359,8 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
         .toList();
     final custom = _customMustVisitStops.map((name) {
       return Destination(
-        sourceId: 'custom_${name.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '_')}',
+        sourceId:
+            'custom_${name.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '_')}',
         name: name,
         description: 'Traveler requested must-visit stop in Sri Lanka',
         latitude: 7.8731,
@@ -351,8 +382,9 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
   void _addCustomMustVisitStop() {
     final raw = _customStopController.text.trim();
     if (raw.isEmpty) return;
-    final exists = _customMustVisitStops
-        .any((s) => s.toLowerCase() == raw.toLowerCase());
+    final exists = _customMustVisitStops.any(
+      (s) => s.toLowerCase() == raw.toLowerCase(),
+    );
     setState(() {
       if (!exists) _customMustVisitStops.add(raw);
       _customStopController.clear();
@@ -375,26 +407,29 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
             ItineraryPlanningLoadingPage(
-          startLocation: start,
-          endLocation: _effectiveEndLocation,
-          startDate: _startDate,
-          endDate: _endDate,
-          adults: _adults,
-          children: _children,
-          budgetTier: _effectiveBudgetTier,
-          interests: _selectedInterests,
-          pace: _selectedPace,
-          accommodationType: _selectedAccommodationType,
-          transportMode: _selectedTransportMode,
-          selectedDestinations: _buildSelectedDestinations(),
-          dietaryPreferences: _selectedDietary,
-          accessibilityNeeds: _selectedAccessibility,
-          extraNotes: _extraNotesController.text,
-          tripDays: _tripDays,
-        ),
+              startLocation: start,
+              endLocation: _effectiveEndLocation,
+              startDate: _startDate,
+              endDate: _endDate,
+              adults: _adults,
+              children: _children,
+              budgetTier: _effectiveBudgetTier,
+              interests: _selectedInterests,
+              pace: _selectedPace,
+              accommodationType: _selectedAccommodationType,
+              transportMode: _selectedTransportMode,
+              selectedDestinations: _buildSelectedDestinations(),
+              dietaryPreferences: _selectedDietary,
+              accessibilityNeeds: _selectedAccessibility,
+              extraNotes: _extraNotesController.text,
+              tripDays: _tripDays,
+            ),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(
-            opacity: CurvedAnimation(parent: animation, curve: Curves.easeInOut),
+            opacity: CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeInOut,
+            ),
             child: child,
           );
         },
@@ -421,10 +456,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF004D40),
-              Color(0xFF00251A),
-            ],
+            colors: [Color(0xFF004D40), Color(0xFF00251A)],
           ),
         ),
         child: const Center(
@@ -461,7 +493,9 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                       shape: BoxShape.circle,
                       color: colors.surfaceContainer,
                       border: Border.all(
-                        color: colors.architecturalBorder.withValues(alpha: 0.6),
+                        color: colors.architecturalBorder.withValues(
+                          alpha: 0.6,
+                        ),
                       ),
                     ),
                     child: Icon(
@@ -658,7 +692,10 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                     runSpacing: 8,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
                           color: colors.primaryFixed,
                           borderRadius: BorderRadius.circular(12),
@@ -673,7 +710,11 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.bolt_rounded, size: 15, color: colors.primary),
+                            Icon(
+                              Icons.bolt_rounded,
+                              size: 15,
+                              color: colors.primary,
+                            ),
                             const SizedBox(width: 5),
                             Text(
                               'Instant AI Routes',
@@ -687,7 +728,10 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.96),
                           borderRadius: BorderRadius.circular(12),
@@ -702,7 +746,11 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                         child: const Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.tune_rounded, size: 15, color: Color(0xFF00382E)),
+                            Icon(
+                              Icons.tune_rounded,
+                              size: 15,
+                              color: Color(0xFF00382E),
+                            ),
                             SizedBox(width: 5),
                             Text(
                               '100% Tailored',
@@ -750,7 +798,10 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                   ),
                   const Text(
                     ' *',
-                    style: TextStyle(color: Color(0xFFDC2626), fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: Color(0xFFDC2626),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
@@ -758,7 +809,11 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
             const SizedBox(width: 8),
             Text(
               'Required',
-              style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600, color: colors.secondary),
+              style: TextStyle(
+                fontSize: 10.5,
+                fontWeight: FontWeight.w600,
+                color: colors.secondary,
+              ),
             ),
           ],
         ),
@@ -791,7 +846,11 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                   color: colors.surfaceContainer,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(Icons.location_on_rounded, size: 20, color: colors.primary),
+                child: Icon(
+                  Icons.location_on_rounded,
+                  size: 20,
+                  color: colors.primary,
+                ),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -810,7 +869,11 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                   ),
                   child: TextField(
                     controller: _startLocationController,
-                    style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600, color: colors.onSurface),
+                    style: TextStyle(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w600,
+                      color: colors.onSurface,
+                    ),
                     decoration: const InputDecoration(
                       border: InputBorder.none,
                       enabledBorder: InputBorder.none,
@@ -826,11 +889,22 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.my_location_rounded, size: 19, color: colors.secondary),
+                icon: Icon(
+                  Icons.my_location_rounded,
+                  size: 19,
+                  color: colors.secondary,
+                ),
                 onPressed: () {
-                  setState(() => _startLocationController.text = 'Bandaranaike Intl Airport (CMB)');
+                  setState(
+                    () => _startLocationController.text =
+                        'Bandaranaike Intl Airport (CMB)',
+                  );
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Set to current location: Bandaranaike Airport (CMB)')),
+                    const SnackBar(
+                      content: Text(
+                        'Set to current location: Bandaranaike Airport (CMB)',
+                      ),
+                    ),
                   );
                 },
               ),
@@ -845,11 +919,26 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
           physics: const BouncingScrollPhysics(),
           child: Row(
             children: [
-              _buildLocationQuickPill('CMB Airport', Icons.flight_land_rounded, 'Bandaranaike Airport (CMB)', colors),
+              _buildLocationQuickPill(
+                'CMB Airport',
+                Icons.flight_land_rounded,
+                'Bandaranaike Airport (CMB)',
+                colors,
+              ),
               const SizedBox(width: 6),
-              _buildLocationQuickPill('Colombo Fort', Icons.train_rounded, 'Colombo Fort Railway Station', colors),
+              _buildLocationQuickPill(
+                'Colombo Fort',
+                Icons.train_rounded,
+                'Colombo Fort Railway Station',
+                colors,
+              ),
               const SizedBox(width: 6),
-              _buildLocationQuickPill('Kandy', Icons.temple_buddhist_rounded, 'Kandy City Center', colors),
+              _buildLocationQuickPill(
+                'Kandy',
+                Icons.temple_buddhist_rounded,
+                'Kandy City Center',
+                colors,
+              ),
             ],
           ),
         ),
@@ -1028,9 +1117,19 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
               children: [
                 Text(
                   HelaAppStateProvider.of(context).tr('travel_dates'),
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface),
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: colors.onSurface,
+                  ),
                 ),
-                const Text(' *', style: TextStyle(color: Color(0xFFDC2626), fontWeight: FontWeight.bold)),
+                const Text(
+                  ' *',
+                  style: TextStyle(
+                    color: Color(0xFFDC2626),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ],
             ),
             InkWell(
@@ -1044,7 +1143,11 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.timelapse_rounded, size: 12, color: colors.onSecondaryContainer),
+                    Icon(
+                      Icons.timelapse_rounded,
+                      size: 12,
+                      color: colors.onSecondaryContainer,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       '$_tripDays Days Island Loop',
@@ -1055,7 +1158,11 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                       ),
                     ),
                     const SizedBox(width: 4),
-                    Icon(Icons.edit_calendar_rounded, size: 11, color: colors.onSecondaryContainer),
+                    Icon(
+                      Icons.edit_calendar_rounded,
+                      size: 11,
+                      color: colors.onSecondaryContainer,
+                    ),
                   ],
                 ),
               ),
@@ -1078,7 +1185,11 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(color: colors.architecturalBorder),
                     boxShadow: [
-                      BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 6, offset: const Offset(0, 2)),
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.03),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
                     ],
                   ),
                   child: Column(
@@ -1086,7 +1197,11 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.calendar_today_rounded, size: 13, color: colors.primary),
+                          Icon(
+                            Icons.calendar_today_rounded,
+                            size: 13,
+                            color: colors.primary,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             'ARRIVAL',
@@ -1098,18 +1213,30 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                             ),
                           ),
                           const Spacer(),
-                          Icon(Icons.edit_rounded, size: 12, color: colors.onSurfaceVariant),
+                          Icon(
+                            Icons.edit_rounded,
+                            size: 12,
+                            color: colors.onSurfaceVariant,
+                          ),
                         ],
                       ),
                       const SizedBox(height: 4),
                       Text(
                         _formatShortDate(_startDate),
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: colors.onSurface),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: colors.onSurface,
+                        ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         '${_weekdayName(_startDate)} • Morning',
-                        style: TextStyle(fontSize: 11, color: colors.secondary, fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: colors.secondary,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ],
                   ),
@@ -1128,7 +1255,11 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(color: colors.architecturalBorder),
                     boxShadow: [
-                      BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 6, offset: const Offset(0, 2)),
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.03),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
                     ],
                   ),
                   child: Column(
@@ -1136,7 +1267,11 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.event_available_rounded, size: 13, color: colors.primary),
+                          Icon(
+                            Icons.event_available_rounded,
+                            size: 13,
+                            color: colors.primary,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             'DEPARTURE',
@@ -1148,18 +1283,30 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                             ),
                           ),
                           const Spacer(),
-                          Icon(Icons.edit_rounded, size: 12, color: colors.onSurfaceVariant),
+                          Icon(
+                            Icons.edit_rounded,
+                            size: 12,
+                            color: colors.onSurfaceVariant,
+                          ),
                         ],
                       ),
                       const SizedBox(height: 4),
                       Text(
                         _formatShortDate(_endDate),
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: colors.onSurface),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: colors.onSurface,
+                        ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         '${_weekdayName(_endDate)} • Evening',
-                        style: TextStyle(fontSize: 11, color: colors.secondary, fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: colors.secondary,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ],
                   ),
@@ -1197,7 +1344,11 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
               child: Text(
                 HelaAppStateProvider.of(context).tr('travel_party'),
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: colors.onSurface,
+                ),
               ),
             ),
             const SizedBox(width: 8),
@@ -1211,7 +1362,11 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                 child: Text(
                   '${_adults + _children} Travellers • $_partyDescription',
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: colors.primary),
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: colors.primary,
+                  ),
                 ),
               ),
             ),
@@ -1226,7 +1381,11 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: colors.architecturalBorder),
             boxShadow: [
-              BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 6, offset: const Offset(0, 2)),
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
             ],
           ),
           child: Column(
@@ -1238,8 +1397,21 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Adults', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: colors.onSurface)),
-                      Text('Age 12 and above', style: TextStyle(fontSize: 11, color: colors.onSurfaceVariant)),
+                      Text(
+                        'Adults',
+                        style: TextStyle(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w700,
+                          color: colors.onSurface,
+                        ),
+                      ),
+                      Text(
+                        'Age 12 and above',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: colors.onSurfaceVariant,
+                        ),
+                      ),
                     ],
                   ),
                   Row(
@@ -1256,7 +1428,11 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                         padding: const EdgeInsets.symmetric(horizontal: 14),
                         child: Text(
                           '$_adults',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: colors.onSurface),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                            color: colors.onSurface,
+                          ),
                         ),
                       ),
                       _buildStepperBtn(
@@ -1280,8 +1456,21 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Children', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: colors.onSurface)),
-                      Text('Age 0 to 11 years', style: TextStyle(fontSize: 11, color: colors.onSurfaceVariant)),
+                      Text(
+                        'Children',
+                        style: TextStyle(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w700,
+                          color: colors.onSurface,
+                        ),
+                      ),
+                      Text(
+                        'Age 0 to 11 years',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: colors.onSurfaceVariant,
+                        ),
+                      ),
                     ],
                   ),
                   Row(
@@ -1298,7 +1487,11 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                         padding: const EdgeInsets.symmetric(horizontal: 14),
                         child: Text(
                           '$_children',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: colors.onSurface),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                            color: colors.onSurface,
+                          ),
                         ),
                       ),
                       _buildStepperBtn(
@@ -1392,7 +1585,8 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
           title: 'Comfort & Boutique',
           priceAmount: r'~$100 – $180',
           priceUnit: '/ day',
-          description: 'Heritage boutique villas · Private AC car · Guided tours',
+          description:
+              'Heritage boutique villas · Private AC car · Guided tours',
           icon: Icons.hotel_rounded,
           isPopular: true,
           colors: colors,
@@ -1439,9 +1633,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
         const SizedBox(height: 12),
         Divider(
           height: 1,
-          color: isDark
-              ? colors.architecturalBorder
-              : const Color(0xFFD6ECE5),
+          color: isDark ? colors.architecturalBorder : const Color(0xFFD6ECE5),
         ),
         const SizedBox(height: 12),
         Row(
@@ -1609,7 +1801,9 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
               : const Color(0xFFF2FBF8))
         : colors.cardBackground;
 
-    final borderColor = isSelected ? colors.primary : colors.architecturalBorder;
+    final borderColor = isSelected
+        ? colors.primary
+        : colors.architecturalBorder;
 
     return Material(
       color: Colors.transparent,
@@ -1648,7 +1842,9 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                     width: 42,
                     height: 42,
                     decoration: BoxDecoration(
-                      color: isSelected ? colors.primary : colors.surfaceContainer,
+                      color: isSelected
+                          ? colors.primary
+                          : colors.surfaceContainer,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
@@ -1688,7 +1884,9 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                                       ),
                                       decoration: BoxDecoration(
                                         color: const Color(0xFFFEF3C7),
-                                        borderRadius: BorderRadius.circular(999),
+                                        borderRadius: BorderRadius.circular(
+                                          999,
+                                        ),
                                         border: Border.all(
                                           color: const Color(0xFFFDE68A),
                                         ),
@@ -1807,15 +2005,33 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                     children: [
                       Flexible(
                         child: Text(
-                          HelaAppStateProvider.of(context).tr('travel_interests'),
+                          HelaAppStateProvider.of(
+                            context,
+                          ).tr('travel_interests'),
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface),
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: colors.onSurface,
+                          ),
                         ),
                       ),
-                      const Text(' *', style: TextStyle(color: Color(0xFFDC2626), fontWeight: FontWeight.bold)),
+                      const Text(
+                        ' *',
+                        style: TextStyle(
+                          color: Color(0xFFDC2626),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
-                  Text('Tap to pick your island passions', style: TextStyle(fontSize: 11, color: colors.onSurfaceVariant)),
+                  Text(
+                    'Tap to pick your island passions',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -1828,7 +2044,11 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
               ),
               child: Text(
                 '${_selectedInterests.length} Selected',
-                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: colors.primary),
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: colors.primary,
+                ),
               ),
             ),
           ],
@@ -1855,16 +2075,23 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
               },
               borderRadius: BorderRadius.circular(999),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 7,
+                ),
                 decoration: BoxDecoration(
                   color: isSelected ? colors.primary : colors.cardBackground,
                   borderRadius: BorderRadius.circular(999),
                   border: Border.all(
-                    color: isSelected ? colors.primary : colors.architecturalBorder,
+                    color: isSelected
+                        ? colors.primary
+                        : colors.architecturalBorder,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: isSelected ? colors.primary.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.02),
+                      color: isSelected
+                          ? colors.primary.withValues(alpha: 0.2)
+                          : Colors.black.withValues(alpha: 0.02),
                       blurRadius: 4,
                       offset: const Offset(0, 1),
                     ),
@@ -1906,7 +2133,11 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
       children: [
         Text(
           HelaAppStateProvider.of(context).tr('pace_travel_style'),
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface),
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: colors.onSurface,
+          ),
         ),
         const SizedBox(height: 8),
 
@@ -1969,7 +2200,9 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
           ),
           boxShadow: [
             BoxShadow(
-              color: isSelected ? colors.primary.withValues(alpha: 0.22) : Colors.black.withValues(alpha: 0.03),
+              color: isSelected
+                  ? colors.primary.withValues(alpha: 0.22)
+                  : Colors.black.withValues(alpha: 0.03),
               blurRadius: 6,
               offset: const Offset(0, 2),
             ),
@@ -1996,7 +2229,9 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
               sublabel,
               style: TextStyle(
                 fontSize: 9.5,
-                color: isSelected ? colors.secondaryContainer : colors.onSurfaceVariant,
+                color: isSelected
+                    ? colors.secondaryContainer
+                    : colors.onSurfaceVariant,
               ),
               textAlign: TextAlign.center,
               maxLines: 2,
@@ -2042,7 +2277,10 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
               borderRadius: BorderRadius.circular(14),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 180),
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: isSelected ? colors.primary : colors.cardBackground,
                   borderRadius: BorderRadius.circular(14),
@@ -2189,8 +2427,9 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
           runSpacing: 8,
           children: [
             ...PlaceService.curatedSriLankaPlaces.map((place) {
-              final isSelected =
-                  _selectedDestinationIds.contains(place.sourceId);
+              final isSelected = _selectedDestinationIds.contains(
+                place.sourceId,
+              );
               return _buildSelectableChip(
                 label: place.name,
                 selected: isSelected,
@@ -2301,7 +2540,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
         ),
         const SizedBox(height: 2),
         Text(
-          'Optional guardrails so Gemini avoids unsuitable stops or meals',
+          'Optional guardrails so DeepSeek AI avoids unsuitable stops or meals',
           style: TextStyle(fontSize: 11.5, color: colors.onSurfaceVariant),
         ),
         const SizedBox(height: 10),
@@ -2387,10 +2626,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
           decoration: InputDecoration(
             hintText:
                 'e.g., Sunrise climb at Pidurangala, celebrating an anniversary, avoid crowded tourist traps...',
-            hintStyle: TextStyle(
-              fontSize: 12,
-              color: colors.onSurfaceVariant,
-            ),
+            hintStyle: TextStyle(fontSize: 12, color: colors.onSurfaceVariant),
             filled: true,
             fillColor: colors.cardBackground,
             contentPadding: const EdgeInsets.all(12),
@@ -2417,7 +2653,9 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
-                  color: alreadyAdded ? colors.primary : colors.onSurfaceVariant,
+                  color: alreadyAdded
+                      ? colors.primary
+                      : colors.onSurfaceVariant,
                 ),
               ),
               backgroundColor: alreadyAdded
@@ -2430,8 +2668,9 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                 setState(() {
                   if (alreadyAdded) return;
                   final trimmed = _extraNotesController.text.trim();
-                  _extraNotesController.text =
-                      trimmed.isEmpty ? chip : '$trimmed, $chip';
+                  _extraNotesController.text = trimmed.isEmpty
+                      ? chip
+                      : '$trimmed, $chip';
                 });
               },
             );
@@ -2539,7 +2778,9 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                 Row(
                   children: [
                     Text(
-                      HelaAppStateProvider.of(context).tr('island_route_optimizer'),
+                      HelaAppStateProvider.of(
+                        context,
+                      ).tr('island_route_optimizer'),
                       style: TextStyle(
                         fontSize: 13.5,
                         fontWeight: FontWeight.w700,
@@ -2548,7 +2789,10 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                     ),
                     const SizedBox(width: 6),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5,
+                        vertical: 1.5,
+                      ),
                       decoration: BoxDecoration(
                         color: colors.tertiaryFixed,
                         borderRadius: BorderRadius.circular(4),
@@ -2596,19 +2840,30 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
               foregroundColor: Colors.white,
               elevation: 4,
               shadowColor: colors.primary.withValues(alpha: 0.35),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.auto_awesome_rounded, size: 19, color: colors.goldenAmber),
+                Icon(
+                  Icons.auto_awesome_rounded,
+                  size: 19,
+                  color: colors.goldenAmber,
+                ),
                 const SizedBox(width: 8),
                 Flexible(
                   child: Text(
-                    HelaAppStateProvider.of(context).tr('generate_my_itinerary'),
+                    HelaAppStateProvider.of(
+                      context,
+                    ).tr('generate_my_itinerary'),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700),
+                    style: const TextStyle(
+                      fontSize: 14.5,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ],
@@ -2619,7 +2874,11 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.verified_user_rounded, size: 13, color: colors.secondary),
+            Icon(
+              Icons.verified_user_rounded,
+              size: 13,
+              color: colors.secondary,
+            ),
             const SizedBox(width: 4),
             Flexible(
               child: Text(
