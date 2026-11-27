@@ -601,82 +601,14 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                 gradient: LinearGradient(
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
+                  stops: const [0.0, 0.45, 0.8, 1.0],
                   colors: [
                     colors.primary.withValues(alpha: 0.95),
-                    colors.primary.withValues(alpha: 0.45),
+                    colors.primary.withValues(alpha: 0.65),
+                    colors.primary.withValues(alpha: 0.2),
                     Colors.transparent,
                   ],
                 ),
-              ),
-            ),
-            // Floating Badges at Top of Banner
-            Positioned(
-              top: 14,
-              left: 14,
-              right: 14,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flexible(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.35),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.auto_awesome_rounded, size: 12, color: Color(0xFF6EE7B7)),
-                          SizedBox(width: 5),
-                          Flexible(
-                            child: Text(
-                              'Gemini AI Curated',
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 0.2,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Flexible(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.35),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.location_on_rounded, size: 12, color: Colors.white),
-                          SizedBox(width: 4),
-                          Flexible(
-                            child: Text(
-                              'Sigiriya Fortress',
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 0.2,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
               ),
             ),
             // Integrated Title, Subtitle and Badges at Bottom of Banner

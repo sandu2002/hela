@@ -712,12 +712,6 @@ class _HelaHomePageState extends State<HelaHomePage>
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Icon(
-                                      Icons.auto_awesome_rounded,
-                                      size: 16,
-                                      color: Color(0xFF052E26),
-                                    ),
-                                    const SizedBox(width: 6),
                                     Flexible(
                                       child: Text(
                                         HelaAppStateProvider.of(

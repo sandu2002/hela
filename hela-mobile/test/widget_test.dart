@@ -946,11 +946,11 @@ void main() {
     );
     await tester.pump();
 
-    // Verify top bar, status, and live weather indicator (without language dropdown pill)
+    // Verify top bar without status and weather bar
     expect(find.text('Ask HELA'), findsOneWidget);
     expect(find.byIcon(Icons.translate_rounded), findsNothing);
-    expect(find.text('Online • Island Intelligence Active'), findsOneWidget);
-    expect(find.byIcon(Icons.thermostat_rounded), findsOneWidget);
+    expect(find.text('Online • Island Intelligence Active'), findsNothing);
+    expect(find.byIcon(Icons.thermostat_rounded), findsNothing);
 
     // Verify welcome intro card & suggested inquiries
     expect(find.text("Hello! I'm your HELA travel guide."), findsOneWidget);
@@ -993,7 +993,7 @@ void main() {
 
     // Now on AskHelaPage
     expect(find.byType(AskHelaPage), findsOneWidget);
-    expect(find.text('Online • Island Intelligence Active'), findsOneWidget);
+    expect(find.text("Hello! I'm your HELA travel guide."), findsOneWidget);
 
     await tester.pumpWidget(const SizedBox());
   });

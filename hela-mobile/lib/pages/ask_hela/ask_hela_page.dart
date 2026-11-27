@@ -77,7 +77,6 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
 
   // Live location & Google weather state
   LiveWeatherData? _liveWeather;
-  bool _isWeatherLoading = true;
   Timer? _weatherRefreshTimer;
 
   @override
@@ -122,7 +121,6 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
     bool requestPermissionIfNeeded = false,
   }) async {
     if (!mounted) return;
-    setState(() => _isWeatherLoading = true);
 
     final appState = HelaAppStateProvider.of(context);
     final fallbackCity = appState.userLocation.split(',').first.trim();
@@ -136,7 +134,6 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
       if (updated != null) {
         _liveWeather = updated;
       }
-      _isWeatherLoading = false;
     });
   }
 
@@ -719,9 +716,6 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
             // Top App Bar
             _buildTopBar(),
 
-            // Status Bar & Weather Info
-            _buildStatusAndWeatherBar(),
-
             // Chat Scrollable View
             Expanded(
               child: ListView(
@@ -846,94 +840,6 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ──────────────────────────────────────────────────────────────────────────
-  // STATUS & WEATHER BAR
-  // ──────────────────────────────────────────────────────────────────────────
-  Widget _buildStatusAndWeatherBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          // Left pill: Online • Island Intelligence Active
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(
-              color: const Color(0xFFD4F3EA),
-              borderRadius: BorderRadius.circular(999),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.circle, size: 7, color: Color(0xFF10B981)),
-                const SizedBox(width: 6),
-                Flexible(
-                  child: Text(
-                    HelaAppStateProvider.of(
-                      context,
-                    ).tr('online_intelligence_active'),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 11.5,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF0F5444),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Right text: Live Weather & Location info (tap to refresh)
-          Tooltip(
-            message: _liveWeather != null
-                ? 'Live via ${_liveWeather!.source} • Tap to refresh'
-                : 'Fetching live temperature & location',
-            child: InkWell(
-              onTap: () => _refreshLiveWeather(requestPermissionIfNeeded: true),
-              borderRadius: BorderRadius.circular(12),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.thermostat_rounded,
-                      size: 15,
-                      color: Color(0xFF38685C),
-                    ),
-                    const SizedBox(width: 3),
-                    Text(
-                      _liveWeather?.formattedLabel ??
-                          (_isWeatherLoading ? 'Locating...' : '--°C'),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF38685C),
-                      ),
-                    ),
-                    if (_isWeatherLoading) ...[
-                      const SizedBox(width: 5),
-                      const SizedBox(
-                        width: 10,
-                        height: 10,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 1.5,
-                          color: Color(0xFF38685C),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
             ),
           ),
         ],
