@@ -35,7 +35,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
   final PageController _pageController = PageController();
   int _currentIndex = 0;
 
-
   // Selected category on Step 2 (Explore Every Corner)
   final int _selectedCategoryIndex = 0;
 
@@ -117,9 +116,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 
   void _navigateToSignUp() {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const SignUpPage()),
-    );
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const SignUpPage()));
   }
 
   void _navigateToSignIn() {
@@ -137,9 +136,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
       appState.signOut();
     } catch (_) {}
 
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const HelaHomePage()),
-    );
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const HelaHomePage()));
   }
 
   void _showLanguageSelector() {
@@ -150,7 +149,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${appState.tr('language_updated')} ${lang.nativeName} (${lang.code}) ✨'),
+            content: Text(
+              '${appState.tr('language_updated')} ${lang.nativeName} (${lang.code}) ✨',
+            ),
             duration: const Duration(seconds: 2),
           ),
         );
@@ -179,7 +180,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 'trainNo': 'Train #1007',
                 'route': 'Colombo Fort ➔ Kandy ➔ Ella ➔ Badulla',
                 'time': '05:30 AM – 03:25 PM',
-                'highlights': 'Stops 10 mins at Nine Arch Bridge & St. Clair Falls',
+                'highlights':
+                    'Stops 10 mins at Nine Arch Bridge & St. Clair Falls',
                 'class': '1st Observation & 2nd Reserved',
               },
               {
@@ -269,9 +271,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       decoration: BoxDecoration(
                         color: OnboardingTokens.background,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: OnboardingTokens.mintBorder,
-                        ),
+                        border: Border.all(color: OnboardingTokens.mintBorder),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -395,11 +395,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     _currentIndex = idx;
                   });
                 },
-                children: [
-                  _buildScreen1(),
-                  _buildScreen2(),
-                  _buildScreen3(),
-                ],
+                children: [_buildScreen1(), _buildScreen2(), _buildScreen3()],
               ),
             ),
           ],
@@ -454,7 +450,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                             ),
                           ),
                           Text(
-                            HelaAppStateProvider.of(context).tr('sri_lanka_travel_companion'),
+                            HelaAppStateProvider.of(
+                              context,
+                            ).tr('sri_lanka_travel_companion'),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                             style: const TextStyle(
@@ -480,9 +478,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   decoration: BoxDecoration(
                     color: OnboardingTokens.mintContainer,
                     shape: BoxShape.circle,
-                    border: Border.all(
-                      color: OnboardingTokens.mintBorder,
-                    ),
+                    border: Border.all(color: OnboardingTokens.mintBorder),
                   ),
                   child: const Icon(
                     Icons.arrow_back_rounded,
@@ -520,14 +516,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 onTap: _showLanguageSelector,
                 borderRadius: BorderRadius.circular(20),
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 7,
+                  ),
                   decoration: BoxDecoration(
                     color: OnboardingTokens.mintContainer,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: OnboardingTokens.mintBorder,
-                    ),
+                    border: Border.all(color: OnboardingTokens.mintBorder),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -884,11 +880,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: 15,
-            color: iconColor,
-          ),
+          Icon(icon, size: 15, color: iconColor),
           const SizedBox(width: 6),
           Text(
             label,
@@ -1050,8 +1042,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: OnboardingTokens.mintBadge,
                   borderRadius: BorderRadius.circular(12),
@@ -1231,7 +1225,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
             ),
           ),
 
-          // Visual Showcase Card (Cultural Immersion in Kandy)
+          // Visual Showcase Card (Temple of the Tooth)
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: SizedBox(
@@ -1243,19 +1237,21 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   HelaNetworkImage(
                     imageUrl: SriLankaImages.templeOfTheTooth,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => HelaNetworkImage(
-                      imageUrl: SriLankaImages.dambulla,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
-                        color: OnboardingTokens.primaryDark,
-                        alignment: Alignment.center,
-                        child: const Icon(
-                          Icons.temple_buddhist_rounded,
-                          color: Colors.white70,
-                          size: 54,
+                    errorBuilder: (context, error, stackTrace) =>
+                        HelaNetworkImage(
+                          imageUrl: SriLankaImages.dambulla,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Container(
+                                color: OnboardingTokens.primaryDark,
+                                alignment: Alignment.center,
+                                child: const Icon(
+                                  Icons.temple_buddhist_rounded,
+                                  color: Colors.white70,
+                                  size: 54,
+                                ),
+                              ),
                         ),
-                      ),
-                    ),
                   ),
 
                   // Ambient Gradient Scrim
@@ -1273,22 +1269,22 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     ),
                   ),
 
-                  // Floating Experience Chip: 🪔 Cultural Immersion • Kandy Heritage
+                  // Top-Left Location Pill: Temple of the Tooth
                   Positioned(
-                    top: 12,
-                    left: 12,
+                    top: 14,
+                    left: 14,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
+                        horizontal: 14,
+                        vertical: 8,
                       ),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.95),
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.08),
-                            blurRadius: 6,
+                            color: Colors.black.withValues(alpha: 0.12),
+                            blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
                         ],
@@ -1296,13 +1292,17 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text('🪔', style: TextStyle(fontSize: 13)),
+                          const Icon(
+                            Icons.location_on_outlined,
+                            size: 16,
+                            color: OnboardingTokens.primaryDark,
+                          ),
                           const SizedBox(width: 6),
                           Text(
                             appState.tr('kandy_heritage_tag'),
                             style: const TextStyle(
-                              fontSize: 11.5,
-                              fontWeight: FontWeight.w600,
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w700,
                               color: OnboardingTokens.textDark,
                             ),
                           ),
@@ -1493,11 +1493,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
               color: const Color(0xFFD2E7E2),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(
-              icon,
-              color: OnboardingTokens.primaryDark,
-              size: 22,
-            ),
+            child: Icon(icon, color: OnboardingTokens.primaryDark, size: 22),
           ),
           const SizedBox(width: 14),
           Expanded(

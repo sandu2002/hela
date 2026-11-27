@@ -1034,8 +1034,11 @@ void main() {
       // Verify top bar language selector is removed on Screen 3
       expect(find.text('EN / සිංහල'), findsNothing);
 
-      // Verify visual showcase card tags
-      expect(find.text('Cultural Immersion • Kandy Heritage'), findsOneWidget);
+      // Verify visual showcase card location pill
+      expect(find.text('Temple of the Tooth'), findsOneWidget);
+      expect(find.byIcon(Icons.location_on_outlined), findsOneWidget);
+      expect(find.text('Cultural Immersion • Kandy Heritage'), findsNothing);
+      expect(find.text('🪔'), findsNothing);
       expect(find.text('Live Folk Lore & Ola Leaf Tales'), findsNothing);
       expect(find.text('4.98'), findsNothing);
 

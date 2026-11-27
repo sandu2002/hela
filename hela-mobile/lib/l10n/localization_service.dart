@@ -211,7 +211,7 @@ class LocalizationService {
       'meter_verified': 'Meter Verified',
       'fair_taxi_pricing_sub':
           'Transparent rates with vetted, honest local drivers',
-      'kandy_heritage_tag': 'Cultural Immersion • Kandy Heritage',
+      'kandy_heritage_tag': 'Temple of the Tooth',
       'live_folklore_tag': 'Live Folk Lore & Ola Leaf Tales',
       'continue_guest_reassurance':
           'Continue as Guest • No credit card or upfront registration required',
