@@ -735,13 +735,21 @@ void main() {
     expect(appState.languageDisplayName, 'English (US)');
     expect(appState.tr('get_started'), 'Get Started');
 
-    // Verify all 20 supported languages including Sinhala, Tamil, and RTL Arabic
+    // Verify all 20 world most spoken languages (without SI/TA) including UR, SW, and RTL AR
     expect(
       LocalizationService.supportedLanguages.any((l) => l.code == 'SI'),
-      isTrue,
+      isFalse,
     );
     expect(
       LocalizationService.supportedLanguages.any((l) => l.code == 'TA'),
+      isFalse,
+    );
+    expect(
+      LocalizationService.supportedLanguages.any((l) => l.code == 'UR'),
+      isTrue,
+    );
+    expect(
+      LocalizationService.supportedLanguages.any((l) => l.code == 'SW'),
       isTrue,
     );
     expect(
@@ -802,10 +810,12 @@ void main() {
       await tester.tap(find.text('EN').first);
       await tester.pumpAndSettle();
 
-      // Modal bottom sheet appears with 'Select Language' and 20-language catalog
+      // Modal bottom sheet appears with 'Select Language' and world languages (no Sinhala/Tamil)
       expect(find.text('Select Language'), findsOneWidget);
-      expect(find.text('Sinhala'), findsOneWidget);
-      expect(find.text('Tamil'), findsOneWidget);
+      expect(find.text('Sinhala'), findsNothing);
+      expect(find.text('Tamil'), findsNothing);
+      expect(find.text('Chinese (Mandarin)'), findsOneWidget);
+      expect(find.text('Hindi'), findsOneWidget);
 
       // Filter to French using search and tap it
       await tester.enterText(find.byType(TextField), 'French');
@@ -895,9 +905,11 @@ void main() {
       await tester.tap(find.text('Language'));
       await tester.pumpAndSettle();
 
-      // Check languages in bottom sheet: Sinhala and Tamil included
-      expect(find.text('Sinhala'), findsOneWidget);
-      expect(find.text('Tamil'), findsOneWidget);
+      // Check languages in bottom sheet: world languages included, Sinhala & Tamil excluded
+      expect(find.text('Sinhala'), findsNothing);
+      expect(find.text('Tamil'), findsNothing);
+      expect(find.text('Chinese (Mandarin)'), findsOneWidget);
+      expect(find.text('Spanish'), findsOneWidget);
 
       // Search for German and tap it
       await tester.enterText(find.byType(TextField), 'German');
@@ -1071,12 +1083,14 @@ void main() {
       await tester.tap(find.text('EN').first);
       await tester.pumpAndSettle();
 
-      // Modal sheet appears with no overflows
+      // Modal sheet appears with no overflows and world languages instead of Sinhala/Tamil
       expect(find.text('Select Language'), findsOneWidget);
       expect(find.text('English (US)'), findsOneWidget);
-      expect(find.text('Sinhala'), findsOneWidget);
-      expect(find.text('Tamil'), findsOneWidget);
+      expect(find.text('Sinhala'), findsNothing);
+      expect(find.text('Tamil'), findsNothing);
       expect(find.text('Chinese (Mandarin)'), findsOneWidget);
+      expect(find.text('Hindi'), findsOneWidget);
+      expect(find.text('Spanish'), findsOneWidget);
 
       await tester.enterText(find.byType(TextField), 'Russian');
       await tester.pumpAndSettle();

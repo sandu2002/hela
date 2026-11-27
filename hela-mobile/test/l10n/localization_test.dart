@@ -11,32 +11,35 @@ void main() {
   });
 
   group('LocalizationService 20-language coverage', () {
-    test('exposes 20 major world and local languages', () {
+    test('exposes 20 major world most spoken languages without SI/TA', () {
       const expectedCodes = [
         'EN',
-        'SI',
-        'TA',
         'ZH',
-        'ES',
         'HI',
+        'ES',
         'AR',
-        'PT',
-        'BN',
-        'RU',
-        'JA',
-        'DE',
         'FR',
+        'BN',
+        'PT',
+        'RU',
+        'UR',
+        'ID',
+        'DE',
+        'JA',
+        'SW',
+        'TR',
+        'VI',
         'KO',
         'IT',
-        'TR',
-        'ID',
-        'NL',
         'TH',
-        'VI',
+        'NL',
       ];
-      final codes =
-          LocalizationService.supportedLanguages.map((l) => l.code).toList();
+      final codes = LocalizationService.supportedLanguages
+          .map((l) => l.code)
+          .toList();
       expect(codes, expectedCodes);
+      expect(codes, isNot(contains('SI')));
+      expect(codes, isNot(contains('TA')));
       expect(codes.length, 20);
     });
 
@@ -76,8 +79,8 @@ void main() {
         }
       }
 
-      expect(LocalizationService.tr('my_profile', 'SI'), 'මගේ පැතිකඩ');
-      expect(LocalizationService.tr('my_profile', 'TA'), 'என் சுயவிவரம்');
+      expect(LocalizationService.tr('my_profile', 'UR'), 'میری پروفائل');
+      expect(LocalizationService.tr('my_profile', 'SW'), 'Wasifu Wangu');
       expect(LocalizationService.tr('my_profile', 'DE'), 'Mein Profil');
       expect(LocalizationService.tr('my_profile', 'ES'), 'Mi Perfil');
       expect(LocalizationService.tr('my_profile', 'AR'), 'ملفي الشخصي');
@@ -104,14 +107,25 @@ void main() {
       expect(restored.selectedLanguage, 'AR');
       expect(restored.isRtl, isTrue);
 
+      restored.setLanguage('UR');
+      expect(restored.selectedLanguage, 'UR');
+      expect(restored.isRtl, isTrue);
+
+      restored.setLanguage('SW');
+      expect(restored.selectedLanguage, 'SW');
+      expect(restored.isRtl, isFalse);
+
+      // Legacy removed codes normalize safely back to English
       restored.setLanguage('SI');
+      expect(restored.selectedLanguage, 'EN');
       expect(restored.isRtl, isFalse);
     });
   });
 
   group('Dynamic UI switching via ProfilePage language picker', () {
-    testWidgets('switching language updates ProfilePage and bottom nav live',
-        (tester) async {
+    testWidgets('switching language updates ProfilePage and bottom nav live', (
+      tester,
+    ) async {
       final appState = HelaAppState();
       await tester.pumpWidget(
         HelaAppStateProvider(
@@ -121,8 +135,9 @@ void main() {
             builder: (context, _) {
               return MaterialApp(
                 builder: (context, child) => Directionality(
-                  textDirection:
-                      appState.isRtl ? TextDirection.rtl : TextDirection.ltr,
+                  textDirection: appState.isRtl
+                      ? TextDirection.rtl
+                      : TextDirection.ltr,
                   child: child ?? const SizedBox.shrink(),
                 ),
                 home: const ProfilePage(),

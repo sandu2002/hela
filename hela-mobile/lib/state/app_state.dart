@@ -37,9 +37,11 @@ class HelaAppState extends ChangeNotifier {
   // ── Saved / Bookmarked Experiences ─────────────────────────────
   final List<ExperienceItem> _savedExperiences = [];
 
-  List<ExperienceItem> get savedExperiences => List.unmodifiable(_savedExperiences);
+  List<ExperienceItem> get savedExperiences =>
+      List.unmodifiable(_savedExperiences);
 
-  bool isExperienceSaved(String title) => _savedExperiences.any((e) => e.title == title);
+  bool isExperienceSaved(String title) =>
+      _savedExperiences.any((e) => e.title == title);
 
   void toggleSaveExperience(ExperienceItem item) {
     final index = _savedExperiences.indexWhere((e) => e.title == item.title);
@@ -94,9 +96,7 @@ class HelaAppState extends ChangeNotifier {
       final list = jsonDecode(raw) as List<dynamic>;
       _savedTours
         ..clear()
-        ..addAll(
-          list.map((e) => TourPlan.fromJson(e as Map<String, dynamic>)),
-        );
+        ..addAll(list.map((e) => TourPlan.fromJson(e as Map<String, dynamic>)));
       notifyListeners();
     } catch (_) {
       // Ignore corrupt local cache
@@ -147,7 +147,10 @@ class HelaAppState extends ChangeNotifier {
   }
 
   int get totalSavedCount =>
-      _savedHavens.length + _savedExperiences.length + _savedStays.length + _savedTours.length;
+      _savedHavens.length +
+      _savedExperiences.length +
+      _savedStays.length +
+      _savedTours.length;
 
   // ── User Custom Saved Lists / Themed Collections ──────────────
   final List<CustomSavedList> _customLists = [
@@ -254,25 +257,33 @@ class HelaAppState extends ChangeNotifier {
     final countedTitles = <String>{};
 
     for (final haven in _savedHavens) {
-      if (!countedTitles.contains(haven.title) && itemMatchesList(haven.title, haven.category, list)) {
+      if (!countedTitles.contains(haven.title) &&
+          itemMatchesList(haven.title, haven.category, list)) {
         countedTitles.add(haven.title);
         count++;
       }
     }
     for (final tour in _savedTours) {
-      if (!countedTitles.contains(tour.title) && itemMatchesList(tour.title, 'tour', list)) {
+      if (!countedTitles.contains(tour.title) &&
+          itemMatchesList(tour.title, 'tour', list)) {
         countedTitles.add(tour.title);
         count++;
       }
     }
     for (final stay in _savedStays) {
-      if (!countedTitles.contains(stay.title) && itemMatchesList(stay.title, '${stay.location} ${stay.ratingLabel}', list)) {
+      if (!countedTitles.contains(stay.title) &&
+          itemMatchesList(
+            stay.title,
+            '${stay.location} ${stay.ratingLabel}',
+            list,
+          )) {
         countedTitles.add(stay.title);
         count++;
       }
     }
     for (final exp in _savedExperiences) {
-      if (!countedTitles.contains(exp.title) && itemMatchesList(exp.title, exp.category, list)) {
+      if (!countedTitles.contains(exp.title) &&
+          itemMatchesList(exp.title, exp.category, list)) {
         countedTitles.add(exp.title);
         count++;
       }
@@ -333,8 +344,13 @@ class HelaAppState extends ChangeNotifier {
     return itemMatchesList(itemTitle, category, list);
   }
 
-  List<CustomSavedList> getListsContainingItem(String itemTitle, [String category = '']) {
-    return _customLists.where((l) => itemMatchesList(itemTitle, category, l)).toList();
+  List<CustomSavedList> getListsContainingItem(
+    String itemTitle, [
+    String category = '',
+  ]) {
+    return _customLists
+        .where((l) => itemMatchesList(itemTitle, category, l))
+        .toList();
   }
 
   // ── Saved / Bookmarked Guides ──────────────────────────────────
@@ -489,7 +505,9 @@ class HelaAppState extends ChangeNotifier {
   }
 
   void toggleTheme() {
-    _themeMode = _themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
+    _themeMode = _themeMode == ThemeMode.dark
+        ? ThemeMode.light
+        : ThemeMode.dark;
     notifyListeners();
   }
 
@@ -499,16 +517,17 @@ class HelaAppState extends ChangeNotifier {
 
   String get selectedLanguage => _selectedLanguage;
 
-  bool get isRtl => _selectedLanguage == 'AR';
+  bool get isRtl => _selectedLanguage == 'AR' || _selectedLanguage == 'UR';
 
-  String get languageDisplayName => LocalizationService.getDisplayName(_selectedLanguage);
+  String get languageDisplayName =>
+      LocalizationService.getDisplayName(_selectedLanguage);
 
   Future<void> restoreLanguage() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final saved = prefs.getString(_languagePrefsKey);
       if (saved != null && saved.trim().isNotEmpty) {
-        _selectedLanguage = saved.toUpperCase();
+        _selectedLanguage = LocalizationService.getLanguage(saved).code;
         notifyListeners();
       }
     } catch (_) {
@@ -517,11 +536,11 @@ class HelaAppState extends ChangeNotifier {
   }
 
   void setLanguage(String code) {
-    final upper = code.toUpperCase();
-    if (_selectedLanguage != upper) {
-      _selectedLanguage = upper;
+    final normalized = LocalizationService.getLanguage(code).code;
+    if (_selectedLanguage != normalized) {
+      _selectedLanguage = normalized;
       notifyListeners();
-      _persistLanguage(upper);
+      _persistLanguage(normalized);
     }
   }
 
@@ -611,8 +630,8 @@ class HelaAppStateProvider extends InheritedNotifier<HelaAppState> {
   static final HelaAppState _fallbackState = HelaAppState();
 
   static HelaAppState of(BuildContext context) {
-    final provider =
-        context.dependOnInheritedWidgetOfExactType<HelaAppStateProvider>();
+    final provider = context
+        .dependOnInheritedWidgetOfExactType<HelaAppStateProvider>();
     return provider?.notifier ?? _fallbackState;
   }
 
