@@ -7,31 +7,34 @@ void main() {
   Widget wrapProfile(HelaAppState appState) {
     return HelaAppStateProvider(
       state: appState,
-      child: const MaterialApp(
-        home: ProfilePage(),
-      ),
+      child: const MaterialApp(home: ProfilePage()),
     );
   }
 
   group('ProfilePage UI & interactions', () {
-    testWidgets('renders hero card, travel hub, preferences, legal & logout', (tester) async {
+    testWidgets('renders hero card, travel hub, preferences, legal & logout', (
+      tester,
+    ) async {
       final appState = HelaAppState()
-        ..signIn(
-          name: 'Elena Rostova',
-          email: 'elena.travels@worldmail.com',
-        )
+        ..signIn(name: 'Elena Rostova', email: 'elena.travels@worldmail.com')
         ..updateProfile(phone: '+44 7911 123456');
 
       await tester.pumpWidget(wrapProfile(appState));
       await tester.pumpAndSettle();
 
       expect(find.text('Profile'), findsAtLeastNWidgets(1));
+      expect(find.text('EN · USD'), findsOneWidget);
+      expect(find.text('VERIFIED PASS'), findsOneWidget);
       expect(find.text('Elena Rostova'), findsOneWidget);
       expect(find.text('elena.travels@worldmail.com'), findsOneWidget);
       expect(find.text('+44 7911 123456'), findsOneWidget);
       expect(find.text('GB'), findsOneWidget);
       expect(find.text('SLTDA Tourist ID #8492'), findsOneWidget);
       expect(find.text('Edit Personal Profile'), findsOneWidget);
+      expect(find.text('Days in Lanka'), findsOneWidget);
+      expect(find.text('Destinations'), findsOneWidget);
+      expect(find.text('Saved Trips'), findsOneWidget);
+      expect(find.text('Carbon Offset'), findsOneWidget);
       expect(find.text('MY TRAVEL HUB'), findsOneWidget);
       expect(find.text('Saved Destinations'), findsOneWidget);
       expect(find.text('Saved Itineraries'), findsOneWidget);
@@ -43,7 +46,9 @@ void main() {
       expect(find.text('HELA Sri Lanka v2.4.1'), findsOneWidget);
     });
 
-    testWidgets('toggles currency display and smart travel alerts', (tester) async {
+    testWidgets('toggles currency display and smart travel alerts', (
+      tester,
+    ) async {
       final appState = HelaAppState();
       await tester.pumpWidget(wrapProfile(appState));
       await tester.pumpAndSettle();

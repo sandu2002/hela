@@ -1067,12 +1067,61 @@ void main() {
       findsOneWidget,
     );
 
-    // Verify progress indicator and first ticker step
+    // Verify progress indicator, pipeline checklist, summary chips & first ticker step
     expect(find.text('CONNECTING TO DEEPSEEK AI PLANNER...'), findsOneWidget);
+    expect(find.text('5-Day Island Route'), findsOneWidget);
+    expect(find.text('5D · 2 Guests'), findsOneWidget);
+    expect(find.text('Comfort · Balanced'), findsOneWidget);
+    expect(
+      find.text('Analyzing weather, tides & optimal route'),
+      findsOneWidget,
+    );
+    expect(find.byTooltip('Cancel planning'), findsOneWidget);
 
     // Dispose cleanly
     await tester.pumpWidget(const SizedBox());
   });
+
+  testWidgets(
+    'ItineraryPlanningLoadingPage renders without overflow on compact screens and dark theme',
+    (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(720, 1480);
+      tester.view.devicePixelRatio = 2.0; // 360x740 logical pixels
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+
+      final appState = HelaAppState();
+      await tester.pumpWidget(
+        HelaAppStateProvider(
+          state: appState,
+          child: MaterialApp(
+            theme: ThemeData.dark(),
+            home: ItineraryPlanningLoadingPage(
+              startLocation: 'Colombo, Sri Lanka',
+              endLocation: 'Galle Fort',
+              startDate: DateTime.now().add(const Duration(days: 2)),
+              endDate: DateTime.now().add(const Duration(days: 6)),
+              tripDays: 4,
+              adults: 3,
+              children: 1,
+              budgetTier: 'luxury',
+              pace: 'relaxed',
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text('Colombo → Galle Fort'), findsOneWidget);
+      expect(find.text('4D · 4 Guests'), findsOneWidget);
+      expect(find.text('Luxury · Relaxed'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
 
   testWidgets(
     'ItineraryDetailsPage renders dynamic AI TourPlan with Stitch timeline UI',

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hela/pages/ask_hela/ask_hela_page.dart';
 import 'package:hela/pages/auth/signup_page.dart';
 import 'package:hela/pages/bookings/bookings_page.dart';
@@ -22,12 +23,13 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  static const Color _mintPageBg = Color(0xFFEAF8F4);
-  static const Color _deepTeal = Color(0xFF0B4D42);
+  static const String _fontFamily = 'Plus Jakarta Sans';
+  static const Color _mintPageBg = Color(0xFFF3FAF7);
+  static const Color _deepTeal = Color(0xFF0A473D);
   static const Color _darkInk = Color(0xFF0B2D25);
-  static const Color _mutedTeal = Color(0xFF4C756A);
-  static const Color _softMintTile = Color(0xFFE5F4F0);
-  static const Color _cardBorder = Color(0xFFDCEEE8);
+  static const Color _mutedTeal = Color(0xFF517168);
+  static const Color _softMintTile = Color(0xFFEEF8F4);
+  static const Color _cardBorder = Color(0xFFDCECE6);
 
   Widget _buildNetworkImage(
     String url, {
@@ -84,51 +86,56 @@ class _ProfilePageState extends State<ProfilePage> {
     final isDark = colors.isDark;
 
     return Scaffold(
-      backgroundColor: isDark ? colors.surface : _mintPageBg,
+      backgroundColor: isDark ? colors.background : _mintPageBg,
       appBar: _buildTopAppBar(appState, colors, isDark),
-      body: SafeArea(
-        top: false,
-        bottom: false,
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(16, 10, 16, 32),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 500),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeroProfileCard(appState, colors, isDark),
-                  const SizedBox(height: 20),
-                  _buildSectionHeader(
-                    appState.tr('my_travel_hub'),
-                    appState.tr('active_passports_itineraries'),
-                    colors,
-                  ),
-                  const SizedBox(height: 10),
-                  _buildTravelHubCard(appState, colors, isDark),
-                  const SizedBox(height: 22),
-                  _buildSectionHeader(
-                    appState.tr('preferences'),
-                    appState.tr('locale_connectivity'),
-                    colors,
-                  ),
-                  const SizedBox(height: 10),
-                  _buildPreferencesCard(appState, colors, isDark),
-                  const SizedBox(height: 22),
-                  _buildSectionHeader(
-                    appState.tr('assistance_legal'),
-                    appState.tr('support_24_7_active'),
-                    colors,
-                    trailingColor: const Color(0xFF0F766E),
-                  ),
-                  const SizedBox(height: 10),
-                  _buildAssistanceLegalCard(appState, colors, isDark),
-                  const SizedBox(height: 18),
-                  _buildLogoutButton(appState, isDark),
-                  const SizedBox(height: 18),
-                  _buildFooterBranding(appState, colors),
-                ],
+      body: DefaultTextStyle.merge(
+        style: const TextStyle(fontFamily: _fontFamily),
+        child: SafeArea(
+          top: false,
+          bottom: false,
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 36),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 500),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHeroProfileCard(appState, colors, isDark),
+                    const SizedBox(height: 14),
+                    _buildBentoStatsGrid(appState, colors, isDark),
+                    const SizedBox(height: 24),
+                    _buildSectionHeader(
+                      appState.tr('my_travel_hub'),
+                      appState.tr('active_passports_itineraries'),
+                      colors,
+                    ),
+                    const SizedBox(height: 10),
+                    _buildTravelHubCard(appState, colors, isDark),
+                    const SizedBox(height: 24),
+                    _buildSectionHeader(
+                      appState.tr('preferences'),
+                      appState.tr('locale_connectivity'),
+                      colors,
+                    ),
+                    const SizedBox(height: 10),
+                    _buildPreferencesCard(appState, colors, isDark),
+                    const SizedBox(height: 24),
+                    _buildSectionHeader(
+                      appState.tr('assistance_legal'),
+                      appState.tr('support_24_7_active'),
+                      colors,
+                      trailingColor: const Color(0xFF0F766E),
+                    ),
+                    const SizedBox(height: 10),
+                    _buildAssistanceLegalCard(appState, colors, isDark),
+                    const SizedBox(height: 20),
+                    _buildLogoutButton(appState, isDark),
+                    const SizedBox(height: 20),
+                    _buildFooterBranding(appState, colors),
+                  ],
+                ),
               ),
             ),
           ),
@@ -144,30 +151,67 @@ class _ProfilePageState extends State<ProfilePage> {
     HelaColorPalette colors,
     bool isDark,
   ) {
+    final currencyCode = appState.preferredCurrency.split(' ').first;
     return AppBar(
-      backgroundColor: isDark ? colors.surface : _mintPageBg,
+      backgroundColor: isDark ? colors.background : _mintPageBg,
       elevation: 0,
-      scrolledUnderElevation: 1,
+      scrolledUnderElevation: 0,
       toolbarHeight: 64,
       automaticallyImplyLeading: false,
       titleSpacing: 16,
       title: Text(
         appState.tr('profile'),
         style: TextStyle(
-          fontSize: 32,
-          fontWeight: FontWeight.w900,
+          fontSize: 30,
+          fontWeight: FontWeight.w800,
           color: isDark ? colors.onSurface : _darkInk,
-          letterSpacing: -0.8,
-          fontFamily: 'Plus Jakarta Sans',
+          letterSpacing: -0.7,
+          fontFamily: _fontFamily,
         ),
       ),
-      actions: const [
-        SizedBox(width: 16),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 16),
+          child: InkWell(
+            onTap: _showLanguagePicker,
+            borderRadius: BorderRadius.circular(999),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
+              decoration: BoxDecoration(
+                color: isDark ? colors.cardBackground : Colors.white,
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(
+                  color: isDark ? colors.architecturalBorder : _cardBorder,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.public_rounded,
+                    size: 14,
+                    color: isDark ? colors.primary : _deepTeal,
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    '${appState.selectedLanguage} · $currencyCode',
+                    style: TextStyle(
+                      fontFamily: _fontFamily,
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w700,
+                      color: isDark ? colors.onSurface : _darkInk,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }
 
-  // ── 1. Hero Profile Card ─────────────────────────────────────────────────
+  // ── 1. European Travel-Fintech Hero Profile Card ─────────────────────────
   Widget _buildHeroProfileCard(
     HelaAppState appState,
     HelaColorPalette colors,
@@ -185,17 +229,19 @@ class _ProfilePageState extends State<ProfilePage> {
     final displayLocation = appState.userLocation.isNotEmpty
         ? appState.userLocation
         : 'Colombo, Sri Lanka';
-    final displayTitle = (appState.userTitle.isNotEmpty
-            ? appState.userTitle
-            : 'Sri Lanka Traveler')
-        .replaceAll('🌿', '')
-        .trim();
-    final currencyCode = appState.preferredCurrency.split(' ').first;
+    final displayTitle =
+        (appState.userTitle.isNotEmpty
+                ? appState.userTitle
+                : 'Sri Lanka Traveler')
+            .replaceAll('🌿', '')
+            .trim();
     final photoUrl =
         appState.userPhotoUrl ??
         'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80';
-    final destinationsCount = 7 + appState.savedHavens.length;
-    final tripsCount = appState.savedTours.length;
+    final touristIdText = appState.tr('sltda_id');
+    final passLabel = appState.isAuthenticated
+        ? 'VERIFIED PASS'
+        : 'EXPLORER PASS';
 
     return Container(
       decoration: BoxDecoration(
@@ -206,8 +252,10 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0B4D42).withValues(alpha: isDark ? 0.22 : 0.08),
-            blurRadius: 22,
+            color: const Color(
+              0xFF0A473D,
+            ).withValues(alpha: isDark ? 0.22 : 0.06),
+            blurRadius: 24,
             offset: const Offset(0, 8),
           ),
         ],
@@ -217,50 +265,49 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // ── Emerald Passport Header ───────────────────────────────────
+            // ── Upper Digital Passport Card ──────────────────────────────
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: isDark
-                      ? const [Color(0xFF0A3830), Color(0xFF105246)]
-                      : const [Color(0xFF0A473D), Color(0xFF13685A)],
+                      ? const [Color(0xFF072D26), Color(0xFF0E4D42)]
+                      : const [Color(0xFF063B32), Color(0xFF105B4E)],
                 ),
               ),
               child: Stack(
                 children: [
-                  // Subtle decorative glow circles
                   Positioned(
-                    top: -28,
-                    right: -22,
+                    top: -34,
+                    right: -26,
                     child: Container(
-                      width: 112,
-                      height: 112,
+                      width: 124,
+                      height: 124,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withValues(alpha: 0.06),
+                        color: Colors.white.withValues(alpha: 0.05),
                       ),
                     ),
                   ),
                   Positioned(
-                    bottom: -36,
-                    left: -18,
+                    bottom: -44,
+                    left: -20,
                     child: Container(
-                      width: 92,
-                      height: 92,
+                      width: 100,
+                      height: 100,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: const Color(0xFF34D399).withValues(alpha: 0.08),
+                        color: const Color(0xFF34D399).withValues(alpha: 0.07),
                       ),
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
+                    padding: const EdgeInsets.fromLTRB(18, 18, 18, 14),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Avatar + Badges, Name & Location
+                        // Avatar + Identity + Quick Edit Icon
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
@@ -276,28 +323,23 @@ class _ProfilePageState extends State<ProfilePage> {
                                 clipBehavior: Clip.none,
                                 children: [
                                   Container(
-                                    width: 68,
-                                    height: 68,
-                                    padding: const EdgeInsets.all(2.5),
+                                    width: 64,
+                                    height: 64,
+                                    padding: const EdgeInsets.all(2),
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       border: Border.all(
-                                        color: Colors.white.withValues(alpha: 0.85),
-                                        width: 2,
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withValues(alpha: 0.2),
-                                          blurRadius: 10,
-                                          offset: const Offset(0, 4),
+                                        color: Colors.white.withValues(
+                                          alpha: 0.85,
                                         ),
-                                      ],
+                                        width: 1.8,
+                                      ),
                                     ),
                                     child: ClipOval(
                                       child: _buildNetworkImage(
                                         photoUrl,
-                                        width: 62,
-                                        height: 62,
+                                        width: 60,
+                                        height: 60,
                                       ),
                                     ),
                                   ),
@@ -311,7 +353,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         color: const Color(0xFF10B981),
                                         shape: BoxShape.circle,
                                         border: Border.all(
-                                          color: const Color(0xFF0C5246),
+                                          color: const Color(0xFF0A473D),
                                           width: 2,
                                         ),
                                       ),
@@ -335,7 +377,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
-                                      fontSize: 21,
+                                      fontFamily: _fontFamily,
+                                      fontSize: 20,
                                       fontWeight: FontWeight.w800,
                                       color: Colors.white,
                                       letterSpacing: -0.4,
@@ -345,10 +388,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                   const SizedBox(height: 4),
                                   Row(
                                     children: [
-                                      Icon(
+                                      const Icon(
                                         Icons.location_on_rounded,
-                                        size: 13.5,
-                                        color: const Color(0xFF6EE7B7),
+                                        size: 13,
+                                        color: Color(0xFF6EE7B7),
                                       ),
                                       const SizedBox(width: 4),
                                       Expanded(
@@ -357,13 +400,42 @@ class _ProfilePageState extends State<ProfilePage> {
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
+                                            fontFamily: _fontFamily,
                                             fontSize: 12,
                                             fontWeight: FontWeight.w500,
-                                            color: Colors.white.withValues(alpha: 0.86),
+                                            color: Colors.white.withValues(
+                                              alpha: 0.88,
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ],
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 3,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withValues(
+                                        alpha: 0.14,
+                                      ),
+                                      borderRadius: BorderRadius.circular(999),
+                                    ),
+                                    child: Text(
+                                      displayTitle,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontFamily: _fontFamily,
+                                        fontSize: 10.5,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white.withValues(
+                                          alpha: 0.95,
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -371,179 +443,68 @@ class _ProfilePageState extends State<ProfilePage> {
                           ],
                         ),
                         const SizedBox(height: 14),
+                        Divider(
+                          height: 1,
+                          color: Colors.white.withValues(alpha: 0.14),
+                        ),
+                        const SizedBox(height: 11),
 
-                        // Frosted Personal Details & Contact Card
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 13,
-                            vertical: 11,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.11),
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.15),
-                            ),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        // Compact Digital Tourist ID Ribbon (Tap to Copy)
+                        InkWell(
+                          borderRadius: BorderRadius.circular(10),
+                          onTap: () {
+                            Clipboard.setData(
+                              ClipboardData(text: touristIdText),
+                            );
+                            _showToast('Copied $touristIdText');
+                          },
+                          child: Row(
                             children: [
-                              // Traveler ID
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.badge_outlined,
-                                    size: 14.5,
-                                    color: Colors.white.withValues(alpha: 0.85),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      appState.tr('sltda_id'),
-                                      style: TextStyle(
-                                        fontSize: 12.5,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.white.withValues(alpha: 0.94),
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ],
+                              Icon(
+                                Icons.badge_outlined,
+                                size: 15,
+                                color: const Color(0xFF6EE7B7),
                               ),
-                              const SizedBox(height: 6),
-
-                              // Contact Email & Phone
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.mail_outline_rounded,
-                                    size: 14.5,
-                                    color: Colors.white.withValues(alpha: 0.85),
+                              const SizedBox(width: 7),
+                              Expanded(
+                                child: Text(
+                                  touristIdText,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontFamily: _fontFamily,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 0.1,
+                                    color: Colors.white,
                                   ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      displayEmail,
-                                      style: TextStyle(
-                                        fontSize: 12.5,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.white.withValues(alpha: 0.94),
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 6),
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 6,
-                                      vertical: 1.5,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha: 0.2),
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                    child: Text(
-                                      _countryCodeFromPhone(displayPhone),
-                                      style: const TextStyle(
-                                        fontSize: 9.5,
-                                        fontWeight: FontWeight.w800,
-                                        color: Colors.white,
-                                        letterSpacing: 0.4,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      displayPhone,
-                                      style: TextStyle(
-                                        fontSize: 12.5,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.white.withValues(alpha: 0.94),
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 9),
-                                child: Divider(
-                                  height: 1,
-                                  color: Colors.white.withValues(alpha: 0.15),
                                 ),
                               ),
-
-                              // 2-Column Traveler Role & Preferences Row
-                              IntrinsicHeight(
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      flex: 6,
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'TRAVELER ROLE',
-                                            style: TextStyle(
-                                              fontSize: 9,
-                                              fontWeight: FontWeight.w700,
-                                              letterSpacing: 0.6,
-                                              color: Colors.white.withValues(alpha: 0.65),
-                                            ),
-                                          ),
-                                          const SizedBox(height: 2),
-                                          Text(
-                                            displayTitle,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w600,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Container(
-                                      width: 1,
-                                      margin: const EdgeInsets.symmetric(horizontal: 10),
-                                      color: Colors.white.withValues(alpha: 0.16),
-                                    ),
-                                    Expanded(
-                                      flex: 4,
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'LANG · CURRENCY',
-                                            style: TextStyle(
-                                              fontSize: 9,
-                                              fontWeight: FontWeight.w700,
-                                              letterSpacing: 0.6,
-                                              color: Colors.white.withValues(alpha: 0.65),
-                                            ),
-                                          ),
-                                          const SizedBox(height: 2),
-                                          Text(
-                                            '${appState.selectedLanguage} · $currencyCode',
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w600,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(
+                                    0xFF10B981,
+                                  ).withValues(alpha: 0.22),
+                                  borderRadius: BorderRadius.circular(999),
+                                  border: Border.all(
+                                    color: const Color(
+                                      0xFF6EE7B7,
+                                    ).withValues(alpha: 0.4),
+                                  ),
+                                ),
+                                child: Text(
+                                  passLabel,
+                                  style: const TextStyle(
+                                    fontFamily: _fontFamily,
+                                    fontSize: 9.5,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 0.5,
+                                    color: Color(0xFFA7F3D0),
+                                  ),
                                 ),
                               ),
                             ],
@@ -556,153 +517,137 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
 
-            // ── Stats Strip & Edit Profile CTA ────────────────────────────
+            // ── Lower Clean White Contact Details & Edit Profile CTA ──────
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+              padding: const EdgeInsets.fromLTRB(18, 14, 18, 16),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 4,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? colors.surfaceContainer
-                          : const Color(0xFFF3FAF7),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: isDark
-                            ? colors.architecturalBorder
-                            : const Color(0xFFD7EDE5),
+                  Row(
+                    children: [
+                      Container(
+                        width: 28,
+                        height: 28,
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? colors.surfaceContainer
+                              : _softMintTile,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.mail_outline_rounded,
+                          size: 14.5,
+                          color: isDark ? colors.primary : _deepTeal,
+                        ),
                       ),
-                    ),
-                    child: IntrinsicHeight(
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: _buildStatBox(
-                              icon: Icons.wb_sunny_rounded,
-                              iconColor: const Color(0xFFD97706),
-                              iconBg: const Color(0xFFFEF3C7),
-                              value: '14',
-                              label: appState.tr('days_in_lanka'),
-                              isDark: isDark,
-                              colors: colors,
-                            ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          displayEmail,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontFamily: _fontFamily,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: isDark ? colors.onSurface : _darkInk,
                           ),
-                          Container(
-                            width: 1,
-                            margin: const EdgeInsets.symmetric(vertical: 4),
-                            color: isDark
-                                ? colors.architecturalBorder
-                                : const Color(0xFFD2E8DF),
-                          ),
-                          Expanded(
-                            child: _buildStatBox(
-                              icon: Icons.explore_rounded,
-                              iconColor: _deepTeal,
-                              iconBg: const Color(0xFFDDF3EC),
-                              value: '$destinationsCount',
-                              label: appState.tr('destinations_stat'),
-                              isDark: isDark,
-                              colors: colors,
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => const SavedPage(),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          Container(
-                            width: 1,
-                            margin: const EdgeInsets.symmetric(vertical: 4),
-                            color: isDark
-                                ? colors.architecturalBorder
-                                : const Color(0xFFD2E8DF),
-                          ),
-                          Expanded(
-                            child: _buildStatBox(
-                              icon: Icons.route_rounded,
-                              iconColor: const Color(0xFF0284C7),
-                              iconBg: const Color(0xFFE0F2FE),
-                              value: '$tripsCount',
-                              label: 'Saved Trips',
-                              isDark: isDark,
-                              colors: colors,
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => const SavedPage(),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          Container(
-                            width: 1,
-                            margin: const EdgeInsets.symmetric(vertical: 4),
-                            color: isDark
-                                ? colors.architecturalBorder
-                                : const Color(0xFFD2E8DF),
-                          ),
-                          Expanded(
-                            child: _buildStatBox(
-                              icon: Icons.eco_rounded,
-                              iconColor: const Color(0xFF059669),
-                              iconBg: const Color(0xFFD1FAE5),
-                              value: '100%',
-                              label: appState.tr('carbon_offset'),
-                              isDark: isDark,
-                              colors: colors,
-                              onTap: _showEcoImpactDialog,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Container(
+                        width: 28,
+                        height: 28,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? colors.surfaceContainer
+                              : _softMintTile,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          _countryCodeFromPhone(displayPhone),
+                          style: TextStyle(
+                            fontFamily: _fontFamily,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            color: isDark ? colors.primary : _deepTeal,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          displayPhone,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontFamily: _fontFamily,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: isDark ? colors.onSurface : _darkInk,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
 
-                  // Edit Personal Profile Button
+                  // Crisp Minimal European Edit Profile Action Button
                   SizedBox(
                     width: double.infinity,
                     height: 44,
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const EditProfilePage(),
+                    child: Material(
+                      color: isDark ? colors.secondaryContainer : _softMintTile,
+                      borderRadius: BorderRadius.circular(14),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(14),
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const EditProfilePage(),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: isDark
+                                  ? colors.architecturalBorder
+                                  : const Color(0xFFCBE5DC),
+                            ),
                           ),
-                        );
-                      },
-                      icon: Icon(
-                        Icons.edit_note_rounded,
-                        size: 20,
-                        color: isDark ? colors.onSecondaryContainer : _deepTeal,
-                      ),
-                      label: Text(
-                        appState.tr('edit_personal_profile'),
-                        style: TextStyle(
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w700,
-                          color: isDark ? colors.onSecondaryContainer : _deepTeal,
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: isDark
-                            ? colors.secondaryContainer
-                            : const Color(0xFFE7F5F0),
-                        elevation: 0,
-                        side: BorderSide(
-                          color: isDark
-                              ? colors.architecturalBorder
-                              : const Color(0xFFC7E6DC),
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.edit_note_rounded,
+                                size: 19,
+                                color: isDark
+                                    ? colors.onSecondaryContainer
+                                    : _deepTeal,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                appState.tr('edit_personal_profile'),
+                                style: TextStyle(
+                                  fontFamily: _fontFamily,
+                                  fontSize: 13.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: isDark
+                                      ? colors.onSecondaryContainer
+                                      : _deepTeal,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -716,7 +661,91 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildStatBox({
+  // ── 2. European 2×2 Modular Bento Stats Grid ─────────────────────────────
+  Widget _buildBentoStatsGrid(
+    HelaAppState appState,
+    HelaColorPalette colors,
+    bool isDark,
+  ) {
+    final destinationsCount = 7 + appState.savedHavens.length;
+    final tripsCount = appState.savedTours.length;
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: _buildBentoTile(
+                icon: Icons.wb_sunny_rounded,
+                iconColor: const Color(0xFFD97706),
+                iconBg: const Color(0xFFFEF3C7),
+                value: '14',
+                label: appState.tr('days_in_lanka'),
+                isDark: isDark,
+                colors: colors,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _buildBentoTile(
+                icon: Icons.explore_rounded,
+                iconColor: _deepTeal,
+                iconBg: const Color(0xFFDDF3EC),
+                value: '$destinationsCount',
+                label: appState.tr('destinations_stat'),
+                isDark: isDark,
+                colors: colors,
+                showActionArrow: true,
+                onTap: () {
+                  Navigator.of(
+                    context,
+                  ).push(MaterialPageRoute(builder: (_) => const SavedPage()));
+                },
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              child: _buildBentoTile(
+                icon: Icons.route_rounded,
+                iconColor: const Color(0xFF0284C7),
+                iconBg: const Color(0xFFE0F2FE),
+                value: '$tripsCount',
+                label: 'Saved Trips',
+                isDark: isDark,
+                colors: colors,
+                showActionArrow: true,
+                onTap: () {
+                  Navigator.of(
+                    context,
+                  ).push(MaterialPageRoute(builder: (_) => const SavedPage()));
+                },
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _buildBentoTile(
+                icon: Icons.eco_rounded,
+                iconColor: const Color(0xFF059669),
+                iconBg: const Color(0xFFD1FAE5),
+                value: '100%',
+                label: appState.tr('carbon_offset'),
+                isDark: isDark,
+                colors: colors,
+                showActionArrow: true,
+                onTap: _showEcoImpactDialog,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBentoTile({
     required IconData icon,
     required Color iconColor,
     required Color iconBg,
@@ -724,53 +753,82 @@ class _ProfilePageState extends State<ProfilePage> {
     required String label,
     required bool isDark,
     required HelaColorPalette colors,
+    bool showActionArrow = false,
     VoidCallback? onTap,
   }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 28,
-              height: 28,
-              decoration: BoxDecoration(
-                color: isDark ? iconColor.withValues(alpha: 0.18) : iconBg,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                size: 14,
-                color: isDark ? iconBg : iconColor,
-              ),
+    return Material(
+      color: isDark ? colors.cardBackground : Colors.white,
+      borderRadius: BorderRadius.circular(18),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(18),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: isDark ? colors.architecturalBorder : _cardBorder,
             ),
-            const SizedBox(height: 6),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w800,
-                color: isDark ? colors.onSurface : _darkInk,
-                letterSpacing: -0.3,
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF0A473D).withValues(alpha: 0.03),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
               ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 9.5,
-                height: 1.15,
-                fontWeight: FontWeight.w600,
-                color: isDark ? colors.onSurfaceVariant : _mutedTeal,
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: isDark ? iconColor.withValues(alpha: 0.18) : iconBg,
+                  borderRadius: BorderRadius.circular(11),
+                ),
+                child: Icon(icon, size: 19, color: isDark ? iconBg : iconColor),
               ),
-            ),
-          ],
+              const SizedBox(width: 11),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      value,
+                      style: TextStyle(
+                        fontFamily: _fontFamily,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: isDark ? colors.onSurface : _darkInk,
+                        letterSpacing: -0.4,
+                        height: 1.1,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontFamily: _fontFamily,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? colors.onSurfaceVariant : _mutedTeal,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (showActionArrow)
+                Icon(
+                  Icons.north_east_rounded,
+                  size: 14,
+                  color: isDark
+                      ? colors.onSurfaceVariant.withValues(alpha: 0.7)
+                      : _mutedTeal.withValues(alpha: 0.7),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -784,27 +842,41 @@ class _ProfilePageState extends State<ProfilePage> {
     Color? trailingColor,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 11.5,
-              fontWeight: FontWeight.w800,
-              letterSpacing: 0.6,
-              color: colors.isDark ? colors.onSurface : _darkInk,
+          Flexible(
+            child: Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontFamily: _fontFamily,
+                fontSize: 11.5,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.75,
+                color: colors.isDark ? colors.onSurfaceVariant : _mutedTeal,
+              ),
             ),
           ),
-          Text(
-            subtitle,
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color:
-                  trailingColor ??
-                  (colors.isDark ? colors.onSurfaceVariant : _mutedTeal),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              subtitle,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.end,
+              style: TextStyle(
+                fontFamily: _fontFamily,
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color:
+                    trailingColor ??
+                    (colors.isDark
+                        ? colors.onSurfaceVariant.withValues(alpha: 0.8)
+                        : _mutedTeal),
+              ),
             ),
           ),
         ],
@@ -959,6 +1031,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 _buildCurrencyOption(
                   label: 'USD (\$)',
                   selected: isUsd,
+                  isDark: isDark,
+                  colors: colors,
                   onTap: () {
                     appState.setPreferredCurrency('USD (\$)');
                     _showToast('Currency set to USD (\$)');
@@ -967,6 +1041,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 _buildCurrencyOption(
                   label: 'LKR (Rs)',
                   selected: !isUsd,
+                  isDark: isDark,
+                  colors: colors,
                   onTap: () {
                     appState.setPreferredCurrency('LKR (Rs)');
                     _showToast('Currency set to LKR (Rs)');
@@ -1076,6 +1152,8 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildCurrencyOption({
     required String label,
     required bool selected,
+    required bool isDark,
+    required HelaColorPalette colors,
     required VoidCallback onTap,
   }) {
     return InkWell(
@@ -1084,7 +1162,9 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: selected ? Colors.white : Colors.transparent,
+          color: selected
+              ? (isDark ? colors.primary : Colors.white)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
           boxShadow: selected
               ? [
@@ -1099,9 +1179,12 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Text(
           label,
           style: TextStyle(
+            fontFamily: _fontFamily,
             fontSize: 11,
             fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
-            color: selected ? _darkInk : _mutedTeal,
+            color: selected
+                ? (isDark ? colors.onPrimary : _darkInk)
+                : (isDark ? colors.onSurfaceVariant : _mutedTeal),
           ),
         ),
       ),
@@ -1350,15 +1433,15 @@ class _ProfilePageState extends State<ProfilePage> {
     return Container(
       decoration: BoxDecoration(
         color: isDark ? colors.cardBackground : Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isDark ? colors.architecturalBorder : _cardBorder,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0B4D42).withValues(alpha: 0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 3),
+            color: const Color(0xFF0A473D).withValues(alpha: 0.035),
+            blurRadius: 14,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
