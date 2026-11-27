@@ -486,7 +486,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
           style: const TextStyle(fontFamily: _fontFamily),
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 114),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 114),
             child: Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 480),
@@ -495,15 +495,15 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                   children: [
                     // 1. Trip Header Summary Card
                     _buildSummaryHeaderCard(colors),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 10),
 
                     // 2. Quick Action Strip (Save, AI Adjust, Ask HELA, Book Taxi)
                     _buildQuickActionToolbar(colors),
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 12),
 
                     // 3. Interactive Scannable Day Selector
                     _buildDaySelector(colors),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 14),
 
                     // 4. Route Map Overview Card
                     _buildRouteMapOverviewCard(colors),
@@ -676,7 +676,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
     final nights = _tripDays > 1 ? _tripDays - 1 : 0;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 11),
       decoration: BoxDecoration(
         color: colors.cardBackground,
         borderRadius: BorderRadius.circular(20),
@@ -705,8 +705,8 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
               Flexible(
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
+                    horizontal: 9,
+                    vertical: 3.5,
                   ),
                   decoration: BoxDecoration(
                     color: isDark
@@ -719,7 +719,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                     children: [
                       Icon(
                         Icons.auto_awesome_rounded,
-                        size: 12.5,
+                        size: 12,
                         color: colors.primary,
                       ),
                       const SizedBox(width: 5),
@@ -746,8 +746,8 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                 borderRadius: BorderRadius.circular(999),
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4.5,
+                    horizontal: 9,
+                    vertical: 3.5,
                   ),
                   decoration: BoxDecoration(
                     color: isDark
@@ -763,12 +763,16 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.tune_rounded, size: 13, color: colors.primary),
+                      Icon(
+                        Icons.tune_rounded,
+                        size: 12.5,
+                        color: colors.primary,
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         'Edit Preferences',
                         style: TextStyle(
-                          fontSize: 11,
+                          fontSize: 10.5,
                           fontWeight: FontWeight.w700,
                           color: colors.primary,
                           fontFamily: _fontFamily,
@@ -780,38 +784,38 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
 
           // Main Title & Concise Subtitle
           Text(
             title,
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 19,
               fontWeight: FontWeight.w800,
               color: colors.onSurface,
               fontFamily: _fontFamily,
-              letterSpacing: -0.45,
+              letterSpacing: -0.4,
               height: 1.2,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 3),
           Text(
             summary,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: 12.5,
+              fontSize: 12,
               color: colors.onSurfaceVariant,
-              height: 1.38,
+              height: 1.35,
               fontFamily: _fontFamily,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 9),
 
           // Clean Metadata Pills
           Wrap(
-            spacing: 7,
-            runSpacing: 7,
+            spacing: 6,
+            runSpacing: 5,
             children: [
               _buildBadgePill(
                 Icons.calendar_today_rounded,
@@ -830,50 +834,42 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 9),
+          Divider(
+            height: 1,
+            color: colors.architecturalBorder.withValues(alpha: 0.45),
+          ),
+          const SizedBox(height: 7),
 
-          // Subtle Left-Accent Personalization Note
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
-            decoration: BoxDecoration(
-              color: isDark
-                  ? colors.surfaceContainerLow.withValues(alpha: 0.7)
-                  : const Color(0xFFF4FAF8),
-              borderRadius: BorderRadius.circular(11),
-              border: Border.all(
-                color: isDark
-                    ? colors.outlineVariant.withValues(alpha: 0.35)
-                    : const Color(0xFFE0F0EB),
+          // Clean Inline Personalization Note
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 1),
+                child: Icon(
+                  Icons.lightbulb_outline_rounded,
+                  size: 14,
+                  color: colors.goldenAmber,
+                ),
               ),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 1),
-                  child: Icon(
-                    Icons.lightbulb_outline_rounded,
-                    size: 15,
-                    color: colors.goldenAmber,
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  matchReason.isNotEmpty
+                      ? matchReason
+                      : 'Tailored by HELA AI • Customizable on-the-go with certified local guides.',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: colors.onSurfaceVariant,
+                    height: 1.32,
+                    fontFamily: _fontFamily,
                   ),
                 ),
-                const SizedBox(width: 7),
-                Expanded(
-                  child: Text(
-                    matchReason.isNotEmpty
-                        ? matchReason
-                        : 'Tailored by HELA AI • Customizable on-the-go with certified local guides.',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: colors.onSurfaceVariant,
-                      height: 1.35,
-                      fontFamily: _fontFamily,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ],
       ),
@@ -883,7 +879,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
   Widget _buildBadgePill(IconData icon, String label, HelaColorPalette colors) {
     final isDark = colors.isDark;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3.5),
       decoration: BoxDecoration(
         color: isDark ? colors.surfaceContainerLow : const Color(0xFFEFF8F5),
         borderRadius: BorderRadius.circular(999),
@@ -896,15 +892,15 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 12.5, color: colors.primary),
-          const SizedBox(width: 5),
+          Icon(icon, size: 12, color: colors.primary),
+          const SizedBox(width: 4),
           Flexible(
             child: Text(
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: 11,
+                fontSize: 10.5,
                 fontWeight: FontWeight.w600,
                 color: colors.onSurface,
                 fontFamily: _fontFamily,
@@ -923,10 +919,10 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
     final isDark = colors.isDark;
     final adjustCount = _customizationMessages.length ~/ 2;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
       decoration: BoxDecoration(
         color: colors.cardBackground,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isDark
               ? colors.outlineVariant.withValues(alpha: 0.5)
@@ -1020,7 +1016,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
   Widget _buildToolbarDivider(HelaColorPalette colors) {
     return Container(
       width: 1,
-      height: 26,
+      height: 22,
       color: colors.architecturalBorder.withValues(alpha: 0.7),
     );
   }
@@ -1039,17 +1035,17 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
         color: isActive
             ? iconColor.withValues(alpha: isDark ? 0.16 : 0.08)
             : Colors.transparent,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(11),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(11),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 3),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(icon, size: 19, color: iconColor),
-                const SizedBox(height: 4),
+                Icon(icon, size: 18, color: iconColor),
+                const SizedBox(height: 2.5),
                 Text(
                   label,
                   maxLines: 1,
@@ -1105,24 +1101,21 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(bottom: 10),
+          padding: const EdgeInsets.only(bottom: 6),
           child: Row(
             children: [
               Text(
                 'Schedule by Day',
                 style: TextStyle(
-                  fontSize: 13.5,
+                  fontSize: 13,
                   fontWeight: FontWeight.w800,
                   color: colors.onSurface,
                   fontFamily: _fontFamily,
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 7),
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 2.5,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
                   color: isDark
                       ? colors.primary.withValues(alpha: 0.16)
@@ -1132,7 +1125,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                 child: Text(
                   '${days.length} Days',
                   style: TextStyle(
-                    fontSize: 10.5,
+                    fontSize: 10,
                     fontWeight: FontWeight.w700,
                     color: colors.primary,
                     fontFamily: _fontFamily,
@@ -1154,7 +1147,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 6),
+                    const SizedBox(width: 5),
                     _buildDayNavChevron(
                       icon: Icons.chevron_right_rounded,
                       enabled: _selectedDayIndex < days.length - 1,
@@ -1180,25 +1173,25 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
               final d = days[idx];
 
               return Padding(
-                padding: const EdgeInsets.only(right: 9),
+                padding: const EdgeInsets.only(right: 8),
                 child: InkWell(
                   onTap: () => setState(() => _selectedDayIndex = idx),
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(13),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 180),
                     constraints: const BoxConstraints(
-                      minWidth: 112,
-                      maxWidth: 148,
+                      minWidth: 104,
+                      maxWidth: 174,
                     ),
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 9,
+                      horizontal: 11,
+                      vertical: 7,
                     ),
                     decoration: BoxDecoration(
                       color: isSelected
                           ? colors.primary
                           : colors.cardBackground,
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(13),
                       border: Border.all(
                         color: isSelected
                             ? colors.primary
@@ -1225,7 +1218,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                             Text(
                               d['day']!,
                               style: TextStyle(
-                                fontSize: 12.5,
+                                fontSize: 12,
                                 fontWeight: FontWeight.w800,
                                 color: isSelected
                                     ? (isDark ? colors.onPrimary : Colors.white)
@@ -1233,25 +1226,29 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                                 fontFamily: _fontFamily,
                               ),
                             ),
-                            const SizedBox(width: 6),
-                            Text(
-                              d['date']!,
-                              style: TextStyle(
-                                fontSize: 10.5,
-                                fontWeight: FontWeight.w600,
-                                color: isSelected
-                                    ? (isDark
-                                          ? colors.onPrimary.withValues(
-                                              alpha: 0.8,
-                                            )
-                                          : colors.secondaryContainer)
-                                    : colors.onSurfaceVariant,
-                                fontFamily: _fontFamily,
+                            const SizedBox(width: 5),
+                            Flexible(
+                              child: Text(
+                                d['date']!,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: isSelected
+                                      ? (isDark
+                                            ? colors.onPrimary.withValues(
+                                                alpha: 0.8,
+                                              )
+                                            : colors.secondaryContainer)
+                                      : colors.onSurfaceVariant,
+                                  fontFamily: _fontFamily,
+                                ),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 3),
+                        const SizedBox(height: 2),
                         Text(
                           d['route']!,
                           maxLines: 1,
