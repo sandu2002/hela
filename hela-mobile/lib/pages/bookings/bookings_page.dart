@@ -53,7 +53,7 @@ class _BookingsPageState extends State<BookingsPage> {
                       Text(
                         HelaAppStateProvider.of(context).tr('my_bookings'),
                         style: TextStyle(
-                          fontFamily: 'Playfair Display',
+                          fontFamily: 'Plus Jakarta Sans',
                           fontSize: 26,
                           fontWeight: FontWeight.w800,
                           color: colors.onBackground,

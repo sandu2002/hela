@@ -481,7 +481,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
           fontSize: 17,
           fontWeight: FontWeight.w700,
           color: colors.onSurface,
-          fontFamily: 'Inter',
+          fontFamily: 'Plus Jakarta Sans',
         ),
       ),
       actions: [
@@ -602,7 +602,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
               fontSize: 20,
               fontWeight: FontWeight.w800,
               color: colors.onSurface,
-              fontFamily: 'Inter',
+              fontFamily: 'Plus Jakarta Sans',
               letterSpacing: -0.3,
             ),
           ),

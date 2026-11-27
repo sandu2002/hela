@@ -132,7 +132,7 @@ class _SavedPageState extends State<SavedPage> {
           fontWeight: FontWeight.w900,
           fontSize: _shouldShowBack ? 24 : 32,
           letterSpacing: -0.8,
-          fontFamily: 'Inter',
+          fontFamily: 'Plus Jakarta Sans',
         ),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,

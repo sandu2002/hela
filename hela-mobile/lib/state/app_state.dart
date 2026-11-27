@@ -417,7 +417,7 @@ class HelaAppState extends ChangeNotifier {
   bool _isAuthenticated = false;
   String _userName = 'Explorer';
   String _userEmail = '';
-  String _userTitle = '🌿 Sri Lanka Traveler';
+  String _userTitle = 'Sri Lanka Traveler';
   String _userBio = '';
   String _userPhone = '';
   String _userLocation = '';

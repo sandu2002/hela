@@ -481,7 +481,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
           fontSize: 34,
           fontWeight: FontWeight.w900,
           letterSpacing: -0.8,
-          fontFamily: 'Inter',
+          fontFamily: 'Plus Jakarta Sans',
         ),
       ),
     );
@@ -621,7 +621,7 @@ class _TripPlannerPageState extends State<TripPlannerPage> {
                   Text(
                     HelaAppStateProvider.of(context).tr('plan_your_adventure'),
                     style: const TextStyle(
-                      fontFamily: 'Inter',
+                      fontFamily: 'Plus Jakarta Sans',
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,

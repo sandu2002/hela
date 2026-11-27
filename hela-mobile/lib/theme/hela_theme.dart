@@ -33,7 +33,7 @@ class HelaTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      fontFamily: 'Inter',
+      fontFamily: 'Plus Jakarta Sans',
       scaffoldBackgroundColor: palette.background,
       colorScheme: colorScheme,
       canvasColor: palette.background,
@@ -51,7 +51,7 @@ class HelaTheme {
           color: palette.primary,
           fontSize: 20,
           fontWeight: FontWeight.w700,
-          fontFamily: 'Inter',
+          fontFamily: 'Plus Jakarta Sans',
           letterSpacing: -0.5,
         ),
       ),
@@ -77,13 +77,13 @@ class HelaTheme {
           color: palette.onSurfaceVariant,
           fontSize: 13,
           fontWeight: FontWeight.w500,
-          fontFamily: 'Inter',
+          fontFamily: 'Plus Jakarta Sans',
         ),
         secondaryLabelStyle: TextStyle(
           color: palette.onSecondaryContainer,
           fontSize: 13,
           fontWeight: FontWeight.w600,
-          fontFamily: 'Inter',
+          fontFamily: 'Plus Jakarta Sans',
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(9999),
@@ -101,12 +101,12 @@ class HelaTheme {
         selectedLabelStyle: const TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w700,
-          fontFamily: 'Inter',
+          fontFamily: 'Plus Jakarta Sans',
         ),
         unselectedLabelStyle: const TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w500,
-          fontFamily: 'Inter',
+          fontFamily: 'Plus Jakarta Sans',
         ),
       ),
       drawerTheme: DrawerThemeData(
@@ -122,12 +122,12 @@ class HelaTheme {
           color: palette.primary,
           fontSize: 18,
           fontWeight: FontWeight.w700,
-          fontFamily: 'Inter',
+          fontFamily: 'Plus Jakarta Sans',
         ),
         contentTextStyle: TextStyle(
           color: palette.onSurfaceVariant,
           fontSize: 14,
-          fontFamily: 'Inter',
+          fontFamily: 'Plus Jakarta Sans',
         ),
       ),
       snackBarTheme: SnackBarThemeData(
@@ -136,7 +136,7 @@ class HelaTheme {
           color: Colors.white,
           fontSize: 13,
           fontWeight: FontWeight.w600,
-          fontFamily: 'Inter',
+          fontFamily: 'Plus Jakarta Sans',
         ),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -175,7 +175,7 @@ class HelaTheme {
           textStyle: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
-            fontFamily: 'Inter',
+            fontFamily: 'Plus Jakarta Sans',
           ),
         ),
       ),
@@ -185,7 +185,7 @@ class HelaTheme {
           textStyle: const TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w700,
-            fontFamily: 'Inter',
+            fontFamily: 'Plus Jakarta Sans',
           ),
         ),
       ),
@@ -197,7 +197,7 @@ class HelaTheme {
           textStyle: const TextStyle(
             fontSize: 13.5,
             fontWeight: FontWeight.w600,
-            fontFamily: 'Inter',
+            fontFamily: 'Plus Jakarta Sans',
           ),
         ),
       ),
@@ -237,7 +237,7 @@ class HelaTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      fontFamily: 'Inter',
+      fontFamily: 'Plus Jakarta Sans',
       scaffoldBackgroundColor: palette.background,
       colorScheme: colorScheme,
       canvasColor: palette.background,
@@ -255,7 +255,7 @@ class HelaTheme {
           color: palette.onSurface,
           fontSize: 20,
           fontWeight: FontWeight.w700,
-          fontFamily: 'Inter',
+          fontFamily: 'Plus Jakarta Sans',
           letterSpacing: -0.5,
         ),
       ),
@@ -281,13 +281,13 @@ class HelaTheme {
           color: palette.onSurface,
           fontSize: 13,
           fontWeight: FontWeight.w500,
-          fontFamily: 'Inter',
+          fontFamily: 'Plus Jakarta Sans',
         ),
         secondaryLabelStyle: TextStyle(
           color: palette.onSecondaryContainer,
           fontSize: 13,
           fontWeight: FontWeight.w600,
-          fontFamily: 'Inter',
+          fontFamily: 'Plus Jakarta Sans',
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(9999),
@@ -305,12 +305,12 @@ class HelaTheme {
         selectedLabelStyle: const TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w700,
-          fontFamily: 'Inter',
+          fontFamily: 'Plus Jakarta Sans',
         ),
         unselectedLabelStyle: const TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w500,
-          fontFamily: 'Inter',
+          fontFamily: 'Plus Jakarta Sans',
         ),
       ),
       drawerTheme: DrawerThemeData(
@@ -326,12 +326,12 @@ class HelaTheme {
           color: palette.primary,
           fontSize: 18,
           fontWeight: FontWeight.w700,
-          fontFamily: 'Inter',
+          fontFamily: 'Plus Jakarta Sans',
         ),
         contentTextStyle: TextStyle(
           color: palette.onSurfaceVariant,
           fontSize: 14,
-          fontFamily: 'Inter',
+          fontFamily: 'Plus Jakarta Sans',
         ),
       ),
       snackBarTheme: SnackBarThemeData(
@@ -340,7 +340,7 @@ class HelaTheme {
           color: palette.onSurface,
           fontSize: 13,
           fontWeight: FontWeight.w600,
-          fontFamily: 'Inter',
+          fontFamily: 'Plus Jakarta Sans',
         ),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
@@ -382,7 +382,7 @@ class HelaTheme {
           textStyle: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
-            fontFamily: 'Inter',
+            fontFamily: 'Plus Jakarta Sans',
           ),
         ),
       ),
@@ -392,7 +392,7 @@ class HelaTheme {
           textStyle: const TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w700,
-            fontFamily: 'Inter',
+            fontFamily: 'Plus Jakarta Sans',
           ),
         ),
       ),
@@ -404,7 +404,7 @@ class HelaTheme {
           textStyle: const TextStyle(
             fontSize: 13.5,
             fontWeight: FontWeight.w600,
-            fontFamily: 'Inter',
+            fontFamily: 'Plus Jakarta Sans',
           ),
         ),
       ),

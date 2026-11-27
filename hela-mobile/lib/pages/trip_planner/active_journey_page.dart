@@ -155,7 +155,7 @@ class _ActiveJourneyPageState extends State<ActiveJourneyPage> {
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
                   color: colors.onSurface,
-                  fontFamily: 'Inter',
+                  fontFamily: 'Plus Jakarta Sans',
                 ),
               ),
               const SizedBox(width: 8),

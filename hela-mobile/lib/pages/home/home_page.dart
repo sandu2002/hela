@@ -479,7 +479,7 @@ class _HelaHomePageState extends State<HelaHomePage>
           fontSize: 34,
           fontWeight: FontWeight.w900,
           letterSpacing: -0.8,
-          fontFamily: 'Inter',
+          fontFamily: 'Plus Jakarta Sans',
         ),
       ),
       actions: [
@@ -631,7 +631,7 @@ class _HelaHomePageState extends State<HelaHomePage>
                   Text(
                     HelaAppStateProvider.of(context).tr('discover_title'),
                     style: const TextStyle(
-                      fontFamily: 'Inter',
+                      fontFamily: 'Plus Jakarta Sans',
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
@@ -720,7 +720,7 @@ class _HelaHomePageState extends State<HelaHomePage>
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
-                                          fontFamily: 'Inter',
+                                          fontFamily: 'Plus Jakarta Sans',
                                           fontSize: 13.5,
                                           fontWeight: FontWeight.w800,
                                           color: Color(0xFF052E26),
@@ -815,7 +815,7 @@ class _HelaHomePageState extends State<HelaHomePage>
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
-                                              fontFamily: 'Inter',
+                                              fontFamily: 'Plus Jakarta Sans',
                                               fontSize: 13.5,
                                               fontWeight: FontWeight.w700,
                                               color: Colors.white,
@@ -875,7 +875,7 @@ class _HelaHomePageState extends State<HelaHomePage>
                         fontSize: 17,
                         fontWeight: FontWeight.w800,
                         color: colors.onSurface,
-                        fontFamily: 'Inter',
+                        fontFamily: 'Plus Jakarta Sans',
                       ),
                     ),
                   ),
@@ -1029,7 +1029,7 @@ class _HelaHomePageState extends State<HelaHomePage>
             fontSize: 17,
             fontWeight: FontWeight.w800,
             color: colors.onSurface,
-            fontFamily: 'Inter',
+            fontFamily: 'Plus Jakarta Sans',
           ),
         ),
         const SizedBox(height: 12),

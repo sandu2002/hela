@@ -629,7 +629,7 @@ class _FairRidePageState extends State<FairRidePage> {
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 15,
-                                  fontFamily: 'Inter',
+                                  fontFamily: 'Plus Jakarta Sans',
                                 ),
                               ),
                               const SizedBox(width: 8),
@@ -712,7 +712,7 @@ class _FairRidePageState extends State<FairRidePage> {
                 Text(
                   'Select Payment Method',
                   style: TextStyle(
-                    fontFamily: 'Inter',
+                    fontFamily: 'Plus Jakarta Sans',
                     fontSize: 17,
                     fontWeight: FontWeight.w800,
                     color: colors.onBackground,
@@ -952,7 +952,7 @@ class _FairRidePageState extends State<FairRidePage> {
                         fontSize: 12.5,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 0.6,
-                        fontFamily: 'Inter',
+                        fontFamily: 'Plus Jakarta Sans',
                       ),
                     ),
                   ],
@@ -1199,7 +1199,7 @@ class _FairRidePageState extends State<FairRidePage> {
                               fontSize: 18,
                               fontWeight: FontWeight.w800,
                               color: Color(0xFF1F2937),
-                              fontFamily: 'Inter',
+                              fontFamily: 'Plus Jakarta Sans',
                             ),
                           ),
                           Text(
@@ -1307,7 +1307,7 @@ class _FairRidePageState extends State<FairRidePage> {
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                   color: Color(0xFF111827),
-                  fontFamily: 'Inter',
+                  fontFamily: 'Plus Jakarta Sans',
                 ),
               ),
               const SizedBox(height: 10),
@@ -1445,7 +1445,7 @@ class _FairRidePageState extends State<FairRidePage> {
                 fontWeight: FontWeight.w900,
                 fontSize: 16,
                 color: iconColor,
-                fontFamily: 'Inter',
+                fontFamily: 'Plus Jakarta Sans',
               ),
             ),
             const SizedBox(width: 8),
@@ -1555,7 +1555,7 @@ class _FairRidePageState extends State<FairRidePage> {
                       Text(
                         'Driver En-Route',
                         style: TextStyle(
-                          fontFamily: 'Inter',
+                          fontFamily: 'Plus Jakarta Sans',
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                           color: colors.onBackground,
@@ -2039,7 +2039,7 @@ class _FairRidePageState extends State<FairRidePage> {
                             Text(
                               'My Taxi Rides',
                               style: TextStyle(
-                                fontFamily: 'Inter',
+                                fontFamily: 'Plus Jakarta Sans',
                                 fontSize: 18,
                                 fontWeight: FontWeight.w800,
                                 color: colors.onBackground,

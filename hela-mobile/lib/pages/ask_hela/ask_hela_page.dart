@@ -818,7 +818,7 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
                         fontSize: 16.5,
                         fontWeight: FontWeight.w800,
                         color: Color(0xFF0B2D25),
-                        fontFamily: 'Inter',
+                        fontFamily: 'Plus Jakarta Sans',
                       ),
                     ),
                     const SizedBox(width: 4),

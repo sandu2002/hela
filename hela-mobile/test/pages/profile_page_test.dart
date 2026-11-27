@@ -64,21 +64,13 @@ void main() {
       expect(appState.smartTravelAlerts, isFalse);
     });
 
-    testWidgets('opens SOS emergency sheet and logout confirmation dialog', (tester) async {
+    testWidgets('opens logout confirmation dialog', (tester) async {
       final appState = HelaAppState();
       await tester.pumpWidget(wrapProfile(appState));
       await tester.pumpAndSettle();
 
-      // Open SOS bottom sheet
-      await tester.tap(find.text('SOS').first);
-      await tester.pumpAndSettle();
-      expect(find.text('Tourist Emergency SOS'), findsOneWidget);
-      expect(find.text('Sri Lanka Tourist Police'), findsOneWidget);
-      expect(find.text('Suwa Seriya National Ambulance'), findsOneWidget);
-
-      // Dismiss SOS sheet
-      await tester.tap(find.byIcon(Icons.close_rounded));
-      await tester.pumpAndSettle();
+      // Ensure SOS button is removed from AppBar
+      expect(find.text('SOS'), findsNothing);
 
       // Scroll to Log Out button and tap it
       final logoutFinder = find.text('Log Out of HELA Account');

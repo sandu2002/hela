@@ -158,56 +158,11 @@ class _ProfilePageState extends State<ProfilePage> {
           fontWeight: FontWeight.w900,
           color: isDark ? colors.onSurface : _darkInk,
           letterSpacing: -0.8,
-          fontFamily: 'Inter',
+          fontFamily: 'Plus Jakarta Sans',
         ),
       ),
-      actions: [
-        // SOS Pill Button
-        InkWell(
-          onTap: _showEmergencySosSheet,
-          borderRadius: BorderRadius.circular(999),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFDE2E2),
-              borderRadius: BorderRadius.circular(999),
-              border: Border.all(color: const Color(0xFFF9B8B8)),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 4,
-                    vertical: 1,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFDC2626),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: const Text(
-                    'SOS',
-                    style: TextStyle(
-                      fontSize: 8.5,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 5),
-                const Text(
-                  'SOS',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFFB91C1C),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(width: 16),
+      actions: const [
+        SizedBox(width: 16),
       ],
     );
   }
@@ -230,12 +185,11 @@ class _ProfilePageState extends State<ProfilePage> {
     final displayLocation = appState.userLocation.isNotEmpty
         ? appState.userLocation
         : 'Colombo, Sri Lanka';
-    final displayTitle = appState.userTitle.isNotEmpty
-        ? appState.userTitle
-        : 'Sri Lanka Traveler';
-    final displayBio = appState.userBio.isNotEmpty
-        ? appState.userBio
-        : 'Exploring Ceylon highlands, heritage citadels & coastal havens.';
+    final displayTitle = (appState.userTitle.isNotEmpty
+            ? appState.userTitle
+            : 'Sri Lanka Traveler')
+        .replaceAll('🌿', '')
+        .trim();
     final currencyCode = appState.preferredCurrency.split(' ').first;
     final photoUrl =
         appState.userPhotoUrl ??
@@ -376,76 +330,6 @@ class _ProfilePageState extends State<ProfilePage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Wrap(
-                                    spacing: 6,
-                                    runSpacing: 5,
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 9,
-                                          vertical: 3.5,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white.withValues(alpha: 0.14),
-                                          borderRadius: BorderRadius.circular(999),
-                                          border: Border.all(
-                                            color: Colors.white.withValues(alpha: 0.2),
-                                          ),
-                                        ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            const Icon(
-                                              Icons.circle,
-                                              size: 6,
-                                              color: Color(0xFF34D399),
-                                            ),
-                                            const SizedBox(width: 5),
-                                            Flexible(
-                                              child: Text(
-                                                appState.tr('sltda_id'),
-                                                overflow: TextOverflow.ellipsis,
-                                                style: const TextStyle(
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.white,
-                                                  letterSpacing: 0.2,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                          vertical: 3.5,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: appState.isAuthenticated
-                                              ? const Color(0xFF10B981).withValues(alpha: 0.22)
-                                              : const Color(0xFFFBBF24).withValues(alpha: 0.2),
-                                          borderRadius: BorderRadius.circular(999),
-                                          border: Border.all(
-                                            color: appState.isAuthenticated
-                                                ? const Color(0xFF34D399).withValues(alpha: 0.45)
-                                                : const Color(0xFFFBBF24).withValues(alpha: 0.45),
-                                          ),
-                                        ),
-                                        child: Text(
-                                          appState.isAuthenticated ? 'Verified' : 'Guest Pass',
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w700,
-                                            color: appState.isAuthenticated
-                                                ? const Color(0xFFA7F3D0)
-                                                : const Color(0xFFFDE68A),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 7),
                                   Text(
                                     displayName,
                                     maxLines: 2,
@@ -504,6 +388,30 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              // Traveler ID
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.badge_outlined,
+                                    size: 14.5,
+                                    color: Colors.white.withValues(alpha: 0.85),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      appState.tr('sltda_id'),
+                                      style: TextStyle(
+                                        fontSize: 12.5,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.white.withValues(alpha: 0.94),
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+
                               // Contact Email & Phone
                               Row(
                                 children: [
@@ -637,39 +545,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                     ),
                                   ],
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 9),
-                                child: Divider(
-                                  height: 1,
-                                  color: Colors.white.withValues(alpha: 0.15),
-                                ),
-                              ),
-
-                              // Traveler Bio
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Icon(
-                                    Icons.format_quote_rounded,
-                                    size: 15,
-                                    color: const Color(0xFF6EE7B7),
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Expanded(
-                                    child: Text(
-                                      displayBio,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontSize: 11.5,
-                                        height: 1.35,
-                                        fontStyle: FontStyle.italic,
-                                        color: Colors.white.withValues(alpha: 0.88),
-                                      ),
-                                    ),
-                                  ),
-                                ],
                               ),
                             ],
                           ),
@@ -1617,168 +1492,6 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   // ── Interactive Sheets & Dialogs ─────────────────────────────────────────
-  void _showEmergencySosSheet() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) => Container(
-        padding: const EdgeInsets.all(22),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
-        ),
-        child: SafeArea(
-          top: false,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFFEE2E2),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.emergency_rounded,
-                        color: Color(0xFFDC2626),
-                        size: 24,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Tourist Emergency SOS',
-                            style: TextStyle(
-                              fontSize: 17.5,
-                              fontWeight: FontWeight.w800,
-                              color: _darkInk,
-                            ),
-                          ),
-                          Text(
-                            '24/7 Official Sri Lanka Emergency Dispatch',
-                            style: TextStyle(fontSize: 12, color: _mutedTeal),
-                          ),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close_rounded),
-                      onPressed: () => Navigator.pop(ctx),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                _buildSosTile(
-                  icon: Icons.local_police_rounded,
-                  title: 'Sri Lanka Tourist Police',
-                  subtitle: 'Toll-free 24/7 English & Sinhala support • 1912',
-                  badge: '1912',
-                  onTap: () {
-                    Navigator.pop(ctx);
-                    _dialNumber('1912');
-                  },
-                ),
-                const SizedBox(height: 8),
-                _buildSosTile(
-                  icon: Icons.medical_services_rounded,
-                  title: 'Suwa Seriya National Ambulance',
-                  subtitle:
-                      'Free island-wide emergency medical response • 1990',
-                  badge: '1990',
-                  onTap: () {
-                    Navigator.pop(ctx);
-                    _dialNumber('1990');
-                  },
-                ),
-                const SizedBox(height: 8),
-                _buildSosTile(
-                  icon: Icons.phone_in_talk_rounded,
-                  title: 'General Police Emergency',
-                  subtitle: 'Immediate dispatch • 119',
-                  badge: '119',
-                  onTap: () {
-                    Navigator.pop(ctx);
-                    _dialNumber('119');
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSosTile({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required String badge,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: const Color(0xFFFFF5F5),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFFED7D7)),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, color: const Color(0xFFDC2626), size: 22),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w700,
-                      color: _darkInk,
-                    ),
-                  ),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(fontSize: 11, color: _mutedTeal),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              decoration: BoxDecoration(
-                color: const Color(0xFFDC2626),
-                borderRadius: BorderRadius.circular(999),
-              ),
-              child: Text(
-                badge,
-                style: const TextStyle(
-                  fontSize: 11.5,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-
   void _showLanguagePicker() {
     final appState = HelaAppStateProvider.of(context);
     showHelaLanguagePickerSheet(
