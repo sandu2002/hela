@@ -1,8 +1,8 @@
 require('dotenv').config();
 
-const INSFORGE_BASE_URL = process.env.INSFORGE_BASE_URL || 'https://tvf24g8r.us-east.insforge.app';
-const INSFORGE_API_KEY = process.env.INSFORGE_API_KEY || 'ik_cab32e75750979d7ab16c1684a35affe';
-const INSFORGE_ANON_KEY = process.env.INSFORGE_ANON_KEY || 'anon_4ac1cdd3569c8ba96ee190681daac2c8e6f773475692bd59bb4a0365e6c09aae';
+const INSFORGE_BASE_URL = (process.env.INSFORGE_BASE_URL || 'https://tvf24g8r.us-east.insforge.app').trim().replace(/\/+$/, '');
+const INSFORGE_API_KEY = (process.env.INSFORGE_API_KEY || '').trim();
+const INSFORGE_ANON_KEY = (process.env.INSFORGE_ANON_KEY || '').trim();
 
 /**
  * InsForge BaaS REST Client
@@ -15,10 +15,12 @@ class InsForgeClient {
   }
 
   getHeaders(authToken = null) {
-    return {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${authToken || this.apiKey || this.anonKey}`,
-    };
+    const token = (authToken || this.apiKey || this.anonKey || '').trim();
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+    return headers;
   }
 
   async fetchFromAuth(endpoint, options = {}) {
@@ -29,8 +31,24 @@ class InsForgeClient {
         ...this.getHeaders(),
         ...options.headers,
       },
+      signal: options.signal || AbortSignal.timeout(15_000),
     });
-    return response.json();
+
+    let payload = null;
+    try {
+      payload = await response.json();
+    } catch (_) {
+      payload = null;
+    }
+
+    if (!response.ok) {
+      const msg = payload?.message || payload?.error || `Auth service returned HTTP ${response.status}`;
+      const err = new Error(msg);
+      err.statusCode = response.status === 401 || response.status === 403 ? response.status : 502;
+      throw err;
+    }
+
+    return payload;
   }
 }
 

@@ -134,9 +134,7 @@ class HelaThemeSwitchButton extends StatelessWidget {
         content: Row(
           children: [
             Icon(
-              switchedToDark
-                  ? Icons.nightlight_round
-                  : Icons.wb_sunny_rounded,
+              switchedToDark ? Icons.nightlight_round : Icons.wb_sunny_rounded,
               color: switchedToDark
                   ? const Color(0xFF7ED994)
                   : const Color(0xFFDFEB6D),

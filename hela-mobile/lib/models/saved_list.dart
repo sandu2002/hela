@@ -22,8 +22,8 @@ class CustomSavedList {
     this.color = const Color(0xFF00443E),
     List<String>? itemTitles,
     DateTime? createdAt,
-  })  : itemTitles = itemTitles ?? [],
-        createdAt = createdAt ?? DateTime.now();
+  }) : itemTitles = itemTitles ?? [],
+       createdAt = createdAt ?? DateTime.now();
 
   CustomSavedList copyWith({
     String? id,
@@ -39,20 +39,22 @@ class CustomSavedList {
       description: description ?? this.description,
       icon: icon ?? this.icon,
       color: color ?? this.color,
-      itemTitles: itemTitles != null ? List.from(itemTitles) : List.from(this.itemTitles),
+      itemTitles: itemTitles != null
+          ? List.from(itemTitles)
+          : List.from(this.itemTitles),
       createdAt: createdAt,
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'description': description,
-        'iconCode': icon.codePoint,
-        'colorValue': color.toARGB32(),
-        'itemTitles': itemTitles,
-        'createdAt': createdAt.toIso8601String(),
-      };
+    'id': id,
+    'name': name,
+    'description': description,
+    'iconCode': icon.codePoint,
+    'colorValue': color.toARGB32(),
+    'itemTitles': itemTitles,
+    'createdAt': createdAt.toIso8601String(),
+  };
 
   factory CustomSavedList.fromJson(Map<String, dynamic> json) {
     final code = json['iconCode'] as int?;
@@ -72,7 +74,8 @@ class CustomSavedList {
       description: json['description'] as String?,
       icon: matchedIcon,
       color: Color(json['colorValue'] as int? ?? 0xFF00443E),
-      itemTitles: (json['itemTitles'] as List<dynamic>?)
+      itemTitles:
+          (json['itemTitles'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],

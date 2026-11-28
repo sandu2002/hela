@@ -65,9 +65,8 @@ class ItineraryActivity {
       isCostEstimated: json['isCostEstimated'] as bool? ?? true,
       travelTimeFromPrevious: json['travelTimeFromPrevious'] as String?,
       travelMethod: json['travelMethod'] as String?,
-      tips: (json['tips'] as List<dynamic>?)
-              ?.map((e) => e.toString())
-              .toList() ??
+      tips:
+          (json['tips'] as List<dynamic>?)?.map((e) => e.toString()).toList() ??
           [],
     );
   }
@@ -124,13 +123,14 @@ class ItineraryDay {
       dayNumber: json['dayNumber'] as int? ?? 1,
       title: json['title'] as String? ?? '',
       summary: json['summary'] as String? ?? '',
-      activities: (json['activities'] as List<dynamic>?)
-              ?.map((e) =>
-                  ItineraryActivity.fromJson(e as Map<String, dynamic>))
+      activities:
+          (json['activities'] as List<dynamic>?)
+              ?.map(
+                (e) => ItineraryActivity.fromJson(e as Map<String, dynamic>),
+              )
               .toList() ??
           [],
-      estimatedDayCostUsd:
-          (json['estimatedDayCostUsd'] as num?)?.toDouble(),
+      estimatedDayCostUsd: (json['estimatedDayCostUsd'] as num?)?.toDouble(),
       overnightStay: json['overnightStay'] as String?,
     );
   }
@@ -228,30 +228,36 @@ class TourPlan {
       summary: json['summary'] as String? ?? '',
       matchReason: json['matchReason'] as String? ?? '',
       durationDays: json['durationDays'] as int? ?? 1,
-      days: (json['days'] as List<dynamic>?)
+      days:
+          (json['days'] as List<dynamic>?)
               ?.map((e) => ItineraryDay.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
-      estimatedTotalCostUsd:
-          (json['estimatedTotalCostUsd'] as num?)?.toDouble(),
+      estimatedTotalCostUsd: (json['estimatedTotalCostUsd'] as num?)
+          ?.toDouble(),
       budgetBreakdown: json['budgetBreakdown'] as String? ?? '',
-      budgetIncludes: (json['budgetIncludes'] as List<dynamic>?)
+      budgetIncludes:
+          (json['budgetIncludes'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],
-      budgetExcludes: (json['budgetExcludes'] as List<dynamic>?)
+      budgetExcludes:
+          (json['budgetExcludes'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],
-      travelTips: (json['travelTips'] as List<dynamic>?)
+      travelTips:
+          (json['travelTips'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],
-      warnings: (json['warnings'] as List<dynamic>?)
+      warnings:
+          (json['warnings'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],
-      dataSources: (json['dataSources'] as List<dynamic>?)
+      dataSources:
+          (json['dataSources'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],

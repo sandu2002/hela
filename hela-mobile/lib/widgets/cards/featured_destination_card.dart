@@ -75,9 +75,13 @@ class FeaturedDestinationCard extends StatelessWidget {
                           vertical: 2.5,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF0F1E19).withValues(alpha: 0.82),
+                          color: const Color(
+                            0xFF0F1E19,
+                          ).withValues(alpha: 0.82),
                           borderRadius: BorderRadius.circular(999),
-                          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.2),
+                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,

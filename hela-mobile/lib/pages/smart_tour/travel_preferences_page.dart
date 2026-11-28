@@ -117,11 +117,17 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
                   const SizedBox(height: 12),
                   _buildDurationSelector(),
                   const SizedBox(height: 28),
-                  _buildSectionTitle('Starting Location', Icons.location_on_rounded),
+                  _buildSectionTitle(
+                    'Starting Location',
+                    Icons.location_on_rounded,
+                  ),
                   const SizedBox(height: 12),
                   _buildStartingLocationSection(),
                   const SizedBox(height: 28),
-                  _buildSectionTitle('Travel Interests', Icons.interests_rounded),
+                  _buildSectionTitle(
+                    'Travel Interests',
+                    Icons.interests_rounded,
+                  ),
                   const SizedBox(height: 6),
                   const Text(
                     'Select all that excite you',
@@ -133,7 +139,10 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
                   const SizedBox(height: 12),
                   _buildInterestsGrid(),
                   const SizedBox(height: 28),
-                  _buildSectionTitle('Budget', Icons.account_balance_wallet_rounded),
+                  _buildSectionTitle(
+                    'Budget',
+                    Icons.account_balance_wallet_rounded,
+                  ),
                   const SizedBox(height: 12),
                   _buildBudgetSection(),
                   const SizedBox(height: 28),
@@ -145,7 +154,10 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
                   const SizedBox(height: 12),
                   _buildAccommodationSection(),
                   const SizedBox(height: 28),
-                  _buildSectionTitle('Additional Notes', Icons.note_add_rounded),
+                  _buildSectionTitle(
+                    'Additional Notes',
+                    Icons.note_add_rounded,
+                  ),
                   const SizedBox(height: 12),
                   _buildNotesSection(),
                   const SizedBox(height: 32),
@@ -192,7 +204,10 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
               onTap: () => setState(() => _selectedDuration = d),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   color: isSelected
                       ? HelaColors.tertiaryFixed
@@ -207,7 +222,9 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
                   boxShadow: isSelected
                       ? [
                           BoxShadow(
-                            color: HelaColors.tertiaryFixed.withValues(alpha: 0.3),
+                            color: HelaColors.tertiaryFixed.withValues(
+                              alpha: 0.3,
+                            ),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -270,7 +287,10 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
     );
   }
 
-  Widget _buildCounterButton({required IconData icon, VoidCallback? onPressed}) {
+  Widget _buildCounterButton({
+    required IconData icon,
+    VoidCallback? onPressed,
+  }) {
     return Material(
       color: onPressed != null
           ? HelaColors.primaryContainer
@@ -330,16 +350,19 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
     // Debounce live OpenStreetMap Nominatim search to discover any sub-location, village, or landmark
     _locationDebounceTimer?.cancel();
     if (trimmed.length >= 2) {
-      _locationDebounceTimer = Timer(const Duration(milliseconds: 320), () async {
-        if (!mounted || _locationController.text.trim() != trimmed) return;
-        setState(() => _isLoadingLiveResults = true);
-        final live = await SriLankaLocationsService.searchLive(trimmed);
-        if (!mounted || _locationController.text.trim() != trimmed) return;
-        setState(() {
-          _liveResults = live;
-          _isLoadingLiveResults = false;
-        });
-      });
+      _locationDebounceTimer = Timer(
+        const Duration(milliseconds: 320),
+        () async {
+          if (!mounted || _locationController.text.trim() != trimmed) return;
+          setState(() => _isLoadingLiveResults = true);
+          final live = await SriLankaLocationsService.searchLive(trimmed);
+          if (!mounted || _locationController.text.trim() != trimmed) return;
+          setState(() {
+            _liveResults = live;
+            _isLoadingLiveResults = false;
+          });
+        },
+      );
     } else {
       _liveResults = [];
       _isLoadingLiveResults = false;
@@ -354,17 +377,19 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
     // Merge local matches with live OpenStreetMap Nominatim results without duplicate names
     final combinedResults = <SriLankaLocationResult>[...localMatches];
     for (final live in _liveResults) {
-      final exists = combinedResults.any((item) =>
-          item.name.toLowerCase() == live.name.toLowerCase());
+      final exists = combinedResults.any(
+        (item) => item.name.toLowerCase() == live.name.toLowerCase(),
+      );
       if (!exists) {
         combinedResults.add(live);
       }
     }
 
     // Check if currently selected location matches one of the popular options
-    final isPopularSelected = SriLankaLocationsService.popularStartingPoints.any(
-      (loc) => loc.name.toLowerCase() == _startLocationName.toLowerCase(),
-    );
+    final isPopularSelected = SriLankaLocationsService.popularStartingPoints
+        .any(
+          (loc) => loc.name.toLowerCase() == _startLocationName.toLowerCase(),
+        );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -393,7 +418,8 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
             focusNode: _locationFocusNode,
             onChanged: _onLocationQueryChanged,
             onTap: () {
-              if (_locationController.text.isNotEmpty && !_isSearchingLocation) {
+              if (_locationController.text.isNotEmpty &&
+                  !_isSearchingLocation) {
                 setState(() => _isSearchingLocation = true);
               }
             },
@@ -422,15 +448,17 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
                     _startLocationType == StartingLocationType.airport
                         ? Icons.flight_takeoff_rounded
                         : (_startLocationType == StartingLocationType.city
-                            ? Icons.location_city_rounded
-                            : Icons.place_rounded),
+                              ? Icons.location_city_rounded
+                              : Icons.place_rounded),
                     color: HelaColors.primary,
                     size: 18,
                   ),
                 ),
               ),
-              prefixIconConstraints:
-                  const BoxConstraints(minWidth: 46, minHeight: 46),
+              prefixIconConstraints: const BoxConstraints(
+                minWidth: 46,
+                minHeight: 46,
+              ),
               suffixIcon: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -448,8 +476,11 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
                     ),
                   if (_locationController.text.isNotEmpty)
                     IconButton(
-                      icon: const Icon(Icons.cancel_rounded,
-                          color: HelaColors.outline, size: 20),
+                      icon: const Icon(
+                        Icons.cancel_rounded,
+                        color: HelaColors.outline,
+                        size: 20,
+                      ),
                       onPressed: () {
                         _locationController.clear();
                         _onLocationQueryChanged('');
@@ -461,8 +492,10 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
               enabledBorder: InputBorder.none,
               focusedBorder: InputBorder.none,
               disabledBorder: InputBorder.none,
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 14,
+              ),
             ),
           ),
         ),
@@ -492,70 +525,84 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
                 shrinkWrap: true,
                 padding: const EdgeInsets.symmetric(vertical: 4),
                 children: [
-                  ...combinedResults.map((item) => InkWell(
-                        onTap: () => _selectLocation(item.name, item.type),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 10),
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(7),
-                                decoration: const BoxDecoration(
-                                  color: HelaColors.surfaceContainerHigh,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(item.icon,
-                                    size: 16, color: HelaColors.primary),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      item.name,
-                                      style: const TextStyle(
-                                        color: HelaColors.primary,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 13.5,
-                                      ),
-                                    ),
-                                    Text(
-                                      item.subtitle,
-                                      style: const TextStyle(
-                                        color: HelaColors.onSurfaceVariant,
-                                        fontSize: 11.5,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const Icon(Icons.arrow_forward_ios_rounded,
-                                  size: 12, color: HelaColors.outline),
-                            ],
-                          ),
+                  ...combinedResults.map(
+                    (item) => InkWell(
+                      onTap: () => _selectLocation(item.name, item.type),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 10,
                         ),
-                      )),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(7),
+                              decoration: const BoxDecoration(
+                                color: HelaColors.surfaceContainerHigh,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                item.icon,
+                                size: 16,
+                                color: HelaColors.primary,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item.name,
+                                    style: const TextStyle(
+                                      color: HelaColors.primary,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 13.5,
+                                    ),
+                                  ),
+                                  Text(
+                                    item.subtitle,
+                                    style: const TextStyle(
+                                      color: HelaColors.onSurfaceVariant,
+                                      fontSize: 11.5,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              size: 12,
+                              color: HelaColors.outline,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                   // Custom input fallback option
                   InkWell(
-                    onTap: () => _selectLocation(
-                      query,
-                      _startLocationType,
-                    ),
+                    onTap: () => _selectLocation(query, _startLocationType),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 10),
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
                       child: Row(
                         children: [
                           Container(
                             padding: const EdgeInsets.all(7),
                             decoration: BoxDecoration(
-                              color: HelaColors.tertiaryFixed.withValues(alpha: 0.3),
+                              color: HelaColors.tertiaryFixed.withValues(
+                                alpha: 0.3,
+                              ),
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.add_location_alt_rounded,
-                                size: 16, color: HelaColors.onTertiaryFixed),
+                            child: const Icon(
+                              Icons.add_location_alt_rounded,
+                              size: 16,
+                              color: HelaColors.onTertiaryFixed,
+                            ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -579,7 +626,9 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
         ],
 
         // Selected Custom Location Tag
-        if (!isPopularSelected && _startLocationName.trim().isNotEmpty && !_isSearchingLocation) ...[
+        if (!isPopularSelected &&
+            _startLocationName.trim().isNotEmpty &&
+            !_isSearchingLocation) ...[
           const SizedBox(height: 10),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
@@ -593,8 +642,11 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.check_circle_rounded,
-                    size: 15, color: HelaColors.secondary),
+                const Icon(
+                  Icons.check_circle_rounded,
+                  size: 15,
+                  color: HelaColors.secondary,
+                ),
                 const SizedBox(width: 6),
                 Text(
                   'Starting from: $_startLocationName',
@@ -625,16 +677,19 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
           spacing: 8,
           runSpacing: 8,
           children: SriLankaLocationsService.popularStartingPoints.map((loc) {
-            final isSelected = _startLocationName.toLowerCase() ==
-                    loc.name.toLowerCase() ||
-                _startLocationName.toLowerCase() == (loc.shortLabel ?? loc.name).toLowerCase();
+            final isSelected =
+                _startLocationName.toLowerCase() == loc.name.toLowerCase() ||
+                _startLocationName.toLowerCase() ==
+                    (loc.shortLabel ?? loc.name).toLowerCase();
             return InkWell(
               borderRadius: BorderRadius.circular(12),
               onTap: () => _selectLocation(loc.name, loc.type),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: isSelected
                       ? HelaColors.tertiaryFixed
@@ -649,8 +704,9 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
                   boxShadow: isSelected
                       ? [
                           BoxShadow(
-                            color:
-                                HelaColors.tertiaryFixed.withValues(alpha: 0.3),
+                            color: HelaColors.tertiaryFixed.withValues(
+                              alpha: 0.3,
+                            ),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -666,8 +722,9 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
                         color: isSelected
                             ? HelaColors.onTertiaryFixed
                             : HelaColors.onSurfaceVariant,
-                        fontWeight:
-                            isSelected ? FontWeight.w700 : FontWeight.w500,
+                        fontWeight: isSelected
+                            ? FontWeight.w700
+                            : FontWeight.w500,
                         fontSize: 13,
                       ),
                     ),
@@ -748,7 +805,11 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
                 ),
                 if (isSelected) ...[
                   const SizedBox(width: 4),
-                  const Icon(Icons.check_rounded, size: 16, color: HelaColors.primary),
+                  const Icon(
+                    Icons.check_rounded,
+                    size: 16,
+                    color: HelaColors.primary,
+                  ),
                 ],
               ],
             ),
@@ -807,7 +868,9 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
                           level.description,
                           style: TextStyle(
                             color: isSelected
-                                ? HelaColors.onTertiaryFixed.withValues(alpha: 0.7)
+                                ? HelaColors.onTertiaryFixed.withValues(
+                                    alpha: 0.7,
+                                  )
                                 : HelaColors.onSurfaceVariant,
                             fontSize: 10.5,
                           ),
@@ -826,7 +889,9 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
           decoration: BoxDecoration(
             color: HelaColors.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: HelaColors.outlineVariant.withValues(alpha: 0.5)),
+            border: Border.all(
+              color: HelaColors.outlineVariant.withValues(alpha: 0.5),
+            ),
           ),
           child: TextField(
             controller: _budgetController,
@@ -838,13 +903,19 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
                 color: HelaColors.onSurfaceVariant.withValues(alpha: 0.6),
                 fontSize: 14,
               ),
-              prefixIcon: const Icon(Icons.attach_money_rounded,
-                  color: HelaColors.primaryContainer, size: 20),
+              prefixIcon: const Icon(
+                Icons.attach_money_rounded,
+                color: HelaColors.primaryContainer,
+                size: 20,
+              ),
               border: InputBorder.none,
               enabledBorder: InputBorder.none,
               focusedBorder: InputBorder.none,
               disabledBorder: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
+              ),
             ),
           ),
         ),
@@ -871,11 +942,17 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
           decoration: BoxDecoration(
             color: HelaColors.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: HelaColors.outlineVariant.withValues(alpha: 0.5)),
+            border: Border.all(
+              color: HelaColors.outlineVariant.withValues(alpha: 0.5),
+            ),
           ),
           child: Row(
             children: [
-              const Icon(Icons.people_rounded, color: HelaColors.primaryContainer, size: 20),
+              const Icon(
+                Icons.people_rounded,
+                color: HelaColors.primaryContainer,
+                size: 20,
+              ),
               const SizedBox(width: 12),
               const Expanded(
                 child: Text(
@@ -924,7 +1001,10 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
               onTap: () => setState(() => _selectedPace = pace),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 decoration: BoxDecoration(
                   color: isSelected
                       ? HelaColors.tertiaryFixed.withValues(alpha: 0.3)
@@ -945,13 +1025,21 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: isSelected ? HelaColors.primary : HelaColors.outline,
+                          color: isSelected
+                              ? HelaColors.primary
+                              : HelaColors.outline,
                           width: 2,
                         ),
-                        color: isSelected ? HelaColors.primary : Colors.transparent,
+                        color: isSelected
+                            ? HelaColors.primary
+                            : Colors.transparent,
                       ),
                       child: isSelected
-                          ? const Icon(Icons.check_rounded, size: 14, color: Colors.white)
+                          ? const Icon(
+                              Icons.check_rounded,
+                              size: 14,
+                              color: Colors.white,
+                            )
                           : null,
                     ),
                     const SizedBox(width: 12),
@@ -963,7 +1051,9 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
                             pace.label,
                             style: TextStyle(
                               color: HelaColors.primary,
-                              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                              fontWeight: isSelected
+                                  ? FontWeight.w700
+                                  : FontWeight.w600,
                               fontSize: 14,
                             ),
                           ),
@@ -1034,7 +1124,9 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
       decoration: BoxDecoration(
         color: HelaColors.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: HelaColors.outlineVariant.withValues(alpha: 0.5)),
+        border: Border.all(
+          color: HelaColors.outlineVariant.withValues(alpha: 0.5),
+        ),
       ),
       child: TextField(
         controller: _notesController,
@@ -1081,8 +1173,11 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage> {
                 padding: const EdgeInsets.only(bottom: 12),
                 child: Row(
                   children: [
-                    Icon(Icons.check_circle_rounded,
-                        size: 16, color: HelaColors.secondary),
+                    Icon(
+                      Icons.check_circle_rounded,
+                      size: 16,
+                      color: HelaColors.secondary,
+                    ),
                     const SizedBox(width: 6),
                     Text(
                       '${_selectedInterests.length} interest${_selectedInterests.length != 1 ? 's' : ''} · ${_selectedDuration == TravelDuration.custom ? _customDays : _selectedDuration.days} day${(_selectedDuration == TravelDuration.custom ? _customDays : _selectedDuration.days) != 1 ? 's' : ''} · $_numberOfTravelers traveler${_numberOfTravelers != 1 ? 's' : ''}',

@@ -16,8 +16,9 @@ Widget _wrap(Widget child, {HelaAppState? state}) {
 
 void main() {
   group('FeaturedDestinationCard & PlaceDetailsPage', () {
-    testWidgets('FeaturedDestinationCard supports const construction',
-        (tester) async {
+    testWidgets('FeaturedDestinationCard supports const construction', (
+      tester,
+    ) async {
       const card = FeaturedDestinationCard(
         item: FeaturedDestinationItem(
           title: 'Sigiriya',
@@ -36,82 +37,87 @@ void main() {
     });
 
     testWidgets(
-        'tapping bottom experience card on HelaHomePage opens PlaceDetailsPage',
-        (tester) async {
-      tester.view.physicalSize = const Size(1080, 2400);
-      tester.view.devicePixelRatio = 2.0;
-      addTearDown(() {
-        tester.view.resetPhysicalSize();
-        tester.view.resetDevicePixelRatio();
-      });
+      'tapping bottom experience card on HelaHomePage opens PlaceDetailsPage',
+      (tester) async {
+        tester.view.physicalSize = const Size(1080, 2400);
+        tester.view.devicePixelRatio = 2.0;
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
 
-      final appState = HelaAppState();
-      await tester.pumpWidget(_wrap(const HelaHomePage(), state: appState));
-      await tester.pump();
+        final appState = HelaAppState();
+        await tester.pumpWidget(_wrap(const HelaHomePage(), state: appState));
+        await tester.pump();
 
-      final expFinder = find.text('Minneriya Elephant Gathering & Yala Safaris');
-      await tester.ensureVisible(expFinder);
-      await tester.tap(expFinder);
-      await tester.pumpAndSettle();
+        final expFinder = find.text(
+          'Minneriya Elephant Gathering & Yala Safaris',
+        );
+        await tester.ensureVisible(expFinder);
+        await tester.tap(expFinder);
+        await tester.pumpAndSettle();
 
-      expect(find.byType(PlaceDetailsPage), findsOneWidget);
-      expect(find.text('Minneriya & Yala Safaris'), findsOneWidget);
-      expect(find.text('Location & Geography'), findsOneWidget);
-      expect(find.byType(FlutterMap), findsOneWidget);
-      expect(find.text('Get Directions'), findsNothing);
-      final addTripFinder = find.text('Add to My Trip');
-      await tester.ensureVisible(addTripFinder);
-      expect(addTripFinder, findsOneWidget);
-    });
+        expect(find.byType(PlaceDetailsPage), findsOneWidget);
+        expect(find.text('Minneriya & Yala Safaris'), findsOneWidget);
+        expect(find.text('Location & Geography'), findsOneWidget);
+        expect(find.byType(FlutterMap), findsOneWidget);
+        expect(find.text('Get Directions'), findsNothing);
+        final addTripFinder = find.text('Add to My Trip');
+        await tester.ensureVisible(addTripFinder);
+        expect(addTripFinder, findsOneWidget);
+      },
+    );
 
     testWidgets(
-        'tapping FeaturedDestinationCard opens Sigiriya details with interactive tabs & save',
-        (tester) async {
-      tester.view.physicalSize = const Size(1080, 2400);
-      tester.view.devicePixelRatio = 2.0;
-      addTearDown(() {
-        tester.view.resetPhysicalSize();
-        tester.view.resetDevicePixelRatio();
-      });
+      'tapping FeaturedDestinationCard opens Sigiriya details with interactive tabs & save',
+      (tester) async {
+        tester.view.physicalSize = const Size(1080, 2400);
+        tester.view.devicePixelRatio = 2.0;
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
 
-      final appState = HelaAppState();
-      await tester.pumpWidget(_wrap(const HelaHomePage(), state: appState));
-      await tester.pump();
+        final appState = HelaAppState();
+        await tester.pumpWidget(_wrap(const HelaHomePage(), state: appState));
+        await tester.pump();
 
-      await tester.tap(find.text('Sigiriya').first);
-      await tester.pumpAndSettle();
+        await tester.tap(find.text('Sigiriya').first);
+        await tester.pumpAndSettle();
 
-      expect(find.byType(PlaceDetailsPage), findsOneWidget);
-      expect(find.text('සීගිරිය'), findsOneWidget);
-      expect(find.text('Tourist Essentials'), findsOneWidget);
-      expect(find.text('Opening Hours'), findsOneWidget);
-      expect(find.text('Entry & Ticket Fee'), findsOneWidget);
-      expect(find.text('Dress Code & Rules'), findsOneWidget);
-      expect(find.text('The Water & Boulder Gardens'), findsOneWidget);
+        expect(find.byType(PlaceDetailsPage), findsOneWidget);
+        expect(find.text('සීගිරිය'), findsOneWidget);
+        expect(find.text('Tourist Essentials'), findsOneWidget);
+        expect(find.text('Opening Hours'), findsOneWidget);
+        expect(find.text('Entry & Ticket Fee'), findsOneWidget);
+        expect(find.text('Dress Code & Rules'), findsOneWidget);
+        expect(find.text('The Water & Boulder Gardens'), findsOneWidget);
 
-      // Switch to History tab
-      final historyTab = find.text('History');
-      await tester.ensureVisible(historyTab);
-      await tester.tap(historyTab);
-      await tester.pumpAndSettle();
-      expect(find.text('King Kashyapa\'s Sky Palace'), findsOneWidget);
+        // Switch to History tab
+        final historyTab = find.text('History');
+        await tester.ensureVisible(historyTab);
+        await tester.tap(historyTab);
+        await tester.pumpAndSettle();
+        expect(find.text('King Kashyapa\'s Sky Palace'), findsOneWidget);
 
-      // Switch to Visit Tips tab
-      final tipsTab = find.text('Visit Tips');
-      await tester.ensureVisible(tipsTab);
-      await tester.tap(tipsTab);
-      await tester.pumpAndSettle();
-      expect(find.text('Best Climbing Window'), findsOneWidget);
+        // Switch to Visit Tips tab
+        final tipsTab = find.text('Visit Tips');
+        await tester.ensureVisible(tipsTab);
+        await tester.tap(tipsTab);
+        await tester.pumpAndSettle();
+        expect(find.text('Best Climbing Window'), findsOneWidget);
 
-      // Toggle Favorite heart and verify HelaAppState updates
-      expect(appState.isHavenSaved('Sigiriya'), isFalse);
-      await tester.tap(find.byIcon(Icons.favorite_border_rounded));
-      await tester.pumpAndSettle();
-      expect(appState.isHavenSaved('Sigiriya'), isTrue);
-    });
+        // Toggle Favorite heart and verify HelaAppState updates
+        expect(appState.isHavenSaved('Sigiriya'), isFalse);
+        await tester.tap(find.byIcon(Icons.favorite_border_rounded));
+        await tester.pumpAndSettle();
+        expect(appState.isHavenSaved('Sigiriya'), isTrue);
+      },
+    );
 
-    testWidgets('Nearby Discoveries card navigates to nearby place details',
-        (tester) async {
+    testWidgets('Nearby Discoveries card navigates to nearby place details', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(1080, 2400);
       tester.view.devicePixelRatio = 2.0;
       addTearDown(() {

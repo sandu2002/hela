@@ -10,10 +10,37 @@ const stayRoutes = require('./routes/stayRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const isProduction = process.env.NODE_ENV === 'production';
 
-// Middlewares
-app.use(cors());
-app.use(express.json());
+// Security headers & payload limits
+app.disable('x-powered-by');
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'no-referrer');
+  next();
+});
+
+const allowedOrigins = (process.env.CORS_ORIGINS || '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
+
+app.use(
+  cors(
+    allowedOrigins.length > 0
+      ? {
+          origin(origin, callback) {
+            if (!origin || allowedOrigins.includes(origin)) {
+              return callback(null, true);
+            }
+            return callback(new Error('Origin not allowed by CORS'));
+          },
+        }
+      : undefined,
+  ),
+);
+app.use(express.json({ limit: '256kb' }));
 
 // API Health Check & Welcome
 app.get('/', (req, res) => {
@@ -43,16 +70,21 @@ app.use('/api/destinations', destinationRoutes);
 app.use('/api/rides', rideRoutes);
 app.use('/api/stays', stayRoutes);
 
-// Error handling middleware
+// Error handling middleware (avoid leaking stack/internal errors in production)
 app.use((err, req, res, next) => {
-  console.error('Unhandled Server Error:', err);
-  res.status(500).json({ error: 'Internal Server Error', message: err.message });
+  console.error('Unhandled Server Error:', err?.message || err);
+  const status = err?.statusCode && err.statusCode >= 400 && err.statusCode < 600 ? err.statusCode : 500;
+  res.status(status).json({
+    error: status === 500 ? 'Internal Server Error' : err.message,
+    ...(isProduction ? {} : { message: err.message }),
+  });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`🚀 HELA Backend server running on http://localhost:${PORT}`);
-  console.log(`📡 Connected to InsForge BaaS at ${process.env.INSFORGE_BASE_URL || 'https://tvf24g8r.us-east.insforge.app'}`);
-});
+// Start server only when executed directly (keeps module cleanly testable)
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`🚀 HELA Backend server running on http://localhost:${PORT}`);
+  });
+}
 
 module.exports = app;

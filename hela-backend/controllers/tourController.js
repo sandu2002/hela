@@ -1,3 +1,5 @@
+const { userOwnsIdentifier } = require('../middleware/authMiddleware');
+
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 const GEMINI_MODEL   = process.env.GEMINI_MODEL   || 'gemini-3.5-flash-lite';
 const GEMINI_FALLBACK      = 'gemini-3.1-flash-lite';
@@ -241,7 +243,35 @@ exports.chatAskHela = async (req, res) => {
 exports.saveTourPlan = async (req, res) => {
   try {
     const db = require('../config/db');
-    const { userId, plan } = req.body;
+    const { userId, plan } = req.body || {};
+    const targetUserId = typeof userId === 'string' ? userId.trim() : '';
+    if (!targetUserId || targetUserId.length > 128) {
+      return res.status(400).json({ error: 'Valid userId is required.' });
+    }
+    const authorized = await userOwnsIdentifier(req.authUser, targetUserId);
+    if (!authorized) {
+      return res.status(403).json({ error: 'Forbidden: cannot save tour plan for another user.' });
+    }
+
+    if (!plan || typeof plan !== 'object') {
+      return res.status(400).json({ error: 'Tour plan payload is required.' });
+    }
+    const title = typeof plan.title === 'string' ? plan.title.trim() : '';
+    if (!title || title.length > 180) {
+      return res.status(400).json({ error: 'Valid plan title is required (max 180 chars).' });
+    }
+    const durationDays = Number(plan.durationDays || 1);
+    if (!Number.isInteger(durationDays) || durationDays < 1 || durationDays > 30) {
+      return res.status(400).json({ error: 'durationDays must be an integer between 1 and 30.' });
+    }
+    const estimatedTotalCostUsd = plan.estimatedTotalCostUsd != null
+      ? Number(plan.estimatedTotalCostUsd)
+      : null;
+    if (estimatedTotalCostUsd !== null && (!Number.isFinite(estimatedTotalCostUsd) || estimatedTotalCostUsd < 0)) {
+      return res.status(400).json({ error: 'estimatedTotalCostUsd must be a non-negative finite number.' });
+    }
+    const days = Array.isArray(plan.days) ? plan.days.slice(0, 30) : [];
+
     const sql = `
       INSERT INTO public.tour_plans (
         user_id, title, summary, match_reason, duration_days,
@@ -250,14 +280,14 @@ exports.saveTourPlan = async (req, res) => {
       RETURNING *;
     `;
     const rows = await db.query(sql, [
-      userId,
-      plan.title,
-      plan.summary,
-      plan.matchReason,
-      plan.durationDays,
-      plan.estimatedTotalCostUsd,
-      plan.budgetBreakdown,
-      JSON.stringify(plan.days || []),
+      targetUserId,
+      title,
+      typeof plan.summary === 'string' ? plan.summary.slice(0, 1000) : '',
+      typeof plan.matchReason === 'string' ? plan.matchReason.slice(0, 500) : '',
+      durationDays,
+      estimatedTotalCostUsd,
+      typeof plan.budgetBreakdown === 'string' ? plan.budgetBreakdown.slice(0, 1000) : '',
+      JSON.stringify(days),
     ]);
     res.json({ success: true, tourPlan: rows[0] });
   } catch (error) {
@@ -272,9 +302,18 @@ exports.getUserTourPlans = async (req, res) => {
   try {
     const db = require('../config/db');
     const { userId } = req.params;
+    const targetUserId = typeof userId === 'string' ? userId.trim() : '';
+    if (!targetUserId || targetUserId.length > 128) {
+      return res.status(400).json({ error: 'Invalid user identifier.' });
+    }
+    const authorized = await userOwnsIdentifier(req.authUser, targetUserId);
+    if (!authorized) {
+      return res.status(403).json({ error: 'Forbidden: cannot access another user tour plans.' });
+    }
+
     const plans = await db.query(
-      'SELECT * FROM public.tour_plans WHERE user_id::text = $1 ORDER BY created_at DESC',
-      [userId],
+      'SELECT * FROM public.tour_plans WHERE user_id::text = $1 ORDER BY created_at DESC LIMIT 50',
+      [targetUserId],
     );
     res.json({ success: true, count: plans.length, plans });
   } catch (error) {

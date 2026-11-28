@@ -8,6 +8,7 @@ import 'package:hela/pages/explore/place_details_page.dart';
 import 'package:hela/services/google_place_rating_service.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/theme/hela_colors.dart';
+import 'package:hela/widgets/common/hela_network_image.dart';
 import 'package:hela/widgets/navigation/hela_bottom_nav_bar.dart';
 import 'package:hela/widgets/navigation/hela_navigation_drawer.dart';
 
@@ -1433,8 +1434,8 @@ class _ExplorePageState extends State<ExplorePage> {
     double? height,
     BoxFit fit = BoxFit.cover,
   }) {
-    return Image.network(
-      url,
+    return HelaNetworkImage(
+      imageUrl: url,
       width: width,
       height: height,
       fit: fit,

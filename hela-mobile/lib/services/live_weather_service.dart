@@ -45,14 +45,14 @@ class LiveWeatherData {
   String get formattedLabel => '${temperatureC.round()}°C $locationName';
 
   Map<String, dynamic> toJson() => {
-        'temperatureC': temperatureC,
-        'locationName': locationName,
-        'condition': condition,
-        'latitude': latitude,
-        'longitude': longitude,
-        'source': source,
-        'updatedAt': updatedAt.toIso8601String(),
-      };
+    'temperatureC': temperatureC,
+    'locationName': locationName,
+    'condition': condition,
+    'latitude': latitude,
+    'longitude': longitude,
+    'source': source,
+    'updatedAt': updatedAt.toIso8601String(),
+  };
 
   factory LiveWeatherData.fromJson(Map<String, dynamic> json) {
     return LiveWeatherData(
@@ -62,7 +62,8 @@ class LiveWeatherData {
       latitude: (json['latitude'] as num?)?.toDouble(),
       longitude: (json['longitude'] as num?)?.toDouble(),
       source: (json['source'] as String?) ?? 'Cache',
-      updatedAt: DateTime.tryParse((json['updatedAt'] as String?) ?? '') ??
+      updatedAt:
+          DateTime.tryParse((json['updatedAt'] as String?) ?? '') ??
           DateTime.now(),
     );
   }
@@ -79,11 +80,9 @@ class LiveWeatherService {
   final bool _hasCustomClient;
   final Future<Position?> Function()? positionProvider;
 
-  LiveWeatherService({
-    http.Client? client,
-    this.positionProvider,
-  })  : _client = client ?? http.Client(),
-        _hasCustomClient = client != null;
+  LiveWeatherService({http.Client? client, this.positionProvider})
+    : _client = client ?? http.Client(),
+      _hasCustomClient = client != null;
 
   /// Loads the most recently cached live weather reading if available.
   Future<LiveWeatherData?> loadCachedWeather() async {
@@ -203,7 +202,8 @@ class LiveWeatherService {
       }
 
       var permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied && requestPermissionIfNeeded) {
+      if (permission == LocationPermission.denied &&
+          requestPermissionIfNeeded) {
         permission = await Geolocator.requestPermission();
       }
 
@@ -243,10 +243,14 @@ class LiveWeatherService {
       final uri = Uri.parse(
         '${ApiConfig.nominatimReverseApiUrl}?lat=$latitude&lon=$longitude&format=json&addressdetails=1&zoom=12',
       );
-      final response = await _client.get(
-        uri,
-        headers: {'User-Agent': 'HelaTravelPlanner/1.0 (contact@hela.travel)'},
-      ).timeout(_httpTimeout);
+      final response = await _client
+          .get(
+            uri,
+            headers: {
+              'User-Agent': 'HelaTravelPlanner/1.0 (contact@hela.travel)',
+            },
+          )
+          .timeout(_httpTimeout);
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
@@ -484,8 +488,7 @@ class LiveWeatherService {
     final jsonMatch = RegExp(r'\{[\s\S]*\}').firstMatch(cleaned);
     if (jsonMatch != null) {
       try {
-        final decoded =
-            jsonDecode(jsonMatch.group(0)!) as Map<String, dynamic>;
+        final decoded = jsonDecode(jsonMatch.group(0)!) as Map<String, dynamic>;
         final temp = (decoded['tempC'] as num?)?.toDouble();
         if (temp != null && temp > -50 && temp < 65) {
           return LiveWeatherData(
@@ -504,7 +507,9 @@ class LiveWeatherService {
     }
 
     // Regex fallback if model included prose around temperature
-    final tempMatch = RegExp(r'(-?\d+(?:\.\d+)?)\s*°?\s*[Cc]').firstMatch(rawText);
+    final tempMatch = RegExp(
+      r'(-?\d+(?:\.\d+)?)\s*°?\s*[Cc]',
+    ).firstMatch(rawText);
     if (tempMatch != null) {
       final temp = double.tryParse(tempMatch.group(1)!);
       if (temp != null && temp > -50 && temp < 65) {
@@ -580,7 +585,8 @@ class LiveWeatherService {
 
     for (final result in results) {
       final components =
-          (result as Map<String, dynamic>)['address_components'] as List<dynamic>?;
+          (result as Map<String, dynamic>)['address_components']
+              as List<dynamic>?;
       if (components == null) continue;
 
       for (final targetType in const [
@@ -606,7 +612,10 @@ class LiveWeatherService {
   static String _normalizeCityLabel(String raw) {
     var clean = raw.split(',').first.trim();
     clean = clean.replaceAll(RegExp(r'\s+District$', caseSensitive: false), '');
-    clean = clean.replaceAll(RegExp(r'\s+Municipal Council$', caseSensitive: false), '');
+    clean = clean.replaceAll(
+      RegExp(r'\s+Municipal Council$', caseSensitive: false),
+      '',
+    );
     return clean.isEmpty ? 'Kandy' : clean;
   }
 

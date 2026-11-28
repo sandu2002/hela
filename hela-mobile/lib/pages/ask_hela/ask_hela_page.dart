@@ -8,6 +8,7 @@ import 'package:hela/state/app_state.dart';
 import 'package:hela/theme/hela_colors.dart';
 import 'package:hela/widgets/chat/structured_ai_reply_view.dart';
 import 'package:hela/widgets/common/hela_logo.dart';
+import 'package:hela/widgets/common/hela_network_image.dart';
 
 /// Bento item representing structured practical tips or cultural rules
 class AskHelaBentoItem {
@@ -1252,8 +1253,8 @@ class _AskHelaPageState extends State<AskHelaPage> with WidgetsBindingObserver {
                 borderRadius: BorderRadius.circular(14),
                 child: Stack(
                   children: [
-                    Image.network(
-                      msg.imageUrl!,
+                    HelaNetworkImage(
+                      imageUrl: msg.imageUrl!,
                       height: 155,
                       width: double.infinity,
                       fit: BoxFit.cover,

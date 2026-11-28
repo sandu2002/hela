@@ -50,6 +50,7 @@ exports.getDestinationById = async (req, res) => {
 
 const liveRatingCache = new Map();
 const LIVE_RATING_TTL_MS = 60 * 60 * 1000;
+const LIVE_RATING_MAX_CACHE = 500;
 
 function formatCompactCount(count) {
   if (!Number.isFinite(count) || count <= 0) return null;
@@ -61,12 +62,12 @@ function formatCompactCount(count) {
 exports.getLiveDestinationRating = async (req, res) => {
   try {
     const { name, region, latitude, longitude } = req.body || {};
-    if (!name || typeof name !== 'string' || !name.trim()) {
-      return res.status(400).json({ error: 'Missing destination name.' });
+    if (!name || typeof name !== 'string' || !name.trim() || name.trim().length > 140) {
+      return res.status(400).json({ error: 'Missing or invalid destination name.' });
     }
 
     const cleanName = name.trim();
-    const cacheKey = `${cleanName.toLowerCase()}|${(region || '').trim().toLowerCase()}`;
+    const cacheKey = `${cleanName.toLowerCase()}|${(typeof region === 'string' ? region : '').trim().toLowerCase()}`;
     const cached = liveRatingCache.get(cacheKey);
     if (cached && Date.now() - cached.cachedAt < LIVE_RATING_TTL_MS) {
       return res.json({ success: true, ...cached.data, cached: true });
@@ -166,6 +167,10 @@ exports.getLiveDestinationRating = async (req, res) => {
       return res.status(404).json({ error: 'Live Google rating temporarily unavailable.' });
     }
 
+    if (liveRatingCache.size >= LIVE_RATING_MAX_CACHE) {
+      const oldestKey = liveRatingCache.keys().next().value;
+      if (oldestKey !== undefined) liveRatingCache.delete(oldestKey);
+    }
     liveRatingCache.set(cacheKey, { data: result, cachedAt: Date.now() });
     res.json({ success: true, ...result });
   } catch (error) {

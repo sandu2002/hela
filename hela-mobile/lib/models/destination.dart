@@ -66,11 +66,13 @@ class Destination {
       sourceId: json['sourceId'] as String? ?? '',
       name: json['name'] as String? ?? 'Unknown Place',
       description: json['description'] as String? ?? '',
-      isDescriptionAIGenerated: json['isDescriptionAIGenerated'] as bool? ?? false,
+      isDescriptionAIGenerated:
+          json['isDescriptionAIGenerated'] as bool? ?? false,
       latitude: (json['latitude'] as num?)?.toDouble() ?? 0.0,
       longitude: (json['longitude'] as num?)?.toDouble() ?? 0.0,
       region: json['region'] as String? ?? '',
-      categories: (json['categories'] as List<dynamic>?)
+      categories:
+          (json['categories'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],
@@ -78,7 +80,8 @@ class Destination {
       imageUrl: json['imageUrl'] as String? ?? '',
       openingHours: json['openingHours'] as String?,
       retrievedAt: json['retrievedAt'] as String? ?? '',
-      attribution: json['attribution'] as String? ?? '© OpenStreetMap contributors',
+      attribution:
+          json['attribution'] as String? ?? '© OpenStreetMap contributors',
       relevanceScore: (json['relevanceScore'] as num?)?.toDouble() ?? 0.0,
     );
   }

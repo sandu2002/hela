@@ -10,10 +10,7 @@ import 'package:hela/pages/smart_tour/destination_recommendations_page.dart';
 class DiscoveryLoadingPage extends StatefulWidget {
   final TourPreferences preferences;
 
-  const DiscoveryLoadingPage({
-    super.key,
-    required this.preferences,
-  });
+  const DiscoveryLoadingPage({super.key, required this.preferences});
 
   @override
   State<DiscoveryLoadingPage> createState() => _DiscoveryLoadingPageState();
@@ -59,8 +56,9 @@ class _DiscoveryLoadingPageState extends State<DiscoveryLoadingPage>
 
   Future<void> _startDiscovery() async {
     try {
-      final destinations =
-          await TourApiService().discoverDestinations(widget.preferences);
+      final destinations = await TourApiService().discoverDestinations(
+        widget.preferences,
+      );
 
       if (!mounted) return;
 
@@ -97,8 +95,10 @@ class _DiscoveryLoadingPageState extends State<DiscoveryLoadingPage>
 
   @override
   Widget build(BuildContext context) {
-    final interestNames =
-        widget.preferences.interests.map((i) => i.label).take(3).join(', ');
+    final interestNames = widget.preferences.interests
+        .map((i) => i.label)
+        .take(3)
+        .join(', ');
 
     return Scaffold(
       backgroundColor: HelaColors.surface,
@@ -173,8 +173,10 @@ class _DiscoveryLoadingPageState extends State<DiscoveryLoadingPage>
 
               // Animated step indicator
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 14,
+                ),
                 decoration: BoxDecoration(
                   color: HelaColors.surfaceContainerLowest,
                   borderRadius: BorderRadius.circular(16),
@@ -196,8 +198,9 @@ class _DiscoveryLoadingPageState extends State<DiscoveryLoadingPage>
                       height: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2.5,
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(HelaColors.primary),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          HelaColors.primary,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 14),
@@ -225,8 +228,9 @@ class _DiscoveryLoadingPageState extends State<DiscoveryLoadingPage>
               LinearProgressIndicator(
                 value: (_currentStep + 1) / _loadingSteps.length,
                 backgroundColor: HelaColors.surfaceContainerHigh,
-                valueColor:
-                    const AlwaysStoppedAnimation<Color>(HelaColors.primary),
+                valueColor: const AlwaysStoppedAnimation<Color>(
+                  HelaColors.primary,
+                ),
                 borderRadius: BorderRadius.circular(8),
                 minHeight: 6,
               ),
@@ -235,8 +239,10 @@ class _DiscoveryLoadingPageState extends State<DiscoveryLoadingPage>
 
               // Source Attribution pill
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: HelaColors.surfaceContainerLow,
                   borderRadius: BorderRadius.circular(20),
@@ -244,7 +250,11 @@ class _DiscoveryLoadingPageState extends State<DiscoveryLoadingPage>
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.lock_rounded, size: 12, color: HelaColors.outline),
+                    Icon(
+                      Icons.lock_rounded,
+                      size: 12,
+                      color: HelaColors.outline,
+                    ),
                     SizedBox(width: 6),
                     Text(
                       'Powered by Google Gemini AI & OpenStreetMap',

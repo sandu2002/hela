@@ -58,10 +58,9 @@ class TourPlannerState extends ChangeNotifier {
   Set<String> _selectedDestinationIds = {};
   Set<String> get selectedDestinationIds => _selectedDestinationIds;
 
-  List<Destination> get selectedDestinations =>
-      _discoveredDestinations
-          .where((d) => _selectedDestinationIds.contains(d.sourceId))
-          .toList();
+  List<Destination> get selectedDestinations => _discoveredDestinations
+      .where((d) => _selectedDestinationIds.contains(d.sourceId))
+      .toList();
 
   void setDiscoveredDestinations(List<Destination> destinations) {
     _discoveredDestinations = destinations;

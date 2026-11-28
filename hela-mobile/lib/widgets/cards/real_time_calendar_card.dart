@@ -58,8 +58,18 @@ class RealTimeCalendarCard extends StatefulWidget {
 
 class _RealTimeCalendarCardState extends State<RealTimeCalendarCard> {
   static const List<String> _months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
   ];
 
   late DateTime _startDate;
@@ -73,7 +83,8 @@ class _RealTimeCalendarCardState extends State<RealTimeCalendarCard> {
     super.initState();
     final now = DateTime.now();
     // Default to initialStartDate or real-time today
-    final start = widget.initialStartDate ?? DateTime(now.year, now.month, now.day);
+    final start =
+        widget.initialStartDate ?? DateTime(now.year, now.month, now.day);
     // Default to initialEndDate or 7 days after start (8 days total)
     final end = widget.initialEndDate ?? start.add(const Duration(days: 7));
     _startDate = DateTime(start.year, start.month, start.day);
@@ -90,7 +101,8 @@ class _RealTimeCalendarCardState extends State<RealTimeCalendarCard> {
   }
 
   String _formatRange() {
-    if (_startDate.year == _endDate.year && _startDate.month == _endDate.month) {
+    if (_startDate.year == _endDate.year &&
+        _startDate.month == _endDate.month) {
       return '${_months[_startDate.month - 1]} ${_startDate.day} — ${_months[_endDate.month - 1]} ${_endDate.day}';
     }
     return '${_formatMonthDay(_startDate)} — ${_formatMonthDay(_endDate)}';
@@ -139,13 +151,19 @@ class _RealTimeCalendarCardState extends State<RealTimeCalendarCard> {
     final day = DateTime(d.year, d.month, d.day);
     final s = DateTime(_startDate.year, _startDate.month, _startDate.day);
     final e = DateTime(_endDate.year, _endDate.month, _endDate.day);
-    return (day.isAfter(s) && day.isBefore(e)) || _isSameDay(day, s) || _isSameDay(day, e);
+    return (day.isAfter(s) && day.isBefore(e)) ||
+        _isSameDay(day, s) ||
+        _isSameDay(day, e);
   }
 
   DateTime get _currentSunday {
     final base = _startDate.add(Duration(days: _weekOffset * 7));
     final daysFromSunday = base.weekday % 7; // Sunday in Dart is 7, 7 % 7 = 0
-    return DateTime(base.year, base.month, base.day).subtract(Duration(days: daysFromSunday));
+    return DateTime(
+      base.year,
+      base.month,
+      base.day,
+    ).subtract(Duration(days: daysFromSunday));
   }
 
   List<DateTime> get _visibleWeekDays {
@@ -154,7 +172,9 @@ class _RealTimeCalendarCardState extends State<RealTimeCalendarCard> {
   }
 
   void _notifyChange() {
-    widget.onDateRangeChanged?.call(DateTimeRange(start: _startDate, end: _endDate));
+    widget.onDateRangeChanged?.call(
+      DateTimeRange(start: _startDate, end: _endDate),
+    );
   }
 
   Future<void> _pickDateRange(BuildContext context) async {
@@ -213,7 +233,9 @@ class _RealTimeCalendarCardState extends State<RealTimeCalendarCard> {
         _endDate = selectedDay.add(duration);
       } else if (_isSameDay(selectedDay, _startDate)) {
         // Tapped start day again, keep it
-      } else if (selectedDay.isAfter(_startDate) && (selectedDay.isBefore(_endDate) || _isSameDay(selectedDay, _endDate))) {
+      } else if (selectedDay.isAfter(_startDate) &&
+          (selectedDay.isBefore(_endDate) ||
+              _isSameDay(selectedDay, _endDate))) {
         // Tapped inside the range: shorten range to end here
         _endDate = selectedDay;
       } else {
@@ -442,8 +464,12 @@ class _RealTimeCalendarCardState extends State<RealTimeCalendarCard> {
                   textColor = HelaColors.primary;
                   labelColor = HelaColors.secondary;
                 } else if (isOutside) {
-                  textColor = HelaColors.onSurfaceVariant.withValues(alpha: 0.4);
-                  labelColor = HelaColors.onSurfaceVariant.withValues(alpha: 0.4);
+                  textColor = HelaColors.onSurfaceVariant.withValues(
+                    alpha: 0.4,
+                  );
+                  labelColor = HelaColors.onSurfaceVariant.withValues(
+                    alpha: 0.4,
+                  );
                 }
 
                 return Expanded(
@@ -458,7 +484,9 @@ class _RealTimeCalendarCardState extends State<RealTimeCalendarCard> {
                         borderRadius: BorderRadius.circular(10),
                         border: isToday && !isStart
                             ? Border.all(
-                                color: HelaColors.secondary.withValues(alpha: 0.5),
+                                color: HelaColors.secondary.withValues(
+                                  alpha: 0.5,
+                                ),
                                 width: 1,
                               )
                             : null,
@@ -533,7 +561,10 @@ class _RealTimeCalendarCardState extends State<RealTimeCalendarCard> {
                 onTap: () => _extendDays(3),
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: HelaColors.surfaceContainerLow,
                     borderRadius: BorderRadius.circular(12),

@@ -11,6 +11,7 @@ import 'package:hela/state/app_state.dart';
 import 'package:hela/theme/hela_colors.dart';
 import 'package:hela/widgets/navigation/hela_bottom_nav_bar.dart';
 import 'package:hela/widgets/common/hela_logo.dart';
+import 'package:hela/widgets/common/hela_network_image.dart';
 import 'package:hela/widgets/common/language_picker_sheet.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -37,8 +38,8 @@ class _ProfilePageState extends State<ProfilePage> {
     double? height,
     BoxFit fit = BoxFit.cover,
   }) {
-    return Image.network(
-      url,
+    return HelaNetworkImage(
+      imageUrl: url,
       width: width,
       height: height,
       fit: fit,

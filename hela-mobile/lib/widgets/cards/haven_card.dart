@@ -82,10 +82,7 @@ class HavenCard extends StatelessWidget {
         height: height,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: colors.architecturalBorder,
-            width: 1,
-          ),
+          border: Border.all(color: colors.architecturalBorder, width: 1),
           boxShadow: [
             BoxShadow(
               color: colors.primary.withValues(alpha: 0.08),
@@ -99,9 +96,7 @@ class HavenCard extends StatelessWidget {
           child: Stack(
             children: [
               // Full Background Image
-              Positioned.fill(
-                child: _buildImage(colors),
-              ),
+              Positioned.fill(child: _buildImage(colors)),
 
               // Forest Dark Green / Ocean Teal Gradient Overlay
               Positioned.fill(
@@ -182,8 +177,12 @@ class HavenCard extends StatelessWidget {
                           // Bookmark Button
                           Material(
                             color: isBookmarked
-                                ? colors.primaryContainer.withValues(alpha: 0.95)
-                                : colors.primaryContainer.withValues(alpha: 0.75),
+                                ? colors.primaryContainer.withValues(
+                                    alpha: 0.95,
+                                  )
+                                : colors.primaryContainer.withValues(
+                                    alpha: 0.75,
+                                  ),
                             shape: const CircleBorder(),
                             child: InkWell(
                               customBorder: const CircleBorder(),
@@ -318,7 +317,8 @@ class HavenCard extends StatelessWidget {
                                           TextSpan(
                                             text: ' / person',
                                             style: TextStyle(
-                                              color: colors.surfaceContainerHighest,
+                                              color: colors
+                                                  .surfaceContainerHighest,
                                               fontSize: 11,
                                               fontWeight: FontWeight.w400,
                                               fontFamily: 'Plus Jakarta Sans',
@@ -345,7 +345,8 @@ class HavenCard extends StatelessWidget {
                                       vertical: 6,
                                     ),
                                     minimumSize: Size.zero,
-                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    tapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
                                   ),
                                   child: const Text(
                                     'Explore',

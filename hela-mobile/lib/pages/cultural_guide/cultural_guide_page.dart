@@ -5,6 +5,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:hela/pages/home/home_page.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/pages/cultural_guide/article_detail_page.dart';
+import 'package:hela/widgets/common/hela_network_image.dart';
 import 'package:hela/widgets/navigation/hela_bottom_nav_bar.dart';
 
 /// Unique ID for this cultural guide article (used by HelaAppState)
@@ -70,14 +71,18 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
     return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
-  Widget _buildNetworkImage(String url, {double? width, double? height, BoxFit fit = BoxFit.cover}) {
-    return Image.network(
-      url,
+  Widget _buildNetworkImage(
+    String url, {
+    double? width,
+    double? height,
+    BoxFit fit = BoxFit.cover,
+  }) {
+    return HelaNetworkImage(
+      imageUrl: url,
       width: width,
       height: height,
       fit: fit,
-      loadingBuilder: (context, child, loadingProgress) {
-        if (loadingProgress == null) return child;
+      placeholderBuilder: (context, _) {
         return Container(
           width: width,
           height: height,
@@ -106,7 +111,11 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
             ),
           ),
           child: const Center(
-            child: Icon(Icons.image_outlined, color: HelaColors.onPrimaryContainer, size: 32),
+            child: Icon(
+              Icons.image_outlined,
+              color: HelaColors.onPrimaryContainer,
+              size: 32,
+            ),
           ),
         );
       },
@@ -175,7 +184,11 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
                 },
                 child: const Padding(
                   padding: EdgeInsets.all(8.0),
-                  child: Icon(Icons.arrow_back_rounded, color: HelaColors.primary, size: 24),
+                  child: Icon(
+                    Icons.arrow_back_rounded,
+                    color: HelaColors.primary,
+                    size: 24,
+                  ),
                 ),
               ),
             ),
@@ -211,7 +224,11 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
                     },
                     child: const Padding(
                       padding: EdgeInsets.all(8.0),
-                      child: Icon(Icons.share_rounded, color: HelaColors.onSurfaceVariant, size: 22),
+                      child: Icon(
+                        Icons.share_rounded,
+                        color: HelaColors.onSurfaceVariant,
+                        size: 22,
+                      ),
                     ),
                   ),
                 ),
@@ -234,11 +251,15 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
                     },
                     child: Builder(
                       builder: (context) {
-                        final isBookmarked = HelaAppStateProvider.of(context).isGuideSaved(_culturalGuideId);
+                        final isBookmarked = HelaAppStateProvider.of(
+                          context,
+                        ).isGuideSaved(_culturalGuideId);
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Icon(
-                            isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+                            isBookmarked
+                                ? Icons.bookmark_rounded
+                                : Icons.bookmark_border_rounded,
                             color: HelaColors.primary,
                             size: 22,
                           ),
@@ -267,9 +288,7 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
             child: SizedBox(
               width: 190,
               height: 190,
-              child: CustomPaint(
-                painter: _MandalaWatermarkPainter(),
-              ),
+              child: CustomPaint(painter: _MandalaWatermarkPainter()),
             ),
           ),
 
@@ -330,10 +349,14 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: HelaColors.secondaryContainer.withValues(alpha: 0.6),
+                        color: HelaColors.secondaryContainer.withValues(
+                          alpha: 0.6,
+                        ),
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: HelaColors.outlineVariant.withValues(alpha: 0.4),
+                          color: HelaColors.outlineVariant.withValues(
+                            alpha: 0.4,
+                          ),
                         ),
                       ),
                       child: const Center(
@@ -368,9 +391,15 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
                             ),
                             Text(
                               ' · ',
-                              style: TextStyle(color: HelaColors.onSurfaceVariant),
+                              style: TextStyle(
+                                color: HelaColors.onSurfaceVariant,
+                              ),
                             ),
-                            Icon(Icons.schedule_rounded, size: 13, color: HelaColors.secondary),
+                            Icon(
+                              Icons.schedule_rounded,
+                              size: 13,
+                              color: HelaColors.secondary,
+                            ),
                             SizedBox(width: 3),
                             Text(
                               '7 min read',
@@ -434,7 +463,9 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
                             child: Padding(
                               padding: const EdgeInsets.all(12),
                               child: Icon(
-                                _isPlayingAudio ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                                _isPlayingAudio
+                                    ? Icons.pause_rounded
+                                    : Icons.play_arrow_rounded,
                                 color: HelaColors.onPrimary,
                                 size: 24,
                               ),
@@ -478,7 +509,10 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
                       borderRadius: BorderRadius.circular(16),
                       onTap: _toggleAudioSpeed,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: HelaColors.surfaceContainer,
                           borderRadius: BorderRadius.circular(14),
@@ -503,7 +537,27 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: List.generate(19, (i) {
-                      final heights = [3, 4, 5, 3, 6, 4, 5, 2, 4, 3, 5, 4, 2, 4, 3, 5, 2, 4, 2];
+                      final heights = [
+                        3,
+                        4,
+                        5,
+                        3,
+                        6,
+                        4,
+                        5,
+                        2,
+                        4,
+                        3,
+                        5,
+                        4,
+                        2,
+                        4,
+                        3,
+                        5,
+                        2,
+                        4,
+                        2,
+                      ];
                       final h = heights[i];
                       final barPosition = i / 19.0;
                       final isPast = barPosition <= _audioPosition;
@@ -512,8 +566,12 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
                         height: h * 4.0,
                         decoration: BoxDecoration(
                           color: isPast
-                              ? (_isPlayingAudio ? HelaColors.tertiaryFixedDim : HelaColors.primaryContainer)
-                              : HelaColors.outlineVariant.withValues(alpha: 0.5),
+                              ? (_isPlayingAudio
+                                    ? HelaColors.tertiaryFixedDim
+                                    : HelaColors.primaryContainer)
+                              : HelaColors.outlineVariant.withValues(
+                                  alpha: 0.5,
+                                ),
                           borderRadius: BorderRadius.circular(2),
                         ),
                       );
@@ -527,10 +585,16 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
                   data: SliderThemeData(
                     trackHeight: 3,
                     activeTrackColor: HelaColors.secondary,
-                    inactiveTrackColor: HelaColors.outlineVariant.withValues(alpha: 0.4),
+                    inactiveTrackColor: HelaColors.outlineVariant.withValues(
+                      alpha: 0.4,
+                    ),
                     thumbColor: HelaColors.secondary,
-                    thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
-                    overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
+                    thumbShape: const RoundSliderThumbShape(
+                      enabledThumbRadius: 6,
+                    ),
+                    overlayShape: const RoundSliderOverlayShape(
+                      overlayRadius: 14,
+                    ),
                     overlayColor: HelaColors.secondary.withValues(alpha: 0.12),
                   ),
                   child: Slider(
@@ -581,7 +645,9 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
           // Offline Save CTA Button
           Builder(
             builder: (context) {
-              final isSavedForOffline = HelaAppStateProvider.of(context).isGuideOffline(_culturalGuideId);
+              final isSavedForOffline = HelaAppStateProvider.of(
+                context,
+              ).isGuideOffline(_culturalGuideId);
               return OutlinedButton(
                 onPressed: () {
                   final appState = HelaAppStateProvider.of(context);
@@ -600,7 +666,9 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
                   foregroundColor: HelaColors.primary,
                   backgroundColor: HelaColors.surface,
                   side: BorderSide(
-                    color: isSavedForOffline ? HelaColors.secondary : HelaColors.secondary.withValues(alpha: 0.4),
+                    color: isSavedForOffline
+                        ? HelaColors.secondary
+                        : HelaColors.secondary.withValues(alpha: 0.4),
                     width: 1.5,
                   ),
                   shape: RoundedRectangleBorder(
@@ -612,13 +680,17 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      isSavedForOffline ? Icons.check_circle_rounded : Icons.cloud_download_rounded,
+                      isSavedForOffline
+                          ? Icons.check_circle_rounded
+                          : Icons.cloud_download_rounded,
                       color: HelaColors.secondary,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      isSavedForOffline ? 'Saved for Offline Reading' : 'Save Guide for Offline Reading',
+                      isSavedForOffline
+                          ? 'Saved for Offline Reading'
+                          : 'Save Guide for Offline Reading',
                       style: const TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 13.5,
@@ -702,9 +774,14 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
                         top: 12,
                         right: 12,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
-                            color: HelaColors.primaryContainer.withValues(alpha: 0.88),
+                            color: HelaColors.primaryContainer.withValues(
+                              alpha: 0.88,
+                            ),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: const Text(
@@ -720,12 +797,17 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
                     ],
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
                       color: HelaColors.surfaceContainerLowest,
                       border: Border(
                         top: BorderSide(
-                          color: HelaColors.outlineVariant.withValues(alpha: 0.2),
+                          color: HelaColors.outlineVariant.withValues(
+                            alpha: 0.2,
+                          ),
                         ),
                       ),
                     ),
@@ -784,10 +866,7 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
               color: HelaColors.surfaceContainerLow,
               borderRadius: BorderRadius.circular(18),
               border: Border(
-                left: BorderSide(
-                  color: HelaColors.secondary,
-                  width: 4,
-                ),
+                left: BorderSide(color: HelaColors.secondary, width: 4),
               ),
               boxShadow: [
                 BoxShadow(
@@ -869,8 +948,14 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
                   spacing: 8,
                   runSpacing: 6,
                   children: [
-                    _buildEtiquettePill(Icons.check_circle_rounded, 'White Attire Recommended'),
-                    _buildEtiquettePill(Icons.do_not_step_rounded, 'Barefoot Courtyards'),
+                    _buildEtiquettePill(
+                      Icons.check_circle_rounded,
+                      'White Attire Recommended',
+                    ),
+                    _buildEtiquettePill(
+                      Icons.do_not_step_rounded,
+                      'Barefoot Courtyards',
+                    ),
                   ],
                 ),
               ],
@@ -899,7 +984,8 @@ class _CulturalGuidePageState extends State<CulturalGuidePage> {
                     MaterialPageRoute(
                       builder: (_) => const ArticleDetailPage(
                         title: 'The Fire Dancers of Kandy',
-                        subtitle: 'Rhythm, ritual percussion, and sacred temple fires',
+                        subtitle:
+                            'Rhythm, ritual percussion, and sacred temple fires',
                         authorName: 'Dr. Indika Bandara',
                         readTime: '5 min read',
                         imageUrl: SriLankaImages.kandyanDance,

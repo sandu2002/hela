@@ -8,8 +8,13 @@ class HelaNetworkImage extends StatelessWidget {
   final double? width;
   final double? height;
   final BoxFit fit;
-  final Widget Function(BuildContext context, Object error, StackTrace? stackTrace)?
-      errorBuilder;
+  final Widget Function(BuildContext context, String url)? placeholderBuilder;
+  final Widget Function(
+    BuildContext context,
+    Object error,
+    StackTrace? stackTrace,
+  )?
+  errorBuilder;
 
   const HelaNetworkImage({
     super.key,
@@ -17,30 +22,47 @@ class HelaNetworkImage extends StatelessWidget {
     this.width,
     this.height,
     this.fit = BoxFit.cover,
+    this.placeholderBuilder,
     this.errorBuilder,
   });
 
+  static bool isValidNetworkUrl(String url) {
+    final uri = Uri.tryParse(url.trim());
+    return uri != null &&
+        uri.hasAuthority &&
+        (uri.scheme == 'https' || uri.scheme == 'http');
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (imageUrl.trim().isEmpty) {
-      return errorBuilder?.call(context, 'Empty URL', null) ??
+    final trimmed = imageUrl.trim();
+    if (trimmed.isEmpty || !isValidNetworkUrl(trimmed)) {
+      return errorBuilder?.call(context, 'Invalid image URL', null) ??
           _defaultFallback(context);
     }
 
+    final boundedMemWidth = width != null && width!.isFinite
+        ? (width! * 2).round().clamp(120, 1200)
+        : 900;
+
     return CachedNetworkImage(
-      imageUrl: imageUrl,
+      imageUrl: trimmed,
       httpHeaders: const {
         'User-Agent': 'HELA-Travel-App/1.0 (https://hela.lk; contact@hela.lk)',
       },
       width: width,
       height: height,
       fit: fit,
-      memCacheWidth: width != null && width!.isFinite ? (width! * 2).round() : 900,
-      placeholder: (ctx, _) => Container(
-        width: width,
-        height: height,
-        color: Theme.of(ctx).colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
-      ),
+      memCacheWidth: boundedMemWidth,
+      placeholder:
+          placeholderBuilder ??
+          (ctx, _) => Container(
+            width: width,
+            height: height,
+            color: Theme.of(
+              ctx,
+            ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+          ),
       errorWidget: (ctx, _, error) =>
           errorBuilder?.call(ctx, error, null) ?? _defaultFallback(ctx),
     );

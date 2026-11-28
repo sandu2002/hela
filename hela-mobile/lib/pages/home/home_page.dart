@@ -132,7 +132,8 @@ class _HelaHomePageState extends State<HelaHomePage>
     // Shown in full under "All" (16 destinations) and filtered by category tab.
     HomeExperienceItem(
       title: 'Sigiriya Lion Rock Fortress',
-      subtitle: '5th-century UNESCO sky citadel, water gardens & ancient frescoes',
+      subtitle:
+          '5th-century UNESCO sky citadel, water gardens & ancient frescoes',
       category: 'CULTURAL HERITAGE',
       rating: '4.7',
       filterCategory: 'Cultural Heritage',
@@ -156,7 +157,8 @@ class _HelaHomePageState extends State<HelaHomePage>
     ),
     HomeExperienceItem(
       title: 'Galle Dutch Fort',
-      subtitle: '17th-century UNESCO ocean ramparts, lighthouse & colonial streets',
+      subtitle:
+          '17th-century UNESCO ocean ramparts, lighthouse & colonial streets',
       category: 'CULTURAL HERITAGE',
       rating: '4.8',
       filterCategory: 'Cultural Heritage',
@@ -164,7 +166,8 @@ class _HelaHomePageState extends State<HelaHomePage>
     ),
     HomeExperienceItem(
       title: 'Nine Arch Bridge & Flying Ravana Zipline',
-      subtitle: '80 km/h tea valley mega zipline, Ella Rock hikes & iconic rail bridge',
+      subtitle:
+          '80 km/h tea valley mega zipline, Ella Rock hikes & iconic rail bridge',
       category: 'ADVENTURE',
       rating: '4.8',
       filterCategory: 'Adventure',
@@ -180,7 +183,8 @@ class _HelaHomePageState extends State<HelaHomePage>
     ),
     HomeExperienceItem(
       title: 'Arugam Bay Surf Capital',
-      subtitle: 'World-renowned east coast surf point breaks & bohemian cabanas',
+      subtitle:
+          'World-renowned east coast surf point breaks & bohemian cabanas',
       category: 'BEACHES',
       rating: '4.6',
       filterCategory: 'Beaches',
@@ -188,7 +192,8 @@ class _HelaHomePageState extends State<HelaHomePage>
     ),
     HomeExperienceItem(
       title: 'Udawalawe National Park',
-      subtitle: 'Open savannah plains famous for guaranteed wild elephant herds',
+      subtitle:
+          'Open savannah plains famous for guaranteed wild elephant herds',
       category: 'NATURE & WILDLIFE',
       rating: '4.8',
       filterCategory: 'Nature & Wildlife',
@@ -196,7 +201,8 @@ class _HelaHomePageState extends State<HelaHomePage>
     ),
     HomeExperienceItem(
       title: 'Adam\'s Peak (Sri Pada) Night Trek',
-      subtitle: '2,243m sacred summit pilgrimage climb for breathtaking sunrise views',
+      subtitle:
+          '2,243m sacred summit pilgrimage climb for breathtaking sunrise views',
       category: 'ADVENTURE',
       rating: '4.8',
       filterCategory: 'Adventure',
@@ -204,7 +210,8 @@ class _HelaHomePageState extends State<HelaHomePage>
     ),
     HomeExperienceItem(
       title: 'Weligama Surfing & Tangalle Bays',
-      subtitle: 'Gentle beginner surf bay, stilt fishermen & secluded southern coves',
+      subtitle:
+          'Gentle beginner surf bay, stilt fishermen & secluded southern coves',
       category: 'BEACHES',
       rating: '4.6',
       filterCategory: 'Beaches',
@@ -212,7 +219,8 @@ class _HelaHomePageState extends State<HelaHomePage>
     ),
     HomeExperienceItem(
       title: 'Horton Plains & World\'s End',
-      subtitle: '2,100m UNESCO cloud forest plateau with dramatic 870m cliff drop',
+      subtitle:
+          '2,100m UNESCO cloud forest plateau with dramatic 870m cliff drop',
       category: 'NATURE & WILDLIFE',
       rating: '4.7',
       filterCategory: 'Nature & Wildlife',
@@ -220,7 +228,8 @@ class _HelaHomePageState extends State<HelaHomePage>
     ),
     HomeExperienceItem(
       title: 'Kitulgala White-Water Rafting',
-      subtitle: 'Kelani River Grade 2–3 rapids, canyoning & rainforest cliff jumps',
+      subtitle:
+          'Kelani River Grade 2–3 rapids, canyoning & rainforest cliff jumps',
       category: 'ADVENTURE',
       rating: '4.7',
       filterCategory: 'Adventure',
@@ -228,7 +237,8 @@ class _HelaHomePageState extends State<HelaHomePage>
     ),
     HomeExperienceItem(
       title: 'Ancient City of Polonnaruwa',
-      subtitle: '12th-century UNESCO royal capital with Gal Vihara rock Buddhas',
+      subtitle:
+          '12th-century UNESCO royal capital with Gal Vihara rock Buddhas',
       category: 'CULTURAL HERITAGE',
       rating: '4.6',
       filterCategory: 'Cultural Heritage',
@@ -236,7 +246,8 @@ class _HelaHomePageState extends State<HelaHomePage>
     ),
     HomeExperienceItem(
       title: 'Unawatuna Beach & Coral Reef',
-      subtitle: 'Calm turquoise horseshoe bay ideal for reef swimming & snorkeling',
+      subtitle:
+          'Calm turquoise horseshoe bay ideal for reef swimming & snorkeling',
       category: 'BEACHES',
       rating: '4.5',
       filterCategory: 'Beaches',
@@ -244,7 +255,8 @@ class _HelaHomePageState extends State<HelaHomePage>
     ),
     HomeExperienceItem(
       title: 'Sinharaja Rainforest Reserve',
-      subtitle: 'UNESCO virgin lowland tropical rainforest & endemic bird sanctuary',
+      subtitle:
+          'UNESCO virgin lowland tropical rainforest & endemic bird sanctuary',
       category: 'NATURE & WILDLIFE',
       rating: '4.8',
       filterCategory: 'Nature & Wildlife',
@@ -252,7 +264,8 @@ class _HelaHomePageState extends State<HelaHomePage>
     ),
     HomeExperienceItem(
       title: 'Knuckles Mountain Range Trek',
-      subtitle: 'Rugged cloud-forest peaks, hidden waterfalls & remote village trails',
+      subtitle:
+          'Rugged cloud-forest peaks, hidden waterfalls & remote village trails',
       category: 'ADVENTURE',
       rating: '4.8',
       filterCategory: 'Adventure',
@@ -674,10 +687,7 @@ class _HelaHomePageState extends State<HelaHomePage>
                             gradient: const LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
-                              colors: [
-                                Color(0xFFFDE047),
-                                Color(0xFFF59E0B),
-                              ],
+                              colors: [Color(0xFFFDE047), Color(0xFFF59E0B)],
                             ),
                             borderRadius: BorderRadius.circular(14),
                             border: Border.all(
@@ -686,8 +696,9 @@ class _HelaHomePageState extends State<HelaHomePage>
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFFF59E0B)
-                                    .withValues(alpha: 0.38),
+                                color: const Color(
+                                  0xFFF59E0B,
+                                ).withValues(alpha: 0.38),
                                 blurRadius: 12,
                                 offset: const Offset(0, 4),
                               ),
@@ -733,8 +744,9 @@ class _HelaHomePageState extends State<HelaHomePage>
                                       width: 22,
                                       height: 22,
                                       decoration: BoxDecoration(
-                                        color: const Color(0xFF052E26)
-                                            .withValues(alpha: 0.14),
+                                        color: const Color(
+                                          0xFF052E26,
+                                        ).withValues(alpha: 0.14),
                                         shape: BoxShape.circle,
                                       ),
                                       child: const Icon(
@@ -826,8 +838,9 @@ class _HelaHomePageState extends State<HelaHomePage>
                                         Icon(
                                           Icons.chevron_right_rounded,
                                           size: 16,
-                                          color: Colors.white
-                                              .withValues(alpha: 0.85),
+                                          color: Colors.white.withValues(
+                                            alpha: 0.85,
+                                          ),
                                         ),
                                       ],
                                     ),

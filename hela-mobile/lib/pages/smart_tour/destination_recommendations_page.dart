@@ -137,8 +137,11 @@ class _DestinationRecommendationsPageState
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.auto_awesome_rounded,
-                    size: 13, color: Color(0xFF1A1D00)),
+                const Icon(
+                  Icons.auto_awesome_rounded,
+                  size: 13,
+                  color: Color(0xFF1A1D00),
+                ),
                 const SizedBox(width: 4),
                 Text(
                   '$days Days Plan',
@@ -170,8 +173,11 @@ class _DestinationRecommendationsPageState
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.tips_and_updates_rounded,
-                        color: HelaColors.primary, size: 22),
+                    const Icon(
+                      Icons.tips_and_updates_rounded,
+                      color: HelaColors.primary,
+                      size: 22,
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
@@ -247,7 +253,8 @@ class _DestinationRecommendationsPageState
                                             dest.region,
                                             style: const TextStyle(
                                               fontSize: 12,
-                                              color: HelaColors.onSurfaceVariant,
+                                              color:
+                                                  HelaColors.onSurfaceVariant,
                                             ),
                                             overflow: TextOverflow.ellipsis,
                                           ),
@@ -263,7 +270,9 @@ class _DestinationRecommendationsPageState
                               // Match Score Badge
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 4),
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
                                 decoration: BoxDecoration(
                                   color: HelaColors.tertiaryFixed,
                                   borderRadius: BorderRadius.circular(12),
@@ -317,7 +326,9 @@ class _DestinationRecommendationsPageState
                                   children: dest.categories.take(3).map((cat) {
                                     return Container(
                                       padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 3),
+                                        horizontal: 8,
+                                        vertical: 3,
+                                      ),
                                       decoration: BoxDecoration(
                                         color: HelaColors.surfaceContainerHigh,
                                         borderRadius: BorderRadius.circular(8),
@@ -338,8 +349,9 @@ class _DestinationRecommendationsPageState
                                 dest.attribution,
                                 style: TextStyle(
                                   fontSize: 9.5,
-                                  color:
-                                      HelaColors.outline.withValues(alpha: 0.8),
+                                  color: HelaColors.outline.withValues(
+                                    alpha: 0.8,
+                                  ),
                                 ),
                               ),
                             ],
@@ -361,9 +373,12 @@ class _DestinationRecommendationsPageState
             child: Container(
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
-                color: HelaColors.surfaceContainerLowest.withValues(alpha: 0.95),
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(20)),
+                color: HelaColors.surfaceContainerLowest.withValues(
+                  alpha: 0.95,
+                ),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(20),
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.08),
@@ -404,7 +419,9 @@ class _DestinationRecommendationsPageState
                         backgroundColor: HelaColors.primary,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 22, vertical: 14),
+                          horizontal: 22,
+                          vertical: 14,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(24),
                         ),
@@ -415,8 +432,9 @@ class _DestinationRecommendationsPageState
                               height: 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2.5,
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
                               ),
                             )
                           : const Row(

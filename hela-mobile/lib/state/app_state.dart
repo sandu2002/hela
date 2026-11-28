@@ -12,6 +12,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Tracks bookmarked/saved guide IDs, saved havens/destinations, audio playback state,
 /// and the current bottom-nav tab index so they persist across screens.
 class HelaAppState extends ChangeNotifier {
+  static const String _savedBookmarksPrefsKey = 'hela_saved_bookmarks_v1';
+
   // ── Saved / Bookmarked Havens ──────────────────────────────────
   final List<HavenItem> _savedHavens = [];
 
@@ -27,11 +29,13 @@ class HelaAppState extends ChangeNotifier {
       _savedHavens.add(item);
     }
     notifyListeners();
+    _persistSavedBookmarks();
   }
 
   void removeSavedHaven(String title) {
     _savedHavens.removeWhere((h) => h.title == title);
     notifyListeners();
+    _persistSavedBookmarks();
   }
 
   // ── Saved / Bookmarked Experiences ─────────────────────────────
@@ -51,11 +55,13 @@ class HelaAppState extends ChangeNotifier {
       _savedExperiences.add(item);
     }
     notifyListeners();
+    _persistSavedBookmarks();
   }
 
   void removeSavedExperience(String title) {
     _savedExperiences.removeWhere((e) => e.title == title);
     notifyListeners();
+    _persistSavedBookmarks();
   }
 
   // ── Saved / Bookmarked Stays ───────────────────────────────────
@@ -73,11 +79,78 @@ class HelaAppState extends ChangeNotifier {
       _savedStays.add(item);
     }
     notifyListeners();
+    _persistSavedBookmarks();
   }
 
   void removeSavedStay(String title) {
     _savedStays.removeWhere((s) => s.title == title);
     notifyListeners();
+    _persistSavedBookmarks();
+  }
+
+  Future<void> restoreSavedBookmarks() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_savedBookmarksPrefsKey);
+      if (raw == null || raw.isEmpty) return;
+      final map = jsonDecode(raw) as Map<String, dynamic>;
+
+      final havens = (map['havens'] as List<dynamic>?)
+          ?.map((e) => HavenItem.fromJson(e as Map<String, dynamic>))
+          .where((h) => h.title.isNotEmpty)
+          .toList();
+      if (havens != null) {
+        _savedHavens
+          ..clear()
+          ..addAll(havens);
+      }
+
+      final experiences = (map['experiences'] as List<dynamic>?)
+          ?.map((e) => ExperienceItem.fromJson(e as Map<String, dynamic>))
+          .where((e) => e.title.isNotEmpty)
+          .toList();
+      if (experiences != null) {
+        _savedExperiences
+          ..clear()
+          ..addAll(experiences);
+      }
+
+      final stays = (map['stays'] as List<dynamic>?)
+          ?.map((e) => StayHaven.fromJson(e as Map<String, dynamic>))
+          .where((s) => s.title.isNotEmpty)
+          .toList();
+      if (stays != null) {
+        _savedStays
+          ..clear()
+          ..addAll(stays);
+      }
+
+      final lists = (map['customLists'] as List<dynamic>?)
+          ?.map((e) => CustomSavedList.fromJson(e as Map<String, dynamic>))
+          .where((l) => l.name.isNotEmpty)
+          .toList();
+      if (lists != null && lists.isNotEmpty) {
+        _customLists
+          ..clear()
+          ..addAll(lists);
+      }
+      notifyListeners();
+    } catch (_) {
+      // Ignore corrupt local bookmark cache
+    }
+  }
+
+  Future<void> _persistSavedBookmarks() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final encoded = jsonEncode({
+        'havens': _savedHavens.map((h) => h.toJson()).toList(),
+        'experiences': _savedExperiences.map((e) => e.toJson()).toList(),
+        'stays': _savedStays.map((s) => s.toJson()).toList(),
+        'customLists': _customLists.map((l) => l.toJson()).toList(),
+      });
+      await prefs.setString(_savedBookmarksPrefsKey, encoded);
+    } catch (_) {}
   }
 
   // ── Saved / Bookmarked Smart Tours ─────────────────────────────
@@ -308,11 +381,13 @@ class HelaAppState extends ChangeNotifier {
     );
     _customLists.add(list);
     notifyListeners();
+    _persistSavedBookmarks();
   }
 
   void deleteCustomList(String id) {
     _customLists.removeWhere((l) => l.id == id);
     notifyListeners();
+    _persistSavedBookmarks();
   }
 
   void renameCustomList(String id, String newName) {
@@ -320,6 +395,7 @@ class HelaAppState extends ChangeNotifier {
     if (index >= 0) {
       _customLists[index] = _customLists[index].copyWith(name: newName.trim());
       notifyListeners();
+      _persistSavedBookmarks();
     }
   }
 
@@ -335,6 +411,7 @@ class HelaAppState extends ChangeNotifier {
       }
       _customLists[index] = list.copyWith(itemTitles: titles);
       notifyListeners();
+      _persistSavedBookmarks();
     }
   }
 

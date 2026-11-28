@@ -139,7 +139,11 @@ class _ActiveJourneyPageState extends State<ActiveJourneyPage> {
                 shape: BoxShape.circle,
                 border: Border.all(color: colors.architecturalBorder),
               ),
-              child: Icon(Icons.arrow_back_rounded, size: 20, color: colors.onSurface),
+              child: Icon(
+                Icons.arrow_back_rounded,
+                size: 20,
+                color: colors.onSurface,
+              ),
             ),
           ),
         ),
@@ -172,7 +176,11 @@ class _ActiveJourneyPageState extends State<ActiveJourneyPage> {
                     SizedBox(width: 4),
                     Text(
                       'GPS LIVE',
-                      style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: Color(0xFF047857)),
+                      style: TextStyle(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF047857),
+                      ),
                     ),
                   ],
                 ),
@@ -190,7 +198,9 @@ class _ActiveJourneyPageState extends State<ActiveJourneyPage> {
       actions: [
         IconButton(
           icon: Icon(
-            _isAudioPlaying ? Icons.volume_up_rounded : Icons.volume_mute_rounded,
+            _isAudioPlaying
+                ? Icons.volume_up_rounded
+                : Icons.volume_mute_rounded,
             color: _isAudioPlaying ? colors.secondary : colors.onSurfaceVariant,
           ),
           onPressed: () {
@@ -235,7 +245,11 @@ class _ActiveJourneyPageState extends State<ActiveJourneyPage> {
               color: colors.secondaryContainer,
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.turn_right_rounded, size: 24, color: colors.onSecondaryContainer),
+            child: Icon(
+              Icons.turn_right_rounded,
+              size: 24,
+              color: colors.onSecondaryContainer,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -244,12 +258,19 @@ class _ActiveJourneyPageState extends State<ActiveJourneyPage> {
               children: [
                 const Text(
                   'In 1.4 km • Turn Right onto Central Link',
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Colors.white),
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   'Heading towards Kurunegala bypass (A6 Highway route)',
-                  style: TextStyle(fontSize: 11, color: colors.onPrimaryContainer),
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: colors.onPrimaryContainer,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -261,7 +282,11 @@ class _ActiveJourneyPageState extends State<ActiveJourneyPage> {
             children: [
               Text(
                 '58 km/h',
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: colors.secondaryContainer),
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: colors.secondaryContainer,
+                ),
               ),
               const Text(
                 'Speed',
@@ -281,7 +306,11 @@ class _ActiveJourneyPageState extends State<ActiveJourneyPage> {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: colors.architecturalBorder),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2)),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: ClipRRect(
@@ -314,7 +343,11 @@ class _ActiveJourneyPageState extends State<ActiveJourneyPage> {
               CircleAvatar(
                 radius: 20,
                 backgroundColor: colors.primary,
-                child: const Icon(Icons.person_rounded, size: 22, color: Colors.white),
+                child: const Icon(
+                  Icons.person_rounded,
+                  size: 22,
+                  color: Colors.white,
+                ),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -325,16 +358,27 @@ class _ActiveJourneyPageState extends State<ActiveJourneyPage> {
                       children: [
                         Text(
                           'Chaminda Perera',
-                          style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: colors.onSurface),
+                          style: TextStyle(
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w700,
+                            color: colors.onSurface,
+                          ),
                         ),
                         const SizedBox(width: 4),
-                        Icon(Icons.verified_rounded, size: 14, color: colors.primary),
+                        Icon(
+                          Icons.verified_rounded,
+                          size: 14,
+                          color: colors.primary,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 2),
                     Text(
                       'Government Certified Tourist Chauffeur • ★ 4.98 (310 trips)',
-                      style: TextStyle(fontSize: 10, color: colors.onSurfaceVariant),
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: colors.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
@@ -342,15 +386,26 @@ class _ActiveJourneyPageState extends State<ActiveJourneyPage> {
               InkWell(
                 onTap: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Calling Chaminda Perera (+94 77 123 4567)... 📞')),
+                    const SnackBar(
+                      content: Text(
+                        'Calling Chaminda Perera (+94 77 123 4567)... 📞',
+                      ),
+                    ),
                   );
                 },
                 borderRadius: BorderRadius.circular(999),
                 child: Container(
                   width: 36,
                   height: 36,
-                  decoration: BoxDecoration(color: colors.primary, shape: BoxShape.circle),
-                  child: const Icon(Icons.phone_in_talk_rounded, size: 18, color: Colors.white),
+                  decoration: BoxDecoration(
+                    color: colors.primary,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.phone_in_talk_rounded,
+                    size: 18,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ],
@@ -387,7 +442,11 @@ class _ActiveJourneyPageState extends State<ActiveJourneyPage> {
                 colors: colors,
                 onTap: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Closest clean rest stop: Ambepussa Rest House in 6 km.')),
+                    const SnackBar(
+                      content: Text(
+                        'Closest clean rest stop: Ambepussa Rest House in 6 km.',
+                      ),
+                    ),
                   );
                 },
               ),
@@ -399,7 +458,11 @@ class _ActiveJourneyPageState extends State<ActiveJourneyPage> {
                 colors: colors,
                 onTap: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Tourist Police 1912 & HELA Emergency hotline connected.')),
+                    const SnackBar(
+                      content: Text(
+                        'Tourist Police 1912 & HELA Emergency hotline connected.',
+                      ),
+                    ),
                   );
                 },
               ),
@@ -434,7 +497,11 @@ class _ActiveJourneyPageState extends State<ActiveJourneyPage> {
               const SizedBox(height: 2),
               Text(
                 label,
-                style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w700, color: colors.onSurface),
+                style: TextStyle(
+                  fontSize: 9.5,
+                  fontWeight: FontWeight.w700,
+                  color: colors.onSurface,
+                ),
               ),
             ],
           ),
@@ -452,7 +519,11 @@ class _ActiveJourneyPageState extends State<ActiveJourneyPage> {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: colors.primary.withValues(alpha: 0.3)),
         boxShadow: [
-          BoxShadow(color: colors.primary.withValues(alpha: 0.08), blurRadius: 10, offset: const Offset(0, 3)),
+          BoxShadow(
+            color: colors.primary.withValues(alpha: 0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
         ],
       ),
       child: Column(
@@ -469,24 +540,40 @@ class _ActiveJourneyPageState extends State<ActiveJourneyPage> {
                 ),
                 child: Text(
                   'CURRENT LEG ${_activeStopIndex + 1} OF 4',
-                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: colors.onSecondaryContainer),
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    color: colors.onSecondaryContainer,
+                  ),
                 ),
               ),
               Text(
                 'ETA: 12:30 PM',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: colors.primary),
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: colors.primary,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 8),
           Text(
             'Traditional Rice & Curry Feast at Kurunegala',
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: colors.onSurface),
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
+              color: colors.onSurface,
+            ),
           ),
           const SizedBox(height: 3),
           Text(
             'Authentic clay-pot lunch featuring coconut sambol, lake fish & jackfruit curry in an open garden pavilion.',
-            style: TextStyle(fontSize: 11.5, color: colors.onSurfaceVariant, height: 1.35),
+            style: TextStyle(
+              fontSize: 11.5,
+              color: colors.onSurfaceVariant,
+              height: 1.35,
+            ),
           ),
           const SizedBox(height: 12),
           SizedBox(
@@ -500,20 +587,29 @@ class _ActiveJourneyPageState extends State<ActiveJourneyPage> {
                   _dayStops[1]['status'] = 'Completed ✓';
                 });
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Marked Stop 2 as Arrived! Proceeding to Sigiriya Citadel. 🎉')),
+                  const SnackBar(
+                    content: Text(
+                      'Marked Stop 2 as Arrived! Proceeding to Sigiriya Citadel. 🎉',
+                    ),
+                  ),
                 );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: colors.primary,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
                   Icon(Icons.check_circle_outline_rounded, size: 18),
                   SizedBox(width: 6),
-                  Text('Mark as Arrived at Kurunegala', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+                  Text(
+                    'Mark as Arrived at Kurunegala',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                  ),
                 ],
               ),
             ),
@@ -533,7 +629,11 @@ class _ActiveJourneyPageState extends State<ActiveJourneyPage> {
           children: [
             Text(
               'Day 1 Timeline & Stops',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: colors.onSurface),
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w800,
+                color: colors.onSurface,
+              ),
             ),
             Text(
               '4 Curated Stops',
@@ -550,7 +650,9 @@ class _ActiveJourneyPageState extends State<ActiveJourneyPage> {
             margin: const EdgeInsets.only(bottom: 8),
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: isCurrent ? colors.surfaceContainerLow : colors.cardBackground,
+              color: isCurrent
+                  ? colors.surfaceContainerLow
+                  : colors.cardBackground,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: isCurrent ? colors.primary : colors.architecturalBorder,
@@ -564,18 +666,26 @@ class _ActiveJourneyPageState extends State<ActiveJourneyPage> {
                   decoration: BoxDecoration(
                     color: isCompleted
                         ? const Color(0xFF10B981)
-                        : (isCurrent ? colors.primary : colors.surfaceContainer),
+                        : (isCurrent
+                              ? colors.primary
+                              : colors.surfaceContainer),
                     shape: BoxShape.circle,
                   ),
                   child: Center(
                     child: isCompleted
-                        ? const Icon(Icons.check_rounded, size: 16, color: Colors.white)
+                        ? const Icon(
+                            Icons.check_rounded,
+                            size: 16,
+                            color: Colors.white,
+                          )
                         : Text(
                             stop['number'] as String,
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
-                              color: isCurrent ? Colors.white : colors.onSurfaceVariant,
+                              color: isCurrent
+                                  ? Colors.white
+                                  : colors.onSurfaceVariant,
                             ),
                           ),
                   ),
@@ -601,7 +711,9 @@ class _ActiveJourneyPageState extends State<ActiveJourneyPage> {
                           fontWeight: FontWeight.w600,
                           color: isCompleted
                               ? const Color(0xFF047857)
-                              : (isCurrent ? colors.primary : colors.onSurfaceVariant),
+                              : (isCurrent
+                                    ? colors.primary
+                                    : colors.onSurfaceVariant),
                         ),
                       ),
                     ],
@@ -609,7 +721,11 @@ class _ActiveJourneyPageState extends State<ActiveJourneyPage> {
                 ),
                 Text(
                   stop['time'] as String,
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: colors.secondary),
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: colors.secondary,
+                  ),
                 ),
               ],
             ),
@@ -638,11 +754,18 @@ class _ActiveJourneyPageState extends State<ActiveJourneyPage> {
               children: [
                 Text(
                   'Offline Maps & Emergency Pack Active',
-                  style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: colors.onSurface),
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w700,
+                    color: colors.onSurface,
+                  ),
                 ),
                 Text(
                   'Voice guide and route cached. Works with zero cellular signal.',
-                  style: TextStyle(fontSize: 10, color: colors.onSurfaceVariant),
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: colors.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),

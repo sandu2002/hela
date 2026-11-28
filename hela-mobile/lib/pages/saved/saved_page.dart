@@ -9,6 +9,7 @@ import 'package:hela/pages/bookings/stays_page.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/widgets/cards/haven_card.dart';
 import 'package:hela/widgets/cards/stay_card.dart';
+import 'package:hela/widgets/common/hela_network_image.dart';
 import 'package:hela/widgets/navigation/hela_bottom_nav_bar.dart';
 
 /// Dedicated Saved / Wishlist Page for the HELA app.
@@ -19,11 +20,7 @@ class SavedPage extends StatefulWidget {
   final bool showBottomNav;
   final bool? showBackButton;
 
-  const SavedPage({
-    super.key,
-    this.showBottomNav = false,
-    this.showBackButton,
-  });
+  const SavedPage({super.key, this.showBottomNav = false, this.showBackButton});
 
   @override
   State<SavedPage> createState() => _SavedPageState();
@@ -33,7 +30,8 @@ class _SavedPageState extends State<SavedPage> {
   String? _selectedCustomListId;
 
   bool get _shouldShowBack =>
-      widget.showBackButton ?? (Navigator.canPop(context) || !widget.showBottomNav);
+      widget.showBackButton ??
+      (Navigator.canPop(context) || !widget.showBottomNav);
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +41,11 @@ class _SavedPageState extends State<SavedPage> {
     final savedStays = appState.savedStays;
     final savedExperiences = appState.savedExperiences;
 
-    final totalCount = savedTours.length + savedHavens.length + savedStays.length + savedExperiences.length;
+    final totalCount =
+        savedTours.length +
+        savedHavens.length +
+        savedStays.length +
+        savedExperiences.length;
     final selectedList = _selectedCustomListId != null
         ? appState.getCustomList(_selectedCustomListId!)
         : null;
@@ -110,7 +112,9 @@ class _SavedPageState extends State<SavedPage> {
                       decoration: BoxDecoration(
                         color: HelaColors.surfaceContainerLow,
                         shape: BoxShape.circle,
-                        border: Border.all(color: HelaColors.architecturalBorder),
+                        border: Border.all(
+                          color: HelaColors.architecturalBorder,
+                        ),
                       ),
                       child: const Icon(
                         Icons.arrow_back_ios_new_rounded,
@@ -141,7 +145,11 @@ class _SavedPageState extends State<SavedPage> {
         if (totalCount > 0)
           TextButton.icon(
             onPressed: () => _confirmClearAll(context, appState),
-            icon: const Icon(Icons.delete_outline_rounded, size: 16, color: HelaColors.secondary),
+            icon: const Icon(
+              Icons.delete_outline_rounded,
+              size: 16,
+              color: HelaColors.secondary,
+            ),
             label: const Text(
               'Clear All',
               style: TextStyle(
@@ -164,7 +172,11 @@ class _SavedPageState extends State<SavedPage> {
       children: [
         Row(
           children: [
-            const Icon(Icons.bookmark_added_rounded, size: 19, color: HelaColors.primary),
+            const Icon(
+              Icons.bookmark_added_rounded,
+              size: 19,
+              color: HelaColors.primary,
+            ),
             const SizedBox(width: 8),
             const Text(
               'My Collections',
@@ -235,7 +247,11 @@ class _SavedPageState extends State<SavedPage> {
                             color: HelaColors.primary.withValues(alpha: 0.08),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.add_rounded, size: 22, color: HelaColors.primary),
+                          child: const Icon(
+                            Icons.add_rounded,
+                            size: 22,
+                            color: HelaColors.primary,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         const Text(
@@ -252,7 +268,9 @@ class _SavedPageState extends State<SavedPage> {
                           style: TextStyle(
                             fontSize: 10.5,
                             fontWeight: FontWeight.w500,
-                            color: HelaColors.onSurfaceVariant.withValues(alpha: 0.7),
+                            color: HelaColors.onSurfaceVariant.withValues(
+                              alpha: 0.7,
+                            ),
                           ),
                         ),
                       ],
@@ -274,14 +292,21 @@ class _SavedPageState extends State<SavedPage> {
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 180),
                   width: 148,
-                  padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 13,
+                    vertical: 11,
+                  ),
                   decoration: BoxDecoration(
                     color: isSelected
                         ? list.color.withValues(alpha: 0.12)
                         : HelaColors.surfaceContainerLowest,
                     borderRadius: BorderRadius.circular(18),
                     border: Border.all(
-                      color: isSelected ? list.color : HelaColors.architecturalBorder.withValues(alpha: 0.8),
+                      color: isSelected
+                          ? list.color
+                          : HelaColors.architecturalBorder.withValues(
+                              alpha: 0.8,
+                            ),
                       width: isSelected ? 2 : 1,
                     ),
                     boxShadow: [
@@ -321,11 +346,17 @@ class _SavedPageState extends State<SavedPage> {
                               icon: Icon(
                                 Icons.more_vert_rounded,
                                 size: 18,
-                                color: HelaColors.onSurfaceVariant.withValues(alpha: 0.8),
+                                color: HelaColors.onSurfaceVariant.withValues(
+                                  alpha: 0.8,
+                                ),
                               ),
                               onSelected: (val) {
                                 if (val == 'rename') {
-                                  _openCreateListDialog(context, appState, editingList: list);
+                                  _openCreateListDialog(
+                                    context,
+                                    appState,
+                                    editingList: list,
+                                  );
                                 } else if (val == 'delete') {
                                   _confirmDeleteList(context, list, appState);
                                 }
@@ -345,9 +376,16 @@ class _SavedPageState extends State<SavedPage> {
                                   value: 'delete',
                                   child: Row(
                                     children: [
-                                      Icon(Icons.delete_outline_rounded, size: 16, color: Colors.red),
+                                      Icon(
+                                        Icons.delete_outline_rounded,
+                                        size: 16,
+                                        color: Colors.red,
+                                      ),
                                       SizedBox(width: 8),
-                                      Text('Delete', style: TextStyle(color: Colors.red)),
+                                      Text(
+                                        'Delete',
+                                        style: TextStyle(color: Colors.red),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -367,7 +405,9 @@ class _SavedPageState extends State<SavedPage> {
                             style: TextStyle(
                               fontSize: 13.5,
                               fontWeight: FontWeight.w800,
-                              color: isSelected ? list.color : HelaColors.onSurface,
+                              color: isSelected
+                                  ? list.color
+                                  : HelaColors.onSurface,
                             ),
                           ),
                           const SizedBox(height: 3),
@@ -376,7 +416,11 @@ class _SavedPageState extends State<SavedPage> {
                               Icon(
                                 Icons.bookmark_rounded,
                                 size: 12,
-                                color: isSelected ? list.color : HelaColors.onSurfaceVariant.withValues(alpha: 0.8),
+                                color: isSelected
+                                    ? list.color
+                                    : HelaColors.onSurfaceVariant.withValues(
+                                        alpha: 0.8,
+                                      ),
                               ),
                               const SizedBox(width: 4),
                               Text(
@@ -384,7 +428,9 @@ class _SavedPageState extends State<SavedPage> {
                                 style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
-                                  color: isSelected ? list.color : HelaColors.onSurfaceVariant,
+                                  color: isSelected
+                                      ? list.color
+                                      : HelaColors.onSurfaceVariant,
                                 ),
                               ),
                             ],
@@ -418,14 +464,22 @@ class _SavedPageState extends State<SavedPage> {
           Expanded(
             child: RichText(
               text: TextSpan(
-                style: const TextStyle(fontSize: 12.5, color: HelaColors.onSurface),
+                style: const TextStyle(
+                  fontSize: 12.5,
+                  color: HelaColors.onSurface,
+                ),
                 children: [
                   const TextSpan(text: 'Filtered by: '),
                   TextSpan(
                     text: list.name,
-                    style: TextStyle(fontWeight: FontWeight.w800, color: list.color),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      color: list.color,
+                    ),
                   ),
-                  TextSpan(text: ' ($itemCount ${itemCount == 1 ? 'item' : 'items'})'),
+                  TextSpan(
+                    text: ' ($itemCount ${itemCount == 1 ? 'item' : 'items'})',
+                  ),
                 ],
               ),
             ),
@@ -443,9 +497,20 @@ class _SavedPageState extends State<SavedPage> {
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.close_rounded, size: 14, color: HelaColors.secondary),
+                  Icon(
+                    Icons.close_rounded,
+                    size: 14,
+                    color: HelaColors.secondary,
+                  ),
                   SizedBox(width: 4),
-                  Text('Clear', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: HelaColors.secondary)),
+                  Text(
+                    'Clear',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: HelaColors.secondary,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -456,22 +521,48 @@ class _SavedPageState extends State<SavedPage> {
   }
 
   Widget _buildContent(HelaAppState appState) {
-    final selectedList = _selectedCustomListId != null ? appState.getCustomList(_selectedCustomListId!) : null;
+    final selectedList = _selectedCustomListId != null
+        ? appState.getCustomList(_selectedCustomListId!)
+        : null;
 
     final visibleTours = appState.savedTours
-        .where((t) => selectedList == null || appState.itemMatchesList(t.title, 'tour', selectedList))
+        .where(
+          (t) =>
+              selectedList == null ||
+              appState.itemMatchesList(t.title, 'tour', selectedList),
+        )
         .toList();
     final visibleHavens = appState.savedHavens
-        .where((h) => selectedList == null || appState.itemMatchesList(h.title, h.category, selectedList))
+        .where(
+          (h) =>
+              selectedList == null ||
+              appState.itemMatchesList(h.title, h.category, selectedList),
+        )
         .toList();
     final visibleStays = appState.savedStays
-        .where((s) => selectedList == null || appState.itemMatchesList(s.title, '${s.location} ${s.ratingLabel}', selectedList))
+        .where(
+          (s) =>
+              selectedList == null ||
+              appState.itemMatchesList(
+                s.title,
+                '${s.location} ${s.ratingLabel}',
+                selectedList,
+              ),
+        )
         .toList();
     final visibleExp = appState.savedExperiences
-        .where((e) => selectedList == null || appState.itemMatchesList(e.title, e.category, selectedList))
+        .where(
+          (e) =>
+              selectedList == null ||
+              appState.itemMatchesList(e.title, e.category, selectedList),
+        )
         .toList();
 
-    final totalVisible = visibleTours.length + visibleHavens.length + visibleStays.length + visibleExp.length;
+    final totalVisible =
+        visibleTours.length +
+        visibleHavens.length +
+        visibleStays.length +
+        visibleExp.length;
 
     if (totalVisible == 0) {
       if (selectedList != null) {
@@ -485,7 +576,9 @@ class _SavedPageState extends State<SavedPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildSectionHeader(selectedList.name, totalVisible),
-          ...visibleTours.map((tour) => _buildSavedTourCardItem(tour, appState)),
+          ...visibleTours.map(
+            (tour) => _buildSavedTourCardItem(tour, appState),
+          ),
           ...visibleHavens.map((haven) => _buildHavenCardItem(haven, appState)),
           ...visibleStays.map((stay) => _buildStayCardItem(stay, appState)),
           ...visibleExp.map((exp) => _buildExperienceCardItem(exp, appState)),
@@ -499,7 +592,9 @@ class _SavedPageState extends State<SavedPage> {
         // ── Saved Smart Tours ─────────────────────────────────────
         if (visibleTours.isNotEmpty) ...[
           _buildSectionHeader('Smart Tours & Itineraries', visibleTours.length),
-          ...visibleTours.map((tour) => _buildSavedTourCardItem(tour, appState)),
+          ...visibleTours.map(
+            (tour) => _buildSavedTourCardItem(tour, appState),
+          ),
         ],
 
         // ── Saved Havens & Excursions ─────────────────────────────
@@ -571,37 +666,39 @@ class _SavedPageState extends State<SavedPage> {
         runSpacing: 6,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          ...containingLists.map((list) => InkWell(
-                onTap: () {
-                  setState(() {
-                    _selectedCustomListId = list.id;
-                  });
-                },
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: list.color.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: list.color.withValues(alpha: 0.3)),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(list.icon, size: 12, color: list.color),
-                      const SizedBox(width: 4),
-                      Text(
-                        list.name,
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: list.color,
-                        ),
-                      ),
-                    ],
-                  ),
+          ...containingLists.map(
+            (list) => InkWell(
+              onTap: () {
+                setState(() {
+                  _selectedCustomListId = list.id;
+                });
+              },
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                decoration: BoxDecoration(
+                  color: list.color.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: list.color.withValues(alpha: 0.3)),
                 ),
-              )),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(list.icon, size: 12, color: list.color),
+                    const SizedBox(width: 4),
+                    Text(
+                      list.name,
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: list.color,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
           InkWell(
             onTap: () => _openManageListsSheet(context, itemTitle, appState),
             borderRadius: BorderRadius.circular(12),
@@ -610,13 +707,17 @@ class _SavedPageState extends State<SavedPage> {
               decoration: BoxDecoration(
                 color: HelaColors.surfaceContainerLowest,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: HelaColors.outlineVariant.withValues(alpha: 0.7)),
+                border: Border.all(
+                  color: HelaColors.outlineVariant.withValues(alpha: 0.7),
+                ),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    containingLists.isEmpty ? Icons.add_rounded : Icons.label_outline_rounded,
+                    containingLists.isEmpty
+                        ? Icons.add_rounded
+                        : Icons.label_outline_rounded,
                     size: 13,
                     color: HelaColors.primary,
                   ),
@@ -639,7 +740,10 @@ class _SavedPageState extends State<SavedPage> {
   }
 
   Widget _buildSavedTourCardItem(TourPlan tour, HelaAppState appState) {
-    final totalActivities = tour.days.fold(0, (sum, d) => sum + d.activities.length);
+    final totalActivities = tour.days.fold(
+      0,
+      (sum, d) => sum + d.activities.length,
+    );
     final costPerPerson = tour.estimatedTotalCostUsd?.toInt() ?? 225;
 
     return Column(
@@ -683,7 +787,10 @@ class _SavedPageState extends State<SavedPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             color: HelaColors.tertiaryFixed,
                             borderRadius: BorderRadius.circular(14),
@@ -691,7 +798,11 @@ class _SavedPageState extends State<SavedPage> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.auto_awesome_rounded, size: 14, color: HelaColors.onTertiaryFixed),
+                              const Icon(
+                                Icons.auto_awesome_rounded,
+                                size: 14,
+                                color: HelaColors.onTertiaryFixed,
+                              ),
                               const SizedBox(width: 5),
                               Text(
                                 '${tour.durationDays} Days Itinerary',
@@ -720,10 +831,14 @@ class _SavedPageState extends State<SavedPage> {
                               borderRadius: BorderRadius.circular(16),
                               onTap: () {
                                 appState.removeSavedTour(tour.id);
-                                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                ScaffoldMessenger.of(
+                                  context,
+                                ).hideCurrentSnackBar();
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text('Removed "${tour.title}" from Saved'),
+                                    content: Text(
+                                      'Removed "${tour.title}" from Saved',
+                                    ),
                                     action: SnackBarAction(
                                       label: 'Undo',
                                       textColor: HelaColors.tertiaryFixed,
@@ -782,26 +897,48 @@ class _SavedPageState extends State<SavedPage> {
 
                     // Days & Activities Bar + Action Button
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.calendar_today_rounded, size: 14, color: HelaColors.tertiaryFixed),
+                          const Icon(
+                            Icons.calendar_today_rounded,
+                            size: 14,
+                            color: HelaColors.tertiaryFixed,
+                          ),
                           const SizedBox(width: 6),
                           Text(
                             '${tour.days.length} Days',
-                            style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                           if (totalActivities > 0) ...[
-                            const Text(' · ', style: TextStyle(color: Colors.white54)),
-                            const Icon(Icons.explore_rounded, size: 14, color: HelaColors.tertiaryFixed),
+                            const Text(
+                              ' · ',
+                              style: TextStyle(color: Colors.white54),
+                            ),
+                            const Icon(
+                              Icons.explore_rounded,
+                              size: 14,
+                              color: HelaColors.tertiaryFixed,
+                            ),
                             const SizedBox(width: 6),
                             Text(
                               '$totalActivities Activities',
-                              style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ],
                           const Spacer(),
@@ -814,7 +951,11 @@ class _SavedPageState extends State<SavedPage> {
                             ),
                           ),
                           const SizedBox(width: 4),
-                          const Icon(Icons.arrow_forward_rounded, size: 14, color: HelaColors.tertiaryFixed),
+                          const Icon(
+                            Icons.arrow_forward_rounded,
+                            size: 14,
+                            color: HelaColors.tertiaryFixed,
+                          ),
                         ],
                       ),
                     ),
@@ -842,7 +983,8 @@ class _SavedPageState extends State<SavedPage> {
             _removeHavenWithUndo(context, haven, appState);
           },
           onExploreTap: () {
-            if (haven.title.toLowerCase().contains('citadel') || haven.title.toLowerCase().contains('sigiriya')) {
+            if (haven.title.toLowerCase().contains('citadel') ||
+                haven.title.toLowerCase().contains('sigiriya')) {
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const CulturalGuidePage()),
               );
@@ -881,9 +1023,9 @@ class _SavedPageState extends State<SavedPage> {
             );
           },
           onViewTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const StaysPage()),
-            );
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const StaysPage()));
           },
         ),
         _buildItemCollectionsBar(stay.title, appState),
@@ -922,13 +1064,19 @@ class _SavedPageState extends State<SavedPage> {
                   child: Stack(
                     children: [
                       Positioned.fill(
-                        child: Image.network(
-                          exp.imageUrl,
+                        child: HelaNetworkImage(
+                          imageUrl: exp.imageUrl,
+                          height: 160,
+                          width: double.infinity,
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => Container(
-                            color: HelaColors.surfaceContainerHigh,
-                            child: const Icon(Icons.landscape_rounded, color: HelaColors.primary),
-                          ),
+                          errorBuilder: (context, error, stackTrace) =>
+                              Container(
+                                color: HelaColors.surfaceContainerHigh,
+                                child: const Icon(
+                                  Icons.landscape_rounded,
+                                  color: HelaColors.primary,
+                                ),
+                              ),
                         ),
                       ),
                       Positioned.fill(
@@ -950,7 +1098,9 @@ class _SavedPageState extends State<SavedPage> {
                         top: 10,
                         right: 10,
                         child: Material(
-                          color: HelaColors.primaryContainer.withValues(alpha: 0.9),
+                          color: HelaColors.primaryContainer.withValues(
+                            alpha: 0.9,
+                          ),
                           shape: const CircleBorder(),
                           child: InkWell(
                             customBorder: const CircleBorder(),
@@ -958,11 +1108,14 @@ class _SavedPageState extends State<SavedPage> {
                               appState.toggleSaveExperience(exp);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Removed "${exp.title}" from Saved'),
+                                  content: Text(
+                                    'Removed "${exp.title}" from Saved',
+                                  ),
                                   action: SnackBarAction(
                                     label: 'Undo',
                                     textColor: HelaColors.tertiaryFixed,
-                                    onPressed: () => appState.toggleSaveExperience(exp),
+                                    onPressed: () =>
+                                        appState.toggleSaveExperience(exp),
                                   ),
                                   behavior: SnackBarBehavior.floating,
                                 ),
@@ -984,7 +1137,10 @@ class _SavedPageState extends State<SavedPage> {
                         bottom: 10,
                         left: 12,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: HelaColors.tertiaryFixed,
                             borderRadius: BorderRadius.circular(12),
@@ -992,7 +1148,11 @@ class _SavedPageState extends State<SavedPage> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(exp.categoryIcon, size: 12, color: HelaColors.primary),
+                              Icon(
+                                exp.categoryIcon,
+                                size: 12,
+                                color: HelaColors.primary,
+                              ),
                               const SizedBox(width: 4),
                               Text(
                                 exp.category,
@@ -1029,7 +1189,11 @@ class _SavedPageState extends State<SavedPage> {
                             const SizedBox(height: 4),
                             Row(
                               children: [
-                                const Icon(Icons.schedule_rounded, size: 13, color: HelaColors.onSurfaceVariant),
+                                const Icon(
+                                  Icons.schedule_rounded,
+                                  size: 13,
+                                  color: HelaColors.onSurfaceVariant,
+                                ),
                                 const SizedBox(width: 4),
                                 Text(
                                   exp.duration,
@@ -1039,11 +1203,18 @@ class _SavedPageState extends State<SavedPage> {
                                   ),
                                 ),
                                 const SizedBox(width: 10),
-                                const Icon(Icons.star_rounded, size: 14, color: Color(0xFFD4A017)),
+                                const Icon(
+                                  Icons.star_rounded,
+                                  size: 14,
+                                  color: Color(0xFFD4A017),
+                                ),
                                 const SizedBox(width: 2),
                                 Text(
                                   exp.rating.toString(),
-                                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
                               ],
                             ),
@@ -1078,7 +1249,9 @@ class _SavedPageState extends State<SavedPage> {
       decoration: BoxDecoration(
         color: HelaColors.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: HelaColors.outlineVariant.withValues(alpha: 0.4)),
+        border: Border.all(
+          color: HelaColors.outlineVariant.withValues(alpha: 0.4),
+        ),
       ),
       child: Column(
         children: [
@@ -1118,7 +1291,9 @@ class _SavedPageState extends State<SavedPage> {
             style: OutlinedButton.styleFrom(
               foregroundColor: HelaColors.primary,
               side: const BorderSide(color: HelaColors.primary),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
             ),
           ),
         ],
@@ -1193,10 +1368,7 @@ class _SavedPageState extends State<SavedPage> {
             icon: const Icon(Icons.explore_rounded, size: 18),
             label: const Text(
               'Explore Havens & Tours',
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 13.5,
-              ),
+              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5),
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: HelaColors.primary,
@@ -1213,7 +1385,11 @@ class _SavedPageState extends State<SavedPage> {
     );
   }
 
-  void _openManageListsSheet(BuildContext context, String itemTitle, HelaAppState appState) {
+  void _openManageListsSheet(
+    BuildContext context,
+    String itemTitle,
+    HelaAppState appState,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1248,10 +1424,16 @@ class _SavedPageState extends State<SavedPage> {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: HelaColors.tertiaryFixed.withValues(alpha: 0.25),
+                          color: HelaColors.tertiaryFixed.withValues(
+                            alpha: 0.25,
+                          ),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.collections_bookmark_rounded, size: 20, color: HelaColors.primary),
+                        child: const Icon(
+                          Icons.collections_bookmark_rounded,
+                          size: 20,
+                          color: HelaColors.primary,
+                        ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -1291,7 +1473,10 @@ class _SavedPageState extends State<SavedPage> {
                       child: Center(
                         child: Text(
                           'No custom collections yet. Create your first one!',
-                          style: TextStyle(color: HelaColors.onSurfaceVariant, fontSize: 13),
+                          style: TextStyle(
+                            color: HelaColors.onSurfaceVariant,
+                            fontSize: 13,
+                          ),
                         ),
                       ),
                     )
@@ -1303,7 +1488,9 @@ class _SavedPageState extends State<SavedPage> {
                         itemCount: lists.length,
                         itemBuilder: (context, index) {
                           final list = lists[index];
-                          final isIncluded = list.itemTitles.contains(itemTitle);
+                          final isIncluded = list.itemTitles.contains(
+                            itemTitle,
+                          );
                           return CheckboxListTile(
                             value: isIncluded,
                             activeColor: list.color,
@@ -1316,7 +1503,11 @@ class _SavedPageState extends State<SavedPage> {
                                     color: list.color.withValues(alpha: 0.15),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
-                                  child: Icon(list.icon, size: 16, color: list.color),
+                                  child: Icon(
+                                    list.icon,
+                                    size: 16,
+                                    color: list.color,
+                                  ),
                                 ),
                                 const SizedBox(width: 10),
                                 Expanded(
@@ -1339,7 +1530,10 @@ class _SavedPageState extends State<SavedPage> {
                               ],
                             ),
                             onChanged: (bool? checked) {
-                              appState.toggleItemInCustomList(list.id, itemTitle);
+                              appState.toggleItemInCustomList(
+                                list.id,
+                                itemTitle,
+                              );
                               setSheetState(() {});
                               setState(() {});
                             },
@@ -1353,7 +1547,11 @@ class _SavedPageState extends State<SavedPage> {
                     child: OutlinedButton.icon(
                       onPressed: () {
                         Navigator.pop(sheetCtx);
-                        _openCreateListDialog(context, appState, initialItemTitle: itemTitle);
+                        _openCreateListDialog(
+                          context,
+                          appState,
+                          initialItemTitle: itemTitle,
+                        );
                       },
                       icon: const Icon(Icons.add_rounded, size: 18),
                       label: const Text('Create New Collection'),
@@ -1361,7 +1559,9 @@ class _SavedPageState extends State<SavedPage> {
                         foregroundColor: HelaColors.primary,
                         side: const BorderSide(color: HelaColors.primary),
                         padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
                       ),
                     ),
                   ),
@@ -1380,206 +1580,36 @@ class _SavedPageState extends State<SavedPage> {
     String? initialItemTitle,
     CustomSavedList? editingList,
   }) {
-    final nameController = TextEditingController(text: editingList?.name ?? '');
-    final descController = TextEditingController(text: editingList?.description ?? '');
-    IconData selectedIcon = editingList?.icon ?? kCustomListAvailableIcons.first;
-    Color selectedColor = editingList?.color ?? kCustomListAvailableColors.first;
-
-    showDialog(
+    showDialog<void>(
       context: context,
-      builder: (dialogCtx) => StatefulBuilder(
-        builder: (context, setDialogState) {
-          return AlertDialog(
-            backgroundColor: HelaColors.surfaceContainerLowest,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-            titlePadding: const EdgeInsets.fromLTRB(22, 22, 22, 10),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 22),
-            actionsPadding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-            title: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: selectedColor.withValues(alpha: 0.18),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(selectedIcon, color: selectedColor, size: 20),
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  editingList != null ? 'Edit Collection' : 'New Collection',
-                  style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: HelaColors.primary),
-                ),
-              ],
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 8),
-                  TextField(
-                    controller: nameController,
-                    autofocus: true,
-                    textCapitalization: TextCapitalization.words,
-                    decoration: InputDecoration(
-                      labelText: 'Collection Name *',
-                      hintText: 'e.g. Beach Escapes, Surf Havens',
-                      filled: true,
-                      fillColor: HelaColors.surfaceContainerLow,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14),
-                        borderSide: BorderSide(color: HelaColors.architecturalBorder),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14),
-                        borderSide: BorderSide(color: HelaColors.architecturalBorder),
-                      ),
-                      focusedBorder: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(14)),
-                        borderSide: BorderSide(color: HelaColors.primary, width: 2),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: descController,
-                    decoration: InputDecoration(
-                      labelText: 'Description (optional)',
-                      hintText: 'e.g. My favorite spots for sunrise',
-                      filled: true,
-                      fillColor: HelaColors.surfaceContainerLow,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14),
-                        borderSide: BorderSide(color: HelaColors.architecturalBorder),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14),
-                        borderSide: BorderSide(color: HelaColors.architecturalBorder),
-                      ),
-                      focusedBorder: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(14)),
-                        borderSide: BorderSide(color: HelaColors.primary, width: 2),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Choose Icon',
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: HelaColors.onSurface),
-                  ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: kCustomListAvailableIcons.map((ic) {
-                      final isChosen = selectedIcon == ic;
-                      return InkWell(
-                        borderRadius: BorderRadius.circular(10),
-                        onTap: () => setDialogState(() => selectedIcon = ic),
-                        child: Container(
-                          padding: const EdgeInsets.all(7),
-                          decoration: BoxDecoration(
-                            color: isChosen ? selectedColor : HelaColors.surfaceContainerHigh,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Icon(
-                            ic,
-                            size: 18,
-                            color: isChosen ? Colors.white : HelaColors.onSurfaceVariant,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Choose Color Theme',
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: HelaColors.onSurface),
-                  ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 10,
-                    children: kCustomListAvailableColors.map((col) {
-                      final isChosen = selectedColor == col;
-                      return InkWell(
-                        borderRadius: BorderRadius.circular(999),
-                        onTap: () => setDialogState(() => selectedColor = col),
-                        child: Container(
-                          width: 28,
-                          height: 28,
-                          decoration: BoxDecoration(
-                            color: col,
-                            shape: BoxShape.circle,
-                            border: isChosen
-                                ? Border.all(color: Colors.white, width: 3)
-                                : null,
-                            boxShadow: isChosen
-                                ? [
-                                    BoxShadow(
-                                      color: col.withValues(alpha: 0.5),
-                                      blurRadius: 6,
-                                      spreadRadius: 1,
-                                    ),
-                                  ]
-                                : null,
-                          ),
-                          child: isChosen
-                              ? const Icon(Icons.check, size: 14, color: Colors.white)
-                              : null,
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                  const SizedBox(height: 8),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogCtx),
-                child: const Text('Cancel', style: TextStyle(color: HelaColors.onSurfaceVariant)),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  final name = nameController.text.trim();
-                  if (name.isEmpty) return;
-                  Navigator.pop(dialogCtx);
-
-                  if (editingList != null) {
-                    appState.renameCustomList(editingList.id, name);
-                  } else {
-                    appState.createCustomList(
-                      name: name,
-                      description: descController.text.trim().isNotEmpty ? descController.text.trim() : null,
-                      icon: selectedIcon,
-                      color: selectedColor,
-                      initialItemTitles: initialItemTitle != null ? [initialItemTitle] : null,
-                    );
-                  }
-                  setState(() {});
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: HelaColors.primary,
-                  foregroundColor: HelaColors.onPrimary,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                ),
-                child: Text(editingList != null ? 'Save' : 'Create'),
-              ),
-            ],
-          );
+      builder: (_) => _CollectionEditorDialog(
+        appState: appState,
+        initialItemTitle: initialItemTitle,
+        editingList: editingList,
+        onSaved: () {
+          if (mounted) setState(() {});
         },
       ),
     );
   }
 
-  void _confirmDeleteList(BuildContext context, CustomSavedList list, HelaAppState appState) {
+  void _confirmDeleteList(
+    BuildContext context,
+    CustomSavedList list,
+    HelaAppState appState,
+  ) {
     showDialog(
       context: context,
       builder: (dialogCtx) => AlertDialog(
         backgroundColor: HelaColors.surfaceContainerLowest,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('Delete "${list.name}"?', style: const TextStyle(fontWeight: FontWeight.w800, color: HelaColors.primary)),
+        title: Text(
+          'Delete "${list.name}"?',
+          style: const TextStyle(
+            fontWeight: FontWeight.w800,
+            color: HelaColors.primary,
+          ),
+        ),
         content: const Text(
           'This will remove this collection. Any saved items inside will remain in your Saved Wishlist.',
           style: TextStyle(color: HelaColors.onSurfaceVariant, fontSize: 13.5),
@@ -1587,7 +1617,10 @@ class _SavedPageState extends State<SavedPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogCtx),
-            child: const Text('Cancel', style: TextStyle(color: HelaColors.onSurfaceVariant)),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: HelaColors.onSurfaceVariant),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -1601,7 +1634,9 @@ class _SavedPageState extends State<SavedPage> {
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red.shade700,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
             ),
             child: const Text('Delete'),
           ),
@@ -1610,7 +1645,11 @@ class _SavedPageState extends State<SavedPage> {
     );
   }
 
-  void _removeHavenWithUndo(BuildContext context, HavenItem haven, HelaAppState appState) {
+  void _removeHavenWithUndo(
+    BuildContext context,
+    HavenItem haven,
+    HelaAppState appState,
+  ) {
     appState.toggleSaveHaven(haven);
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
@@ -1625,9 +1664,7 @@ class _SavedPageState extends State<SavedPage> {
         ),
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 4),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
@@ -1640,7 +1677,10 @@ class _SavedPageState extends State<SavedPage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text(
           'Clear Saved Items?',
-          style: TextStyle(fontWeight: FontWeight.w800, color: HelaColors.primary),
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            color: HelaColors.primary,
+          ),
         ),
         content: const Text(
           'Are you sure you want to remove all saved smart tours, havens, stays, and experiences from your wishlist?',
@@ -1649,7 +1689,10 @@ class _SavedPageState extends State<SavedPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogCtx),
-            child: const Text('Cancel', style: TextStyle(color: HelaColors.onSurfaceVariant)),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: HelaColors.onSurfaceVariant),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -1663,19 +1706,278 @@ class _SavedPageState extends State<SavedPage> {
               for (final s in List<StayHaven>.from(appState.savedStays)) {
                 appState.removeSavedStay(s.title);
               }
-              for (final e in List<ExperienceItem>.from(appState.savedExperiences)) {
+              for (final e in List<ExperienceItem>.from(
+                appState.savedExperiences,
+              )) {
                 appState.removeSavedExperience(e.title);
               }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red.shade700,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
             ),
             child: const Text('Clear All'),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _CollectionEditorDialog extends StatefulWidget {
+  final HelaAppState appState;
+  final String? initialItemTitle;
+  final CustomSavedList? editingList;
+  final VoidCallback onSaved;
+
+  const _CollectionEditorDialog({
+    required this.appState,
+    this.initialItemTitle,
+    this.editingList,
+    required this.onSaved,
+  });
+
+  @override
+  State<_CollectionEditorDialog> createState() =>
+      _CollectionEditorDialogState();
+}
+
+class _CollectionEditorDialogState extends State<_CollectionEditorDialog> {
+  late final TextEditingController _nameController;
+  late final TextEditingController _descController;
+  late IconData _selectedIcon;
+  late Color _selectedColor;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(
+      text: widget.editingList?.name ?? '',
+    );
+    _descController = TextEditingController(
+      text: widget.editingList?.description ?? '',
+    );
+    _selectedIcon = widget.editingList?.icon ?? kCustomListAvailableIcons.first;
+    _selectedColor =
+        widget.editingList?.color ?? kCustomListAvailableColors.first;
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final editingList = widget.editingList;
+    return AlertDialog(
+      backgroundColor: HelaColors.surfaceContainerLowest,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      titlePadding: const EdgeInsets.fromLTRB(22, 22, 22, 10),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 22),
+      actionsPadding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+      title: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: _selectedColor.withValues(alpha: 0.18),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(_selectedIcon, color: _selectedColor, size: 20),
+          ),
+          const SizedBox(width: 10),
+          Text(
+            editingList != null ? 'Edit Collection' : 'New Collection',
+            style: const TextStyle(
+              fontWeight: FontWeight.w800,
+              fontSize: 18,
+              color: HelaColors.primary,
+            ),
+          ),
+        ],
+      ),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 8),
+            TextField(
+              controller: _nameController,
+              autofocus: true,
+              textCapitalization: TextCapitalization.words,
+              decoration: InputDecoration(
+                labelText: 'Collection Name *',
+                hintText: 'e.g. Beach Escapes, Surf Havens',
+                filled: true,
+                fillColor: HelaColors.surfaceContainerLow,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide(color: HelaColors.architecturalBorder),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide(color: HelaColors.architecturalBorder),
+                ),
+                focusedBorder: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(14)),
+                  borderSide: BorderSide(color: HelaColors.primary, width: 2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _descController,
+              decoration: InputDecoration(
+                labelText: 'Description (optional)',
+                hintText: 'e.g. My favorite spots for sunrise',
+                filled: true,
+                fillColor: HelaColors.surfaceContainerLow,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide(color: HelaColors.architecturalBorder),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide(color: HelaColors.architecturalBorder),
+                ),
+                focusedBorder: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(14)),
+                  borderSide: BorderSide(color: HelaColors.primary, width: 2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Choose Icon',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+                color: HelaColors.onSurface,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: kCustomListAvailableIcons.map((ic) {
+                final isChosen = _selectedIcon == ic;
+                return InkWell(
+                  borderRadius: BorderRadius.circular(10),
+                  onTap: () => setState(() => _selectedIcon = ic),
+                  child: Container(
+                    padding: const EdgeInsets.all(7),
+                    decoration: BoxDecoration(
+                      color: isChosen
+                          ? _selectedColor
+                          : HelaColors.surfaceContainerHigh,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      ic,
+                      size: 18,
+                      color: isChosen
+                          ? Colors.white
+                          : HelaColors.onSurfaceVariant,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Choose Color Theme',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+                color: HelaColors.onSurface,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 10,
+              children: kCustomListAvailableColors.map((col) {
+                final isChosen = _selectedColor == col;
+                return InkWell(
+                  borderRadius: BorderRadius.circular(999),
+                  onTap: () => setState(() => _selectedColor = col),
+                  child: Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: col,
+                      shape: BoxShape.circle,
+                      border: isChosen
+                          ? Border.all(color: Colors.white, width: 3)
+                          : null,
+                      boxShadow: isChosen
+                          ? [
+                              BoxShadow(
+                                color: col.withValues(alpha: 0.5),
+                                blurRadius: 6,
+                                spreadRadius: 1,
+                              ),
+                            ]
+                          : null,
+                    ),
+                    child: isChosen
+                        ? const Icon(Icons.check, size: 14, color: Colors.white)
+                        : null,
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text(
+            'Cancel',
+            style: TextStyle(color: HelaColors.onSurfaceVariant),
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            final name = _nameController.text.trim();
+            if (name.isEmpty) return;
+            Navigator.pop(context);
+
+            if (editingList != null) {
+              widget.appState.renameCustomList(editingList.id, name);
+            } else {
+              widget.appState.createCustomList(
+                name: name,
+                description: _descController.text.trim().isNotEmpty
+                    ? _descController.text.trim()
+                    : null,
+                icon: _selectedIcon,
+                color: _selectedColor,
+                initialItemTitles: widget.initialItemTitle != null
+                    ? [widget.initialItemTitle!]
+                    : null,
+              );
+            }
+            widget.onSaved();
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: HelaColors.primary,
+            foregroundColor: HelaColors.onPrimary,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+          ),
+          child: Text(editingList != null ? 'Save' : 'Create'),
+        ),
+      ],
     );
   }
 }

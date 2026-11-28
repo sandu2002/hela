@@ -53,7 +53,12 @@ class PlaceService {
       latitude: 6.0270,
       longitude: 80.2170,
       region: 'Southern Province / Galle',
-      categories: ['Historic', 'Coastal', 'Architecture', 'UNESCO World Heritage'],
+      categories: [
+        'Historic',
+        'Coastal',
+        'Architecture',
+        'UNESCO World Heritage',
+      ],
       sourceUrl: 'https://en.wikipedia.org/wiki/Galle_Fort',
       imageUrl: SriLankaImages.galleFort,
       attribution: '© OpenStreetMap contributors',
@@ -71,7 +76,8 @@ class PlaceService {
       categories: ['Wildlife', 'Safari', 'Nature', 'Photography'],
       sourceUrl: 'https://en.wikipedia.org/wiki/Yala_National_Park',
       imageUrl: SriLankaImages.leopard,
-      attribution: '© OpenStreetMap contributors / Department of Wildlife Conservation',
+      attribution:
+          '© OpenStreetMap contributors / Department of Wildlife Conservation',
       relevanceScore: 0.95,
     ),
     const Destination(
@@ -83,7 +89,12 @@ class PlaceService {
       latitude: 7.2936,
       longitude: 80.6413,
       region: 'Central Province / Kandy',
-      categories: ['Spiritual', 'Cultural', 'UNESCO World Heritage', 'Historic'],
+      categories: [
+        'Spiritual',
+        'Cultural',
+        'UNESCO World Heritage',
+        'Historic',
+      ],
       sourceUrl: 'https://en.wikipedia.org/wiki/Temple_of_the_Tooth',
       imageUrl: SriLankaImages.templeOfTheTooth,
       attribution: '© OpenStreetMap contributors',
@@ -128,7 +139,12 @@ class PlaceService {
       latitude: 7.9403,
       longitude: 81.0188,
       region: 'North Central Province / Polonnaruwa',
-      categories: ['Historic', 'Cultural', 'Archaeology', 'UNESCO World Heritage'],
+      categories: [
+        'Historic',
+        'Cultural',
+        'Archaeology',
+        'UNESCO World Heritage',
+      ],
       sourceUrl: 'https://en.wikipedia.org/wiki/Polonnaruwa',
       imageUrl: SriLankaImages.polonnaruwa,
       attribution: '© OpenStreetMap contributors',
@@ -167,7 +183,9 @@ class PlaceService {
   ];
 
   /// Queries places matching preferences from Overpass API or filtered curated list.
-  Future<List<Destination>> getPlacesForPreferences(TourPreferences prefs) async {
+  Future<List<Destination>> getPlacesForPreferences(
+    TourPreferences prefs,
+  ) async {
     try {
       // Try live Overpass query for tourism nodes in Sri Lanka
       final livePlaces = await _fetchOverpassTourism(prefs);
@@ -195,11 +213,15 @@ area["ISO3166-1"="LK"][admin_level=2]->.searchArea;
 out center 15;
 ''';
 
-    final response = await _client.post(
-      Uri.parse(ApiConfig.overpassApiUrl),
-      body: {'data': query},
-      headers: {'User-Agent': 'HelaTravelPlanner/1.0 (contact@hela.travel)'},
-    ).timeout(const Duration(seconds: 8));
+    final response = await _client
+        .post(
+          Uri.parse(ApiConfig.overpassApiUrl),
+          body: {'data': query},
+          headers: {
+            'User-Agent': 'HelaTravelPlanner/1.0 (contact@hela.travel)',
+          },
+        )
+        .timeout(const Duration(seconds: 8));
 
     if (response.statusCode != 200) {
       return [];
@@ -229,7 +251,8 @@ out center 15;
         Destination(
           sourceId: 'osm_${elem['type']}_${elem['id']}',
           name: name.toString(),
-          description: tags['description']?.toString() ??
+          description:
+              tags['description']?.toString() ??
               tags['note']?.toString() ??
               'Notable travel attraction in Sri Lanka discovered from OpenStreetMap.',
           isDescriptionAIGenerated: false,
@@ -237,7 +260,8 @@ out center 15;
           longitude: lon.toDouble(),
           region: tags['addr:province'] ?? tags['addr:city'] ?? 'Sri Lanka',
           categories: categories.isNotEmpty ? categories : ['Attraction'],
-          sourceUrl: 'https://www.openstreetmap.org/${elem['type']}/${elem['id']}',
+          sourceUrl:
+              'https://www.openstreetmap.org/${elem['type']}/${elem['id']}',
           imageUrl: '',
           retrievedAt: now,
           attribution: '© OpenStreetMap contributors',
@@ -254,8 +278,9 @@ out center 15;
     List<Destination> destinations,
     TourPreferences prefs,
   ) {
-    final interestLabels =
-        prefs.interests.map((i) => i.label.toLowerCase()).toSet();
+    final interestLabels = prefs.interests
+        .map((i) => i.label.toLowerCase())
+        .toSet();
 
     final scored = destinations.map((d) {
       double score = 0.5;
@@ -271,7 +296,9 @@ out center 15;
       }
 
       if (interestLabels.isNotEmpty) {
-        score = 0.6 + (0.38 * (matchCount / interestLabels.length)).clamp(0.0, 0.38);
+        score =
+            0.6 +
+            (0.38 * (matchCount / interestLabels.length)).clamp(0.0, 0.38);
       } else {
         score = d.relevanceScore > 0 ? d.relevanceScore : 0.85;
       }

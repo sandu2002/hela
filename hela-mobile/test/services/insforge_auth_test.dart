@@ -11,9 +11,9 @@ void main() {
         'providers': ['email', 'google'],
         'profile': {
           'name': 'Ceylon Adventurer',
-          'avatar_url': 'https://example.com/avatar.jpg'
+          'avatar_url': 'https://example.com/avatar.jpg',
         },
-        'metadata': {'tier': 'Gold'}
+        'metadata': {'tier': 'Gold'},
       };
 
       final user = InsForgeUser.fromJson(json);
@@ -54,7 +54,10 @@ void main() {
     test('InsForgeAuthService singleton endpoints and keys', () {
       final service = InsForgeAuthService.instance;
 
-      expect(InsForgeAuthService.baseUrl, equals('https://tvf24g8r.us-east.insforge.app'));
+      expect(
+        InsForgeAuthService.baseUrl,
+        equals('https://tvf24g8r.us-east.insforge.app'),
+      );
       expect(InsForgeAuthService.anonKey, isNotEmpty);
       expect(service.currentUser, isNull);
       expect(service.isAuthenticated, isFalse);

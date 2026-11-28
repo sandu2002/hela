@@ -9,9 +9,13 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
 void main() {
-  testWidgets('HelaHomePage updates header location pill from phone GPS', (tester) async {
+  testWidgets('HelaHomePage updates header location pill from phone GPS', (
+    tester,
+  ) async {
     final mockClient = MockClient((request) async {
-      if (request.url.toString().contains('nominatim.openstreetmap.org/reverse')) {
+      if (request.url.toString().contains(
+        'nominatim.openstreetmap.org/reverse',
+      )) {
         return http.Response(
           jsonEncode({
             'address': {'city': 'Kandy', 'country': 'Sri Lanka'},
@@ -45,9 +49,7 @@ void main() {
     await tester.pumpWidget(
       HelaAppStateProvider(
         state: appState,
-        child: MaterialApp(
-          home: HelaHomePage(weatherService: locationService),
-        ),
+        child: MaterialApp(home: HelaHomePage(weatherService: locationService)),
       ),
     );
     await tester.pumpAndSettle();

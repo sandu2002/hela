@@ -22,7 +22,9 @@ PasswordStrength _evaluatePasswordStrength(String password) {
   if (password.length >= 10) score++;
   if (RegExp(r'[A-Z]').hasMatch(password)) score++;
   if (RegExp(r'[0-9]').hasMatch(password)) score++;
-  if (RegExp(r'[!@#\$%\^&\*\(\)_\+\-=\[\]\{\};:,\.<>\?/\\|`~]').hasMatch(password)) {
+  if (RegExp(
+    r'[!@#\$%\^&\*\(\)_\+\-=\[\]\{\};:,\.<>\?/\\|`~]',
+  ).hasMatch(password)) {
     score++;
   }
 
@@ -69,10 +71,7 @@ class _GoogleIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      size: Size(size, size),
-      painter: _GoogleLogoPainter(),
-    );
+    return CustomPaint(size: Size(size, size), painter: _GoogleLogoPainter());
   }
 }
 
@@ -135,7 +134,12 @@ class _GoogleLogoPainter extends CustomPainter {
       ..color = const Color(0xFF4285F4)
       ..style = PaintingStyle.fill;
     canvas.drawRect(
-      Rect.fromLTWH(cx - strokeW * 0.2, cy - strokeW / 2, r + strokeW / 2, strokeW),
+      Rect.fromLTWH(
+        cx - strokeW * 0.2,
+        cy - strokeW / 2,
+        r + strokeW / 2,
+        strokeW,
+      ),
       barPaint,
     );
   }
@@ -245,7 +249,11 @@ class _SignUpPageState extends State<SignUpPage> {
       final InsForgeAuthResult result;
 
       if (_mode == AuthMode.signUp) {
-        result = await auth.signUp(email: email, password: password, name: name);
+        result = await auth.signUp(
+          email: email,
+          password: password,
+          name: name,
+        );
       } else {
         result = await auth.signIn(email: email, password: password);
       }
@@ -254,11 +262,9 @@ class _SignUpPageState extends State<SignUpPage> {
 
       if (result.isSuccess && result.user != null) {
         final user = result.user!;
-        HelaAppStateProvider.of(context).signIn(
-          name: user.name,
-          email: user.email,
-          photoUrl: user.avatarUrl,
-        );
+        HelaAppStateProvider.of(
+          context,
+        ).signIn(name: user.name, email: user.email, photoUrl: user.avatarUrl);
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => const HelaHomePage()),
           (route) => false,
@@ -266,7 +272,9 @@ class _SignUpPageState extends State<SignUpPage> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(result.errorMessage ?? 'Authentication failed. Please try again.'),
+            content: Text(
+              result.errorMessage ?? 'Authentication failed. Please try again.',
+            ),
             backgroundColor: HelaColors.error,
           ),
         );
@@ -274,7 +282,10 @@ class _SignUpPageState extends State<SignUpPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: HelaColors.error),
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: HelaColors.error,
+          ),
         );
       }
     } finally {
@@ -390,13 +401,14 @@ class _SignUpPageState extends State<SignUpPage> {
             height: 300 + topPadding,
             fit: BoxFit.cover,
             errorBuilder: (context, error, stackTrace) {
-              return Image.network(
-                SriLankaImages.sigiriyaMonolith,
+              return HelaNetworkImage(
+                imageUrl: SriLankaImages.sigiriyaMonolith,
                 width: double.infinity,
                 height: 300 + topPadding,
                 fit: BoxFit.cover,
-                errorBuilder: (ctx, err, stack) => Image.network(
-                  'https://images.unsplash.com/photo-1580794749460-76f97b7180d8?auto=format&fit=crop&w=1200&q=80',
+                errorBuilder: (ctx, err, stack) => HelaNetworkImage(
+                  imageUrl:
+                      'https://images.unsplash.com/photo-1580794749460-76f97b7180d8?auto=format&fit=crop&w=1200&q=80',
                   width: double.infinity,
                   height: 300 + topPadding,
                   fit: BoxFit.cover,
@@ -614,7 +626,9 @@ class _SignUpPageState extends State<SignUpPage> {
           child: ElevatedButton(
             onPressed: _isLoading ? null : () => _handleSocialLogin('Apple'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: isDark ? colors.surfaceContainerHighest : colors.onSurface,
+              backgroundColor: isDark
+                  ? colors.surfaceContainerHighest
+                  : colors.onSurface,
               foregroundColor: Colors.white,
               elevation: 1,
               shadowColor: Colors.black12,
@@ -648,7 +662,9 @@ class _SignUpPageState extends State<SignUpPage> {
   void _handleSocialLogin(String provider) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('$provider sign-in is initializing secure OAuth tokens...'),
+        content: Text(
+          '$provider sign-in is initializing secure OAuth tokens...',
+        ),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -657,11 +673,18 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget _buildDivider(HelaColorPalette colors) {
     return Row(
       children: [
-        Expanded(child: Divider(color: colors.outlineVariant.withValues(alpha: 0.5), thickness: 1)),
+        Expanded(
+          child: Divider(
+            color: colors.outlineVariant.withValues(alpha: 0.5),
+            thickness: 1,
+          ),
+        ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Text(
-            _mode == AuthMode.signUp ? 'or sign up with email' : 'or sign in with email',
+            _mode == AuthMode.signUp
+                ? 'or sign up with email'
+                : 'or sign in with email',
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w500,
@@ -670,7 +693,12 @@ class _SignUpPageState extends State<SignUpPage> {
             ),
           ),
         ),
-        Expanded(child: Divider(color: colors.outlineVariant.withValues(alpha: 0.5), thickness: 1)),
+        Expanded(
+          child: Divider(
+            color: colors.outlineVariant.withValues(alpha: 0.5),
+            thickness: 1,
+          ),
+        ),
       ],
     );
   }
@@ -808,7 +836,11 @@ class _SignUpPageState extends State<SignUpPage> {
             TextFormField(
               controller: _nameController,
               textCapitalization: TextCapitalization.words,
-              style: TextStyle(color: colors.onSurface, fontSize: 14, fontFamily: 'Plus Jakarta Sans'),
+              style: TextStyle(
+                color: colors.onSurface,
+                fontSize: 14,
+                fontFamily: 'Plus Jakarta Sans',
+              ),
               decoration: InputDecoration(
                 filled: true,
                 fillColor: colors.surfaceContainerLowest,
@@ -818,8 +850,15 @@ class _SignUpPageState extends State<SignUpPage> {
                   fontSize: 14,
                   fontFamily: 'Plus Jakarta Sans',
                 ),
-                prefixIcon: Icon(Icons.person_outline_rounded, color: colors.primary, size: 20),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                prefixIcon: Icon(
+                  Icons.person_outline_rounded,
+                  color: colors.primary,
+                  size: 20,
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(color: colors.architecturalBorder),
@@ -834,7 +873,8 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
               validator: (v) {
-                if (_mode == AuthMode.signUp && (v == null || v.trim().isEmpty)) {
+                if (_mode == AuthMode.signUp &&
+                    (v == null || v.trim().isEmpty)) {
                   return 'Please enter your full name';
                 }
                 if (v != null && v.trim().length > 100) {
@@ -860,7 +900,11 @@ class _SignUpPageState extends State<SignUpPage> {
           TextFormField(
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
-            style: TextStyle(color: colors.onSurface, fontSize: 14, fontFamily: 'Plus Jakarta Sans'),
+            style: TextStyle(
+              color: colors.onSurface,
+              fontSize: 14,
+              fontFamily: 'Plus Jakarta Sans',
+            ),
             decoration: InputDecoration(
               filled: true,
               fillColor: colors.surfaceContainerLowest,
@@ -870,8 +914,15 @@ class _SignUpPageState extends State<SignUpPage> {
                 fontSize: 14,
                 fontFamily: 'Plus Jakarta Sans',
               ),
-              prefixIcon: Icon(Icons.mail_outline_rounded, color: colors.primary, size: 20),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              prefixIcon: Icon(
+                Icons.mail_outline_rounded,
+                color: colors.primary,
+                size: 20,
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(color: colors.architecturalBorder),
@@ -886,8 +937,12 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
             ),
             validator: (v) {
-              if (v == null || v.trim().isEmpty) return 'Please enter your email';
-              if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(v.trim())) {
+              if (v == null || v.trim().isEmpty) {
+                return 'Please enter your email';
+              }
+              if (!RegExp(
+                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+              ).hasMatch(v.trim())) {
                 return 'Please enter a valid email address';
               }
               return null;
@@ -924,7 +979,11 @@ class _SignUpPageState extends State<SignUpPage> {
           TextFormField(
             controller: _passwordController,
             obscureText: _obscurePassword,
-            style: TextStyle(color: colors.onSurface, fontSize: 14, fontFamily: 'Plus Jakarta Sans'),
+            style: TextStyle(
+              color: colors.onSurface,
+              fontSize: 14,
+              fontFamily: 'Plus Jakarta Sans',
+            ),
             decoration: InputDecoration(
               filled: true,
               fillColor: colors.surfaceContainerLowest,
@@ -934,16 +993,26 @@ class _SignUpPageState extends State<SignUpPage> {
                 fontSize: 14,
                 fontFamily: 'Plus Jakarta Sans',
               ),
-              prefixIcon: Icon(Icons.lock_outline_rounded, color: colors.primary, size: 20),
+              prefixIcon: Icon(
+                Icons.lock_outline_rounded,
+                color: colors.primary,
+                size: 20,
+              ),
               suffixIcon: IconButton(
                 icon: Icon(
-                  _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                  _obscurePassword
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined,
                   color: colors.outline,
                   size: 20,
                 ),
-                onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                onPressed: () =>
+                    setState(() => _obscurePassword = !_obscurePassword),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(color: colors.architecturalBorder),
@@ -967,7 +1036,8 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
 
           // Password Strength Meter (Only for Sign Up)
-          if (_mode == AuthMode.signUp && _passwordController.text.isNotEmpty) ...[
+          if (_mode == AuthMode.signUp &&
+              _passwordController.text.isNotEmpty) ...[
             const SizedBox(height: 8),
             Row(
               children: [
@@ -977,7 +1047,9 @@ class _SignUpPageState extends State<SignUpPage> {
                     child: LinearProgressIndicator(
                       value: _strength.index / PasswordStrength.values.length,
                       backgroundColor: colors.surfaceContainerHighest,
-                      valueColor: AlwaysStoppedAnimation<Color>(_strengthColor(_strength)),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        _strengthColor(_strength),
+                      ),
                       minHeight: 4,
                     ),
                   ),
@@ -1015,7 +1087,10 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFFED7AA),
                         borderRadius: BorderRadius.circular(4),
@@ -1048,12 +1123,23 @@ class _SignUpPageState extends State<SignUpPage> {
             DropdownButtonFormField<String>(
               initialValue: _selectedCountry.isEmpty ? '' : _selectedCountry,
               isExpanded: true,
-              style: TextStyle(color: colors.onSurface, fontSize: 14, fontFamily: 'Plus Jakarta Sans'),
+              style: TextStyle(
+                color: colors.onSurface,
+                fontSize: 14,
+                fontFamily: 'Plus Jakarta Sans',
+              ),
               decoration: InputDecoration(
                 filled: true,
                 fillColor: colors.surfaceContainerLowest,
-                prefixIcon: Icon(Icons.public_rounded, color: colors.primary, size: 20),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                prefixIcon: Icon(
+                  Icons.public_rounded,
+                  color: colors.primary,
+                  size: 20,
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(color: colors.architecturalBorder),
@@ -1067,14 +1153,20 @@ class _SignUpPageState extends State<SignUpPage> {
                   borderSide: BorderSide(color: colors.primary, width: 1.5),
                 ),
               ),
-              icon: Icon(Icons.keyboard_arrow_down_rounded, color: colors.outline, size: 22),
+              icon: Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: colors.outline,
+                size: 22,
+              ),
               items: _countries.map((c) {
                 return DropdownMenuItem<String>(
                   value: c['code'],
                   child: Text(
                     c['label']!,
                     style: TextStyle(
-                      color: c['code']!.isEmpty ? colors.outline.withValues(alpha: 0.7) : colors.onSurface,
+                      color: c['code']!.isEmpty
+                          ? colors.outline.withValues(alpha: 0.7)
+                          : colors.onSurface,
                       fontSize: 13.5,
                       fontFamily: 'Plus Jakarta Sans',
                     ),
@@ -1099,15 +1191,19 @@ class _SignUpPageState extends State<SignUpPage> {
                     value: _agreedToTerms,
                     activeColor: colors.primary,
                     checkColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                     side: BorderSide(color: colors.outlineVariant, width: 1.5),
-                    onChanged: (val) => setState(() => _agreedToTerms = val ?? false),
+                    onChanged: (val) =>
+                        setState(() => _agreedToTerms = val ?? false),
                   ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: GestureDetector(
-                    onTap: () => setState(() => _agreedToTerms = !_agreedToTerms),
+                    onTap: () =>
+                        setState(() => _agreedToTerms = !_agreedToTerms),
                     child: RichText(
                       text: TextSpan(
                         style: TextStyle(
@@ -1156,7 +1252,8 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                           ),
                           const TextSpan(
-                            text: '. Send me curated weather updates & train schedule alerts.',
+                            text:
+                                '. Send me curated weather updates & train schedule alerts.',
                           ),
                         ],
                       ),
@@ -1177,7 +1274,9 @@ class _SignUpPageState extends State<SignUpPage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: colors.primary,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 elevation: 3,
                 shadowColor: colors.primary.withValues(alpha: 0.3),
               ),
@@ -1185,13 +1284,18 @@ class _SignUpPageState extends State<SignUpPage> {
                   ? const SizedBox(
                       width: 22,
                       height: 22,
-                      child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        color: Colors.white,
+                      ),
                     )
                   : Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          _mode == AuthMode.signUp ? 'Create HELA Account' : 'Sign In',
+                          _mode == AuthMode.signUp
+                              ? 'Create HELA Account'
+                              : 'Sign In',
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
@@ -1224,7 +1328,11 @@ class _SignUpPageState extends State<SignUpPage> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.explore_rounded, size: 16, color: colors.onSecondaryContainer),
+                  Icon(
+                    Icons.explore_rounded,
+                    size: 16,
+                    color: colors.onSecondaryContainer,
+                  ),
                   const SizedBox(width: 6),
                   Text(
                     'Explore as Guest first',
@@ -1247,7 +1355,9 @@ class _SignUpPageState extends State<SignUpPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              _mode == AuthMode.signUp ? 'Already have an account?' : "Don't have an account?",
+              _mode == AuthMode.signUp
+                  ? 'Already have an account?'
+                  : "Don't have an account?",
               style: TextStyle(
                 fontSize: 14,
                 color: colors.onSurfaceVariant,
@@ -1281,7 +1391,11 @@ class _SignUpPageState extends State<SignUpPage> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.verified_user_rounded, size: 16, color: colors.secondary),
+              Icon(
+                Icons.verified_user_rounded,
+                size: 16,
+                color: colors.secondary,
+              ),
               const SizedBox(width: 8),
               Flexible(
                 child: Text(

@@ -95,7 +95,9 @@ void main() {
   });
 
   group('ItineraryDetailsPage Gemini TourPlan rendering', () {
-    testWidgets('renders AI days and switches stops when selecting Day 2', (tester) async {
+    testWidgets('renders AI days and switches stops when selecting Day 2', (
+      tester,
+    ) async {
       final aiPlan = TourPlan(
         id: 'tour_widget_1',
         title: 'Gemini Highland & Coast',
@@ -173,180 +175,207 @@ void main() {
       expect(find.text('Mirissa'), findsWidgets);
     });
 
-    test('AIService.buildChatHistoryFromMessages restores user & model turns', () {
-      const messages = [
-        ChatMessage(
-          id: 'u1',
-          content: '[Day 1] Add a seafood lunch stop',
-          isUser: true,
-          timestamp: '10:00 AM',
-        ),
-        ChatMessage(
-          id: 'a1',
-          content: 'Applied v2: Added Negombo Lagoon seafood lunch on Day 1.',
-          isUser: false,
-          timestamp: '10:01 AM',
-        ),
-      ];
-
-      final history = AIService.buildChatHistoryFromMessages(messages);
-      expect(history.length, 2);
-      expect(history[0].isUser, isTrue);
-      expect(history[0].text, '[Day 1] Add a seafood lunch stop');
-      expect(history[1].isUser, isFalse);
-      expect(
-        history[1].text,
-        'Applied v2: Added Negombo Lagoon seafood lunch on Day 1.',
-      );
-    });
-
-    testWidgets('restores persisted customization chat memory in Ask HELA Adjust sheet', (tester) async {
-      SharedPreferences.setMockInitialValues({
-        'hela_itinerary_chat_tour_mem_1': jsonEncode([
-          {
-            'id': 'u1',
-            'content': 'Make Day 1 more relaxed',
-            'isUser': true,
-            'timestamp': '9:30 AM',
-          },
-          {
-            'id': 'a1',
-            'content': 'Removed afternoon hike and added lakeside tea.',
-            'isUser': false,
-            'timestamp': '9:31 AM',
-          },
-        ]),
-      });
-
-      const aiPlan = TourPlan(
-        id: 'tour_mem_1',
-        title: 'Kandy Cultural Escape',
-        summary: 'Relaxed cultural itinerary.',
-        durationDays: 1,
-        days: [
-          ItineraryDay(
-            dayNumber: 1,
-            title: 'Kandy Heritage',
-            overnightStay: 'Kandy',
-            activities: [
-              ItineraryActivity(
-                title: 'Kandy Lake Stroll',
-                startTime: '04:00 PM',
-              ),
-            ],
+    test(
+      'AIService.buildChatHistoryFromMessages restores user & model turns',
+      () {
+        const messages = [
+          ChatMessage(
+            id: 'u1',
+            content: '[Day 1] Add a seafood lunch stop',
+            isUser: true,
+            timestamp: '10:00 AM',
           ),
-        ],
-      );
+          ChatMessage(
+            id: 'a1',
+            content: 'Applied v2: Added Negombo Lagoon seafood lunch on Day 1.',
+            isUser: false,
+            timestamp: '10:01 AM',
+          ),
+        ];
 
-      await tester.pumpWidget(
-        HelaAppStateProvider(
-          state: HelaAppState(),
-          child: MaterialApp(
-            home: ItineraryDetailsPage(
-              startLocation: 'Kandy',
-              startDate: DateTime(2026, 12, 1),
-              endDate: DateTime(2026, 12, 2),
-              aiTourPlan: aiPlan,
+        final history = AIService.buildChatHistoryFromMessages(messages);
+        expect(history.length, 2);
+        expect(history[0].isUser, isTrue);
+        expect(history[0].text, '[Day 1] Add a seafood lunch stop');
+        expect(history[1].isUser, isFalse);
+        expect(
+          history[1].text,
+          'Applied v2: Added Negombo Lagoon seafood lunch on Day 1.',
+        );
+      },
+    );
+
+    testWidgets(
+      'restores persisted customization chat memory in Ask HELA Adjust sheet',
+      (tester) async {
+        SharedPreferences.setMockInitialValues({
+          'hela_itinerary_chat_tour_mem_1': jsonEncode([
+            {
+              'id': 'u1',
+              'content': 'Make Day 1 more relaxed',
+              'isUser': true,
+              'timestamp': '9:30 AM',
+            },
+            {
+              'id': 'a1',
+              'content': 'Removed afternoon hike and added lakeside tea.',
+              'isUser': false,
+              'timestamp': '9:31 AM',
+            },
+          ]),
+        });
+
+        const aiPlan = TourPlan(
+          id: 'tour_mem_1',
+          title: 'Kandy Cultural Escape',
+          summary: 'Relaxed cultural itinerary.',
+          durationDays: 1,
+          days: [
+            ItineraryDay(
+              dayNumber: 1,
+              title: 'Kandy Heritage',
+              overnightStay: 'Kandy',
+              activities: [
+                ItineraryActivity(
+                  title: 'Kandy Lake Stroll',
+                  startTime: '04:00 PM',
+                ),
+              ],
+            ),
+          ],
+        );
+
+        await tester.pumpWidget(
+          HelaAppStateProvider(
+            state: HelaAppState(),
+            child: MaterialApp(
+              home: ItineraryDetailsPage(
+                startLocation: 'Kandy',
+                startDate: DateTime(2026, 12, 1),
+                endDate: DateTime(2026, 12, 2),
+                aiTourPlan: aiPlan,
+              ),
             ),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        );
+        await tester.pumpAndSettle();
 
-      final adjustBtn = find.text('Ask HELA to Adjust Day 1 (1)');
-      await tester.ensureVisible(adjustBtn);
-      await tester.tap(adjustBtn);
-      await tester.pumpAndSettle();
+        final adjustBtn = find.text('Ask HELA to Adjust Day 1 (1)');
+        await tester.ensureVisible(adjustBtn);
+        await tester.tap(adjustBtn);
+        await tester.pumpAndSettle();
 
-      expect(find.text('Ask HELA • Adjust Day 1'), findsOneWidget);
-      expect(find.text('Memory active • 2 messages saved'), findsOneWidget);
-      final aiReply = find.text('Removed afternoon hike and added lakeside tea.');
-      await tester.ensureVisible(aiReply);
-      expect(find.text('Make Day 1 more relaxed'), findsWidgets);
-      expect(aiReply, findsOneWidget);
-    });
+        expect(find.text('Ask HELA • Adjust Day 1'), findsOneWidget);
+        expect(find.text('Memory active • 2 messages saved'), findsOneWidget);
+        final aiReply = find.text(
+          'Removed afternoon hike and added lakeside tea.',
+        );
+        await tester.ensureVisible(aiReply);
+        expect(find.text('Make Day 1 more relaxed'), findsWidgets);
+        expect(aiReply, findsOneWidget);
+      },
+    );
   });
 
   group('TripPlannerPage structured AI inputs & prompt payload', () {
-    test('AIService.generateTourPlan embeds all user planning inputs in prompt', () async {
-      String capturedPrompt = '';
-      final mockClient = MockClient((request) async {
-        final body = jsonDecode(request.body) as Map<String, dynamic>;
-        capturedPrompt = body['prompt']?.toString() ?? '';
-        return http.Response(
-          jsonEncode({
-            'model': 'gemini-test',
-            'text': jsonEncode({
-              'id': 'tour_ai_inputs',
-              'title': 'South Coast Express',
-              'summary': 'Colombo to Galle rail & villa route.',
-              'durationDays': 3,
-              'days': [
-                {
-                  'dayNumber': 1,
-                  'title': 'Colombo to Kandy',
-                  'summary': 'Scenic start',
-                  'estimatedDayCostUsd': 100.0,
-                  'overnightStay': 'Kandy',
-                  'activities': [
-                    {
-                      'title': 'Temple Visit',
-                      'description': 'Morning visit',
-                      'startTime': '09:00 AM',
-                      'estimatedDuration': '2h',
-                      'category': 'Culture',
-                      'estimatedCostUsd': 10.0,
-                    },
-                  ],
-                },
-              ],
+    test(
+      'AIService.generateTourPlan embeds all user planning inputs in prompt',
+      () async {
+        String capturedPrompt = '';
+        final mockClient = MockClient((request) async {
+          final body = jsonDecode(request.body) as Map<String, dynamic>;
+          capturedPrompt = body['prompt']?.toString() ?? '';
+          return http.Response(
+            jsonEncode({
+              'model': 'gemini-test',
+              'text': jsonEncode({
+                'id': 'tour_ai_inputs',
+                'title': 'South Coast Express',
+                'summary': 'Colombo to Galle rail & villa route.',
+                'durationDays': 3,
+                'days': [
+                  {
+                    'dayNumber': 1,
+                    'title': 'Colombo to Kandy',
+                    'summary': 'Scenic start',
+                    'estimatedDayCostUsd': 100.0,
+                    'overnightStay': 'Kandy',
+                    'activities': [
+                      {
+                        'title': 'Temple Visit',
+                        'description': 'Morning visit',
+                        'startTime': '09:00 AM',
+                        'estimatedDuration': '2h',
+                        'category': 'Culture',
+                        'estimatedCostUsd': 10.0,
+                      },
+                    ],
+                  },
+                ],
+              }),
             }),
-          }),
-          200,
+            200,
+          );
+        });
+
+        final service = AIService(
+          client: mockClient,
+          backendUrl: 'https://example.test/api/tour/generate',
         );
-      });
-
-      final service = AIService(
-        client: mockClient,
-        backendUrl: 'https://example.test/api/tour/generate',
-      );
-      final plan = await service.generateTourPlan(
-        preferences: const TourPreferences(
-          duration: TravelDuration.threeDays,
-          startingLocationName: 'Colombo Fort',
-          endLocationName: 'Galle Dutch Fort',
-          interests: {TravelInterest.beaches, TravelInterest.culture},
-          budgetLevel: BudgetLevel.medium,
-          pace: TravelPace.relaxed,
-          accommodationType: AccommodationType.villa,
-          transportMode: 'Scenic Train + Tuk-Tuk Mix',
-          dietaryPreferences: {'Halal', 'Vegetarian'},
-          accessibilityNeeds: {'Minimal Stairs / Step-Free'},
-          numberOfTravelers: 2,
-          additionalNotes: 'Sunset photography priority',
-        ),
-        selectedDestinations: const [
-          Destination(
-            sourceId: 'd_ella',
-            name: 'Ella & Nine Arch Bridge',
-            latitude: 6.8728,
-            longitude: 81.0464,
-            region: 'Uva Province',
+        final plan = await service.generateTourPlan(
+          preferences: const TourPreferences(
+            duration: TravelDuration.threeDays,
+            startingLocationName: 'Colombo Fort',
+            endLocationName: 'Galle Dutch Fort',
+            interests: {TravelInterest.beaches, TravelInterest.culture},
+            budgetLevel: BudgetLevel.medium,
+            pace: TravelPace.relaxed,
+            accommodationType: AccommodationType.villa,
+            transportMode: 'Scenic Train + Tuk-Tuk Mix',
+            dietaryPreferences: {'Halal', 'Vegetarian'},
+            accessibilityNeeds: {'Minimal Stairs / Step-Free'},
+            numberOfTravelers: 2,
+            additionalNotes: 'Sunset photography priority',
           ),
-        ],
-      );
+          selectedDestinations: const [
+            Destination(
+              sourceId: 'd_ella',
+              name: 'Ella & Nine Arch Bridge',
+              latitude: 6.8728,
+              longitude: 81.0464,
+              region: 'Uva Province',
+            ),
+          ],
+        );
 
-      expect(plan.title, 'South Coast Express');
-      expect(capturedPrompt, contains('Ending / Drop-off Location: Galle Dutch Fort'));
-      expect(capturedPrompt, contains('Preferred Transport Mode: Scenic Train + Tuk-Tuk Mix'));
-      expect(capturedPrompt, contains('Accommodation Style: Villa'));
-      expect(capturedPrompt, contains('Dietary Requirements: Halal, Vegetarian'));
-      expect(capturedPrompt, contains('Mobility & Comfort Constraints: Minimal Stairs / Step-Free'));
-      expect(capturedPrompt, contains('Ella & Nine Arch Bridge'));
-      expect(capturedPrompt, contains('Sunset photography priority'));
-    });
+        expect(plan.title, 'South Coast Express');
+        expect(
+          capturedPrompt,
+          contains('Ending / Drop-off Location: Galle Dutch Fort'),
+        );
+        expect(
+          capturedPrompt,
+          contains('Preferred Transport Mode: Scenic Train + Tuk-Tuk Mix'),
+        );
+        expect(capturedPrompt, contains('Accommodation Style: Villa'));
+        expect(
+          capturedPrompt,
+          contains('Dietary Requirements: Halal, Vegetarian'),
+        );
+        expect(
+          capturedPrompt,
+          contains(
+            'Mobility & Comfort Constraints: Minimal Stairs / Step-Free',
+          ),
+        );
+        expect(capturedPrompt, contains('Ella & Nine Arch Bridge'));
+        expect(capturedPrompt, contains('Sunset photography priority'));
+      },
+    );
 
-    testWidgets('TripPlannerPage exposes interactive AI planning controls', (tester) async {
+    testWidgets('TripPlannerPage exposes interactive AI planning controls', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(1080, 2400);
       tester.view.devicePixelRatio = 2.0;
       addTearDown(() {
@@ -357,9 +386,7 @@ void main() {
       await tester.pumpWidget(
         HelaAppStateProvider(
           state: HelaAppState(),
-          child: const MaterialApp(
-            home: TripPlannerPage(),
-          ),
+          child: const MaterialApp(home: TripPlannerPage()),
         ),
       );
       await tester.pump();

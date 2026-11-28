@@ -1,3 +1,5 @@
+import 'dart:ui';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hela/pages/onboarding/onboarding_page.dart';
 import 'package:hela/services/insforge_auth_service.dart';
@@ -6,6 +8,21 @@ import 'package:hela/state/tour_planner_state.dart';
 import 'package:hela/theme/hela_theme.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Record framework and async errors safely without exposing PII/tokens
+  FlutterError.onError = (FlutterErrorDetails details) {
+    if (kDebugMode) {
+      FlutterError.presentError(details);
+    } else {
+      debugPrint('[HELA] Flutter error: ${details.exceptionAsString()}');
+    }
+  };
+  PlatformDispatcher.instance.onError = (Object error, StackTrace stack) {
+    debugPrint('[HELA] Uncaught async error: ${error.runtimeType}');
+    return true;
+  };
+
   runApp(const MyApp());
 }
 
@@ -25,6 +42,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     _appState.restoreLanguage();
     _appState.restoreSavedTours();
+    _appState.restoreSavedBookmarks();
     _restoreAuthSession();
   }
 

@@ -38,3 +38,27 @@ jobs:
 
       - name: Build Android debug APK
         run: flutter build apk --debug
+
+  backend-security-tests:
+    name: Backend Syntax & Security Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: hela-backend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: hela-backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run syntax & security authorization tests
+        run: npm test

@@ -158,7 +158,8 @@ class RouteMapService {
       ),
     );
 
-    final fallbackDestCoords = resolveKnownCoordinates(destinationLabel) ??
+    final fallbackDestCoords =
+        resolveKnownCoordinates(destinationLabel) ??
         resolveKnownCoordinates(day?.overnightStay ?? '') ??
         resolveKnownCoordinates(day?.title ?? '') ??
         const LatLng(7.9570, 80.7603); // Sigiriya highlights fallback
@@ -168,7 +169,8 @@ class RouteMapService {
 
       for (var i = 0; i < day.activities.length; i++) {
         final act = day.activities[i];
-        final resolved = resolveKnownCoordinates(
+        final resolved =
+            resolveKnownCoordinates(
               '${act.title} ${act.description}',
               destination: act.destination,
             ) ??
@@ -272,7 +274,7 @@ class RouteMapService {
 
   /// Safely checks/requests location permission and reads the current GPS fix.
   static Future<({LatLng? position, double? accuracy, LiveGpsStatus status})>
-      fetchCurrentGpsPosition({bool requestPermission = true}) async {
+  fetchCurrentGpsPosition({bool requestPermission = true}) async {
     try {
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {

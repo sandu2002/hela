@@ -124,9 +124,7 @@ class StayCard extends StatelessWidget {
                 child: Stack(
                   children: [
                     // Network Image with Fallback
-                    Positioned.fill(
-                      child: _buildImage(),
-                    ),
+                    Positioned.fill(child: _buildImage()),
 
                     // Dark Vignette Gradients
                     Positioned.fill(
@@ -194,8 +192,9 @@ class StayCard extends StatelessWidget {
                       top: 12,
                       right: 12,
                       child: Material(
-                        color: HelaColors.primaryContainer
-                            .withValues(alpha: 0.72),
+                        color: HelaColors.primaryContainer.withValues(
+                          alpha: 0.72,
+                        ),
                         shape: const CircleBorder(),
                         child: InkWell(
                           customBorder: const CircleBorder(),
@@ -315,8 +314,9 @@ class StayCard extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: HelaColors.secondaryFixed
-                                .withValues(alpha: 0.5),
+                            color: HelaColors.secondaryFixed.withValues(
+                              alpha: 0.5,
+                            ),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Row(
@@ -365,8 +365,9 @@ class StayCard extends StatelessWidget {
                             color: HelaColors.surfaceContainer,
                             borderRadius: BorderRadius.circular(14),
                             border: Border.all(
-                              color: HelaColors.outlineVariant
-                                  .withValues(alpha: 0.3),
+                              color: HelaColors.outlineVariant.withValues(
+                                alpha: 0.3,
+                              ),
                             ),
                           ),
                           child: Row(
@@ -469,10 +470,7 @@ class StayCard extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              const Icon(
-                                Icons.arrow_forward_rounded,
-                                size: 15,
-                              ),
+                              const Icon(Icons.arrow_forward_rounded, size: 15),
                             ],
                           ),
                         ),

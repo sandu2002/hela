@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hela/data/sri_lanka_images.dart';
 import 'package:hela/theme/hela_colors.dart';
 import 'package:hela/pages/smart_tour/travel_preferences_page.dart';
+import 'package:hela/widgets/common/hela_network_image.dart';
 
 /// Smart Tour Planner Home — the entry point for AI-powered trip planning.
 ///
@@ -31,10 +32,10 @@ class _SmartTourHomePageState extends State<SmartTourHomePage>
       duration: const Duration(milliseconds: 900),
     );
     _fadeIn = CurvedAnimation(parent: _animController, curve: Curves.easeOut);
-    _slideUp = Tween<Offset>(
-      begin: const Offset(0, 0.12),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic));
+    _slideUp = Tween<Offset>(begin: const Offset(0, 0.12), end: Offset.zero)
+        .animate(
+          CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
+        );
     _animController.forward();
   }
 
@@ -109,10 +110,11 @@ class _SmartTourHomePageState extends State<SmartTourHomePage>
               ),
             ),
             // Network hero image
-            Image.network(
-              SriLankaImages.sigiriya,
+            HelaNetworkImage(
+              imageUrl: SriLankaImages.sigiriya,
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
+              errorBuilder: (context, error, stackTrace) =>
+                  const SizedBox.shrink(),
             ),
             // Dark overlay for text legibility
             Container(
@@ -140,7 +142,10 @@ class _SmartTourHomePageState extends State<SmartTourHomePage>
                 children: [
                   // AI badge
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: HelaColors.tertiaryFixed.withValues(alpha: 0.9),
                       borderRadius: BorderRadius.circular(20),
@@ -148,7 +153,11 @@ class _SmartTourHomePageState extends State<SmartTourHomePage>
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.auto_awesome_rounded, size: 14, color: Color(0xFF1A1D00)),
+                        Icon(
+                          Icons.auto_awesome_rounded,
+                          size: 14,
+                          color: Color(0xFF1A1D00),
+                        ),
                         SizedBox(width: 6),
                         Text(
                           'AI-Powered Planner',
@@ -262,10 +271,12 @@ class _SmartTourHomePageState extends State<SmartTourHomePage>
           ),
         ),
         const SizedBox(height: 14),
-        ...cards.map((card) => Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: _buildInfoCard(card),
-            )),
+        ...cards.map(
+          (card) => Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: _buildInfoCard(card),
+          ),
+        ),
       ],
     );
   }
@@ -276,7 +287,9 @@ class _SmartTourHomePageState extends State<SmartTourHomePage>
       decoration: BoxDecoration(
         color: HelaColors.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: HelaColors.outlineVariant.withValues(alpha: 0.5)),
+        border: Border.all(
+          color: HelaColors.outlineVariant.withValues(alpha: 0.5),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -365,18 +378,13 @@ class _SmartTourHomePageState extends State<SmartTourHomePage>
         const SizedBox(height: 6),
         const Text(
           'Popular trip themes to get you started',
-          style: TextStyle(
-            color: HelaColors.onSurfaceVariant,
-            fontSize: 13,
-          ),
+          style: TextStyle(color: HelaColors.onSurfaceVariant, fontSize: 13),
         ),
         const SizedBox(height: 14),
         Wrap(
           spacing: 10,
           runSpacing: 10,
-          children: inspirations
-              .map((i) => _buildInspirationChip(i))
-              .toList(),
+          children: inspirations.map((i) => _buildInspirationChip(i)).toList(),
         ),
       ],
     );
@@ -391,7 +399,9 @@ class _SmartTourHomePageState extends State<SmartTourHomePage>
         decoration: BoxDecoration(
           color: HelaColors.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: HelaColors.outlineVariant.withValues(alpha: 0.5)),
+          border: Border.all(
+            color: HelaColors.outlineVariant.withValues(alpha: 0.5),
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -419,8 +429,11 @@ class _SmartTourHomePageState extends State<SmartTourHomePage>
               ],
             ),
             const SizedBox(width: 8),
-            const Icon(Icons.arrow_forward_ios_rounded,
-                size: 12, color: HelaColors.outline),
+            const Icon(
+              Icons.arrow_forward_ios_rounded,
+              size: 12,
+              color: HelaColors.outline,
+            ),
           ],
         ),
       ),
@@ -428,11 +441,9 @@ class _SmartTourHomePageState extends State<SmartTourHomePage>
   }
 
   void _navigateToPreferences(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => const TravelPreferencesPage(),
-      ),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const TravelPreferencesPage()));
   }
 }
 

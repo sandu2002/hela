@@ -26,11 +26,7 @@ class _ChatBubble {
   final bool isUser;
   final TourPlan? updatedPlan;
 
-  _ChatBubble({
-    required this.text,
-    required this.isUser,
-    this.updatedPlan,
-  });
+  _ChatBubble({required this.text, required this.isUser, this.updatedPlan});
 }
 
 class _AiChatCustomizationPageState extends State<AiChatCustomizationPage> {
@@ -105,7 +101,8 @@ class _AiChatCustomizationPageState extends State<AiChatCustomizationPage> {
         _activePlan = updated;
         _messages.add(
           _ChatBubble(
-            text: updated.customizationSummary ??
+            text:
+                updated.customizationSummary ??
                 'I have updated your itinerary according to your request!',
             isUser: false,
             updatedPlan: updated,
@@ -119,7 +116,8 @@ class _AiChatCustomizationPageState extends State<AiChatCustomizationPage> {
       setState(() {
         _messages.add(
           _ChatBubble(
-            text: 'I could not process the update right now: $e. Please try again.',
+            text:
+                'I could not process the update right now: $e. Please try again.',
             isUser: false,
           ),
         );
@@ -251,8 +249,9 @@ class _AiChatCustomizationPageState extends State<AiChatCustomizationPage> {
                     height: 16,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      valueColor:
-                          AlwaysStoppedAnimation<Color>(HelaColors.primary),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        HelaColors.primary,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -303,7 +302,9 @@ class _AiChatCustomizationPageState extends State<AiChatCustomizationPage> {
                           focusedBorder: InputBorder.none,
                           disabledBorder: InputBorder.none,
                           contentPadding: EdgeInsets.symmetric(
-                              horizontal: 18, vertical: 12),
+                            horizontal: 18,
+                            vertical: 12,
+                          ),
                         ),
                         onSubmitted: (_) => _sendMessage(),
                       ),
@@ -316,8 +317,11 @@ class _AiChatCustomizationPageState extends State<AiChatCustomizationPage> {
                       shape: BoxShape.circle,
                     ),
                     child: IconButton(
-                      icon: const Icon(Icons.send_rounded,
-                          size: 18, color: Colors.white),
+                      icon: const Icon(
+                        Icons.send_rounded,
+                        size: 18,
+                        color: Colors.white,
+                      ),
                       onPressed: _isSending ? null : () => _sendMessage(),
                     ),
                   ),
@@ -394,8 +398,11 @@ class _AiChatCustomizationPageState extends State<AiChatCustomizationPage> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.check_circle_rounded,
-                        size: 16, color: HelaColors.primary),
+                    const Icon(
+                      Icons.check_circle_rounded,
+                      size: 16,
+                      color: HelaColors.primary,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -411,7 +418,9 @@ class _AiChatCustomizationPageState extends State<AiChatCustomizationPage> {
                       onPressed: () => _applyAndExit(msg.updatedPlan!),
                       style: TextButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 4),
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
                         minimumSize: Size.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),

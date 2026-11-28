@@ -76,9 +76,10 @@ class _FairRidePageState extends State<FairRidePage> {
     ),
   ];
 
-
-  VehicleOption get _currentVehicle =>
-      _vehicles.firstWhere((v) => v.id == _selectedVehicleId, orElse: () => _vehicles.first);
+  VehicleOption get _currentVehicle => _vehicles.firstWhere(
+    (v) => v.id == _selectedVehicleId,
+    orElse: () => _vehicles.first,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +103,9 @@ class _FairRidePageState extends State<FairRidePage> {
                 height: 315,
                 onSwapLocations: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Swapped pickup and destination')),
+                    const SnackBar(
+                      content: Text('Swapped pickup and destination'),
+                    ),
                   );
                 },
                 onRecenter: () {
@@ -118,7 +121,9 @@ class _FairRidePageState extends State<FairRidePage> {
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: HelaColors.surfaceContainerLowest,
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(24),
+                    ),
                     boxShadow: [
                       BoxShadow(
                         color: const Color(0xFF1F2E24).withValues(alpha: 0.12),
@@ -129,7 +134,10 @@ class _FairRidePageState extends State<FairRidePage> {
                   ),
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -139,7 +147,9 @@ class _FairRidePageState extends State<FairRidePage> {
                             width: 38,
                             height: 4.5,
                             decoration: BoxDecoration(
-                              color: HelaColors.outlineVariant.withValues(alpha: 0.7),
+                              color: HelaColors.outlineVariant.withValues(
+                                alpha: 0.7,
+                              ),
                               borderRadius: BorderRadius.circular(3),
                             ),
                           ),
@@ -175,14 +185,21 @@ class _FairRidePageState extends State<FairRidePage> {
                               ],
                             ),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 color: HelaColors.surfaceContainer,
                                 borderRadius: BorderRadius.circular(14),
                               ),
                               child: Row(
                                 children: const [
-                                  Icon(Icons.eco_rounded, size: 14, color: HelaColors.secondary),
+                                  Icon(
+                                    Icons.eco_rounded,
+                                    size: 14,
+                                    color: HelaColors.secondary,
+                                  ),
                                   SizedBox(width: 4),
                                   Text(
                                     'Highland Verified',
@@ -206,10 +223,12 @@ class _FairRidePageState extends State<FairRidePage> {
                             scrollDirection: Axis.horizontal,
                             physics: const BouncingScrollPhysics(),
                             itemCount: _vehicles.length,
-                            separatorBuilder: (context, index) => const SizedBox(width: 10),
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(width: 10),
                             itemBuilder: (context, index) {
                               final vehicle = _vehicles[index];
-                              final isSelected = vehicle.id == _selectedVehicleId;
+                              final isSelected =
+                                  vehicle.id == _selectedVehicleId;
 
                               return InkWell(
                                 borderRadius: BorderRadius.circular(18),
@@ -218,455 +237,529 @@ class _FairRidePageState extends State<FairRidePage> {
                                     _selectedVehicleId = vehicle.id;
                                   });
                                 },
-                              child: Container(
-                                width: 160,
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: isSelected ? const Color(0xFFFAFDF9) : HelaColors.surfaceContainerLow,
-                                  borderRadius: BorderRadius.circular(18),
-                                  border: Border.all(
-                                    color: isSelected ? HelaColors.secondary : HelaColors.outlineVariant.withValues(alpha: 0.35),
-                                    width: isSelected ? 2 : 1,
+                                child: Container(
+                                  width: 160,
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? const Color(0xFFFAFDF9)
+                                        : HelaColors.surfaceContainerLow,
+                                    borderRadius: BorderRadius.circular(18),
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? HelaColors.secondary
+                                          : HelaColors.outlineVariant
+                                                .withValues(alpha: 0.35),
+                                      width: isSelected ? 2 : 1,
+                                    ),
+                                    boxShadow: isSelected
+                                        ? [
+                                            BoxShadow(
+                                              color: HelaColors.secondary
+                                                  .withValues(alpha: 0.12),
+                                              blurRadius: 8,
+                                              offset: const Offset(0, 3),
+                                            ),
+                                          ]
+                                        : null,
                                   ),
-                                  boxShadow: isSelected
-                                      ? [
-                                          BoxShadow(
-                                            color: HelaColors.secondary.withValues(alpha: 0.12),
-                                            blurRadius: 8,
-                                            offset: const Offset(0, 3),
-                                          ),
-                                        ]
-                                      : null,
-                                ),
-                                child: Stack(
-                                  children: [
-                                    if (isSelected)
-                                      Positioned(
-                                        top: 0,
-                                        right: 0,
-                                        child: Container(
-                                          width: 20,
-                                          height: 20,
-                                          decoration: const BoxDecoration(
-                                            color: HelaColors.primaryContainer,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: const Icon(
-                                            Icons.check_rounded,
-                                            size: 13,
-                                            color: HelaColors.tertiaryFixed,
+                                  child: Stack(
+                                    children: [
+                                      if (isSelected)
+                                        Positioned(
+                                          top: 0,
+                                          right: 0,
+                                          child: Container(
+                                            width: 20,
+                                            height: 20,
+                                            decoration: const BoxDecoration(
+                                              color:
+                                                  HelaColors.primaryContainer,
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: const Icon(
+                                              Icons.check_rounded,
+                                              size: 13,
+                                              color: HelaColors.tertiaryFixed,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Container(
-                                              width: 36,
-                                              height: 36,
-                                              decoration: BoxDecoration(
-                                                color: isSelected
-                                                    ? HelaColors.secondaryContainer.withValues(alpha: 0.5)
-                                                    : HelaColors.surfaceContainerHigh,
-                                                borderRadius: BorderRadius.circular(10),
-                                              ),
-                                              child: Icon(
-                                                vehicle.icon,
-                                                size: 22,
-                                                color: isSelected ? HelaColors.primaryContainer : HelaColors.onSurfaceVariant,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 8),
-                                            Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                              decoration: BoxDecoration(
-                                                color: isSelected
-                                                    ? HelaColors.secondary.withValues(alpha: 0.1)
-                                                    : HelaColors.surfaceVariant,
-                                                borderRadius: BorderRadius.circular(4),
-                                              ),
-                                              child: Text(
-                                                vehicle.capacity,
-                                                style: TextStyle(
-                                                  color: isSelected ? HelaColors.primaryContainer : HelaColors.onSurfaceVariant,
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.w700,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              vehicle.title,
-                                              style: TextStyle(
-                                                color: isSelected ? HelaColors.primary : HelaColors.onSurface,
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w700,
-                                              ),
-                                            ),
-                                            Text(
-                                              vehicle.subtitle,
-                                              style: const TextStyle(
-                                                color: HelaColors.onSurfaceVariant,
-                                                fontSize: 11,
-                                              ),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ],
-                                        ),
-                                        Container(
-                                          padding: const EdgeInsets.only(top: 6),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                              top: BorderSide(
-                                                color: isSelected
-                                                    ? HelaColors.secondary.withValues(alpha: 0.2)
-                                                    : HelaColors.outlineVariant.withValues(alpha: 0.2),
-                                              ),
-                                            ),
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
                                             children: [
-                                              Text(
-                                                'LKR ${vehicle.fareLkr}',
-                                                style: TextStyle(
-                                                  color: isSelected ? HelaColors.primary : HelaColors.onSurface,
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w800,
+                                              Container(
+                                                width: 36,
+                                                height: 36,
+                                                decoration: BoxDecoration(
+                                                  color: isSelected
+                                                      ? HelaColors
+                                                            .secondaryContainer
+                                                            .withValues(
+                                                              alpha: 0.5,
+                                                            )
+                                                      : HelaColors
+                                                            .surfaceContainerHigh,
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                                child: Icon(
+                                                  vehicle.icon,
+                                                  size: 22,
+                                                  color: isSelected
+                                                      ? HelaColors
+                                                            .primaryContainer
+                                                      : HelaColors
+                                                            .onSurfaceVariant,
                                                 ),
                                               ),
-                                              Text(
-                                                '~\$${vehicle.fareUsd.toStringAsFixed(2)}',
-                                                style: const TextStyle(
-                                                  color: HelaColors.onSurfaceVariant,
-                                                  fontSize: 10.5,
+                                              const SizedBox(width: 8),
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 6,
+                                                      vertical: 2,
+                                                    ),
+                                                decoration: BoxDecoration(
+                                                  color: isSelected
+                                                      ? HelaColors.secondary
+                                                            .withValues(
+                                                              alpha: 0.1,
+                                                            )
+                                                      : HelaColors
+                                                            .surfaceVariant,
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
+                                                ),
+                                                child: Text(
+                                                  vehicle.capacity,
+                                                  style: TextStyle(
+                                                    color: isSelected
+                                                        ? HelaColors
+                                                              .primaryContainer
+                                                        : HelaColors
+                                                              .onSurfaceVariant,
+                                                    fontSize: 10,
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
                                                 ),
                                               ),
                                             ],
+                                          ),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                vehicle.title,
+                                                style: TextStyle(
+                                                  color: isSelected
+                                                      ? HelaColors.primary
+                                                      : HelaColors.onSurface,
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                              Text(
+                                                vehicle.subtitle,
+                                                style: const TextStyle(
+                                                  color: HelaColors
+                                                      .onSurfaceVariant,
+                                                  fontSize: 11,
+                                                ),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ],
+                                          ),
+                                          Container(
+                                            padding: const EdgeInsets.only(
+                                              top: 6,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              border: Border(
+                                                top: BorderSide(
+                                                  color: isSelected
+                                                      ? HelaColors.secondary
+                                                            .withValues(
+                                                              alpha: 0.2,
+                                                            )
+                                                      : HelaColors
+                                                            .outlineVariant
+                                                            .withValues(
+                                                              alpha: 0.2,
+                                                            ),
+                                                ),
+                                              ),
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                  'LKR ${vehicle.fareLkr}',
+                                                  style: TextStyle(
+                                                    color: isSelected
+                                                        ? HelaColors.primary
+                                                        : HelaColors.onSurface,
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w800,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  '~\$${vehicle.fareUsd.toStringAsFixed(2)}',
+                                                  style: const TextStyle(
+                                                    color: HelaColors
+                                                        .onSurfaceVariant,
+                                                    fontSize: 10.5,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+
+                        // Guaranteed Upfront Fair Fare Card
+                        Container(
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: HelaColors.primaryContainer,
+                            borderRadius: BorderRadius.circular(18),
+                            boxShadow: [
+                              BoxShadow(
+                                color: HelaColors.primaryContainer.withValues(
+                                  alpha: 0.35,
+                                ),
+                                blurRadius: 14,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: const [
+                                      Icon(
+                                        Icons.verified_rounded,
+                                        size: 16,
+                                        color: HelaColors.tertiaryFixed,
+                                      ),
+                                      SizedBox(width: 5),
+                                      Text(
+                                        'Guaranteed Ceylon Fair Fare',
+                                        style: TextStyle(
+                                          color: HelaColors.tertiaryFixed,
+                                          fontSize: 11.5,
+                                          fontWeight: FontWeight.w700,
+                                          letterSpacing: 0.4,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 3,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withValues(
+                                        alpha: 0.12,
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: const Text(
+                                      'Regulated Rate',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              RichText(
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: 'LKR ${_currentVehicle.fareLkr} ',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.w800,
+                                        letterSpacing: -0.5,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text:
+                                          '(\$${_currentVehicle.fareUsd.toStringAsFixed(2)} USD)',
+                                      style: const TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: const [
+                                  Icon(
+                                    Icons.lock_clock_rounded,
+                                    size: 13,
+                                    color: HelaColors.tertiaryFixed,
+                                  ),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    'Fixed upfront price · Zero tourist surge surcharge',
+                                    style: TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 11,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Container(
+                                padding: const EdgeInsets.only(top: 8),
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    top: BorderSide(
+                                      color: Colors.white.withValues(
+                                        alpha: 0.15,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: const [
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.volunteer_activism_rounded,
+                                          size: 14,
+                                          color: HelaColors.tertiaryFixed,
+                                        ),
+                                        SizedBox(width: 5),
+                                        Text(
+                                          '85% goes directly to driver',
+                                          style: TextStyle(
+                                            color: HelaColors.tertiaryFixed,
+                                            fontSize: 11.5,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Text(
+                                      'Fair Wage Model',
+                                      style: TextStyle(
+                                        color: Colors.white60,
+                                        fontSize: 10.5,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+
+                        // Payment Method Row (Supports both Card and Cash with interactive switcher)
+                        InkWell(
+                          onTap: () => _showPaymentMethodPicker(context),
+                          borderRadius: BorderRadius.circular(12),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(
+                                      width: 36,
+                                      height: 36,
+                                      decoration: BoxDecoration(
+                                        color: _paymentMethod == 'cash'
+                                            ? const Color(0xFFDCFCE7)
+                                            : HelaColors.surfaceContainer,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        _paymentMethod == 'cash'
+                                            ? Icons.payments_rounded
+                                            : Icons.credit_card_rounded,
+                                        size: 19,
+                                        color: _paymentMethod == 'cash'
+                                            ? const Color(0xFF15803D)
+                                            : HelaColors.primary,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        if (_paymentMethod == 'cash')
+                                          const Text(
+                                            'Cash on Arrival (LKR)',
+                                            style: TextStyle(
+                                              color: HelaColors.onSurface,
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          )
+                                        else
+                                          Row(
+                                            children: const [
+                                              Text(
+                                                'Ceylon Pay / Visa',
+                                                style: TextStyle(
+                                                  color: HelaColors.onSurface,
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                              SizedBox(width: 6),
+                                              Text(
+                                                '•••• 4291',
+                                                style: TextStyle(
+                                                  color: HelaColors
+                                                      .onSurfaceVariant,
+                                                  fontSize: 12,
+                                                  fontFamily: 'monospace',
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        Text(
+                                          _paymentMethod == 'cash'
+                                              ? 'Pay exact fare LKR ${_currentVehicle.fareLkr} directly to driver'
+                                              : 'Automatic instant receipt',
+                                          style: TextStyle(
+                                            color: _paymentMethod == 'cash'
+                                                ? const Color(0xFF15803D)
+                                                : HelaColors.secondary,
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w500,
                                           ),
                                         ),
                                       ],
                                     ),
                                   ],
                                 ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-
-                      // Guaranteed Upfront Fair Fare Card
-                      Container(
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          color: HelaColors.primaryContainer,
-                          borderRadius: BorderRadius.circular(18),
-                          boxShadow: [
-                            BoxShadow(
-                              color: HelaColors.primaryContainer.withValues(alpha: 0.35),
-                              blurRadius: 14,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: const [
-                                    Icon(
-                                      Icons.verified_rounded,
-                                      size: 16,
-                                      color: HelaColors.tertiaryFixed,
-                                    ),
-                                    SizedBox(width: 5),
-                                    Text(
-                                      'Guaranteed Ceylon Fair Fare',
-                                      style: TextStyle(
-                                        color: HelaColors.tertiaryFixed,
-                                        fontSize: 11.5,
-                                        fontWeight: FontWeight.w700,
-                                        letterSpacing: 0.4,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.12),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
+                                TextButton(
+                                  onPressed: () =>
+                                      _showPaymentMethodPicker(context),
                                   child: const Text(
-                                    'Regulated Rate',
+                                    'Change',
                                     style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: 'LKR ${_currentVehicle.fareLkr} ',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w800,
-                                      letterSpacing: -0.5,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: '(\$${_currentVehicle.fareUsd.toStringAsFixed(2)} USD)',
-                                    style: const TextStyle(
-                                      color: Colors.white70,
+                                      color: HelaColors.primary,
+                                      fontWeight: FontWeight.w700,
                                       fontSize: 13,
-                                      fontWeight: FontWeight.w400,
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Row(
-                              children: const [
-                                Icon(
-                                  Icons.lock_clock_rounded,
-                                  size: 13,
-                                  color: HelaColors.tertiaryFixed,
-                                ),
-                                SizedBox(width: 4),
-                                Text(
-                                  'Fixed upfront price · Zero tourist surge surcharge',
-                                  style: TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 11,
                                   ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 10),
-                            Container(
-                              padding: const EdgeInsets.only(top: 8),
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  top: BorderSide(
-                                    color: Colors.white.withValues(alpha: 0.15),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+
+                        // Confirm Ride CTA Button
+                        SizedBox(
+                          width: double.infinity,
+                          height: 52,
+                          child: ElevatedButton(
+                            onPressed: () => _showLiveTrackingSheet(context),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: colors.primary,
+                              foregroundColor: Colors.white,
+                              elevation: 2,
+                              shadowColor: colors.primary.withValues(
+                                alpha: 0.15,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Confirm ${_currentVehicle.title} Ride',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 15,
+                                    fontFamily: 'Plus Jakarta Sans',
                                   ),
                                 ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: const [
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.volunteer_activism_rounded,
-                                        size: 14,
-                                        color: HelaColors.tertiaryFixed,
-                                      ),
-                                      SizedBox(width: 5),
-                                      Text(
-                                        '85% goes directly to driver',
-                                        style: TextStyle(
-                                          color: HelaColors.tertiaryFixed,
-                                          fontSize: 11.5,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Text(
-                                    'Fair Wage Model',
-                                    style: TextStyle(
-                                      color: Colors.white60,
-                                      fontSize: 10.5,
-                                    ),
-                                  ),
-                                ],
+                                const SizedBox(width: 8),
+                                const Icon(
+                                  Icons.arrow_forward_rounded,
+                                  size: 18,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+
+                        // Safety & Trust Footer
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(
+                              Icons.security_rounded,
+                              size: 14,
+                              color: HelaColors.secondary,
+                            ),
+                            SizedBox(width: 5),
+                            Text(
+                              '100% Vetted Local Drivers · SOS & GPS Live Protected',
+                              style: TextStyle(
+                                color: HelaColors.onSurfaceVariant,
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ],
                         ),
-                      ),
-                      const SizedBox(height: 12),
-
-                      // Payment Method Row (Supports both Card and Cash with interactive switcher)
-                      InkWell(
-                        onTap: () => _showPaymentMethodPicker(context),
-                        borderRadius: BorderRadius.circular(12),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 36,
-                                    height: 36,
-                                    decoration: BoxDecoration(
-                                      color: _paymentMethod == 'cash'
-                                          ? const Color(0xFFDCFCE7)
-                                          : HelaColors.surfaceContainer,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Icon(
-                                      _paymentMethod == 'cash'
-                                          ? Icons.payments_rounded
-                                          : Icons.credit_card_rounded,
-                                      size: 19,
-                                      color: _paymentMethod == 'cash'
-                                          ? const Color(0xFF15803D)
-                                          : HelaColors.primary,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      if (_paymentMethod == 'cash')
-                                        const Text(
-                                          'Cash on Arrival (LKR)',
-                                          style: TextStyle(
-                                            color: HelaColors.onSurface,
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        )
-                                      else
-                                        Row(
-                                          children: const [
-                                            Text(
-                                              'Ceylon Pay / Visa',
-                                              style: TextStyle(
-                                                color: HelaColors.onSurface,
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.w700,
-                                              ),
-                                            ),
-                                            SizedBox(width: 6),
-                                            Text(
-                                              '•••• 4291',
-                                              style: TextStyle(
-                                                color: HelaColors.onSurfaceVariant,
-                                                fontSize: 12,
-                                                fontFamily: 'monospace',
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      Text(
-                                        _paymentMethod == 'cash'
-                                            ? 'Pay exact fare LKR ${_currentVehicle.fareLkr} directly to driver'
-                                            : 'Automatic instant receipt',
-                                        style: TextStyle(
-                                          color: _paymentMethod == 'cash'
-                                              ? const Color(0xFF15803D)
-                                              : HelaColors.secondary,
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              TextButton(
-                                onPressed: () => _showPaymentMethodPicker(context),
-                                child: const Text(
-                                  'Change',
-                                  style: TextStyle(
-                                    color: HelaColors.primary,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-
-                      // Confirm Ride CTA Button
-                      SizedBox(
-                        width: double.infinity,
-                        height: 52,
-                        child: ElevatedButton(
-                          onPressed: () => _showLiveTrackingSheet(context),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: colors.primary,
-                            foregroundColor: Colors.white,
-                            elevation: 2,
-                            shadowColor: colors.primary.withValues(alpha: 0.15),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Confirm ${_currentVehicle.title} Ride',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 15,
-                                  fontFamily: 'Plus Jakarta Sans',
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              const Icon(Icons.arrow_forward_rounded, size: 18),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-
-                      // Safety & Trust Footer
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(Icons.security_rounded, size: 14, color: HelaColors.secondary),
-                          SizedBox(width: 5),
-                          Text(
-                            '100% Vetted Local Drivers · SOS & GPS Live Protected',
-                            style: TextStyle(
-                              color: HelaColors.onSurfaceVariant,
-                              fontSize: 10.5,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                    ],
+                        const SizedBox(height: 10),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
-  );
+    );
   }
 
   void _showPaymentMethodPicker(BuildContext context) {
@@ -720,7 +813,10 @@ class _FairRidePageState extends State<FairRidePage> {
                 ),
                 IconButton(
                   onPressed: () => Navigator.pop(sheetCtx),
-                  icon: Icon(Icons.close_rounded, color: colors.onSurfaceVariant),
+                  icon: Icon(
+                    Icons.close_rounded,
+                    color: colors.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
@@ -729,7 +825,8 @@ class _FairRidePageState extends State<FairRidePage> {
             // Option 1: Cash on Arrival (LKR)
             _buildPaymentOptionTile(
               title: 'Cash on Arrival (LKR)',
-              subtitle: 'Pay exact fare LKR ${_currentVehicle.fareLkr} directly to driver upon dropoff',
+              subtitle:
+                  'Pay exact fare LKR ${_currentVehicle.fareLkr} directly to driver upon dropoff',
               badgeText: 'Driver Preferred',
               badgeBg: const Color(0xFFDCFCE7),
               badgeColor: const Color(0xFF15803D),
@@ -743,7 +840,9 @@ class _FairRidePageState extends State<FairRidePage> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     backgroundColor: Color(0xFF15803D),
-                    content: Text('Payment method set to Cash on Arrival (LKR)'),
+                    content: Text(
+                      'Payment method set to Cash on Arrival (LKR)',
+                    ),
                     duration: Duration(seconds: 2),
                   ),
                 );
@@ -754,7 +853,8 @@ class _FairRidePageState extends State<FairRidePage> {
             // Option 2: Card / Ceylon Pay
             _buildPaymentOptionTile(
               title: 'Ceylon Pay / Visa',
-              subtitle: '•••• 4291 · Automatic cashless checkout with instant receipt',
+              subtitle:
+                  '•••• 4291 · Automatic cashless checkout with instant receipt',
               badgeText: 'Instant Receipt',
               badgeBg: colors.secondaryContainer,
               badgeColor: colors.primary,
@@ -768,7 +868,9 @@ class _FairRidePageState extends State<FairRidePage> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     backgroundColor: colors.primary,
-                    content: const Text('Payment method set to Ceylon Pay / Visa (•••• 4291)'),
+                    content: const Text(
+                      'Payment method set to Ceylon Pay / Visa (•••• 4291)',
+                    ),
                     duration: const Duration(seconds: 2),
                   ),
                 );
@@ -801,7 +903,9 @@ class _FairRidePageState extends State<FairRidePage> {
           color: isSelected ? const Color(0xFFF0FDF4) : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? const Color(0xFF15803D) : const Color(0xFFE5E7EB),
+            color: isSelected
+                ? const Color(0xFF15803D)
+                : const Color(0xFFE5E7EB),
             width: isSelected ? 1.8 : 1.0,
           ),
           boxShadow: [
@@ -840,7 +944,10 @@ class _FairRidePageState extends State<FairRidePage> {
                       ),
                       const SizedBox(width: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: badgeBg,
                           borderRadius: BorderRadius.circular(999),
@@ -869,8 +976,12 @@ class _FairRidePageState extends State<FairRidePage> {
             ),
             const SizedBox(width: 8),
             Icon(
-              isSelected ? Icons.check_circle_rounded : Icons.radio_button_off_rounded,
-              color: isSelected ? const Color(0xFF15803D) : const Color(0xFF9CA3AF),
+              isSelected
+                  ? Icons.check_circle_rounded
+                  : Icons.radio_button_off_rounded,
+              color: isSelected
+                  ? const Color(0xFF15803D)
+                  : const Color(0xFF9CA3AF),
               size: 22,
             ),
           ],
@@ -905,7 +1016,11 @@ class _FairRidePageState extends State<FairRidePage> {
                 onTap: () => Navigator.of(context).maybePop(),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Icon(Icons.arrow_back_rounded, color: colors.primary, size: 20),
+                  child: Icon(
+                    Icons.arrow_back_rounded,
+                    color: colors.primary,
+                    size: 20,
+                  ),
                 ),
               ),
             ),
@@ -913,7 +1028,10 @@ class _FairRidePageState extends State<FairRidePage> {
             GestureDetector(
               onTap: () => _showEmergencySosSheet(context),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 7,
+                ),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Color(0xFFDC2626), Color(0xFFB91C1C)],
@@ -973,7 +1091,11 @@ class _FairRidePageState extends State<FairRidePage> {
                     onTap: () => _showRidesHistorySheet(context),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Icon(Icons.history_rounded, color: colors.primary, size: 20),
+                      child: Icon(
+                        Icons.history_rounded,
+                        color: colors.primary,
+                        size: 20,
+                      ),
                     ),
                   ),
                 ),
@@ -1023,7 +1145,8 @@ class _FairRidePageState extends State<FairRidePage> {
   }
 
   Future<void> _shareEmergencyDispatch() async {
-    const text = '🚨 HELA EMERGENCY DISTRESS ALERT 🚨\n'
+    const text =
+        '🚨 HELA EMERGENCY DISTRESS ALERT 🚨\n'
         'I need immediate assistance while travelling in Sri Lanka!\n\n'
         '• Current Vehicle: HELA Taxi / Tuk-Tuk Service\n'
         '• Pickup / Current Area: 98 Acres Resort & Spa, Ella\n'
@@ -1039,7 +1162,9 @@ class _FairRidePageState extends State<FairRidePage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             backgroundColor: Color(0xFFDC2626),
-            content: Text('Emergency distress text copied to clipboard! Paste into SMS or WhatsApp.'),
+            content: Text(
+              'Emergency distress text copied to clipboard! Paste into SMS or WhatsApp.',
+            ),
           ),
         );
       }
@@ -1104,7 +1229,9 @@ class _FairRidePageState extends State<FairRidePage> {
                       backgroundColor: Colors.white,
                       foregroundColor: const Color(0xFFB91C1C),
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     child: const Text(
                       'CALL 119 POLICE',
@@ -1120,7 +1247,9 @@ class _FairRidePageState extends State<FairRidePage> {
                       foregroundColor: Colors.white,
                       side: const BorderSide(color: Colors.white70),
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     child: const Text('DISMISS'),
                   ),
@@ -1216,7 +1345,10 @@ class _FairRidePageState extends State<FairRidePage> {
                   ),
                   IconButton(
                     onPressed: () => Navigator.pop(sheetCtx),
-                    icon: const Icon(Icons.close_rounded, color: Color(0xFF4B5563)),
+                    icon: const Icon(
+                      Icons.close_rounded,
+                      color: Color(0xFF4B5563),
+                    ),
                   ),
                 ],
               ),
@@ -1271,14 +1403,19 @@ class _FairRidePageState extends State<FairRidePage> {
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: _shareEmergencyDispatch,
-                            icon: const Icon(Icons.share_location_rounded, size: 16),
+                            icon: const Icon(
+                              Icons.share_location_rounded,
+                              size: 16,
+                            ),
                             label: const Text('Share Location SOS'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFFDC2626),
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 9),
                               elevation: 0,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
                             ),
                           ),
                         ),
@@ -1290,8 +1427,13 @@ class _FairRidePageState extends State<FairRidePage> {
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFF991B1B),
                             side: const BorderSide(color: Color(0xFFFCA5A5)),
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 9,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
                         ),
                       ],
@@ -1368,14 +1510,21 @@ class _FairRidePageState extends State<FairRidePage> {
                 },
                 borderRadius: BorderRadius.circular(14),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF1F2937),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.warning_amber_rounded, color: Color(0xFFFBBF24), size: 24),
+                      const Icon(
+                        Icons.warning_amber_rounded,
+                        color: Color(0xFFFBBF24),
+                        size: 24,
+                      ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
@@ -1399,7 +1548,11 @@ class _FairRidePageState extends State<FairRidePage> {
                           ],
                         ),
                       ),
-                      const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white70, size: 14),
+                      const Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        color: Colors.white70,
+                        size: 14,
+                      ),
                     ],
                   ),
                 ),
@@ -1465,10 +1618,7 @@ class _FairRidePageState extends State<FairRidePage> {
         ),
         subtitle: Text(
           subtitle,
-          style: const TextStyle(
-            fontSize: 11,
-            color: Color(0xFF6B7280),
-          ),
+          style: const TextStyle(fontSize: 11, color: Color(0xFF6B7280)),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -1478,7 +1628,9 @@ class _FairRidePageState extends State<FairRidePage> {
             backgroundColor: iconColor,
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
             elevation: 0,
           ),
           child: const Row(
@@ -1544,7 +1696,11 @@ class _FairRidePageState extends State<FairRidePage> {
                 children: [
                   IconButton(
                     onPressed: () => Navigator.pop(ctx),
-                    icon: Icon(Icons.keyboard_arrow_down_rounded, color: colors.primary, size: 28),
+                    icon: Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      color: colors.primary,
+                      size: 28,
+                    ),
                     style: IconButton.styleFrom(
                       backgroundColor: colors.surfaceContainerLowest,
                       shape: const CircleBorder(),
@@ -1590,12 +1746,19 @@ class _FairRidePageState extends State<FairRidePage> {
                   InkWell(
                     onTap: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Connected to Sri Lanka Tourist Police 1912')),
+                        const SnackBar(
+                          content: Text(
+                            'Connected to Sri Lanka Tourist Police 1912',
+                          ),
+                        ),
                       );
                     },
                     borderRadius: BorderRadius.circular(999),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFFEE2E2),
                         borderRadius: BorderRadius.circular(999),
@@ -1621,7 +1784,9 @@ class _FairRidePageState extends State<FairRidePage> {
                 decoration: BoxDecoration(
                   color: const Color(0xFFE6F5F3),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: colors.primary.withValues(alpha: 0.15)),
+                  border: Border.all(
+                    color: colors.primary.withValues(alpha: 0.15),
+                  ),
                 ),
                 child: Stack(
                   children: [
@@ -1630,7 +1795,9 @@ class _FairRidePageState extends State<FairRidePage> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
                         child: CustomPaint(
-                          painter: _RouteMapPainter(primaryColor: colors.primary),
+                          painter: _RouteMapPainter(
+                            primaryColor: colors.primary,
+                          ),
                         ),
                       ),
                     ),
@@ -1639,18 +1806,28 @@ class _FairRidePageState extends State<FairRidePage> {
                       top: 12,
                       left: 12,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(999),
                           boxShadow: [
-                            BoxShadow(color: Colors.black.withValues(alpha: 0.15), blurRadius: 8),
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.15),
+                              blurRadius: 8,
+                            ),
                           ],
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.timer_outlined, size: 14, color: colors.primary),
+                            Icon(
+                              Icons.timer_outlined,
+                              size: 14,
+                              color: colors.primary,
+                            ),
                             const SizedBox(width: 5),
                             Text(
                               '3 mins away · 450m',
@@ -1669,18 +1846,28 @@ class _FairRidePageState extends State<FairRidePage> {
                       bottom: 12,
                       right: 12,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: colors.primary,
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
-                            BoxShadow(color: colors.primary.withValues(alpha: 0.15), blurRadius: 8),
+                            BoxShadow(
+                              color: colors.primary.withValues(alpha: 0.15),
+                              blurRadius: 8,
+                            ),
                           ],
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: const [
-                            Icon(Icons.pin_drop_rounded, size: 14, color: Colors.white),
+                            Icon(
+                              Icons.pin_drop_rounded,
+                              size: 14,
+                              color: Colors.white,
+                            ),
                             SizedBox(width: 4),
                             Text(
                               'START PIN: 4821',
@@ -1714,8 +1901,14 @@ class _FairRidePageState extends State<FairRidePage> {
                       children: [
                         CircleAvatar(
                           radius: 28,
-                          backgroundColor: colors.primary.withValues(alpha: 0.15),
-                          child: Icon(Icons.person_rounded, size: 36, color: colors.primary),
+                          backgroundColor: colors.primary.withValues(
+                            alpha: 0.15,
+                          ),
+                          child: Icon(
+                            Icons.person_rounded,
+                            size: 36,
+                            color: colors.primary,
+                          ),
                         ),
                         Positioned(
                           bottom: 0,
@@ -1726,7 +1919,11 @@ class _FairRidePageState extends State<FairRidePage> {
                               color: Color(0xFF15803D),
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.check, size: 10, color: Colors.white),
+                            child: const Icon(
+                              Icons.check,
+                              size: 10,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ],
@@ -1748,14 +1945,23 @@ class _FairRidePageState extends State<FairRidePage> {
                               ),
                               const SizedBox(width: 6),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
                                 decoration: BoxDecoration(
-                                  color: colors.goldenAmber.withValues(alpha: 0.15),
+                                  color: colors.goldenAmber.withValues(
+                                    alpha: 0.15,
+                                  ),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Row(
                                   children: [
-                                    Icon(Icons.star_rounded, size: 12, color: colors.goldenAmber),
+                                    Icon(
+                                      Icons.star_rounded,
+                                      size: 12,
+                                      color: colors.goldenAmber,
+                                    ),
                                     const SizedBox(width: 2),
                                     Text(
                                       '4.95',
@@ -1864,7 +2070,11 @@ class _FairRidePageState extends State<FairRidePage> {
                     child: OutlinedButton.icon(
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Calling Chaminda Perera (+94 77 123 4821)...')),
+                          const SnackBar(
+                            content: Text(
+                              'Calling Chaminda Perera (+94 77 123 4821)...',
+                            ),
+                          ),
                         );
                       },
                       icon: const Icon(Icons.phone_rounded, size: 16),
@@ -1873,7 +2083,9 @@ class _FairRidePageState extends State<FairRidePage> {
                         foregroundColor: colors.primary,
                         side: BorderSide(color: colors.primary),
                         padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
                       ),
                     ),
                   ),
@@ -1882,16 +2094,25 @@ class _FairRidePageState extends State<FairRidePage> {
                     child: OutlinedButton.icon(
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Message sent to Chaminda: "I am ready at main entrance"')),
+                          const SnackBar(
+                            content: Text(
+                              'Message sent to Chaminda: "I am ready at main entrance"',
+                            ),
+                          ),
                         );
                       },
-                      icon: const Icon(Icons.chat_bubble_outline_rounded, size: 16),
+                      icon: const Icon(
+                        Icons.chat_bubble_outline_rounded,
+                        size: 16,
+                      ),
                       label: const Text('Message'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: colors.primary,
                         side: BorderSide(color: colors.primary),
                         padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
                       ),
                     ),
                   ),
@@ -1911,7 +2132,9 @@ class _FairRidePageState extends State<FairRidePage> {
                     backgroundColor: colors.primary,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
                 ),
               ),
@@ -1988,7 +2211,9 @@ class _FairRidePageState extends State<FairRidePage> {
           builder: (scrollCtx, scrollController) => Container(
             decoration: BoxDecoration(
               color: colors.cardBackground,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(28),
+              ),
               boxShadow: const [
                 BoxShadow(
                   color: Colors.black26,
@@ -2059,7 +2284,10 @@ class _FairRidePageState extends State<FairRidePage> {
                     ),
                     IconButton(
                       onPressed: () => Navigator.pop(sheetCtx),
-                      icon: Icon(Icons.close_rounded, color: colors.onSurfaceVariant),
+                      icon: Icon(
+                        Icons.close_rounded,
+                        color: colors.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
@@ -2080,12 +2308,16 @@ class _FairRidePageState extends State<FairRidePage> {
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 9),
                             decoration: BoxDecoration(
-                              color: currentTab == 0 ? colors.cardBackground : Colors.transparent,
+                              color: currentTab == 0
+                                  ? colors.cardBackground
+                                  : Colors.transparent,
                               borderRadius: BorderRadius.circular(10),
                               boxShadow: currentTab == 0
                                   ? [
                                       BoxShadow(
-                                        color: Colors.black.withValues(alpha: 0.05),
+                                        color: Colors.black.withValues(
+                                          alpha: 0.05,
+                                        ),
                                         blurRadius: 4,
                                         offset: const Offset(0, 1),
                                       ),
@@ -2108,8 +2340,12 @@ class _FairRidePageState extends State<FairRidePage> {
                                   'Ongoing Ride (1)',
                                   style: TextStyle(
                                     fontSize: 12.5,
-                                    fontWeight: currentTab == 0 ? FontWeight.w800 : FontWeight.w600,
-                                    color: currentTab == 0 ? colors.onSurface : colors.onSurfaceVariant,
+                                    fontWeight: currentTab == 0
+                                        ? FontWeight.w800
+                                        : FontWeight.w600,
+                                    color: currentTab == 0
+                                        ? colors.onSurface
+                                        : colors.onSurfaceVariant,
                                   ),
                                 ),
                               ],
@@ -2123,12 +2359,16 @@ class _FairRidePageState extends State<FairRidePage> {
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 9),
                             decoration: BoxDecoration(
-                              color: currentTab == 1 ? colors.cardBackground : Colors.transparent,
+                              color: currentTab == 1
+                                  ? colors.cardBackground
+                                  : Colors.transparent,
                               borderRadius: BorderRadius.circular(10),
                               boxShadow: currentTab == 1
                                   ? [
                                       BoxShadow(
-                                        color: Colors.black.withValues(alpha: 0.05),
+                                        color: Colors.black.withValues(
+                                          alpha: 0.05,
+                                        ),
                                         blurRadius: 4,
                                         offset: const Offset(0, 1),
                                       ),
@@ -2138,14 +2378,22 @@ class _FairRidePageState extends State<FairRidePage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.history_rounded, size: 14, color: colors.onSurfaceVariant),
+                                Icon(
+                                  Icons.history_rounded,
+                                  size: 14,
+                                  color: colors.onSurfaceVariant,
+                                ),
                                 const SizedBox(width: 5),
                                 Text(
                                   'Past History (${pastRides.length})',
                                   style: TextStyle(
                                     fontSize: 12.5,
-                                    fontWeight: currentTab == 1 ? FontWeight.w800 : FontWeight.w600,
-                                    color: currentTab == 1 ? colors.onSurface : colors.onSurfaceVariant,
+                                    fontWeight: currentTab == 1
+                                        ? FontWeight.w800
+                                        : FontWeight.w600,
+                                    color: currentTab == 1
+                                        ? colors.onSurface
+                                        : colors.onSurfaceVariant,
                                   ),
                                 ),
                               ],
@@ -2163,7 +2411,9 @@ class _FairRidePageState extends State<FairRidePage> {
                   _buildOngoingRideCard(context, vehicle, colors, sheetCtx),
                 ] else ...[
                   // TAB 1: Past Rides History
-                  ...pastRides.map((ride) => _buildPastRideCard(context, ride, colors)),
+                  ...pastRides.map(
+                    (ride) => _buildPastRideCard(context, ride, colors),
+                  ),
                 ],
               ],
             ),
@@ -2201,7 +2451,10 @@ class _FairRidePageState extends State<FairRidePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFDCFCE7),
                   borderRadius: BorderRadius.circular(999),
@@ -2209,7 +2462,11 @@ class _FairRidePageState extends State<FairRidePage> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: const [
-                    Icon(Icons.directions_car_filled_rounded, size: 13, color: Color(0xFF15803D)),
+                    Icon(
+                      Icons.directions_car_filled_rounded,
+                      size: 13,
+                      color: Color(0xFF15803D),
+                    ),
                     SizedBox(width: 5),
                     Text(
                       'DRIVER EN-ROUTE • 3 MINS AWAY',
@@ -2311,7 +2568,11 @@ class _FairRidePageState extends State<FairRidePage> {
                     color: colors.surfaceContainer,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.person_rounded, size: 24, color: colors.primary),
+                  child: Icon(
+                    Icons.person_rounded,
+                    size: 24,
+                    color: colors.primary,
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -2337,7 +2598,10 @@ class _FairRidePageState extends State<FairRidePage> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFFEF3C7),
                     borderRadius: BorderRadius.circular(10),
@@ -2377,13 +2641,19 @@ class _FairRidePageState extends State<FairRidePage> {
               Row(
                 children: [
                   Icon(
-                    _paymentMethod == 'cash' ? Icons.payments_rounded : Icons.credit_card_rounded,
+                    _paymentMethod == 'cash'
+                        ? Icons.payments_rounded
+                        : Icons.credit_card_rounded,
                     size: 16,
-                    color: _paymentMethod == 'cash' ? const Color(0xFF15803D) : colors.primary,
+                    color: _paymentMethod == 'cash'
+                        ? const Color(0xFF15803D)
+                        : colors.primary,
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    _paymentMethod == 'cash' ? 'Cash on Arrival' : 'Ceylon Pay / Visa',
+                    _paymentMethod == 'cash'
+                        ? 'Cash on Arrival'
+                        : 'Ceylon Pay / Visa',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -2419,7 +2689,9 @@ class _FairRidePageState extends State<FairRidePage> {
                     backgroundColor: colors.primary,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 11),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
               ),
@@ -2431,8 +2703,13 @@ class _FairRidePageState extends State<FairRidePage> {
                 style: OutlinedButton.styleFrom(
                   foregroundColor: colors.primary,
                   side: BorderSide(color: colors.primary),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 11,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
             ],
@@ -2472,7 +2749,10 @@ class _FairRidePageState extends State<FairRidePage> {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFDCFCE7),
                       borderRadius: BorderRadius.circular(999),
@@ -2501,10 +2781,7 @@ class _FairRidePageState extends State<FairRidePage> {
               ),
               Text(
                 ride['date'] as String,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: colors.onSurfaceVariant,
-                ),
+                style: TextStyle(fontSize: 11, color: colors.onSurfaceVariant),
               ),
             ],
           ),
@@ -2603,7 +2880,9 @@ class _FairRidePageState extends State<FairRidePage> {
                     foregroundColor: colors.primary,
                     side: BorderSide(color: colors.architecturalBorder),
                     padding: const EdgeInsets.symmetric(vertical: 8),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 ),
               ),
@@ -2614,7 +2893,9 @@ class _FairRidePageState extends State<FairRidePage> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         backgroundColor: colors.primary,
-                        content: Text('Rebooking ${ride['pickup']} to ${ride['dropoff']}...'),
+                        content: Text(
+                          'Rebooking ${ride['pickup']} to ${ride['dropoff']}...',
+                        ),
                       ),
                     );
                   },
@@ -2625,7 +2906,9 @@ class _FairRidePageState extends State<FairRidePage> {
                     foregroundColor: colors.primary,
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(vertical: 8),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 ),
               ),
@@ -2682,43 +2965,97 @@ class _FairRidePageState extends State<FairRidePage> {
               ],
             ),
             const Divider(height: 20),
-            Text('Date: ${ride['date']}', style: const TextStyle(fontSize: 12, color: Color(0xFF6B7280))),
-            Text('Driver: ${ride['driver']} (${ride['plate']})', style: const TextStyle(fontSize: 12, color: Color(0xFF6B7280))),
-            Text('Route: ${ride['pickup']} ➔ ${ride['dropoff']}', style: const TextStyle(fontSize: 12, color: Color(0xFF6B7280))),
+            Text(
+              'Date: ${ride['date']}',
+              style: const TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+            ),
+            Text(
+              'Driver: ${ride['driver']} (${ride['plate']})',
+              style: const TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+            ),
+            Text(
+              'Route: ${ride['pickup']} ➔ ${ride['dropoff']}',
+              style: const TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+            ),
             const Divider(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Official Flag Drop (1st km):', style: TextStyle(fontSize: 12, color: Color(0xFF4B5563))),
-                Text('LKR $baseFare', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                const Text(
+                  'Official Flag Drop (1st km):',
+                  style: TextStyle(fontSize: 12, color: Color(0xFF4B5563)),
+                ),
+                Text(
+                  'LKR $baseFare',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 6),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Distance Fare:', style: TextStyle(fontSize: 12, color: Color(0xFF4B5563))),
-                Text('LKR $distFare', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                const Text(
+                  'Distance Fare:',
+                  style: TextStyle(fontSize: 12, color: Color(0xFF4B5563)),
+                ),
+                Text(
+                  'LKR $distFare',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 6),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: const [
-                Text('Regulated Tourism Levy (SLTDA):', style: TextStyle(fontSize: 12, color: Color(0xFF4B5563))),
-                Text('LKR 0 (Free)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF15803D))),
+                Text(
+                  'Regulated Tourism Levy (SLTDA):',
+                  style: TextStyle(fontSize: 12, color: Color(0xFF4B5563)),
+                ),
+                Text(
+                  'LKR 0 (Free)',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF15803D),
+                  ),
+                ),
               ],
             ),
             const Divider(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Total Amount Paid:', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF111827))),
-                Text('LKR $fare', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Color(0xFF15803D))),
+                const Text(
+                  'Total Amount Paid:',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF111827),
+                  ),
+                ),
+                Text(
+                  'LKR $fare',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF15803D),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 4),
-            Text('Payment Method: ${ride['payment']}', style: const TextStyle(fontSize: 11.5, color: Color(0xFF6B7280))),
+            Text(
+              'Payment Method: ${ride['payment']}',
+              style: const TextStyle(fontSize: 11.5, color: Color(0xFF6B7280)),
+            ),
             const SizedBox(height: 18),
             SizedBox(
               width: double.infinity,
@@ -2726,14 +3063,18 @@ class _FairRidePageState extends State<FairRidePage> {
                 onPressed: () {
                   Navigator.pop(ctx);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Receipt downloaded & saved to device')),
+                    const SnackBar(
+                      content: Text('Receipt downloaded & saved to device'),
+                    ),
                   );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF00382E),
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 10),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
                 child: const Text('Download Receipt PDF'),
               ),
@@ -2765,19 +3106,31 @@ class _FairRidePageState extends State<FairRidePage> {
               width: 18,
               height: 18,
               decoration: BoxDecoration(
-                color: isCompleted ? const Color(0xFFDCFCE7) : (isActive ? colors.primary : Colors.transparent),
+                color: isCompleted
+                    ? const Color(0xFFDCFCE7)
+                    : (isActive ? colors.primary : Colors.transparent),
                 border: Border.all(color: dotColor, width: 2),
                 shape: BoxShape.circle,
               ),
               child: isCompleted
                   ? const Icon(Icons.check, size: 11, color: Color(0xFF15803D))
-                  : (isActive ? const Center(child: Icon(Icons.circle, size: 6, color: Colors.white)) : null),
+                  : (isActive
+                        ? const Center(
+                            child: Icon(
+                              Icons.circle,
+                              size: 6,
+                              color: Colors.white,
+                            ),
+                          )
+                        : null),
             ),
             if (!isLast)
               Container(
                 width: 2,
                 height: 28,
-                color: isCompleted ? const Color(0xFF15803D) : colors.architecturalBorder,
+                color: isCompleted
+                    ? const Color(0xFF15803D)
+                    : colors.architecturalBorder,
               ),
           ],
         ),
@@ -2790,8 +3143,12 @@ class _FairRidePageState extends State<FairRidePage> {
                 title,
                 style: TextStyle(
                   fontSize: 13,
-                  fontWeight: isActive || isCompleted ? FontWeight.w700 : FontWeight.w500,
-                  color: isActive || isCompleted ? colors.onBackground : colors.onSurfaceVariant,
+                  fontWeight: isActive || isCompleted
+                      ? FontWeight.w700
+                      : FontWeight.w500,
+                  color: isActive || isCompleted
+                      ? colors.onBackground
+                      : colors.onSurfaceVariant,
                 ),
               ),
               Text(
@@ -2821,7 +3178,14 @@ class _RouteMapPainter extends CustomPainter {
 
     final path = Path()
       ..moveTo(20, size.height * 0.8)
-      ..cubicTo(size.width * 0.3, size.height * 0.7, size.width * 0.6, size.height * 0.3, size.width - 30, 30);
+      ..cubicTo(
+        size.width * 0.3,
+        size.height * 0.7,
+        size.width * 0.6,
+        size.height * 0.3,
+        size.width - 30,
+        30,
+      );
 
     canvas.drawPath(path, paint);
 
@@ -2831,7 +3195,11 @@ class _RouteMapPainter extends CustomPainter {
 
     // Car/tuk-tuk current point
     final carPaint = Paint()..color = primaryColor;
-    canvas.drawCircle(Offset(size.width * 0.45, size.height * 0.5), 8, carPaint);
+    canvas.drawCircle(
+      Offset(size.width * 0.45, size.height * 0.5),
+      8,
+      carPaint,
+    );
 
     // Dropoff circle
     final dropoffPaint = Paint()..color = const Color(0xFFDC2626);

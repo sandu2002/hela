@@ -79,7 +79,10 @@ class HelaBottomNavBar extends StatelessWidget {
         targetPage = const TripPlannerPage();
         break;
       case 3:
-        targetPage = const SavedPage(showBottomNav: true, showBackButton: false);
+        targetPage = const SavedPage(
+          showBottomNav: true,
+          showBackButton: false,
+        );
         break;
       case 4:
         targetPage = const ProfilePage();
@@ -98,9 +101,9 @@ class HelaBottomNavBar extends StatelessWidget {
   }
 
   static void openAskHelaSheet(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const AskHelaPage()),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const AskHelaPage()));
   }
 
   static Widget buildFloatingAskHelaButton(BuildContext context) {
@@ -215,7 +218,11 @@ class HelaBottomNavBar extends StatelessWidget {
     );
   }
 
-  Widget _buildNavItem(BuildContext context, int index, HelaColorPalette colors) {
+  Widget _buildNavItem(
+    BuildContext context,
+    int index,
+    HelaColorPalette colors,
+  ) {
     final item = _items[index];
     final isActive = currentIndex == index;
     final activeColor = colors.primaryContainer;
@@ -290,7 +297,8 @@ class _AskHelaBottomSheetState extends State<_AskHelaBottomSheet> {
   final List<Map<String, String>> _messages = [
     {
       'role': 'assistant',
-      'text': 'Ayubowan! I am HELA, your 24/7 Sri Lanka Travel Companion. Ask me anything about trains, tuk-tuks, secret trails, or cultural etiquette.',
+      'text':
+          'Ayubowan! I am HELA, your 24/7 Sri Lanka Travel Companion. Ask me anything about trains, tuk-tuks, secret trails, or cultural etiquette.',
     },
   ];
   bool _isResponding = false;
@@ -325,15 +333,24 @@ class _AskHelaBottomSheetState extends State<_AskHelaBottomSheet> {
       String reply;
       final lower = text.toLowerCase();
       if (lower.contains('train') || lower.contains('ella')) {
-        reply = 'The Main Line scenic train from Kandy to Ella runs daily. The most picturesque departures are the 08:47 Express and 11:10 Podi Menike. Tip: Reserve 1st/2nd class observation seats 30 days ahead!';
-      } else if (lower.contains('tuk') || lower.contains('fare') || lower.contains('meter')) {
-        reply = 'Official Sri Lanka Tuk-Tuk rate: LKR 100-120 for the 1st km, and LKR 80-90 per subsequent km. Always look for the illuminated "METER TAXI" roof sign or use HELA Fair Ride calculator!';
-      } else if (lower.contains('temple') || lower.contains('dress') || lower.contains('etiquette')) {
-        reply = 'Sacred site etiquette: Wear white or light-colored attire covering shoulders and knees. Remove shoes and hats before entering, and never take photos with your back turned directly to a Buddha statue.';
+        reply =
+            'The Main Line scenic train from Kandy to Ella runs daily. The most picturesque departures are the 08:47 Express and 11:10 Podi Menike. Tip: Reserve 1st/2nd class observation seats 30 days ahead!';
+      } else if (lower.contains('tuk') ||
+          lower.contains('fare') ||
+          lower.contains('meter')) {
+        reply =
+            'Official Sri Lanka Tuk-Tuk rate: LKR 100-120 for the 1st km, and LKR 80-90 per subsequent km. Always look for the illuminated "METER TAXI" roof sign or use HELA Fair Ride calculator!';
+      } else if (lower.contains('temple') ||
+          lower.contains('dress') ||
+          lower.contains('etiquette')) {
+        reply =
+            'Sacred site etiquette: Wear white or light-colored attire covering shoulders and knees. Remove shoes and hats before entering, and never take photos with your back turned directly to a Buddha statue.';
       } else if (lower.contains('sigiriya') || lower.contains('sunrise')) {
-        reply = 'Sigiriya gates open at 06:30 AM. Arrive by 06:15 AM to avoid heat and crowds. Alternatively, climb Pidurangala Rock at 05:00 AM for the iconic sunrise panorama over Sigiriya!';
+        reply =
+            'Sigiriya gates open at 06:30 AM. Arrive by 06:15 AM to avoid heat and crowds. Alternatively, climb Pidurangala Rock at 05:00 AM for the iconic sunrise panorama over Sigiriya!';
       } else {
-        reply = 'Sri Lanka is wonderful right now! Whether you are heading to the mist-covered hill country or the golden south coast, I can help you plan verified routes, check fair transit prices, and discover hidden gems.';
+        reply =
+            'Sri Lanka is wonderful right now! Whether you are heading to the mist-covered hill country or the golden south coast, I can help you plan verified routes, check fair transit prices, and discover hidden gems.';
       }
 
       setState(() {
@@ -406,7 +423,10 @@ class _AskHelaBottomSheetState extends State<_AskHelaBottomSheet> {
                           ),
                           const SizedBox(width: 6),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
                               color: colors.tertiaryFixed,
                               borderRadius: BorderRadius.circular(4),
@@ -465,7 +485,9 @@ class _AskHelaBottomSheetState extends State<_AskHelaBottomSheet> {
                   ),
                   backgroundColor: colors.surfaceContainerLow,
                   side: BorderSide(color: colors.architecturalBorder),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9999)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(9999),
+                  ),
                   onPressed: () => _sendQuery(prompt),
                 );
               },
@@ -482,21 +504,34 @@ class _AskHelaBottomSheetState extends State<_AskHelaBottomSheet> {
                 final msg = _messages[index];
                 final isUser = msg['role'] == 'user';
                 return Align(
-                  alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+                  alignment: isUser
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
                   child: Container(
                     margin: const EdgeInsets.only(bottom: 10),
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
                     constraints: BoxConstraints(
                       maxWidth: MediaQuery.of(context).size.width * 0.78,
                     ),
                     decoration: BoxDecoration(
-                      color: isUser ? colors.primaryContainer : colors.surfaceContainerLow,
+                      color: isUser
+                          ? colors.primaryContainer
+                          : colors.surfaceContainerLow,
                       borderRadius: BorderRadius.circular(16).copyWith(
-                        bottomRight: isUser ? const Radius.circular(2) : const Radius.circular(16),
-                        bottomLeft: isUser ? const Radius.circular(16) : const Radius.circular(2),
+                        bottomRight: isUser
+                            ? const Radius.circular(2)
+                            : const Radius.circular(16),
+                        bottomLeft: isUser
+                            ? const Radius.circular(16)
+                            : const Radius.circular(2),
                       ),
                       border: Border.all(
-                        color: isUser ? colors.primaryContainer : colors.architecturalBorder,
+                        color: isUser
+                            ? colors.primaryContainer
+                            : colors.architecturalBorder,
                       ),
                     ),
                     child: Text(
@@ -522,7 +557,10 @@ class _AskHelaBottomSheetState extends State<_AskHelaBottomSheet> {
                   SizedBox(
                     width: 14,
                     height: 14,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: colors.primaryContainer),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: colors.primaryContainer,
+                    ),
                   ),
                   const SizedBox(width: 8),
                   Text(
@@ -549,7 +587,10 @@ class _AskHelaBottomSheetState extends State<_AskHelaBottomSheet> {
                     decoration: InputDecoration(
                       hintText: 'Ask anything about Sri Lanka...',
                       hintStyle: TextStyle(fontSize: 13, color: colors.outline),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                     ),
                   ),
                 ),

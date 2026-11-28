@@ -158,9 +158,7 @@ class ItineraryCard extends StatelessWidget {
               width: double.infinity,
               child: Stack(
                 children: [
-                  Positioned.fill(
-                    child: _buildImage(),
-                  ),
+                  Positioned.fill(child: _buildImage()),
                   // Gradient overlay on image bottom
                   Positioned.fill(
                     child: DecoratedBox(
@@ -218,8 +216,9 @@ class ItineraryCard extends StatelessWidget {
                     top: 12,
                     right: 12,
                     child: Material(
-                      color: HelaColors.surfaceContainerLowest
-                          .withValues(alpha: 0.85),
+                      color: HelaColors.surfaceContainerLowest.withValues(
+                        alpha: 0.85,
+                      ),
                       shape: const CircleBorder(),
                       child: InkWell(
                         customBorder: const CircleBorder(),
@@ -270,8 +269,9 @@ class ItineraryCard extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: HelaColors.surfaceContainerLowest
-                                .withValues(alpha: 0.92),
+                            color: HelaColors.surfaceContainerLowest.withValues(
+                              alpha: 0.92,
+                            ),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Row(
@@ -365,10 +365,7 @@ class ItineraryCard extends StatelessWidget {
                   }),
 
                   const SizedBox(height: 12),
-                  const Divider(
-                    height: 1,
-                    color: HelaColors.surfaceContainer,
-                  ),
+                  const Divider(height: 1, color: HelaColors.surfaceContainer),
                   const SizedBox(height: 12),
 
                   // Card Footer (Pricing & View Route Action)
@@ -436,10 +433,7 @@ class ItineraryCard extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 4),
-                            const Icon(
-                              Icons.chevron_right_rounded,
-                              size: 16,
-                            ),
+                            const Icon(Icons.chevron_right_rounded, size: 16),
                           ],
                         ),
                       ),
@@ -454,10 +448,7 @@ class ItineraryCard extends StatelessWidget {
     );
 
     if (onTap != null) {
-      return GestureDetector(
-        onTap: onTap,
-        child: card,
-      );
+      return GestureDetector(onTap: onTap, child: card);
     }
     return card;
   }

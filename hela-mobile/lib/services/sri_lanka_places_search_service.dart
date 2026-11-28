@@ -30,7 +30,8 @@ class SriLankaPlacesSearchService {
     ),
     const FeaturedDestinationItem(
       title: 'Yala National Park',
-      subtitle: 'World\'s densest leopard population & thrilling dawn 4x4 safaris',
+      subtitle:
+          'World\'s densest leopard population & thrilling dawn 4x4 safaris',
       rating: '4.9',
       badge: 'Wildlife Safari',
       footerTag: 'Big Five of Sri Lanka',
@@ -60,7 +61,8 @@ class SriLankaPlacesSearchService {
     ),
     const FeaturedDestinationItem(
       title: 'Anuradhapura',
-      subtitle: 'Ruwanwelisaya stupa & 2,300-year-old sacred Jaya Sri Maha Bodhi',
+      subtitle:
+          'Ruwanwelisaya stupa & 2,300-year-old sacred Jaya Sri Maha Bodhi',
       rating: '4.9',
       badge: 'Sacred City',
       footerTag: 'Ancient First Capital',
@@ -75,7 +77,8 @@ class SriLankaPlacesSearchService {
     ),
     const FeaturedDestinationItem(
       title: 'Polonnaruwa',
-      subtitle: 'Gal Vihara colossal rock statues & monumental Royal Palace ruins',
+      subtitle:
+          'Gal Vihara colossal rock statues & monumental Royal Palace ruins',
       rating: '4.8',
       badge: 'Medieval Citadel',
       footerTag: 'King Parakramabahu Heritage',
@@ -90,7 +93,8 @@ class SriLankaPlacesSearchService {
     ),
     const FeaturedDestinationItem(
       title: 'Trincomalee',
-      subtitle: 'Koneswaram cliff-top temple, Nilaveli beach & Pigeon Island corals',
+      subtitle:
+          'Koneswaram cliff-top temple, Nilaveli beach & Pigeon Island corals',
       rating: '4.8',
       badge: 'East Coast',
       footerTag: 'Deep Ocean & Coral Marine Park',
@@ -105,7 +109,8 @@ class SriLankaPlacesSearchService {
     ),
     const FeaturedDestinationItem(
       title: 'Jaffna',
-      subtitle: 'Historic Nallur Kandaswamy Kovil, Dutch Fort & vibrant Tamil culture',
+      subtitle:
+          'Historic Nallur Kandaswamy Kovil, Dutch Fort & vibrant Tamil culture',
       rating: '4.8',
       badge: 'Northern Hub',
       footerTag: 'Palmyrah & Sacred Kovils',
@@ -120,7 +125,8 @@ class SriLankaPlacesSearchService {
     ),
     const FeaturedDestinationItem(
       title: 'Bentota',
-      subtitle: 'Broad golden sand crescents, marine water sports & Madu Ganga mangrove lagoon',
+      subtitle:
+          'Broad golden sand crescents, marine water sports & Madu Ganga mangrove lagoon',
       rating: '4.7',
       badge: 'Beach Haven',
       footerTag: 'Water Sports & River Safari',
@@ -135,7 +141,8 @@ class SriLankaPlacesSearchService {
     ),
     const FeaturedDestinationItem(
       title: 'Arugam Bay',
-      subtitle: 'World-renowned point breaks, moonlit lagoons & Kumana wildlife sanctuary',
+      subtitle:
+          'World-renowned point breaks, moonlit lagoons & Kumana wildlife sanctuary',
       rating: '4.9',
       badge: 'Surf Capital',
       footerTag: 'Global Surf Point · Southeast Coast',
@@ -150,7 +157,8 @@ class SriLankaPlacesSearchService {
     ),
     const FeaturedDestinationItem(
       title: 'Horton Plains & World\'s End',
-      subtitle: 'Misty plateau trek ending in a breathtaking 880-metre sheer cliff drop',
+      subtitle:
+          'Misty plateau trek ending in a breathtaking 880-metre sheer cliff drop',
       rating: '4.9',
       badge: 'Cloud Forest',
       footerTag: 'Worlds End Trek · Baker\'s Falls',
@@ -165,7 +173,8 @@ class SriLankaPlacesSearchService {
     ),
     const FeaturedDestinationItem(
       title: 'Colombo',
-      subtitle: 'Eclectic Gangaramaya Temple, Galle Face Green promenade & vibrant Pettah',
+      subtitle:
+          'Eclectic Gangaramaya Temple, Galle Face Green promenade & vibrant Pettah',
       rating: '4.7',
       badge: 'Commercial Capital',
       footerTag: 'Urban Skyline & Street Food',
@@ -180,7 +189,8 @@ class SriLankaPlacesSearchService {
     ),
     const FeaturedDestinationItem(
       title: 'Pidurangala Rock',
-      subtitle: 'Adjoining ancient monastery summit offering 360° panoramic view of Sigiriya',
+      subtitle:
+          'Adjoining ancient monastery summit offering 360° panoramic view of Sigiriya',
       rating: '4.9',
       badge: 'Sunrise Summit',
       footerTag: 'Lion Rock Horizon View',
@@ -195,7 +205,8 @@ class SriLankaPlacesSearchService {
     ),
     const FeaturedDestinationItem(
       title: 'Tangalle & Silent Beach',
-      subtitle: 'Secluded azure coves, sea turtle night nesting & wild coconut palm shores',
+      subtitle:
+          'Secluded azure coves, sea turtle night nesting & wild coconut palm shores',
       rating: '4.8',
       badge: 'Untouched Haven',
       footerTag: 'Rekawa Turtle Beach',
@@ -210,7 +221,8 @@ class SriLankaPlacesSearchService {
     ),
     const FeaturedDestinationItem(
       title: 'Unawatuna Beach',
-      subtitle: 'Calm turquoise bay, Japanese Peace Pagoda & lively sunset beach cafes',
+      subtitle:
+          'Calm turquoise bay, Japanese Peace Pagoda & lively sunset beach cafes',
       rating: '4.7',
       badge: 'Beach Resort',
       footerTag: 'Jungle Beach & Coral Reefs',
@@ -225,7 +237,8 @@ class SriLankaPlacesSearchService {
     ),
     const FeaturedDestinationItem(
       title: 'Adams Peak (Sri Pada)',
-      subtitle: 'Sacred mountain pilgrimage above the clouds to the sacred footprint',
+      subtitle:
+          'Sacred mountain pilgrimage above the clouds to the sacred footprint',
       rating: '4.9',
       badge: 'Sacred Summit',
       footerTag: '2,243m Cloud Peak · Sunrise',
@@ -240,7 +253,8 @@ class SriLankaPlacesSearchService {
     ),
     const FeaturedDestinationItem(
       title: 'Kitulgala',
-      subtitle: 'Adrenaline white-water rafting, rainforest canyoning & Kelani river pools',
+      subtitle:
+          'Adrenaline white-water rafting, rainforest canyoning & Kelani river pools',
       rating: '4.8',
       badge: 'Adventure',
       footerTag: 'White Water Rafting Grade 3+',
@@ -319,7 +333,8 @@ class SriLankaPlacesSearchService {
     LiveWeatherData? userLiveWeather,
   }) async {
     final local = searchLocal(query);
-    if (local.isNotEmpty && local.first.title.toLowerCase().contains(query.trim().toLowerCase())) {
+    if (local.isNotEmpty &&
+        local.first.title.toLowerCase().contains(query.trim().toLowerCase())) {
       return local;
     }
 
@@ -389,8 +404,10 @@ class SriLankaPlacesSearchService {
       footer = 'Sacred Heritage';
     }
 
-    if (userWeather != null && loc.name.toLowerCase() == userWeather.locationName.toLowerCase()) {
-      weather = '${userWeather.temperatureC.round()}°C · ${userWeather.condition ?? 'Live'}';
+    if (userWeather != null &&
+        loc.name.toLowerCase() == userWeather.locationName.toLowerCase()) {
+      weather =
+          '${userWeather.temperatureC.round()}°C · ${userWeather.condition ?? 'Live'}';
     }
 
     return FeaturedDestinationItem(

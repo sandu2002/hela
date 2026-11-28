@@ -13,8 +13,8 @@ class TourApiService {
   factory TourApiService() => _instance;
 
   TourApiService._internal()
-      : _placeService = PlaceService(),
-        _aiService = AIService();
+    : _placeService = PlaceService(),
+      _aiService = AIService();
 
   TourApiService.withServices({
     required this._placeService,
@@ -26,8 +26,7 @@ class TourApiService {
     TourPreferences preferences,
   ) async {
     // 1. Query candidate places from OpenStreetMap & curated database
-    final basePlaces =
-        await _placeService.getPlacesForPreferences(preferences);
+    final basePlaces = await _placeService.getPlacesForPreferences(preferences);
 
     // 2. Use Gemini AI to score, rank, and describe why each matches
     final enrichedPlaces = await _aiService.discoverDestinations(

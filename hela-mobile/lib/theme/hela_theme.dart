@@ -61,10 +61,7 @@ class HelaTheme {
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: BorderSide(
-            color: palette.architecturalBorder,
-            width: 1,
-          ),
+          side: BorderSide(color: palette.architecturalBorder, width: 1),
         ),
       ),
       chipTheme: ChipThemeData(
@@ -87,9 +84,7 @@ class HelaTheme {
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(9999),
-          side: BorderSide(
-            color: palette.architecturalBorder,
-          ),
+          side: BorderSide(color: palette.architecturalBorder),
         ),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
@@ -148,17 +143,19 @@ class HelaTheme {
           color: palette.outline,
           fontSize: 14,
           fontWeight: FontWeight.w400,
+          fontFamily: 'Plus Jakarta Sans',
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: palette.outlineVariant),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: palette.outlineVariant,
-          ),
+          borderSide: BorderSide(color: palette.outlineVariant),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -171,7 +168,9 @@ class HelaTheme {
           foregroundColor: palette.onPrimary,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           textStyle: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
@@ -193,7 +192,9 @@ class HelaTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: palette.primary,
           side: BorderSide(color: palette.outlineVariant),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           textStyle: const TextStyle(
             fontSize: 13.5,
             fontWeight: FontWeight.w600,
@@ -205,6 +206,15 @@ class HelaTheme {
         color: palette.outlineVariant.withValues(alpha: 0.4),
         thickness: 1,
         space: 1,
+      ),
+      popupMenuTheme: PopupMenuThemeData(
+        color: palette.surfaceContainerLowest,
+        textStyle: TextStyle(
+          color: palette.onSurface,
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          fontFamily: 'Plus Jakarta Sans',
+        ),
       ),
     );
   }
@@ -345,7 +355,9 @@ class HelaTheme {
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: palette.outlineVariant.withValues(alpha: 0.6)),
+          side: BorderSide(
+            color: palette.outlineVariant.withValues(alpha: 0.6),
+          ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -355,8 +367,12 @@ class HelaTheme {
           color: palette.onSurfaceVariant.withValues(alpha: 0.6),
           fontSize: 14,
           fontWeight: FontWeight.w400,
+          fontFamily: 'Plus Jakarta Sans',
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: palette.outlineVariant),
@@ -378,7 +394,9 @@ class HelaTheme {
           foregroundColor: palette.onPrimary,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           textStyle: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
@@ -400,7 +418,9 @@ class HelaTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: palette.primary,
           side: BorderSide(color: palette.outlineVariant),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           textStyle: const TextStyle(
             fontSize: 13.5,
             fontWeight: FontWeight.w600,
@@ -412,6 +432,15 @@ class HelaTheme {
         color: palette.outlineVariant.withValues(alpha: 0.5),
         thickness: 1,
         space: 1,
+      ),
+      popupMenuTheme: PopupMenuThemeData(
+        color: palette.surfaceContainer,
+        textStyle: TextStyle(
+          color: palette.onSurface,
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          fontFamily: 'Plus Jakarta Sans',
+        ),
       ),
     );
   }

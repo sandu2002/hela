@@ -50,11 +50,13 @@ class HelaLogo extends StatelessWidget {
       padding: EdgeInsets.all(padding),
       decoration: BoxDecoration(
         color:
-            backgroundColor ?? (isDark ? const Color(0xFF142721) : Colors.white),
+            backgroundColor ??
+            (isDark ? const Color(0xFF142721) : Colors.white),
         shape: isCircle ? BoxShape.circle : BoxShape.rectangle,
         borderRadius: isCircle ? null : BorderRadius.circular(borderRadius),
-        border:
-            borderColor != null ? Border.all(color: borderColor!, width: 1) : null,
+        border: borderColor != null
+            ? Border.all(color: borderColor!, width: 1)
+            : null,
         boxShadow: boxShadow,
       ),
       alignment: Alignment.center,

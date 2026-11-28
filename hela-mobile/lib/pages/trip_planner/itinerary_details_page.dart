@@ -476,14 +476,14 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
     final colors = HelaColors.of(context);
     final isDark = colors.isDark;
 
-    return Scaffold(
-      backgroundColor: isDark ? colors.background : const Color(0xFFF3FAF7),
-      appBar: _buildAppBar(colors, isDark),
-      body: SafeArea(
-        top: false,
-        bottom: false,
-        child: DefaultTextStyle.merge(
-          style: const TextStyle(fontFamily: _fontFamily),
+    return DefaultTextStyle.merge(
+      style: const TextStyle(fontFamily: _fontFamily),
+      child: Scaffold(
+        backgroundColor: isDark ? colors.background : const Color(0xFFF3FAF7),
+        appBar: _buildAppBar(colors, isDark),
+        body: SafeArea(
+          top: false,
+          bottom: false,
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 114),
@@ -534,8 +534,8 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
             ),
           ),
         ),
+        bottomNavigationBar: _buildStickyBottomBar(colors),
       ),
-      bottomNavigationBar: _buildStickyBottomBar(colors),
     );
   }
 
@@ -631,7 +631,10 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                 children: [
                   Icon(Icons.picture_as_pdf_outlined, size: 18),
                   SizedBox(width: 10),
-                  Text('Export Itinerary as PDF'),
+                  Text(
+                    'Export Itinerary as PDF',
+                    style: TextStyle(fontFamily: _fontFamily),
+                  ),
                 ],
               ),
             ),
@@ -641,7 +644,10 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                 children: [
                   Icon(Icons.download_for_offline_outlined, size: 18),
                   SizedBox(width: 10),
-                  Text('Download for Offline Use'),
+                  Text(
+                    'Download for Offline Use',
+                    style: TextStyle(fontFamily: _fontFamily),
+                  ),
                 ],
               ),
             ),
@@ -651,7 +657,10 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                 children: [
                   Icon(Icons.local_taxi_outlined, size: 18),
                   SizedBox(width: 10),
-                  Text('Connect with Local Chauffeur'),
+                  Text(
+                    'Connect with Local Chauffeur',
+                    style: TextStyle(fontFamily: _fontFamily),
+                  ),
                 ],
               ),
             ),
@@ -2230,6 +2239,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                   fontSize: 13.5,
                   fontWeight: FontWeight.w700,
                   color: colors.onSurface,
+                  fontFamily: _fontFamily,
                 ),
               ),
             ],
@@ -2256,6 +2266,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                             fontSize: 11,
                             color: colors.onSurfaceVariant,
                             height: 1.35,
+                            fontFamily: _fontFamily,
                           ),
                         ),
                       ),
@@ -2284,6 +2295,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                             fontSize: 11,
                             color: colors.onSurfaceVariant,
                             height: 1.35,
+                            fontFamily: _fontFamily,
                           ),
                         ),
                       ),
@@ -2427,6 +2439,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                   fontSize: 13.5,
                   fontWeight: FontWeight.w700,
                   color: colors.onSurface,
+                  fontFamily: _fontFamily,
                 ),
               ),
             ],
@@ -2438,6 +2451,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
               fontSize: 11,
               color: colors.onSurfaceVariant,
               height: 1.35,
+              fontFamily: _fontFamily,
             ),
           ),
           const SizedBox(height: 10),
@@ -2468,6 +2482,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                             fontSize: 9.5,
                             fontWeight: FontWeight.w600,
                             color: colors.onSurface,
+                            fontFamily: _fontFamily,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -2503,6 +2518,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                             fontSize: 9.5,
                             fontWeight: FontWeight.w600,
                             color: colors.onSurface,
+                            fontFamily: _fontFamily,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -2616,6 +2632,7 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                         style: TextStyle(
                           fontSize: 10.5,
                           color: colors.onSurfaceVariant,
+                          fontFamily: _fontFamily,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -2792,335 +2809,353 @@ class _AiCustomizeChatSheetState extends State<_AiCustomizeChatSheet> {
       'Include a scenic train ride or sunset viewpoint',
     ];
 
-    return Padding(
-      padding: EdgeInsets.only(bottom: bottomInset),
-      child: Container(
-        height: MediaQuery.of(context).size.height * 0.72,
-        decoration: BoxDecoration(
-          color: colors.cardBackground,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: SafeArea(
-          top: false,
-          child: Column(
-            children: [
-              const SizedBox(height: 10),
-              Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: colors.architecturalBorder,
-                  borderRadius: BorderRadius.circular(999),
+    return DefaultTextStyle.merge(
+      style: const TextStyle(
+        fontFamily: _ItineraryDetailsPageState._fontFamily,
+      ),
+      child: Padding(
+        padding: EdgeInsets.only(bottom: bottomInset),
+        child: Container(
+          height: MediaQuery.of(context).size.height * 0.72,
+          decoration: BoxDecoration(
+            color: colors.cardBackground,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              children: [
+                const SizedBox(height: 10),
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: colors.architecturalBorder,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
                 ),
-              ),
-              // Header
-              Padding(
-                padding: const EdgeInsets.fromLTRB(18, 12, 10, 10),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 34,
-                      height: 34,
-                      decoration: BoxDecoration(
-                        color: colors.secondaryContainer,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.auto_awesome_rounded,
-                        color: colors.primary,
-                        size: 18,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Ask HELA • Adjust Day ${widget.focusedDayNumber}',
-                            style: TextStyle(
-                              fontSize: 15.5,
-                              fontWeight: FontWeight.w800,
-                              color: colors.onSurface,
-                            ),
-                          ),
-                          Text(
-                            widget.geminiHistory.isEmpty
-                                ? 'DeepSeek AI remembers our chat history as we refine'
-                                : 'Memory active • ${widget.messages.length} messages saved',
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: colors.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (widget.messages.isNotEmpty)
-                      IconButton(
-                        tooltip: 'Clear Chat Memory',
-                        icon: Icon(
-                          Icons.delete_sweep_outlined,
-                          size: 20,
-                          color: colors.onSurfaceVariant,
+                // Header
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(18, 12, 10, 10),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 34,
+                        height: 34,
+                        decoration: BoxDecoration(
+                          color: colors.secondaryContainer,
+                          shape: BoxShape.circle,
                         ),
-                        onPressed: _isSending
-                            ? null
-                            : () async {
-                                await widget.onClearHistory();
-                                if (mounted) setState(() {});
-                              },
-                      ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text(
-                        'Done',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
+                        child: Icon(
+                          Icons.auto_awesome_rounded,
                           color: colors.primary,
+                          size: 18,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              Divider(height: 1, color: colors.architecturalBorder),
-
-              // Chat History Scroll View
-              Expanded(
-                child: ListView(
-                  controller: _scrollController,
-                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
-                  children: [
-                    // Welcome / Memory Intro Bubble
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: colors.surfaceContainerLow,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: colors.architecturalBorder),
-                      ),
-                      child: Text(
-                        'Ayubowan! Tell me how to customize Day ${widget.focusedDayNumber} or any part of "${_activePlan.title}". I remember every previous change we make so you can follow up naturally.',
-                        style: TextStyle(
-                          fontSize: 12.5,
-                          height: 1.4,
-                          color: colors.onSurface,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Wrap(
-                      spacing: 6,
-                      runSpacing: 6,
-                      children: suggestions.map((s) {
-                        return ActionChip(
-                          label: Text(s, style: const TextStyle(fontSize: 11)),
-                          onPressed: _isSending ? null : () => _sendRequest(s),
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 14),
-
-                    ...widget.messages.map((msg) {
-                      if (msg.isUser) {
-                        return Align(
-                          alignment: Alignment.centerRight,
-                          child: Container(
-                            margin: const EdgeInsets.only(bottom: 10, left: 48),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 13,
-                              vertical: 10,
-                            ),
-                            decoration: BoxDecoration(
-                              color: colors.primary,
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(16),
-                                topRight: Radius.circular(16),
-                                bottomLeft: Radius.circular(16),
-                                bottomRight: Radius.circular(4),
-                              ),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  msg.content,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                                const SizedBox(height: 3),
-                                Text(
-                                  msg.timestamp,
-                                  style: TextStyle(
-                                    color: Colors.white.withValues(alpha: 0.7),
-                                    fontSize: 9.5,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }
-
-                      return Align(
-                        alignment: Alignment.centerLeft,
-                        child: Container(
-                          margin: const EdgeInsets.only(bottom: 12, right: 36),
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: colors.surfaceContainer,
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(16),
-                              topRight: Radius.circular(16),
-                              bottomRight: Radius.circular(16),
-                              bottomLeft: Radius.circular(4),
-                            ),
-                            border: Border.all(
-                              color: colors.architecturalBorder,
-                            ),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.check_circle_rounded,
-                                    size: 13,
-                                    color: colors.primary,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    msg.updatedPlan != null
-                                        ? 'Itinerary Updated (v${msg.updatedPlan!.version})'
-                                        : 'HELA AI Assistant',
-                                    style: TextStyle(
-                                      fontSize: 10.5,
-                                      fontWeight: FontWeight.w800,
-                                      color: colors.primary,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                msg.content,
-                                style: TextStyle(
-                                  fontSize: 12.5,
-                                  height: 1.35,
-                                  color: colors.onSurface,
-                                ),
-                              ),
-                              const SizedBox(height: 3),
-                              Text(
-                                msg.timestamp,
-                                style: TextStyle(
-                                  fontSize: 9.5,
-                                  color: colors.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }),
-
-                    if (_isSending)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4, bottom: 8),
-                        child: Row(
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SizedBox(
-                              width: 14,
-                              height: 14,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: colors.primary,
+                            Text(
+                              'Ask HELA • Adjust Day ${widget.focusedDayNumber}',
+                              style: TextStyle(
+                                fontSize: 15.5,
+                                fontWeight: FontWeight.w800,
+                                color: colors.onSurface,
                               ),
                             ),
-                            const SizedBox(width: 8),
                             Text(
-                              'DeepSeek AI is updating your itinerary...',
+                              widget.geminiHistory.isEmpty
+                                  ? 'DeepSeek AI remembers our chat history as we refine'
+                                  : 'Memory active • ${widget.messages.length} messages saved',
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: 11,
                                 color: colors.onSurfaceVariant,
                               ),
                             ),
                           ],
                         ),
                       ),
-                  ],
-                ),
-              ),
-
-              // Input Bar
-              Container(
-                padding: const EdgeInsets.fromLTRB(14, 8, 10, 12),
-                decoration: BoxDecoration(
-                  color: colors.surface,
-                  border: Border(
-                    top: BorderSide(color: colors.architecturalBorder),
+                      if (widget.messages.isNotEmpty)
+                        IconButton(
+                          tooltip: 'Clear Chat Memory',
+                          icon: Icon(
+                            Icons.delete_sweep_outlined,
+                            size: 20,
+                            color: colors.onSurfaceVariant,
+                          ),
+                          onPressed: _isSending
+                              ? null
+                              : () async {
+                                  await widget.onClearHistory();
+                                  if (mounted) setState(() {});
+                                },
+                        ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text(
+                          'Done',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            color: colors.primary,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _inputController,
-                        textInputAction: TextInputAction.send,
-                        onSubmitted: _sendRequest,
-                        decoration: InputDecoration(
-                          hintText:
-                              'Ask to swap stops, change pace, or follow up...',
-                          isDense: true,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 11,
-                          ),
-                          filled: true,
-                          fillColor: colors.cardBackground,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(24),
-                            borderSide: BorderSide(
-                              color: colors.architecturalBorder,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(24),
-                            borderSide: BorderSide(
-                              color: colors.architecturalBorder,
-                            ),
+                Divider(height: 1, color: colors.architecturalBorder),
+
+                // Chat History Scroll View
+                Expanded(
+                  child: ListView(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+                    children: [
+                      // Welcome / Memory Intro Bubble
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: colors.surfaceContainerLow,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: colors.architecturalBorder),
+                        ),
+                        child: Text(
+                          'Ayubowan! Tell me how to customize Day ${widget.focusedDayNumber} or any part of "${_activePlan.title}". I remember every previous change we make so you can follow up naturally.',
+                          style: TextStyle(
+                            fontSize: 12.5,
+                            height: 1.4,
+                            color: colors.onSurface,
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Material(
-                      color: colors.primary,
-                      shape: const CircleBorder(),
-                      child: InkWell(
-                        customBorder: const CircleBorder(),
-                        onTap: _isSending
-                            ? null
-                            : () => _sendRequest(_inputController.text),
-                        child: const Padding(
-                          padding: EdgeInsets.all(11),
-                          child: Icon(
-                            Icons.send_rounded,
-                            size: 18,
-                            color: Colors.white,
+                      const SizedBox(height: 10),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: suggestions.map((s) {
+                          return ActionChip(
+                            label: Text(
+                              s,
+                              style: const TextStyle(fontSize: 11),
+                            ),
+                            onPressed: _isSending
+                                ? null
+                                : () => _sendRequest(s),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 14),
+
+                      ...widget.messages.map((msg) {
+                        if (msg.isUser) {
+                          return Align(
+                            alignment: Alignment.centerRight,
+                            child: Container(
+                              margin: const EdgeInsets.only(
+                                bottom: 10,
+                                left: 48,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 13,
+                                vertical: 10,
+                              ),
+                              decoration: BoxDecoration(
+                                color: colors.primary,
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(16),
+                                  topRight: Radius.circular(16),
+                                  bottomLeft: Radius.circular(16),
+                                  bottomRight: Radius.circular(4),
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    msg.content,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 3),
+                                  Text(
+                                    msg.timestamp,
+                                    style: TextStyle(
+                                      color: Colors.white.withValues(
+                                        alpha: 0.7,
+                                      ),
+                                      fontSize: 9.5,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+
+                        return Align(
+                          alignment: Alignment.centerLeft,
+                          child: Container(
+                            margin: const EdgeInsets.only(
+                              bottom: 12,
+                              right: 36,
+                            ),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: colors.surfaceContainer,
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(16),
+                                topRight: Radius.circular(16),
+                                bottomRight: Radius.circular(16),
+                                bottomLeft: Radius.circular(4),
+                              ),
+                              border: Border.all(
+                                color: colors.architecturalBorder,
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.check_circle_rounded,
+                                      size: 13,
+                                      color: colors.primary,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      msg.updatedPlan != null
+                                          ? 'Itinerary Updated (v${msg.updatedPlan!.version})'
+                                          : 'HELA AI Assistant',
+                                      style: TextStyle(
+                                        fontSize: 10.5,
+                                        fontWeight: FontWeight.w800,
+                                        color: colors.primary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  msg.content,
+                                  style: TextStyle(
+                                    fontSize: 12.5,
+                                    height: 1.35,
+                                    color: colors.onSurface,
+                                  ),
+                                ),
+                                const SizedBox(height: 3),
+                                Text(
+                                  msg.timestamp,
+                                  style: TextStyle(
+                                    fontSize: 9.5,
+                                    color: colors.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }),
+
+                      if (_isSending)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4, bottom: 8),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 14,
+                                height: 14,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: colors.primary,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'DeepSeek AI is updating your itinerary...',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: colors.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+
+                // Input Bar
+                Container(
+                  padding: const EdgeInsets.fromLTRB(14, 8, 10, 12),
+                  decoration: BoxDecoration(
+                    color: colors.surface,
+                    border: Border(
+                      top: BorderSide(color: colors.architecturalBorder),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _inputController,
+                          textInputAction: TextInputAction.send,
+                          onSubmitted: _sendRequest,
+                          decoration: InputDecoration(
+                            hintText:
+                                'Ask to swap stops, change pace, or follow up...',
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 11,
+                            ),
+                            filled: true,
+                            fillColor: colors.cardBackground,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(24),
+                              borderSide: BorderSide(
+                                color: colors.architecturalBorder,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(24),
+                              borderSide: BorderSide(
+                                color: colors.architecturalBorder,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Material(
+                        color: colors.primary,
+                        shape: const CircleBorder(),
+                        child: InkWell(
+                          customBorder: const CircleBorder(),
+                          onTap: _isSending
+                              ? null
+                              : () => _sendRequest(_inputController.text),
+                          child: const Padding(
+                            padding: EdgeInsets.all(11),
+                            child: Icon(
+                              Icons.send_rounded,
+                              size: 18,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

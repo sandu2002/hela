@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hela/pages/home/home_page.dart';
+import 'package:hela/widgets/common/hela_network_image.dart';
 import 'package:hela/widgets/navigation/hela_bottom_nav_bar.dart';
 
 /// A generic article / cultural guide detail page.
@@ -24,15 +25,18 @@ class ArticleDetailPage extends StatelessWidget {
     this.bodyText = '',
   });
 
-  Widget _buildNetworkImage(String url,
-      {double? width, double? height, BoxFit fit = BoxFit.cover}) {
-    return Image.network(
-      url,
+  Widget _buildNetworkImage(
+    String url, {
+    double? width,
+    double? height,
+    BoxFit fit = BoxFit.cover,
+  }) {
+    return HelaNetworkImage(
+      imageUrl: url,
       width: width,
       height: height,
       fit: fit,
-      loadingBuilder: (context, child, loadingProgress) {
-        if (loadingProgress == null) return child;
+      placeholderBuilder: (context, _) {
         return Container(
           width: width,
           height: height,
@@ -61,8 +65,11 @@ class ArticleDetailPage extends StatelessWidget {
             ),
           ),
           child: const Center(
-            child: Icon(Icons.image_outlined,
-                color: HelaColors.onPrimaryContainer, size: 32),
+            child: Icon(
+              Icons.image_outlined,
+              color: HelaColors.onPrimaryContainer,
+              size: 32,
+            ),
           ),
         );
       },
@@ -95,21 +102,25 @@ class ArticleDetailPage extends StatelessWidget {
                       Navigator.of(context).pop();
                     } else {
                       Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                            builder: (_) => const HelaHomePage()),
+                        MaterialPageRoute(builder: (_) => const HelaHomePage()),
                       );
                     }
                   },
                   child: const Padding(
                     padding: EdgeInsets.all(8.0),
-                    child: Icon(Icons.arrow_back_rounded,
-                        color: HelaColors.primary, size: 24),
+                    child: Icon(
+                      Icons.arrow_back_rounded,
+                      color: HelaColors.primary,
+                      size: 24,
+                    ),
                   ),
                 ),
               ),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
                   color: HelaColors.surfaceContainer,
                   borderRadius: BorderRadius.circular(20),
@@ -140,8 +151,11 @@ class ArticleDetailPage extends StatelessWidget {
                       },
                       child: const Padding(
                         padding: EdgeInsets.all(8.0),
-                        child: Icon(Icons.share_rounded,
-                            color: HelaColors.onSurfaceVariant, size: 22),
+                        child: Icon(
+                          Icons.share_rounded,
+                          color: HelaColors.onSurfaceVariant,
+                          size: 22,
+                        ),
                       ),
                     ),
                   ),
@@ -167,7 +181,8 @@ class ArticleDetailPage extends StatelessWidget {
                   if (imageUrl.isNotEmpty)
                     ClipRRect(
                       borderRadius: const BorderRadius.vertical(
-                          bottom: Radius.circular(24)),
+                        bottom: Radius.circular(24),
+                      ),
                       child: _buildNetworkImage(
                         imageUrl,
                         width: double.infinity,
@@ -188,7 +203,8 @@ class ArticleDetailPage extends StatelessWidget {
                           ],
                         ),
                         borderRadius: const BorderRadius.vertical(
-                            bottom: Radius.circular(24)),
+                          bottom: Radius.circular(24),
+                        ),
                       ),
                       child: Center(
                         child: Column(
@@ -203,7 +219,9 @@ class ArticleDetailPage extends StatelessWidget {
                             Text(
                               'Coming Soon',
                               style: TextStyle(
-                                color: HelaColors.onPrimary.withValues(alpha: 0.8),
+                                color: HelaColors.onPrimary.withValues(
+                                  alpha: 0.8,
+                                ),
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -275,8 +293,11 @@ class ArticleDetailPage extends StatelessWidget {
                                 ),
                                 Row(
                                   children: [
-                                    const Icon(Icons.schedule_rounded,
-                                        size: 13, color: HelaColors.secondary),
+                                    const Icon(
+                                      Icons.schedule_rounded,
+                                      size: 13,
+                                      color: HelaColors.secondary,
+                                    ),
                                     const SizedBox(width: 3),
                                     Text(
                                       readTime,
@@ -295,7 +316,9 @@ class ArticleDetailPage extends StatelessWidget {
 
                         const SizedBox(height: 20),
                         Divider(
-                          color: HelaColors.outlineVariant.withValues(alpha: 0.4),
+                          color: HelaColors.outlineVariant.withValues(
+                            alpha: 0.4,
+                          ),
                           height: 1,
                         ),
                         const SizedBox(height: 20),
@@ -375,10 +398,7 @@ class ArticleDetailPage extends StatelessWidget {
             color: HelaColors.surfaceContainerLow,
             borderRadius: BorderRadius.circular(18),
             border: Border(
-              left: BorderSide(
-                color: HelaColors.secondary,
-                width: 4,
-              ),
+              left: BorderSide(color: HelaColors.secondary, width: 4),
             ),
           ),
           child: const Text(

@@ -6,6 +6,7 @@ import 'package:hela/models/tour_preferences.dart';
 import 'package:hela/pages/home/home_page.dart';
 import 'package:hela/pages/smart_tour/smart_tour_home_page.dart';
 import 'package:hela/services/place_service.dart';
+import 'package:hela/widgets/common/hela_network_image.dart';
 import 'package:hela/widgets/navigation/hela_bottom_nav_bar.dart';
 
 class TravelPreferencesPage extends StatefulWidget {
@@ -17,7 +18,6 @@ class TravelPreferencesPage extends StatefulWidget {
 
 class _TravelPreferencesPageState extends State<TravelPreferencesPage>
     with TickerProviderStateMixin {
-
   // ── Selected Preferences ──────────────────────────────────────────
   final Set<TravelInterest> _selectedInterests = {};
   BudgetLevel _selectedBudget = BudgetLevel.medium;
@@ -52,8 +52,9 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage>
     final all = PlaceService.curatedSriLankaPlaces;
     if (_selectedInterests.isEmpty) return all;
 
-    final interestLabels =
-        _selectedInterests.map((i) => i.label.toLowerCase()).toSet();
+    final interestLabels = _selectedInterests
+        .map((i) => i.label.toLowerCase())
+        .toSet();
 
     return all.where((d) {
       final text =
@@ -163,7 +164,11 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage>
                   _selectedInterests.clear();
                 });
               },
-              icon: const Icon(Icons.refresh_rounded, size: 16, color: HelaColors.secondary),
+              icon: const Icon(
+                Icons.refresh_rounded,
+                size: 16,
+                color: HelaColors.secondary,
+              ),
               label: const Text(
                 'Reset',
                 style: TextStyle(
@@ -207,8 +212,10 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 9,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: HelaColors.tertiaryFixed,
                       borderRadius: BorderRadius.circular(14),
@@ -291,8 +298,7 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage>
               ),
               const SizedBox(width: 8),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                 decoration: BoxDecoration(
                   color: HelaColors.tertiaryFixed.withValues(alpha: 0.35),
                   borderRadius: BorderRadius.circular(10),
@@ -309,13 +315,13 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage>
               const Spacer(),
               GestureDetector(
                 onTap: () {
-                  _mapController.move(
-                    const LatLng(7.8731, 80.7718),
-                    6.5,
-                  );
+                  _mapController.move(const LatLng(7.8731, 80.7718), 6.5);
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: HelaColors.surfaceContainerLowest,
                     borderRadius: BorderRadius.circular(12),
@@ -326,8 +332,11 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage>
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: const [
-                      Icon(Icons.center_focus_strong_rounded,
-                          size: 14, color: HelaColors.secondary),
+                      Icon(
+                        Icons.center_focus_strong_rounded,
+                        size: 14,
+                        color: HelaColors.secondary,
+                      ),
                       SizedBox(width: 5),
                       Text(
                         'Reset View',
@@ -388,7 +397,8 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage>
                       // Destination markers
                       MarkerLayer(
                         markers: destinations.map((dest) {
-                          final isSelected = _selectedDestination?.sourceId == dest.sourceId;
+                          final isSelected =
+                              _selectedDestination?.sourceId == dest.sourceId;
                           return Marker(
                             point: LatLng(dest.latitude, dest.longitude),
                             width: isSelected ? 42 : 34,
@@ -419,8 +429,9 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage>
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: HelaColors.primary
-                                          .withValues(alpha: isSelected ? 0.45 : 0.2),
+                                      color: HelaColors.primary.withValues(
+                                        alpha: isSelected ? 0.45 : 0.2,
+                                      ),
                                       blurRadius: isSelected ? 12 : 6,
                                       offset: const Offset(0, 3),
                                     ),
@@ -449,7 +460,9 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage>
                     right: 6,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 3),
+                        horizontal: 6,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.82),
                         borderRadius: BorderRadius.circular(6),
@@ -499,8 +512,11 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage>
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: const [
-                              Icon(Icons.location_off_rounded,
-                                  size: 36, color: Colors.white70),
+                              Icon(
+                                Icons.location_off_rounded,
+                                size: 36,
+                                color: Colors.white70,
+                              ),
                               SizedBox(height: 8),
                               Text(
                                 'No destinations match\nyour selected interests',
@@ -549,8 +565,10 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage>
                   },
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 180),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 0,
+                    ),
                     decoration: BoxDecoration(
                       color: isSelected
                           ? HelaColors.primaryContainer
@@ -597,7 +615,10 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage>
     );
   }
 
-  Widget _buildMapButton({required IconData icon, required VoidCallback onTap}) {
+  Widget _buildMapButton({
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
     return Material(
       color: Colors.white.withValues(alpha: 0.9),
       shape: const CircleBorder(),
@@ -617,12 +638,16 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage>
     final text = categories.join(' ').toLowerCase();
     if (text.contains('wildlife') || text.contains('safari')) {
       return Icons.pets_rounded;
-    } else if (text.contains('beach') || text.contains('coast') || text.contains('marine')) {
+    } else if (text.contains('beach') ||
+        text.contains('coast') ||
+        text.contains('marine')) {
       return Icons.beach_access_rounded;
-    } else if (text.contains('historic') || text.contains('heritage') ||
+    } else if (text.contains('historic') ||
+        text.contains('heritage') ||
         text.contains('archaeology')) {
       return Icons.account_balance_rounded;
-    } else if (text.contains('hik') || text.contains('trek') ||
+    } else if (text.contains('hik') ||
+        text.contains('trek') ||
         text.contains('highland')) {
       return Icons.hiking_rounded;
     } else if (text.contains('spiritual') || text.contains('temple')) {
@@ -675,8 +700,10 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage>
                 },
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 180),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: isSelected
                         ? HelaColors.primaryContainer
@@ -691,8 +718,9 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage>
                     boxShadow: isSelected
                         ? [
                             BoxShadow(
-                              color:
-                                  HelaColors.primaryContainer.withValues(alpha: 0.25),
+                              color: HelaColors.primaryContainer.withValues(
+                                alpha: 0.25,
+                              ),
                               blurRadius: 8,
                               offset: const Offset(0, 3),
                             ),
@@ -702,7 +730,10 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage>
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(interest.emoji, style: const TextStyle(fontSize: 15)),
+                      Text(
+                        interest.emoji,
+                        style: const TextStyle(fontSize: 15),
+                      ),
                       const SizedBox(width: 6),
                       Text(
                         interest.label,
@@ -710,8 +741,9 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage>
                           color: isSelected
                               ? HelaColors.onPrimary
                               : HelaColors.onSurface,
-                          fontWeight:
-                              isSelected ? FontWeight.w700 : FontWeight.w500,
+                          fontWeight: isSelected
+                              ? FontWeight.w700
+                              : FontWeight.w500,
                           fontSize: 13,
                         ),
                       ),
@@ -770,7 +802,9 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage>
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 180),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 14),
+                        horizontal: 8,
+                        vertical: 14,
+                      ),
                       decoration: BoxDecoration(
                         color: isSelected
                             ? HelaColors.primaryContainer
@@ -779,17 +813,20 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage>
                         border: Border.all(
                           color: isSelected
                               ? HelaColors.primaryContainer
-                              : HelaColors.outlineVariant.withValues(alpha: 0.5),
+                              : HelaColors.outlineVariant.withValues(
+                                  alpha: 0.5,
+                                ),
                           width: isSelected ? 1.5 : 1,
                         ),
                         boxShadow: isSelected
                             ? [
                                 BoxShadow(
-                                  color: HelaColors.primaryContainer
-                                      .withValues(alpha: 0.25),
+                                  color: HelaColors.primaryContainer.withValues(
+                                    alpha: 0.25,
+                                  ),
                                   blurRadius: 8,
                                   offset: const Offset(0, 3),
-                                )
+                                ),
                               ]
                             : null,
                       ),
@@ -882,7 +919,9 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage>
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 180),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 14),
+                        horizontal: 8,
+                        vertical: 14,
+                      ),
                       decoration: BoxDecoration(
                         color: isSelected
                             ? HelaColors.secondaryContainer
@@ -891,7 +930,9 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage>
                         border: Border.all(
                           color: isSelected
                               ? HelaColors.secondary.withValues(alpha: 0.5)
-                              : HelaColors.outlineVariant.withValues(alpha: 0.5),
+                              : HelaColors.outlineVariant.withValues(
+                                  alpha: 0.5,
+                                ),
                           width: isSelected ? 1.5 : 1,
                         ),
                       ),
@@ -961,66 +1002,73 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage>
             children: TravelDuration.values
                 .where((d) => d != TravelDuration.custom)
                 .map((duration) {
-              final isSelected = _selectedDuration == duration;
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedDuration = duration;
-                  });
-                },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 180),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? HelaColors.tertiaryFixed
-                        : HelaColors.surfaceContainerLowest,
-                    borderRadius: BorderRadius.circular(22),
-                    border: Border.all(
-                      color: isSelected
-                          ? HelaColors.tertiaryFixed
-                          : HelaColors.outlineVariant.withValues(alpha: 0.6),
-                      width: isSelected ? 1.5 : 1,
-                    ),
-                    boxShadow: isSelected
-                        ? [
-                            BoxShadow(
-                              color: HelaColors.tertiaryFixed.withValues(alpha: 0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 3),
-                            ),
-                          ]
-                        : null,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        duration.label,
-                        style: TextStyle(
-                          color: isSelected
-                              ? HelaColors.primary
-                              : HelaColors.onSurface,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 13.5,
-                        ),
+                  final isSelected = _selectedDuration == duration;
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectedDuration = duration;
+                      });
+                    },
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 180),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 10,
                       ),
-                      if (duration.days > 1)
-                        Text(
-                          '${duration.days} destinations',
-                          style: TextStyle(
-                            color: isSelected
-                                ? HelaColors.primary.withValues(alpha: 0.7)
-                                : HelaColors.onSurfaceVariant,
-                            fontSize: 10.5,
-                          ),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? HelaColors.tertiaryFixed
+                            : HelaColors.surfaceContainerLowest,
+                        borderRadius: BorderRadius.circular(22),
+                        border: Border.all(
+                          color: isSelected
+                              ? HelaColors.tertiaryFixed
+                              : HelaColors.outlineVariant.withValues(
+                                  alpha: 0.6,
+                                ),
+                          width: isSelected ? 1.5 : 1,
                         ),
-                    ],
-                  ),
-                ),
-              );
-            }).toList(),
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                                  color: HelaColors.tertiaryFixed.withValues(
+                                    alpha: 0.3,
+                                  ),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ]
+                            : null,
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            duration.label,
+                            style: TextStyle(
+                              color: isSelected
+                                  ? HelaColors.primary
+                                  : HelaColors.onSurface,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13.5,
+                            ),
+                          ),
+                          if (duration.days > 1)
+                            Text(
+                              '${duration.days} destinations',
+                              style: TextStyle(
+                                color: isSelected
+                                    ? HelaColors.primary.withValues(alpha: 0.7)
+                                    : HelaColors.onSurfaceVariant,
+                                fontSize: 10.5,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  );
+                })
+                .toList(),
           ),
         ],
       ),
@@ -1041,9 +1089,7 @@ class _TravelPreferencesPageState extends State<TravelPreferencesPage>
             child: ElevatedButton(
               onPressed: () {
                 Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const SmartTourHomePage(),
-                  ),
+                  MaterialPageRoute(builder: (_) => const SmartTourHomePage()),
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -1169,22 +1215,27 @@ class _DestinationBottomSheet extends StatelessWidget {
           // Image header
           if (destination.imageUrl.isNotEmpty)
             ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(24)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(24),
+              ),
               child: SizedBox(
                 height: 160,
                 width: double.infinity,
                 child: Stack(
                   children: [
                     Positioned.fill(
-                      child: Image.network(
-                        destination.imageUrl,
+                      child: HelaNetworkImage(
+                        imageUrl: destination.imageUrl,
+                        height: 160,
                         fit: BoxFit.cover,
                         errorBuilder: (_, e, st) => Container(
                           color: HelaColors.surfaceContainerHigh,
                           child: const Center(
-                            child: Icon(Icons.landscape_rounded,
-                                color: HelaColors.primary, size: 36),
+                            child: Icon(
+                              Icons.landscape_rounded,
+                              color: HelaColors.primary,
+                              size: 36,
+                            ),
                           ),
                         ),
                       ),
@@ -1211,15 +1262,16 @@ class _DestinationBottomSheet extends StatelessWidget {
                         children: [
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 3),
+                              horizontal: 8,
+                              vertical: 3,
+                            ),
                             decoration: BoxDecoration(
                               color: HelaColors.tertiaryFixed,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               destination.categories.isNotEmpty
-                                  ? destination.categories.first
-                                      .toUpperCase()
+                                  ? destination.categories.first.toUpperCase()
                                   : 'ATTRACTION',
                               style: const TextStyle(
                                 color: HelaColors.primary,
@@ -1238,9 +1290,10 @@ class _DestinationBottomSheet extends StatelessWidget {
                               fontSize: 18,
                               shadows: [
                                 Shadow(
-                                    blurRadius: 8,
-                                    color: Colors.black54,
-                                    offset: Offset(0, 2))
+                                  blurRadius: 8,
+                                  color: Colors.black54,
+                                  offset: Offset(0, 2),
+                                ),
                               ],
                             ),
                           ),
@@ -1271,8 +1324,11 @@ class _DestinationBottomSheet extends StatelessWidget {
                 // Location
                 Row(
                   children: [
-                    const Icon(Icons.location_on_rounded,
-                        size: 14, color: HelaColors.secondary),
+                    const Icon(
+                      Icons.location_on_rounded,
+                      size: 14,
+                      color: HelaColors.secondary,
+                    ),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
@@ -1285,13 +1341,18 @@ class _DestinationBottomSheet extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const Icon(Icons.star_rounded,
-                        size: 14, color: Color(0xFFD4A017)),
+                    const Icon(
+                      Icons.star_rounded,
+                      size: 14,
+                      color: Color(0xFFD4A017),
+                    ),
                     const SizedBox(width: 3),
                     Text(
                       destination.relevanceScore.toStringAsFixed(2),
                       style: const TextStyle(
-                          fontSize: 12, fontWeight: FontWeight.w700),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ],
                 ),
@@ -1319,7 +1380,9 @@ class _DestinationBottomSheet extends StatelessWidget {
                   children: destination.categories.map((cat) {
                     return Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 4),
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: HelaColors.tertiaryFixed.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(12),
@@ -1345,7 +1408,8 @@ class _DestinationBottomSheet extends StatelessWidget {
                       Navigator.pop(context);
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                            builder: (_) => const SmartTourHomePage()),
+                          builder: (_) => const SmartTourHomePage(),
+                        ),
                       );
                     },
                     icon: const Icon(Icons.explore_rounded, size: 18),

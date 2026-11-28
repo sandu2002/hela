@@ -6,6 +6,28 @@ import 'package:hela/state/app_state.dart';
 import 'package:hela/widgets/cards/stay_card.dart';
 import 'package:hela/widgets/navigation/hela_bottom_nav_bar.dart';
 
+const List<IconData> _kStayAmenityIcons = [
+  Icons.pool_rounded,
+  Icons.local_cafe_rounded,
+  Icons.spa_rounded,
+  Icons.restaurant_rounded,
+  Icons.hiking_rounded,
+  Icons.solar_power_rounded,
+  Icons.cabin_rounded,
+  Icons.landscape_rounded,
+  Icons.wifi_rounded,
+  Icons.hotel_rounded,
+];
+
+IconData _resolveStayAmenityIcon(int? codePoint) {
+  if (codePoint != null) {
+    for (final icon in _kStayAmenityIcons) {
+      if (icon.codePoint == codePoint) return icon;
+    }
+  }
+  return Icons.hotel_rounded;
+}
+
 /// Model representing an Eco-Haven / Stay item
 class StayHaven {
   final String title;
@@ -36,10 +58,42 @@ class StayHaven {
     this.buttonTextColor = HelaColors.onPrimary,
   });
 
+  Map<String, dynamic> toJson() => {
+    'title': title,
+    'location': location,
+    'rating': rating,
+    'reviewsCount': reviewsCount,
+    'ratingLabel': ratingLabel,
+    'pricePerNight': pricePerNight,
+    'feeNote': feeNote,
+    'imageUrl': imageUrl,
+    'amenities': amenities.map((a) => a.toJson()).toList(),
+    'hasPagerDots': hasPagerDots,
+  };
+
+  factory StayHaven.fromJson(Map<String, dynamic> json) => StayHaven(
+    title: json['title']?.toString() ?? '',
+    location: json['location']?.toString() ?? '',
+    rating: (json['rating'] as num?)?.toDouble() ?? 4.8,
+    reviewsCount: (json['reviewsCount'] as num?)?.toInt() ?? 0,
+    ratingLabel: json['ratingLabel']?.toString() ?? 'Top Rated',
+    pricePerNight: (json['pricePerNight'] as num?)?.toInt() ?? 100,
+    feeNote: json['feeNote']?.toString() ?? '',
+    imageUrl: json['imageUrl']?.toString() ?? '',
+    amenities:
+        (json['amenities'] as List<dynamic>?)
+            ?.map((e) => StayAmenity.fromJson(e as Map<String, dynamic>))
+            .toList() ??
+        const [],
+    hasPagerDots: json['hasPagerDots'] == true,
+  );
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is StayHaven && runtimeType == other.runtimeType && title == other.title;
+      other is StayHaven &&
+          runtimeType == other.runtimeType &&
+          title == other.title;
 
   @override
   int get hashCode => title.hashCode;
@@ -50,6 +104,13 @@ class StayAmenity {
   final IconData icon;
 
   const StayAmenity({required this.label, required this.icon});
+
+  Map<String, dynamic> toJson() => {'label': label, 'iconCode': icon.codePoint};
+
+  factory StayAmenity.fromJson(Map<String, dynamic> json) => StayAmenity(
+    label: json['label']?.toString() ?? '',
+    icon: _resolveStayAmenityIcon(json['iconCode'] as int?),
+  );
 }
 
 class StayFilterChipData {
@@ -77,7 +138,10 @@ class _StaysPageState extends State<StaysPage> {
   final List<StayFilterChipData> _filterChips = const [
     StayFilterChipData(label: 'Under \$120', hasDropdown: true),
     StayFilterChipData(label: '4.8+ Top Rated', icon: Icons.star_rounded),
-    StayFilterChipData(label: 'Tea Estate & Forest', icon: Icons.forest_rounded),
+    StayFilterChipData(
+      label: 'Tea Estate & Forest',
+      icon: Icons.forest_rounded,
+    ),
     StayFilterChipData(label: 'Free Breakfast', icon: Icons.coffee_rounded),
     StayFilterChipData(label: 'Infinity Pool', icon: Icons.pool_rounded),
     StayFilterChipData(label: 'Eco-Certified', icon: Icons.eco_rounded),
@@ -98,7 +162,10 @@ class _StaysPageState extends State<StaysPage> {
       buttonTextColor: HelaColors.primary,
       amenities: [
         StayAmenity(label: 'Infinity Pool', icon: Icons.pool_rounded),
-        StayAmenity(label: 'Estate Tea Tour Included', icon: Icons.local_cafe_rounded),
+        StayAmenity(
+          label: 'Estate Tea Tour Included',
+          icon: Icons.local_cafe_rounded,
+        ),
         StayAmenity(label: 'Ayurveda Spa', icon: Icons.spa_rounded),
       ],
     ),
@@ -114,7 +181,10 @@ class _StaysPageState extends State<StaysPage> {
       buttonBgColor: HelaColors.primaryContainer,
       buttonTextColor: HelaColors.onPrimary,
       amenities: [
-        StayAmenity(label: 'Farm-to-Table Dining', icon: Icons.restaurant_rounded),
+        StayAmenity(
+          label: 'Farm-to-Table Dining',
+          icon: Icons.restaurant_rounded,
+        ),
         StayAmenity(label: 'Waterfalls Trek', icon: Icons.hiking_rounded),
         StayAmenity(label: 'Solar Powered', icon: Icons.solar_power_rounded),
       ],
@@ -132,11 +202,13 @@ class _StaysPageState extends State<StaysPage> {
       buttonTextColor: HelaColors.onPrimary,
       amenities: [
         StayAmenity(label: 'Luxury Tented Chalet', icon: Icons.cabin_rounded),
-        StayAmenity(label: 'Valley Infinity Edge', icon: Icons.landscape_rounded),
+        StayAmenity(
+          label: 'Valley Infinity Edge',
+          icon: Icons.landscape_rounded,
+        ),
       ],
     ),
   ];
-
 
   @override
   Widget build(BuildContext context) {
@@ -163,7 +235,8 @@ class _StaysPageState extends State<StaysPage> {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: _stays.length,
-                      separatorBuilder: (context, index) => const SizedBox(height: 20),
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 20),
                       itemBuilder: (context, index) => _buildStayCard(index),
                     ),
                   ),
@@ -205,7 +278,11 @@ class _StaysPageState extends State<StaysPage> {
                       },
                       child: const Padding(
                         padding: EdgeInsets.all(8.0),
-                        child: Icon(Icons.arrow_back_rounded, color: HelaColors.primary, size: 24),
+                        child: Icon(
+                          Icons.arrow_back_rounded,
+                          color: HelaColors.primary,
+                          size: 24,
+                        ),
                       ),
                     ),
                   ),
@@ -229,7 +306,11 @@ class _StaysPageState extends State<StaysPage> {
                       },
                       child: const Padding(
                         padding: EdgeInsets.all(8.0),
-                        child: Icon(Icons.map_outlined, color: HelaColors.primary, size: 24),
+                        child: Icon(
+                          Icons.map_outlined,
+                          color: HelaColors.primary,
+                          size: 24,
+                        ),
                       ),
                     ),
                   ),
@@ -238,7 +319,10 @@ class _StaysPageState extends State<StaysPage> {
 
               // Search & Date Summary Pill
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: HelaColors.surfaceContainerLowest,
                   borderRadius: BorderRadius.circular(24),
@@ -279,7 +363,9 @@ class _StaysPageState extends State<StaysPage> {
                         customBorder: const CircleBorder(),
                         onTap: () {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Editing search criteria...')),
+                            const SnackBar(
+                              content: Text('Editing search criteria...'),
+                            ),
                           );
                         },
                         child: const Padding(
@@ -337,7 +423,9 @@ class _StaysPageState extends State<StaysPage> {
                 duration: const Duration(milliseconds: 180),
                 padding: const EdgeInsets.symmetric(horizontal: 14),
                 decoration: BoxDecoration(
-                  color: isSelected ? HelaColors.primaryContainer : HelaColors.surfaceContainerLowest,
+                  color: isSelected
+                      ? HelaColors.primaryContainer
+                      : HelaColors.surfaceContainerLowest,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: isSelected
@@ -347,7 +435,9 @@ class _StaysPageState extends State<StaysPage> {
                   boxShadow: isSelected
                       ? [
                           BoxShadow(
-                            color: HelaColors.primaryContainer.withValues(alpha: 0.25),
+                            color: HelaColors.primaryContainer.withValues(
+                              alpha: 0.25,
+                            ),
                             blurRadius: 6,
                             offset: const Offset(0, 2),
                           ),
@@ -361,16 +451,22 @@ class _StaysPageState extends State<StaysPage> {
                       Icon(
                         filter.icon,
                         size: 14,
-                        color: isSelected ? HelaColors.tertiaryFixed : HelaColors.secondary,
+                        color: isSelected
+                            ? HelaColors.tertiaryFixed
+                            : HelaColors.secondary,
                       ),
                       const SizedBox(width: 5),
                     ],
                     Text(
                       filter.label,
                       style: TextStyle(
-                        color: isSelected ? HelaColors.onPrimary : HelaColors.onSurfaceVariant,
+                        color: isSelected
+                            ? HelaColors.onPrimary
+                            : HelaColors.onSurfaceVariant,
                         fontSize: 12,
-                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                        fontWeight: isSelected
+                            ? FontWeight.w700
+                            : FontWeight.w500,
                       ),
                     ),
                     if (filter.hasDropdown) ...[
@@ -378,7 +474,9 @@ class _StaysPageState extends State<StaysPage> {
                       Icon(
                         Icons.expand_more_rounded,
                         size: 16,
-                        color: isSelected ? HelaColors.onPrimary : HelaColors.onSurfaceVariant,
+                        color: isSelected
+                            ? HelaColors.onPrimary
+                            : HelaColors.onSurfaceVariant,
                       ),
                     ],
                   ],
@@ -440,7 +538,11 @@ class _StaysPageState extends State<StaysPage> {
                     ),
                   ),
                   SizedBox(width: 3),
-                  Icon(Icons.swap_vert_rounded, size: 16, color: HelaColors.secondary),
+                  Icon(
+                    Icons.swap_vert_rounded,
+                    size: 16,
+                    color: HelaColors.secondary,
+                  ),
                 ],
               ),
             ),

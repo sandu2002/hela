@@ -67,72 +67,76 @@ void main() {
   });
 
   group('LiveRouteOverviewMap widget', () {
-    testWidgets('renders FlutterMap with live GPS status and updates on stream',
-        (tester) async {
-      final controller = StreamController<LatLng>.broadcast();
-      addTearDown(controller.close);
+    testWidgets(
+      'renders FlutterMap with live GPS status and updates on stream',
+      (tester) async {
+        final controller = StreamController<LatLng>.broadcast();
+        addTearDown(controller.close);
 
-      final stops = RouteMapService.buildDayRouteStops(
-        originLabel: 'Bandaranaike Intl Airport (CMB)',
-        destinationLabel: 'Sigiriya',
-      );
+        final stops = RouteMapService.buildDayRouteStops(
+          originLabel: 'Bandaranaike Intl Airport (CMB)',
+          destinationLabel: 'Sigiriya',
+        );
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: LiveRouteOverviewMap(
-              dayNumber: 1,
-              routeSummary: 'CMB → Kurunegala → Sigiriya',
-              stops: stops,
-              stopsCount: 4,
-              initialUserLocation: const LatLng(7.1950, 79.8950),
-              locationStreamOverride: controller.stream,
-              enableDeviceLocation: false,
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: LiveRouteOverviewMap(
+                dayNumber: 1,
+                routeSummary: 'CMB → Kurunegala → Sigiriya',
+                stops: stops,
+                stopsCount: 4,
+                initialUserLocation: const LatLng(7.1950, 79.8950),
+                locationStreamOverride: controller.stream,
+                enableDeviceLocation: false,
+              ),
             ),
           ),
-        ),
-      );
-      await tester.pump();
+        );
+        await tester.pump();
 
-      expect(find.byType(FlutterMap), findsOneWidget);
-      expect(find.textContaining('Live GPS'), findsOneWidget);
-      expect(find.text('4 stops'), findsOneWidget);
+        expect(find.byType(FlutterMap), findsOneWidget);
+        expect(find.textContaining('Live GPS'), findsOneWidget);
+        expect(find.text('4 stops'), findsOneWidget);
 
-      // Emit a new live location closer to Kurunegala
-      controller.add(const LatLng(7.4800, 80.3500));
-      await tester.pump();
+        // Emit a new live location closer to Kurunegala
+        controller.add(const LatLng(7.4800, 80.3500));
+        await tester.pump();
 
-      expect(find.textContaining('Live GPS'), findsOneWidget);
-    });
+        expect(find.textContaining('Live GPS'), findsOneWidget);
+      },
+    );
 
-    testWidgets('ItineraryDetailsPage displays LiveRouteOverviewMap and opens Expand page',
-        (tester) async {
-      await tester.pumpWidget(
-        HelaAppStateProvider(
-          state: HelaAppState(),
-          child: MaterialApp(
-            home: ItineraryDetailsPage(
-              startDate: DateTime(2026, 10, 14),
-              endDate: DateTime(2026, 10, 18),
+    testWidgets(
+      'ItineraryDetailsPage displays LiveRouteOverviewMap and opens Expand page',
+      (tester) async {
+        await tester.pumpWidget(
+          HelaAppStateProvider(
+            state: HelaAppState(),
+            child: MaterialApp(
+              home: ItineraryDetailsPage(
+                startDate: DateTime(2026, 10, 14),
+                endDate: DateTime(2026, 10, 18),
+              ),
             ),
           ),
-        ),
-      );
-      await tester.pump();
+        );
+        await tester.pump();
 
-      expect(find.text('Day 1 Route Overview'), findsOneWidget);
-      expect(find.byType(LiveRouteOverviewMap), findsOneWidget);
-      expect(find.byType(FlutterMap), findsOneWidget);
+        expect(find.text('Day 1 Route Overview'), findsOneWidget);
+        expect(find.byType(LiveRouteOverviewMap), findsOneWidget);
+        expect(find.byType(FlutterMap), findsOneWidget);
 
-      // Scroll Expand into view (above sticky bottom bar) and tap it
-      await tester.ensureVisible(find.text('Expand'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Expand'));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 300));
+        // Scroll Expand into view (above sticky bottom bar) and tap it
+        await tester.ensureVisible(find.text('Expand'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Expand'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
 
-      expect(find.byType(LiveRouteMapPage), findsOneWidget);
-      expect(find.text('Day 1 Live Route Map'), findsOneWidget);
-    });
+        expect(find.byType(LiveRouteMapPage), findsOneWidget);
+        expect(find.text('Day 1 Live Route Map'), findsOneWidget);
+      },
+    );
   });
 }

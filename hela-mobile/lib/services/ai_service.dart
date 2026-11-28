@@ -495,7 +495,7 @@ HELA:''';
         }
       } else {
         debugPrint(
-          '[AIService] chatWithHela backend proxy HTTP ${response.statusCode}: ${response.body}',
+          '[AIService] chatWithHela backend proxy returned HTTP ${response.statusCode}',
         );
       }
     } catch (e) {

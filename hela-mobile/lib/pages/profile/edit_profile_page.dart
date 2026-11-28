@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hela/state/app_state.dart';
 import 'package:hela/theme/hela_colors.dart';
+import 'package:hela/widgets/common/hela_network_image.dart';
 
 /// Available avatar presets for the explorer
 class _AvatarPreset {
@@ -151,7 +152,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
       SnackBar(
         content: const Row(
           children: [
-            Icon(Icons.check_circle_rounded, color: HelaColors.tertiaryFixed, size: 20),
+            Icon(
+              Icons.check_circle_rounded,
+              color: HelaColors.tertiaryFixed,
+              size: 20,
+            ),
             SizedBox(width: 10),
             Text(
               'Profile updated successfully!',
@@ -207,7 +212,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     itemCount: _avatarPresets.length,
-                    separatorBuilder: (context, index) => const SizedBox(width: 14),
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(width: 14),
                     itemBuilder: (context, index) {
                       final preset = _avatarPresets[index];
                       final isSelected = _selectedPhotoUrl == preset.url;
@@ -232,14 +238,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 ),
                               ),
                               child: ClipOval(
-                                child: Image.network(
-                                  preset.url,
+                                child: HelaNetworkImage(
+                                  imageUrl: preset.url,
+                                  width: 60,
+                                  height: 60,
                                   fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) => Container(
-                                    color: HelaColors.primaryContainer,
-                                    child: const Icon(Icons.person,
-                                        color: Colors.white),
-                                  ),
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Container(
+                                        color: HelaColors.primaryContainer,
+                                        child: const Icon(
+                                          Icons.person,
+                                          color: Colors.white,
+                                        ),
+                                      ),
                                 ),
                               ),
                             ),
@@ -351,19 +362,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               ),
                             ),
                             child: ClipOval(
-                              child: Image.network(
-                                _selectedPhotoUrl ?? _avatarPresets.first.url,
+                              child: HelaNetworkImage(
+                                imageUrl:
+                                    _selectedPhotoUrl ??
+                                    _avatarPresets.first.url,
                                 width: 97,
                                 height: 97,
                                 fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) => Container(
-                                  color: HelaColors.primaryContainer,
-                                  child: const Icon(
-                                    Icons.person_rounded,
-                                    size: 50,
-                                    color: Colors.white,
-                                  ),
-                                ),
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Container(
+                                      color: HelaColors.primaryContainer,
+                                      child: const Icon(
+                                        Icons.person_rounded,
+                                        size: 50,
+                                        color: Colors.white,
+                                      ),
+                                    ),
                               ),
                             ),
                           ),
@@ -405,7 +419,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         borderRadius: BorderRadius.circular(12),
                         child: const Padding(
                           padding: EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
                           child: Text(
                             'Change Portrait',
                             style: TextStyle(
@@ -457,7 +473,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
                 // ── Contact & Location Card ────────────────────
                 _buildSectionHeader(
-                    'Contact & Location', Icons.contact_mail_outlined),
+                  'Contact & Location',
+                  Icons.contact_mail_outlined,
+                ),
                 const SizedBox(height: 12),
                 _buildCardContainer(
                   children: [
@@ -501,7 +519,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     _buildTextField(
                       controller: _bioController,
                       label: 'About You',
-                      hint: 'Share a note about your travel aspirations in Ceylon...',
+                      hint:
+                          'Share a note about your travel aspirations in Ceylon...',
                       icon: Icons.format_quote_rounded,
                       maxLines: 3,
                     ),
@@ -510,7 +529,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 const SizedBox(height: 24),
 
                 // ── Travel Interests ───────────────────────────
-                _buildSectionHeader('Wanderlust Interests', Icons.interests_outlined),
+                _buildSectionHeader(
+                  'Wanderlust Interests',
+                  Icons.interests_outlined,
+                ),
                 const SizedBox(height: 12),
                 Container(
                   width: double.infinity,
@@ -539,8 +561,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             }
                           });
                         },
-                        selectedColor:
-                            HelaColors.secondaryContainer.withValues(alpha: 0.6),
+                        selectedColor: HelaColors.secondaryContainer.withValues(
+                          alpha: 0.6,
+                        ),
                         checkmarkColor: HelaColors.primary,
                         backgroundColor: HelaColors.surface,
                         labelStyle: TextStyle(
@@ -555,7 +578,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         side: BorderSide(
                           color: isSelected
                               ? HelaColors.secondary
-                              : HelaColors.outlineVariant.withValues(alpha: 0.5),
+                              : HelaColors.outlineVariant.withValues(
+                                  alpha: 0.5,
+                                ),
                         ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
@@ -580,8 +605,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(28),
                       ),
-                      disabledBackgroundColor:
-                          HelaColors.tertiaryFixed.withValues(alpha: 0.5),
+                      disabledBackgroundColor: HelaColors.tertiaryFixed
+                          .withValues(alpha: 0.5),
                     ),
                     child: _isSaving
                         ? const SizedBox(
@@ -693,8 +718,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
         prefixIcon: Icon(icon, color: HelaColors.secondary, size: 18),
         filled: true,
         fillColor: HelaColors.surfaceContainerLow,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 14,
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
@@ -703,10 +730,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(
-            color: HelaColors.secondary,
-            width: 1.5,
-          ),
+          borderSide: const BorderSide(color: HelaColors.secondary, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),

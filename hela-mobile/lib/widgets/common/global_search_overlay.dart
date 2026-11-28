@@ -5,6 +5,7 @@ import 'package:hela/pages/smart_tour/smart_tour_home_page.dart';
 import 'package:hela/pages/bookings/stays_page.dart';
 import 'package:hela/services/place_service.dart';
 import 'package:hela/theme/hela_colors.dart';
+import 'package:hela/widgets/common/hela_network_image.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Unified searchable data catalog
@@ -223,12 +224,24 @@ class _GlobalSearchOverlayState extends State<GlobalSearchOverlay>
   late final AnimationController _slideController;
   late final Animation<Offset> _slideAnimation;
 
-  static const _filters = ['All', 'Havens', 'Stays', 'Experiences', 'Destinations'];
+  static const _filters = [
+    'All',
+    'Havens',
+    'Stays',
+    'Experiences',
+    'Destinations',
+  ];
 
   // Popular quick suggestions
   static const _suggestions = [
-    'Sigiriya', 'Ella', 'Galle Fort', 'Yala Safari',
-    'Mirissa Beach', 'Kandy', 'Nuwara Eliya', 'Trincomalee',
+    'Sigiriya',
+    'Ella',
+    'Galle Fort',
+    'Yala Safari',
+    'Mirissa Beach',
+    'Kandy',
+    'Nuwara Eliya',
+    'Trincomalee',
   ];
 
   @override
@@ -306,8 +319,8 @@ class _GlobalSearchOverlayState extends State<GlobalSearchOverlay>
                   child: _query.isEmpty
                       ? _buildSuggestionsPanel()
                       : results.isEmpty
-                          ? _buildEmptyState()
-                          : _buildResultsList(results),
+                      ? _buildEmptyState()
+                      : _buildResultsList(results),
                 ),
               ),
             ),
@@ -374,7 +387,10 @@ class _GlobalSearchOverlayState extends State<GlobalSearchOverlay>
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.close_rounded, color: HelaColors.onSurfaceVariant),
+                icon: const Icon(
+                  Icons.close_rounded,
+                  color: HelaColors.onSurfaceVariant,
+                ),
                 onPressed: () => Navigator.of(context).pop(),
                 style: IconButton.styleFrom(
                   backgroundColor: HelaColors.surfaceContainerLowest,
@@ -422,7 +438,9 @@ class _GlobalSearchOverlayState extends State<GlobalSearchOverlay>
                     decoration: InputDecoration(
                       hintText: 'Where in Sri Lanka? Try "Ella" or "Kandy"',
                       hintStyle: TextStyle(
-                        color: HelaColors.onSurfaceVariant.withValues(alpha: 0.6),
+                        color: HelaColors.onSurfaceVariant.withValues(
+                          alpha: 0.6,
+                        ),
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                       ),
@@ -437,7 +455,11 @@ class _GlobalSearchOverlayState extends State<GlobalSearchOverlay>
                 ),
                 if (_query.isNotEmpty)
                   IconButton(
-                    icon: const Icon(Icons.close_rounded, size: 18, color: HelaColors.outline),
+                    icon: const Icon(
+                      Icons.close_rounded,
+                      size: 18,
+                      color: HelaColors.outline,
+                    ),
                     onPressed: () {
                       _controller.clear();
                       setState(() => _query = '');
@@ -483,8 +505,9 @@ class _GlobalSearchOverlayState extends State<GlobalSearchOverlay>
                           color: isSelected
                               ? HelaColors.onPrimary
                               : HelaColors.onSurfaceVariant,
-                          fontWeight:
-                              isSelected ? FontWeight.w700 : FontWeight.w500,
+                          fontWeight: isSelected
+                              ? FontWeight.w700
+                              : FontWeight.w500,
                           fontSize: 12.5,
                         ),
                       ),
@@ -525,7 +548,11 @@ class _GlobalSearchOverlayState extends State<GlobalSearchOverlay>
               padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
               child: Row(
                 children: [
-                  const Icon(Icons.bolt_rounded, size: 16, color: HelaColors.secondary),
+                  const Icon(
+                    Icons.bolt_rounded,
+                    size: 16,
+                    color: HelaColors.secondary,
+                  ),
                   const SizedBox(width: 6),
                   const Text(
                     'Popular in Sri Lanka',
@@ -540,44 +567,57 @@ class _GlobalSearchOverlayState extends State<GlobalSearchOverlay>
             ),
             const Divider(height: 1, color: HelaColors.surfaceContainer),
             // Suggestion tiles
-            ..._suggestions.map((sug) => InkWell(
-                  onTap: () {
-                    _controller.text = sug;
-                    setState(() => _query = sug);
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                            color: HelaColors.tertiaryFixed.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Center(
-                            child: Icon(Icons.search_rounded,
-                                size: 15, color: HelaColors.primary),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            sug,
-                            style: const TextStyle(
-                              color: HelaColors.onSurface,
-                              fontSize: 13.5,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                        const Icon(Icons.north_west_rounded,
-                            size: 14, color: HelaColors.onSurfaceVariant),
-                      ],
-                    ),
+            ..._suggestions.map(
+              (sug) => InkWell(
+                onTap: () {
+                  _controller.text = sug;
+                  setState(() => _query = sug);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 11,
                   ),
-                )),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: HelaColors.tertiaryFixed.withValues(
+                            alpha: 0.2,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.search_rounded,
+                            size: 15,
+                            color: HelaColors.primary,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          sug,
+                          style: const TextStyle(
+                            color: HelaColors.onSurface,
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      const Icon(
+                        Icons.north_west_rounded,
+                        size: 14,
+                        color: HelaColors.onSurfaceVariant,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -649,13 +689,17 @@ class _GlobalSearchOverlayState extends State<GlobalSearchOverlay>
           children: [
             // Thumbnail
             ClipRRect(
-              borderRadius: const BorderRadius.horizontal(left: Radius.circular(18)),
+              borderRadius: const BorderRadius.horizontal(
+                left: Radius.circular(18),
+              ),
               child: SizedBox(
                 width: 86,
                 height: 86,
                 child: item.imageUrl.isNotEmpty
-                    ? Image.network(
-                        item.imageUrl,
+                    ? HelaNetworkImage(
+                        imageUrl: item.imageUrl,
+                        width: 86,
+                        height: 86,
                         fit: BoxFit.cover,
                         errorBuilder: (_, e, st) => _fallbackThumb(item.icon),
                       )
@@ -673,7 +717,10 @@ class _GlobalSearchOverlayState extends State<GlobalSearchOverlay>
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 7,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: typeBg,
                             borderRadius: BorderRadius.circular(6),
@@ -690,7 +737,11 @@ class _GlobalSearchOverlayState extends State<GlobalSearchOverlay>
                         ),
                         const Spacer(),
                         if (item.rating != null) ...[
-                          const Icon(Icons.star_rounded, size: 13, color: Color(0xFFD4A017)),
+                          const Icon(
+                            Icons.star_rounded,
+                            size: 13,
+                            color: Color(0xFFD4A017),
+                          ),
                           const SizedBox(width: 2),
                           Text(
                             item.rating!.toStringAsFixed(2),
@@ -718,8 +769,11 @@ class _GlobalSearchOverlayState extends State<GlobalSearchOverlay>
                     const SizedBox(height: 3),
                     Row(
                       children: [
-                        const Icon(Icons.location_on_outlined,
-                            size: 11, color: HelaColors.onSurfaceVariant),
+                        const Icon(
+                          Icons.location_on_outlined,
+                          size: 11,
+                          color: HelaColors.onSurfaceVariant,
+                        ),
                         const SizedBox(width: 3),
                         Expanded(
                           child: Text(
@@ -751,8 +805,11 @@ class _GlobalSearchOverlayState extends State<GlobalSearchOverlay>
             // Arrow
             const Padding(
               padding: EdgeInsets.only(right: 12),
-              child: Icon(Icons.arrow_forward_ios_rounded,
-                  size: 14, color: HelaColors.onSurfaceVariant),
+              child: Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 14,
+                color: HelaColors.onSurfaceVariant,
+              ),
             ),
           ],
         ),
@@ -763,9 +820,7 @@ class _GlobalSearchOverlayState extends State<GlobalSearchOverlay>
   Widget _fallbackThumb(IconData icon) {
     return Container(
       color: HelaColors.surfaceContainerHigh,
-      child: Center(
-        child: Icon(icon, color: HelaColors.primary, size: 28),
-      ),
+      child: Center(child: Icon(icon, color: HelaColors.primary, size: 28)),
     );
   }
 
@@ -796,7 +851,11 @@ class _GlobalSearchOverlayState extends State<GlobalSearchOverlay>
               shape: BoxShape.circle,
             ),
             child: const Center(
-              child: Icon(Icons.search_off_rounded, size: 32, color: HelaColors.primary),
+              child: Icon(
+                Icons.search_off_rounded,
+                size: 32,
+                color: HelaColors.primary,
+              ),
             ),
           ),
           const SizedBox(height: 14),
@@ -848,9 +907,9 @@ class _GlobalSearchOverlayState extends State<GlobalSearchOverlay>
           }
           break;
         case _ResultType.stay:
-          Navigator.of(ctx).push(
-            MaterialPageRoute(builder: (_) => const StaysPage()),
-          );
+          Navigator.of(
+            ctx,
+          ).push(MaterialPageRoute(builder: (_) => const StaysPage()));
           break;
       }
     });

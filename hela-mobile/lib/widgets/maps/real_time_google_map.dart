@@ -3,11 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hela/pages/home/home_page.dart';
 
 /// Available map layer styles
-enum MapStyleType {
-  standard,
-  satellite,
-  terrain,
-}
+enum MapStyleType { standard, satellite, terrain }
 
 /// Real-Time Interactive Google Map Widget
 ///
@@ -166,8 +162,10 @@ class _RealTimeGoogleMapState extends State<RealTimeGoogleMap>
     final uuu = uu * u;
     final ttt = tt * t;
 
-    final x = uuu * p0.dx + 3 * uu * t * p1.dx + 3 * u * tt * p2.dx + ttt * p3.dx;
-    final y = uuu * p0.dy + 3 * uu * t * p1.dy + 3 * u * tt * p2.dy + ttt * p3.dy;
+    final x =
+        uuu * p0.dx + 3 * uu * t * p1.dx + 3 * u * tt * p2.dx + ttt * p3.dx;
+    final y =
+        uuu * p0.dy + 3 * uu * t * p1.dy + 3 * u * tt * p2.dy + ttt * p3.dy;
     return Offset(x, y);
   }
 
@@ -263,11 +261,7 @@ class _RealTimeGoogleMapState extends State<RealTimeGoogleMap>
           ),
 
           // 5. Google Maps Watermark Logo (Bottom Left)
-          Positioned(
-            bottom: 48,
-            left: 16,
-            child: _buildGoogleWatermark(),
-          ),
+          Positioned(bottom: 48, left: 16, child: _buildGoogleWatermark()),
 
           // 6. Map Type & Traffic Layer Buttons (Top Right beneath card)
           Positioned(
@@ -304,11 +298,7 @@ class _RealTimeGoogleMapState extends State<RealTimeGoogleMap>
           ),
 
           // 7. Zoom In & Zoom Out Pill Controls (Right Center)
-          Positioned(
-            top: 194,
-            right: 14,
-            child: _buildZoomControls(),
-          ),
+          Positioned(top: 194, right: 14, child: _buildZoomControls()),
 
           // 8. Bottom Navigation Strip (ETA, Route Info & Recenter Button)
           Positioned(
@@ -401,13 +391,7 @@ class _RealTimeGoogleMapState extends State<RealTimeGoogleMap>
                   ),
                 ],
               ),
-              child: Center(
-                child: Icon(
-                  icon,
-                  size: 15,
-                  color: Colors.white,
-                ),
-              ),
+              child: Center(child: Icon(icon, size: 15, color: Colors.white)),
             ),
           ],
         ),
@@ -549,10 +533,7 @@ class _RealTimeGoogleMapState extends State<RealTimeGoogleMap>
         color: Colors.white.withValues(alpha: 0.75),
         borderRadius: BorderRadius.circular(4),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 4,
-          ),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 4),
         ],
       ),
       child: RichText(
@@ -564,12 +545,30 @@ class _RealTimeGoogleMapState extends State<RealTimeGoogleMap>
             letterSpacing: -0.4,
           ),
           children: [
-            TextSpan(text: 'G', style: TextStyle(color: Color(0xFF4285F4))),
-            TextSpan(text: 'o', style: TextStyle(color: Color(0xFFEA4335))),
-            TextSpan(text: 'o', style: TextStyle(color: Color(0xFFFBBC05))),
-            TextSpan(text: 'g', style: TextStyle(color: Color(0xFF4285F4))),
-            TextSpan(text: 'l', style: TextStyle(color: Color(0xFF34A853))),
-            TextSpan(text: 'e', style: TextStyle(color: Color(0xFFEA4335))),
+            TextSpan(
+              text: 'G',
+              style: TextStyle(color: Color(0xFF4285F4)),
+            ),
+            TextSpan(
+              text: 'o',
+              style: TextStyle(color: Color(0xFFEA4335)),
+            ),
+            TextSpan(
+              text: 'o',
+              style: TextStyle(color: Color(0xFFFBBC05)),
+            ),
+            TextSpan(
+              text: 'g',
+              style: TextStyle(color: Color(0xFF4285F4)),
+            ),
+            TextSpan(
+              text: 'l',
+              style: TextStyle(color: Color(0xFF34A853)),
+            ),
+            TextSpan(
+              text: 'e',
+              style: TextStyle(color: Color(0xFFEA4335)),
+            ),
           ],
         ),
       ),
@@ -593,11 +592,7 @@ class _RealTimeGoogleMapState extends State<RealTimeGoogleMap>
           onTap: onTap,
           child: Padding(
             padding: const EdgeInsets.all(7.0),
-            child: Icon(
-              icon,
-              size: 19,
-              color: color ?? HelaColors.primary,
-            ),
+            child: Icon(icon, size: 19, color: color ?? HelaColors.primary),
           ),
         ),
       ),
@@ -610,10 +605,7 @@ class _RealTimeGoogleMapState extends State<RealTimeGoogleMap>
         color: HelaColors.surfaceContainerLowest.withValues(alpha: 0.94),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 6,
-          ),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 6),
         ],
       ),
       child: Column(
@@ -631,14 +623,11 @@ class _RealTimeGoogleMapState extends State<RealTimeGoogleMap>
               ),
             ),
           ),
-          Container(
-            height: 1,
-            width: 20,
-            color: HelaColors.surfaceContainer,
-          ),
+          Container(height: 1, width: 20, color: HelaColors.surfaceContainer),
           InkWell(
-            borderRadius:
-                const BorderRadius.vertical(bottom: Radius.circular(16)),
+            borderRadius: const BorderRadius.vertical(
+              bottom: Radius.circular(16),
+            ),
             onTap: _zoomOut,
             child: const Padding(
               padding: EdgeInsets.symmetric(horizontal: 7, vertical: 6),
@@ -694,10 +683,7 @@ class _RealTimeGoogleMapState extends State<RealTimeGoogleMap>
               ),
               Text(
                 widget.distanceText,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 12,
-                ),
+                style: const TextStyle(color: Colors.white70, fontSize: 12),
               ),
             ],
           ),
@@ -955,9 +941,9 @@ class _GoogleMapCanvasPainter extends CustomPainter {
 
     // Pulsing radar glow behind vehicle
     final radarPaint = Paint()
-      ..color = const Color(0xFF34A853).withValues(
-        alpha: (1.4 - pulse).clamp(0.0, 0.35),
-      )
+      ..color = const Color(
+        0xFF34A853,
+      ).withValues(alpha: (1.4 - pulse).clamp(0.0, 0.35))
       ..style = PaintingStyle.fill;
     canvas.drawCircle(Offset.zero, 18 * pulse, radarPaint);
 

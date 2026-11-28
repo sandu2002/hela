@@ -12,11 +12,7 @@ class TourPlanDetailsPage extends StatefulWidget {
   final TourPlan plan;
   final TourPreferences? preferences;
 
-  const TourPlanDetailsPage({
-    super.key,
-    required this.plan,
-    this.preferences,
-  });
+  const TourPlanDetailsPage({super.key, required this.plan, this.preferences});
 
   @override
   State<TourPlanDetailsPage> createState() => _TourPlanDetailsPageState();
@@ -70,23 +66,31 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
           persist: false,
           content: Row(
             children: [
-              const Icon(Icons.bookmark_added_rounded, color: Colors.white, size: 20),
+              const Icon(
+                Icons.bookmark_added_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
               const SizedBox(width: 10),
               Expanded(
-                child: Text('Saved "${_currentPlan.title}" to your Saved Page!'),
+                child: Text(
+                  'Saved "${_currentPlan.title}" to your Saved Page!',
+                ),
               ),
             ],
           ),
           backgroundColor: HelaColors.primary,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
           action: SnackBarAction(
             label: 'View',
             textColor: HelaColors.tertiaryFixed,
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const SavedPage()),
-              );
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => const SavedPage()));
             },
           ),
         ),
@@ -103,7 +107,11 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
           persist: false,
           content: Row(
             children: [
-              const Icon(Icons.bookmark_remove_rounded, color: Colors.white, size: 20),
+              const Icon(
+                Icons.bookmark_remove_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
               const SizedBox(width: 10),
               Expanded(
                 child: Text('Removed "${_currentPlan.title}" from Saved Page'),
@@ -112,7 +120,9 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
           ),
           backgroundColor: HelaColors.primary,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
     }
@@ -153,8 +163,9 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
   @override
   Widget build(BuildContext context) {
     final days = _currentPlan.days;
-    final activeDay =
-        days.isNotEmpty && _selectedDayIndex < days.length ? days[_selectedDayIndex] : null;
+    final activeDay = days.isNotEmpty && _selectedDayIndex < days.length
+        ? days[_selectedDayIndex]
+        : null;
 
     return Scaffold(
       backgroundColor: HelaColors.surface,
@@ -218,7 +229,10 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
                       decoration: BoxDecoration(
                         color: HelaColors.tertiaryFixed,
                         borderRadius: BorderRadius.circular(20),
@@ -226,8 +240,11 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.auto_awesome_rounded,
-                              size: 13, color: Color(0xFF1A1D00)),
+                          const Icon(
+                            Icons.auto_awesome_rounded,
+                            size: 13,
+                            color: Color(0xFF1A1D00),
+                          ),
                           const SizedBox(width: 5),
                           Text(
                             '${_currentPlan.durationDays} Days Itinerary',
@@ -282,8 +299,11 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.info_outline_rounded,
-                            size: 15, color: HelaColors.tertiaryFixed),
+                        const Icon(
+                          Icons.info_outline_rounded,
+                          size: 15,
+                          color: HelaColors.tertiaryFixed,
+                        ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
@@ -330,14 +350,20 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
                         border: Border.all(
                           color: isSelected
                               ? HelaColors.primary
-                              : HelaColors.outlineVariant.withValues(alpha: 0.5),
+                              : HelaColors.outlineVariant.withValues(
+                                  alpha: 0.5,
+                                ),
                         ),
                       ),
                       child: Text(
                         'Day ${index + 1}',
                         style: TextStyle(
-                          color: isSelected ? Colors.white : HelaColors.onSurfaceVariant,
-                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                          color: isSelected
+                              ? Colors.white
+                              : HelaColors.onSurfaceVariant,
+                          fontWeight: isSelected
+                              ? FontWeight.w700
+                              : FontWeight.w500,
                           fontSize: 13,
                         ),
                       ),
@@ -387,19 +413,27 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
                       activeDay.overnightStay!.isNotEmpty) ...[
                     const SizedBox(height: 10),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
                       decoration: BoxDecoration(
                         color: HelaColors.surfaceContainerLow,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: HelaColors.outlineVariant.withValues(alpha: 0.4),
+                          color: HelaColors.outlineVariant.withValues(
+                            alpha: 0.4,
+                          ),
                         ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.hotel_rounded,
-                              size: 14, color: HelaColors.primary),
+                          const Icon(
+                            Icons.hotel_rounded,
+                            size: 14,
+                            color: HelaColors.primary,
+                          ),
                           const SizedBox(width: 6),
                           Flexible(
                             child: Text(
@@ -439,14 +473,19 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
                                 decoration: BoxDecoration(
                                   color: HelaColors.primary,
                                   shape: BoxShape.circle,
-                                  border: Border.all(color: Colors.white, width: 2),
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 2,
+                                  ),
                                 ),
                               ),
                               if (!isLast)
                                 Expanded(
                                   child: Container(
                                     width: 2,
-                                    color: HelaColors.outlineVariant.withValues(alpha: 0.5),
+                                    color: HelaColors.outlineVariant.withValues(
+                                      alpha: 0.5,
+                                    ),
                                   ),
                                 ),
                             ],
@@ -462,7 +501,8 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         act.startTime.isNotEmpty
@@ -505,12 +545,17 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
                                     ),
                                   ],
                                   if (act.travelTimeFromPrevious != null &&
-                                      act.travelTimeFromPrevious!.isNotEmpty) ...[
+                                      act
+                                          .travelTimeFromPrevious!
+                                          .isNotEmpty) ...[
                                     const SizedBox(height: 6),
                                     Row(
                                       children: [
-                                        const Icon(Icons.directions_car_rounded,
-                                            size: 13, color: HelaColors.secondary),
+                                        const Icon(
+                                          Icons.directions_car_rounded,
+                                          size: 13,
+                                          color: HelaColors.secondary,
+                                        ),
                                         const SizedBox(width: 4),
                                         Expanded(
                                           child: Text(
@@ -529,9 +574,12 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
                                     const SizedBox(height: 6),
                                     Container(
                                       padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 4),
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
                                       decoration: BoxDecoration(
-                                        color: HelaColors.tertiaryFixed.withValues(alpha: 0.5),
+                                        color: HelaColors.tertiaryFixed
+                                            .withValues(alpha: 0.5),
                                         borderRadius: BorderRadius.circular(6),
                                       ),
                                       child: Text(
@@ -573,8 +621,11 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
               children: [
                 const Row(
                   children: [
-                    Icon(Icons.account_balance_wallet_rounded,
-                        size: 18, color: HelaColors.primary),
+                    Icon(
+                      Icons.account_balance_wallet_rounded,
+                      size: 18,
+                      color: HelaColors.primary,
+                    ),
                     SizedBox(width: 8),
                     Text(
                       'Budget & Preparation',
@@ -613,7 +664,10 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('• ', style: TextStyle(color: HelaColors.primary)),
+                          const Text(
+                            '• ',
+                            style: TextStyle(color: HelaColors.primary),
+                          ),
                           Expanded(
                             child: Text(
                               tip,
@@ -694,7 +748,10 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
                     icon: const Icon(Icons.home_rounded, size: 18),
                     label: const Text(
                       'Back to Home Page',
-                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                      ),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: HelaColors.primary,
@@ -757,14 +814,19 @@ class _TourPlanDetailsPageState extends State<TourPlanDetailsPage> {
               OutlinedButton.icon(
                 onPressed: _handleSave,
                 icon: Icon(
-                  _isSaved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+                  _isSaved
+                      ? Icons.bookmark_rounded
+                      : Icons.bookmark_border_rounded,
                   size: 17,
                 ),
                 label: Text(_isSaved ? 'Saved' : 'Save'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: HelaColors.primary,
                   side: const BorderSide(color: HelaColors.primary),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 11,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),

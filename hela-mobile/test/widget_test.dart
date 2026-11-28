@@ -37,6 +37,7 @@ import 'package:hela/widgets/cards/haven_card.dart';
 import 'package:hela/widgets/cards/stay_card.dart';
 import 'package:hela/widgets/cards/itinerary_card.dart';
 import 'package:hela/widgets/cards/real_time_calendar_card.dart';
+import 'package:hela/widgets/common/hela_network_image.dart';
 import 'package:hela/widgets/maps/real_time_google_map.dart';
 import 'package:hela/widgets/navigation/hela_bottom_nav_bar.dart';
 
@@ -1346,4 +1347,116 @@ void main() {
       expect(find.text('Day 2 Route Overview'), findsOneWidget);
     },
   );
+
+  testWidgets(
+    'ItineraryDetailsPage uses Plus Jakarta Sans across AppBar, map overlay, and bottom bar',
+    (WidgetTester tester) async {
+      _ignoreOverflow();
+      await tester.pumpWidget(
+        _wrapWithState(
+          ItineraryDetailsPage(
+            startDate: DateTime(2026, 12, 5),
+            endDate: DateTime(2026, 12, 15),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      String? effectiveFontFamily(Finder finder) {
+        final element = finder.evaluate().first;
+        final textWidget = element.widget as Text;
+        return textWidget.style?.fontFamily ??
+            DefaultTextStyle.of(element).style.fontFamily;
+      }
+
+      expect(
+        effectiveFontFamily(find.text('Itinerary Details')),
+        'Plus Jakarta Sans',
+      );
+      expect(
+        effectiveFontFamily(find.text('Cultural Wonders & Emerald Peaks')),
+        'Plus Jakarta Sans',
+      );
+      expect(
+        effectiveFontFamily(find.text('Day 1 Route Overview')),
+        'Plus Jakarta Sans',
+      );
+      expect(
+        effectiveFontFamily(
+          find.text('Turn-by-turn live navigation & offline mode included'),
+        ),
+        'Plus Jakarta Sans',
+      );
+      expect(
+        effectiveFontFamily(find.text('Start My Journey')),
+        'Plus Jakarta Sans',
+      );
+      expect(effectiveFontFamily(find.text('4 stops')), 'Plus Jakarta Sans');
+    },
+  );
+
+  test(
+    'HelaAppState persists saved havens, stays, experiences, and custom collections across restart',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final appState = HelaAppState();
+
+      appState.toggleSaveHaven(
+        const HavenItem(
+          title: 'Sigiriya Sanctuary',
+          location: 'Matale • Central',
+          category: 'Heritage',
+          price: r'$36',
+          rating: 4.9,
+          badgeText: 'UNESCO',
+          imageUrl: 'https://example.com/sigiriya.jpg',
+        ),
+      );
+      appState.toggleSaveStay(
+        const StayHaven(
+          title: 'Tea Hills Lodge',
+          location: 'Ella, Sri Lanka',
+          rating: 4.8,
+          reviewsCount: 120,
+          ratingLabel: 'Top Rated',
+          pricePerNight: 145,
+          feeNote: 'Taxes included',
+          imageUrl: 'https://example.com/stay.jpg',
+          amenities: [
+            StayAmenity(label: 'Infinity Pool', icon: Icons.pool_rounded),
+          ],
+        ),
+      );
+      appState.createCustomList(
+        name: 'Hill Country Stops',
+        initialItemTitles: ['Tea Hills Lodge'],
+      );
+
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+
+      final restored = HelaAppState();
+      await restored.restoreSavedBookmarks();
+
+      expect(restored.isHavenSaved('Sigiriya Sanctuary'), isTrue);
+      expect(restored.isStaySaved('Tea Hills Lodge'), isTrue);
+      expect(
+        restored.customLists.any((l) => l.name == 'Hill Country Stops'),
+        isTrue,
+      );
+    },
+  );
+
+  test('HelaNetworkImage validates safe HTTP/HTTPS URLs only', () {
+    expect(
+      HelaNetworkImage.isValidNetworkUrl('https://images.unsplash.com/a.jpg'),
+      isTrue,
+    );
+    expect(
+      HelaNetworkImage.isValidNetworkUrl('http://localhost:5000/img.png'),
+      isTrue,
+    );
+    expect(HelaNetworkImage.isValidNetworkUrl('file:///etc/passwd'), isFalse);
+    expect(HelaNetworkImage.isValidNetworkUrl('javascript:alert(1)'), isFalse);
+    expect(HelaNetworkImage.isValidNetworkUrl(''), isFalse);
+  });
 }

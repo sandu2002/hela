@@ -49,7 +49,9 @@ class HelaNavigationDrawer extends StatelessWidget {
                         framed: true,
                         isCircle: true,
                         padding: 5,
-                        borderColor: colors.outlineVariant.withValues(alpha: 0.6),
+                        borderColor: colors.outlineVariant.withValues(
+                          alpha: 0.6,
+                        ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
