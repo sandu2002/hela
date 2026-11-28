@@ -681,7 +681,6 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
     final summary = _currentPlan?.summary.isNotEmpty == true
         ? _currentPlan!.summary
         : 'Sri Lanka Grand Highlights Expedition';
-    final matchReason = _currentPlan?.matchReason ?? '';
     final nights = _tripDays > 1 ? _tripDays - 1 : 0;
 
     return Container(
@@ -840,43 +839,6 @@ class _ItineraryDetailsPageState extends State<ItineraryDetailsPage> {
                 Icons.payments_outlined,
                 _budgetPriceBadge,
                 colors,
-              ),
-            ],
-          ),
-          const SizedBox(height: 9),
-          Divider(
-            height: 1,
-            color: colors.architecturalBorder.withValues(alpha: 0.45),
-          ),
-          const SizedBox(height: 7),
-
-          // Clean Inline Personalization Note
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 1),
-                child: Icon(
-                  Icons.lightbulb_outline_rounded,
-                  size: 14,
-                  color: colors.goldenAmber,
-                ),
-              ),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  matchReason.isNotEmpty
-                      ? matchReason
-                      : 'Tailored by HELA AI • Customizable on-the-go with certified local guides.',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: colors.onSurfaceVariant,
-                    height: 1.32,
-                    fontFamily: _fontFamily,
-                  ),
-                ),
               ),
             ],
           ),
